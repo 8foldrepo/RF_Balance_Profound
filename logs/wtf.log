@@ -1,0 +1,367 @@
+2022-02-04 18:45:14,926 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-04 18:45:18,683 [INFO] [Manager] [manager_thread] : Loading script
+2022-02-04 18:45:20,686 [INFO] [Manager] [manager_thread] : Running script
+2022-02-04 18:45:20,686 [INFO] [Manager] [manager_thread] : [Top Level]
+
+2022-02-04 18:45:20,686 [INFO] [Manager] [manager_thread] : # of Tasks = 14
+
+2022-02-04 18:45:20,686 [INFO] [Manager] [manager_thread] : Createdon = "25/08/2016"
+
+2022-02-04 18:45:20,687 [INFO] [Manager] [manager_thread] : Createdby = "PSM"
+
+2022-02-04 18:45:20,687 [INFO] [Manager] [manager_thread] : Description = "Script runs through finding elements (Beam angle test), HF and LF efficiency only. Manual setting of frequency at start of test."
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : [Task0]
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : Task type = "Pre-test initialisation"
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,689 [INFO] [Manager] [manager_thread] : [Task1]
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : Task type = "Find element "n""
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : Element = "Element 1"
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : X Incr. (mm) = "0.250000"
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : X #Pts. = "21"
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : Theta Incr. (deg) = "-0.400000"
+
+2022-02-04 18:45:20,690 [INFO] [Manager] [manager_thread] : Theta #Pts. = "41"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Scope channel = "Channel 1"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Acquisition type = "N Averaged Waveform"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Averages = "16"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Data storage = "Do not store"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Storage location = "UA results directory"
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Data directory = ""
+
+2022-02-04 18:45:20,691 [INFO] [Manager] [manager_thread] : Max. position error (+/- mm) = "0.200000"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : ElementPositionTest = "FALSE"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : Max angle variation (deg) = "2.000000"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : BeamAngleTest = "FALSE"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : Frequency settings = "Avg. Low frequency"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : Auto set timebase = "TRUE"
+
+2022-02-04 18:45:20,692 [INFO] [Manager] [manager_thread] : #Cycles.Capture = "10"
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : #Cycles.Delay = "0"
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : Frequency (MHz) = "4.400000"
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : Amplitude (mV) = "50.000000"
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : Burst count = "50"
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : [Task2]
+
+2022-02-04 18:45:20,693 [INFO] [Manager] [manager_thread] : Task type = "Loop over elements"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 1 = "TRUE"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 2 = "TRUE"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 3 = "TRUE"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 4 = "TRUE"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 5 = "TRUE"
+
+2022-02-04 18:45:20,694 [INFO] [Manager] [manager_thread] : Element 6 = "TRUE"
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : Element 7 = "TRUE"
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : Element 8 = "TRUE"
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : Element 9 = "TRUE"
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : Element 10 = "TRUE"
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,695 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,696 [INFO] [Manager] [manager_thread] : [Task3]
+
+2022-02-04 18:45:20,696 [INFO] [Manager] [manager_thread] : Task type = "Find element "n"_1"
+
+2022-02-04 18:45:20,696 [INFO] [Manager] [manager_thread] : Element = "Current"
+
+2022-02-04 18:45:20,696 [INFO] [Manager] [manager_thread] : X Incr. (mm) = "0.200000"
+
+2022-02-04 18:45:20,696 [INFO] [Manager] [manager_thread] : X #Pts. = "21"
+
+2022-02-04 18:45:20,704 [INFO] [Manager] [manager_thread] : Theta Incr. (deg) = "-0.400000"
+
+2022-02-04 18:45:20,704 [INFO] [Manager] [manager_thread] : Theta #Pts. = "41"
+
+2022-02-04 18:45:20,704 [INFO] [Manager] [manager_thread] : Scope channel = "Channel 1"
+
+2022-02-04 18:45:20,704 [INFO] [Manager] [manager_thread] : Acquisition type = "N Averaged Waveform"
+
+2022-02-04 18:45:20,704 [INFO] [Manager] [manager_thread] : Averages = "16"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : Data storage = "Store profiles only"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : Storage location = "UA results directory"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : Data directory = ""
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : Max. position error (+/- mm) = "0.400000"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : ElementPositionTest = "FALSE"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : Max angle variation (deg) = "2.000000"
+
+2022-02-04 18:45:20,705 [INFO] [Manager] [manager_thread] : BeamAngleTest = "TRUE"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : Frequency settings = "Avg. Low frequency"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : Auto set timebase = "TRUE"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : #Cycles.Capture = "10"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : #Cycles.Delay = "5"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : Frequency (MHz) = "4.400000"
+
+2022-02-04 18:45:20,706 [INFO] [Manager] [manager_thread] : Amplitude (mV) = "50.000000"
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : Burst count = "50"
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : [Task4]
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : Task type = "End loop"
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,707 [INFO] [Manager] [manager_thread] : [Task5]
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Task type = "Loop over elements_1"
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Element 1 = "TRUE"
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Element 2 = "TRUE"
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Element 3 = "TRUE"
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Element 4 = "TRUE"
+
+2022-02-04 18:45:20,708 [INFO] [Manager] [manager_thread] : Element 5 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : Element 6 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : Element 7 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : Element 8 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : Element 9 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : Element 10 = "TRUE"
+
+2022-02-04 18:45:20,709 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : [Task6]
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : Task type = "Measure element efficiency (RFB)"
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : Element = "Current"
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : Frequency range = "Low frequency"
+
+2022-02-04 18:45:20,710 [INFO] [Manager] [manager_thread] : RFB.#on/off cycles = "3"
+
+2022-02-04 18:45:20,711 [INFO] [Manager] [manager_thread] : RFB.On time (s) = "10.000000"
+
+2022-02-04 18:45:20,711 [INFO] [Manager] [manager_thread] : RFB.Off time (s) = "10.000000"
+
+2022-02-04 18:45:20,711 [INFO] [Manager] [manager_thread] : RFB.Threshold = "0.050000"
+
+2022-02-04 18:45:20,711 [INFO] [Manager] [manager_thread] : RFB.Offset = "0.500000"
+
+2022-02-04 18:45:20,711 [INFO] [Manager] [manager_thread] : Set frequency options = "Common peak frequency"
+
+2022-02-04 18:45:20,719 [INFO] [Manager] [manager_thread] : Frequency (MHz) = "4.200000"
+
+2022-02-04 18:45:20,719 [INFO] [Manager] [manager_thread] : Amplitude (mVpp) = "100.000000"
+
+2022-02-04 18:45:20,719 [INFO] [Manager] [manager_thread] : Storage location = "UA results directory"
+
+2022-02-04 18:45:20,719 [INFO] [Manager] [manager_thread] : Data directory = ""
+
+2022-02-04 18:45:20,719 [INFO] [Manager] [manager_thread] : RFB target position = "Average UA RFB position"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : RFB target angle = "-90.000000"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : EfficiencyTest = "TRUE"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : Pa max (target, W) = "4.000000"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : Pf max (limit, W) = "12.000000"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : Reflection limit (%) = "70.000000"
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,720 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : [Task7]
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : Task type = "Measure element efficiency (RFB)_1"
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : Element = "Current"
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : Frequency range = "High frequency"
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : RFB.#on/off cycles = "3"
+
+2022-02-04 18:45:20,721 [INFO] [Manager] [manager_thread] : RFB.On time (s) = "10.000000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : RFB.Off time (s) = "10.000000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : RFB.Threshold = "0.050000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : RFB.Offset = "0.500000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : Set frequency options = "Common peak frequency"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : Frequency (MHz) = "4.200000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : Amplitude (mVpp) = "175.000000"
+
+2022-02-04 18:45:20,722 [INFO] [Manager] [manager_thread] : Storage location = "UA results directory"
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : Data directory = ""
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : RFB target position = "Average UA RFB position"
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : RFB target angle = "-90.000000"
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : EfficiencyTest = "TRUE"
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : Pa max (target, W) = "2.000000"
+
+2022-02-04 18:45:20,723 [INFO] [Manager] [manager_thread] : Pf max (limit, W) = "12.000000"
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : Reflection limit (%) = "70.000000"
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : [Task8]
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : Task type = "Measure element efficiency (RFB)_2"
+
+2022-02-04 18:45:20,724 [INFO] [Manager] [manager_thread] : Element = "Current"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : Frequency range = "Low frequency"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : RFB.#on/off cycles = "3"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : RFB.On time (s) = "10.000000"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : RFB.Off time (s) = "10.000000"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : RFB.Threshold = "0.050000"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : RFB.Offset = "0.500000"
+
+2022-02-04 18:45:20,725 [INFO] [Manager] [manager_thread] : Set frequency options = "Common peak frequency"
+
+2022-02-04 18:45:20,726 [INFO] [Manager] [manager_thread] : Frequency (MHz) = "4.200000"
+
+2022-02-04 18:45:20,726 [INFO] [Manager] [manager_thread] : Amplitude (mVpp) = "100.000000"
+
+2022-02-04 18:45:20,734 [INFO] [Manager] [manager_thread] : Storage location = "UA results directory"
+
+2022-02-04 18:45:20,734 [INFO] [Manager] [manager_thread] : Data directory = ""
+
+2022-02-04 18:45:20,734 [INFO] [Manager] [manager_thread] : RFB target position = "Average UA RFB position"
+
+2022-02-04 18:45:20,734 [INFO] [Manager] [manager_thread] : RFB target angle = "-90.000000"
+
+2022-02-04 18:45:20,734 [INFO] [Manager] [manager_thread] : EfficiencyTest = "TRUE"
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : Pa max (target, W) = "4.000000"
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : Pf max (limit, W) = "12.000000"
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : Reflection limit (%) = "70.000000"
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : [Task9]
+
+2022-02-04 18:45:20,735 [INFO] [Manager] [manager_thread] : Task type = "End loop_1"
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : [Task10]
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : Task type = "Save results"
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : Save summary file = "TRUE"
+
+2022-02-04 18:45:20,736 [INFO] [Manager] [manager_thread] : Write UA Calibration = "TRUE"
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : PromptForCalWrite = "FALSE"
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : [Task11]
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : Task type = "Prompt user for action"
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : Prompt type = "Disable UA pump"
+
+2022-02-04 18:45:20,737 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : [Task12]
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : Task type = "Home system"
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : Axis to home = "Theta"
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,738 [INFO] [Manager] [manager_thread] : 
+
+2022-02-04 18:45:20,739 [INFO] [Manager] [manager_thread] : [Task13]
+
+2022-02-04 18:45:20,739 [INFO] [Manager] [manager_thread] : Task type = "Home system_1"
+
+2022-02-04 18:45:20,739 [INFO] [Manager] [manager_thread] : Axis to home = "X"
+

@@ -1,0 +1,76 @@
+# This file will get read into the application first.
+
+WTF:
+  Device: 'LP-100'
+  FGen:
+    brand: 'siglent'
+    ip: '192.168.52.121'
+    port: 5025
+  Scope:
+    brand: 'picoscope'
+    resolution: 14  # -> bits, default for 2 channels
+  Motor:
+    brand: 'galil'
+    ip: '192.168.42.101'
+  Transducers:
+    TxConfigPath: './resources/tx_config'
+
+MRI:
+  brand: 'BRUKER'
+
+RealTime_MRI:
+  BRUKER:
+    port: 8888
+  SIEMENS:
+    BOLD:
+      folder: 'C:\Export'
+
+DICOM_Node:
+  AETitle: 'MORPHEUS' 
+  port: 10000  # -> runs on the local machine
+  acse_timeout: 30
+  dimse_timeout: 30
+  network_timeout: 60
+
+RK-50:
+  speed_x: 2
+  speed_y: 2
+  speed_z: 2
+  steps_per_mm_x: 320
+  steps_per_mm_y: 320
+  steps_per_mm_z: 6400
+
+LP-100:
+  UI:
+    num_mri_views: 1
+  # Tuning Parameters along the three axes [A,B,C]
+  Speed: [4500,4500,0]  # default speed for ceramic motors
+  TM: 250
+  K1: [320,320,0]
+  K2: [0,0,0]
+  K3: [950,950,0]
+  KD: [300,300,0]
+  KP: [30,30,0]
+  KI: [0.12,0.12,0]
+  DB: [200,200,0]
+  DS: [50,50,0]
+  FC: [20,20,0]
+  FN: [100,100,0]
+  ZP: [1.2,1,0]
+  ZN: [-0.8,-0.5,0]
+  JG: [2500,2500,0]  # -> jog speed is used for homing
+
+  ReturnLatchA: 3120
+  ReturnLatchB: 6240
+  ReturnLatchC: 3120
+
+  MotorLimL: 20.0
+  MotorLimR: 20.0
+
+  MotorLimS: 30.0
+  MotorLimI: 30.0
+
+  MotorLimA: 20.0
+  MotorLimP: 20.0
+
+  counts_per_mm: 312

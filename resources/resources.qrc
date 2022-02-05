@@ -1,0 +1,33 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+
+    <qresource prefix="icons">
+        <file alias="WTF_logo.svg">icons/WTF_logo.svg</file>
+        <file alias="connected_plugs.svg">icons/connected_plugs.svg</file>
+        <file alias="disconnected_plugs.svg">icons/disconnected_plugs.svg</file>
+        <file alias="cancel_red.svg">icons/cancel_red.svg</file>
+        <file alias="checked_green.svg">icons/checked_green.svg</file>
+        <file alias="opened_folder_gray.svg">icons/opened_folder_gray.svg</file>
+        <file alias="contrast_gray.svg">icons/contrast_gray.svg</file>
+        <file alias="close_gray.svg">icons/close_gray.svg</file>
+        <file alias="target_gray.svg">icons/target_gray.svg</file>
+        <file alias="target_cancel_gray.svg">icons/target_cancel_gray.svg</file>
+        <file alias="coordinate_system_gray.svg">icons/coordinate_system_gray.svg</file>
+    </qresource>
+
+    <qresource prefix="cursors">
+        <file alias="crosshairs.png">cursors/crosshairs.png</file>
+    </qresource>
+
+    <qresource prefix="splash">
+        <file alias="WTF_logo_splash">splashscreen/WTFInstruments_colorOnTransparent.png</file>
+    </qresource>
+
+    <qresource prefix="stylesheets">
+        <file alias="motor_status_edit">stylesheets/motor_status_edits.qss</file>
+        <file alias="style_lp100">stylesheets/style_lp100.qss</file>
+        <file alias="blue_btn_style">stylesheets/blue_push_button.qss</file>
+        <file alias="green_btn_style">stylesheets/green_push_button.qss</file>
+    </qresource>
+
+</RCC>

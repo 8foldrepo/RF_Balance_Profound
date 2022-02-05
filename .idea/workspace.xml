@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8073fbcf-d5eb-4eea-913b-d9d2eda5b663" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/8foldlogo.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hardware/hardware_galil.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Utilities/load_config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Utilities/useful_commands.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Utilities/useful_methods.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/default.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/local.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/resources.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/resources.qrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/widget_balance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/window_test_test.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="24exEfOm6WAVQtQpIjvtIaczMLB" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\isaia\OneDrive\Documents\GitHub\RF_Balance_Profound" />
+      <recent name="C:\Users\isaia\OneDrive\Documents\GitHub\RF_Balance_Profound\resources" />
+      <recent name="C:\Users\isaia\OneDrive\Documents\GitHub\RF_Balance_Profound\Hardware" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\isaia\OneDrive\Documents\GitHub\RF_Balance_Profound" />
+      <recent name="C:\Users\isaia\OneDrive\Documents\GitHub\RF_Balance_Profound\resources\config" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RF_Balance_Profound" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8073fbcf-d5eb-4eea-913b-d9d2eda5b663" name="Changes" comment="" />
+      <created>1644004743794</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1644004743794</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
