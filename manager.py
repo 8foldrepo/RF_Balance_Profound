@@ -3,7 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QLineEdit, QMessageBox
 from typing import Optional
 from Hardware.hardware_galil import GalilDMC41x3
-
+import re
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 
@@ -19,6 +19,7 @@ motor_logger.setLevel(logging.INFO)
 
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+
 class Manager(QThread):
     """
     this class acts as the chief executive for the application. It is in charge of recieving commands from the UI,
@@ -27,19 +28,32 @@ class Manager(QThread):
     Signals:
         logger_signal: convey info to the user via a feedback widget
         finished_signal: emitted when the thread is ready to be deleted.
+
+        description_signal = pyqtSignal(str): Convey script metadata to UI
+        created_on_signal = pyqtSignal(str): Convey script metadata to UI
+        num_tasks_signal = pyqtSignal(str): Convey script metadata to UI
+
     Slots:
         execute_command: execute a command given to the application
 
     Methods:
 
     """
+    #Script metadata
+    description_signal = pyqtSignal(str)
+    created_on_signal = pyqtSignal(str)
+    created_by_signal = pyqtSignal(str)
+    num_tasks_signal = pyqtSignal(int)
+    script_name_signal = pyqtSignal(str)
+
+    step_number_signal = pyqtSignal(int)
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
-    sMotorConnection = pyqtSignal(bool)
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+
         self.script = None
         self.stay_alive = True
 
@@ -64,11 +78,7 @@ class Manager(QThread):
         msg = f"SIMULATE HARDWARE is: {self.SIMULATE_HARDWARE}"
         self.log_msg(level='info', message=msg)
 
-        motor_status = self.motor.connect_motor()
-        self.stay_alive = motor_status
-
-        # -> signal the main app whether the motor connection was successful
-        self.sMotorConnection.emit(motor_status)
+        self.stay_alive = True
 
         while self.stay_alive is True:
 
@@ -88,15 +98,14 @@ class Manager(QThread):
                 try:
                     cmd_ray.pop(0)
                     path = ' '.join(cmd_ray)
-                    self.script = open(path, "r")
+                    self.load_script(path)
                 except Exception as e:
                     self.log_msg("info", f"Error in load script: {e}")
                 self.cmd = ''
             elif cmd_ray[0] == 'RUN':
                 self.log_msg('info', message="Running script")
                 try:
-                    for command in self.script:
-                        self.log_msg('info', message=command)
+                    self.run_script()
                 except Exception as e:
                     self.log_msg("info", f"Error in run script: {e}")
 
@@ -108,6 +117,41 @@ class Manager(QThread):
         self.mutex.unlock()
 
         return super().run()
+
+    def load_script(self, path):
+        self.script = open(path, "r")
+
+        # Send name of script to UI
+        split_path = path.split('/')
+        name = split_path[len(split_path)-1]
+        self.script_name_signal.emit(name)
+
+        # Load the top level metadata and emit it to the UI
+        for line in self.script:
+            line = line.upper()
+            # If an empty line is detected that means the end of the metadata is reached.
+            print(line)
+            if line == '\n' or line == '[TASK0]':
+                break
+
+            ray = line.split(' = ')
+
+            if ray[0] == '# OF TASKS':
+                self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
+            elif ray[0] == 'CREATEDON':
+                self.created_on_signal.emit(ray[1].replace('"', ""))
+            if ray[0] == 'CREATEDBY':
+                self.created_by_signal.emit(ray[1].replace('"', ""))
+            elif ray[0] == 'DESCRIPTION':
+                self.description_signal.emit(ray[1].replace('"', ""))
+
+    def run_script(self):
+        for command in self.script:
+            command = command.upper()
+            self.log_msg('info', message=command)
+            if '[TASK' in command:
+                step_number = int(command.replace('[TASK', '').replace(']', ''))
+                self.step_number_signal.emit(step_number)
 
     def log_msg(self, level: str, message: str) -> None:
         """
@@ -137,10 +181,9 @@ class Manager(QThread):
             motor_logger.info(log_entry)
 
     @pyqtSlot(str)
-    def exec_command(self,command):
+    def exec_command(self, command):
         self.cmd = command
         self.condition.wakeAll()
 
     def wrap_up(self):
         pass
-

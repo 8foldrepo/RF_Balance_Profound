@@ -32,6 +32,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     command_signal = QtCore.pyqtSignal(str)
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+    num_tasks = 0
+    #Tracks whether the thread is doing something
+    ready = True
 
     def __init__(self):
         # Load default.yaml file to self.config as a python dictionary
@@ -65,6 +68,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
+        self.manager.script_name_signal.connect(self.script_name_field.setText)
+        self.manager.created_by_signal.connect(self.created_by_field.setText)
+        self.manager.created_on_signal.connect(self.created_on_field.setText)
+        self.manager.description_signal.connect(self.script_description_field.setText)
+        self.manager.num_tasks_signal.connect(self.set_num_tasks)
+        self.manager.step_number_signal.connect(self.calc_progress)
 
     def popup(self, s):
         popup = QMessageBox()
@@ -72,6 +81,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         popup.setText(s)
         popup.exec()
         self.cont_signal.emit()
+
+    @pyqtSlot(int)
+    def set_num_tasks(self,num_tasks):
+        self.num_tasks = num_tasks
+
+    @pyqtSlot(int)
+    def calc_progress(self, step_number):
+        if self.ready == False:
+            return
+        self.ready = False
+        self.progressBar.setValue((step_number+1)/self.num_tasks*100)
+        self.ready = True
 
     @pyqtSlot(str)
     def emit_command_signal(self, command):
