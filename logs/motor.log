@@ -365,3 +365,10 @@
 
 2022-02-04 18:45:20,739 [INFO] [Manager] [manager_thread] : Axis to home = "X"
 
+2022-02-04 18:46:31,536 [INFO] [Manager] [manager_thread] : Loading script
+2022-02-04 18:46:31,537 [INFO] [Manager] [manager_thread] : Error in load script: [Errno 2] No such file or directory: ''
+2022-02-04 18:46:36,355 [INFO] [Manager] [manager_thread] : Loading script
+2022-02-04 18:46:36,355 [INFO] [Manager] [manager_thread] : Error in load script: [Errno 2] No such file or directory: ''
+2022-02-04 18:46:36,998 [INFO] [Manager] [manager_thread] : Running script
+2022-02-04 18:46:40,094 [INFO] [Manager] [manager_thread] : Loading script
+2022-02-04 18:46:40,094 [INFO] [Manager] [manager_thread] : Error in load script: [Errno 2] No such file or directory: ''
