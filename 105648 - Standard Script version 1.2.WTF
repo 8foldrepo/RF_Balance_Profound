@@ -1,0 +1,181 @@
+[Top Level]
+# of Tasks = 14
+Createdon = "25/08/2016"
+Createdby = "PSM"
+Description = "Script runs through finding elements (Beam angle test), HF and LF efficiency only. Manual setting of frequency at start of test."
+
+[Task0]
+Task type = "Pre-test initialisation"
+
+[Task1]
+Task type = "Find element "n""
+Element = "Element 1"
+X Incr. (mm) = "0.250000"
+X #Pts. = "21"
+Theta Incr. (deg) = "-0.400000"
+Theta #Pts. = "41"
+Scope channel = "Channel 1"
+Acquisition type = "N Averaged Waveform"
+Averages = "16"
+Data storage = "Do not store"
+Storage location = "UA results directory"
+Data directory = ""
+Max. position error (+/- mm) = "0.200000"
+ElementPositionTest = "FALSE"
+Max angle variation (deg) = "2.000000"
+BeamAngleTest = "FALSE"
+Frequency settings = "Avg. Low frequency"
+Auto set timebase = "TRUE"
+#Cycles.Capture = "10"
+#Cycles.Delay = "0"
+Frequency (MHz) = "4.400000"
+Amplitude (mV) = "50.000000"
+Burst count = "50"
+
+[Task2]
+Task type = "Loop over elements"
+Element 1 = "TRUE"
+Element 2 = "TRUE"
+Element 3 = "TRUE"
+Element 4 = "TRUE"
+Element 5 = "TRUE"
+Element 6 = "TRUE"
+Element 7 = "TRUE"
+Element 8 = "TRUE"
+Element 9 = "TRUE"
+Element 10 = "TRUE"
+
+
+[Task3]
+Task type = "Find element "n"_1"
+Element = "Current"
+X Incr. (mm) = "0.200000"
+X #Pts. = "21"
+Theta Incr. (deg) = "-0.400000"
+Theta #Pts. = "41"
+Scope channel = "Channel 1"
+Acquisition type = "N Averaged Waveform"
+Averages = "16"
+Data storage = "Store profiles only"
+Storage location = "UA results directory"
+Data directory = ""
+Max. position error (+/- mm) = "0.400000"
+ElementPositionTest = "FALSE"
+Max angle variation (deg) = "2.000000"
+BeamAngleTest = "TRUE"
+Frequency settings = "Avg. Low frequency"
+Auto set timebase = "TRUE"
+#Cycles.Capture = "10"
+#Cycles.Delay = "5"
+Frequency (MHz) = "4.400000"
+Amplitude (mV) = "50.000000"
+Burst count = "50"
+
+[Task4]
+Task type = "End loop"
+
+
+[Task5]
+Task type = "Loop over elements_1"
+Element 1 = "TRUE"
+Element 2 = "TRUE"
+Element 3 = "TRUE"
+Element 4 = "TRUE"
+Element 5 = "TRUE"
+Element 6 = "TRUE"
+Element 7 = "TRUE"
+Element 8 = "TRUE"
+Element 9 = "TRUE"
+Element 10 = "TRUE"
+
+
+[Task6]
+Task type = "Measure element efficiency (RFB)"
+Element = "Current"
+Frequency range = "Low frequency"
+RFB.#on/off cycles = "3"
+RFB.On time (s) = "10.000000"
+RFB.Off time (s) = "10.000000"
+RFB.Threshold = "0.050000"
+RFB.Offset = "0.500000"
+Set frequency options = "Common peak frequency"
+Frequency (MHz) = "4.200000"
+Amplitude (mVpp) = "100.000000"
+Storage location = "UA results directory"
+Data directory = ""
+RFB target position = "Average UA RFB position"
+RFB target angle = "-90.000000"
+EfficiencyTest = "TRUE"
+Pa max (target, W) = "4.000000"
+Pf max (limit, W) = "12.000000"
+Reflection limit (%) = "70.000000"
+
+
+[Task7]
+Task type = "Measure element efficiency (RFB)_1"
+Element = "Current"
+Frequency range = "High frequency"
+RFB.#on/off cycles = "3"
+RFB.On time (s) = "10.000000"
+RFB.Off time (s) = "10.000000"
+RFB.Threshold = "0.050000"
+RFB.Offset = "0.500000"
+Set frequency options = "Common peak frequency"
+Frequency (MHz) = "4.200000"
+Amplitude (mVpp) = "175.000000"
+Storage location = "UA results directory"
+Data directory = ""
+RFB target position = "Average UA RFB position"
+RFB target angle = "-90.000000"
+EfficiencyTest = "TRUE"
+Pa max (target, W) = "2.000000"
+Pf max (limit, W) = "12.000000"
+Reflection limit (%) = "70.000000"
+
+
+[Task8]
+Task type = "Measure element efficiency (RFB)_2"
+Element = "Current"
+Frequency range = "Low frequency"
+RFB.#on/off cycles = "3"
+RFB.On time (s) = "10.000000"
+RFB.Off time (s) = "10.000000"
+RFB.Threshold = "0.050000"
+RFB.Offset = "0.500000"
+Set frequency options = "Common peak frequency"
+Frequency (MHz) = "4.200000"
+Amplitude (mVpp) = "100.000000"
+Storage location = "UA results directory"
+Data directory = ""
+RFB target position = "Average UA RFB position"
+RFB target angle = "-90.000000"
+EfficiencyTest = "TRUE"
+Pa max (target, W) = "4.000000"
+Pf max (limit, W) = "12.000000"
+Reflection limit (%) = "70.000000"
+
+
+[Task9]
+Task type = "End loop_1"
+
+
+[Task10]
+Task type = "Save results"
+Save summary file = "TRUE"
+Write UA Calibration = "TRUE"
+PromptForCalWrite = "FALSE"
+
+
+[Task11]
+Task type = "Prompt user for action"
+Prompt type = "Disable UA pump"
+
+
+[Task12]
+Task type = "Home system"
+Axis to home = "Theta"
+
+
+[Task13]
+Task type = "Home system_1"
+Axis to home = "X"
