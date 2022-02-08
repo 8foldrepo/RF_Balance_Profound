@@ -110,6 +110,9 @@ class Manager(QThread):
                     self.log_msg("info", f"Error in run script: {e}")
 
                 self.cmd == ''
+            elif cmd_ray[0] == 'CLOSE':
+                self.stay_alive = False
+                break
             else:
                 pass
 

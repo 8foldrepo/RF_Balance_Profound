@@ -13,9 +13,9 @@ from resources.resources import qt_resource_data, qt_resource_struct, qt_resourc
 import sys
 import logging
 
+#Set up logger
 fmt_str = LOGGER_FORMAT
 log_formatter = logging.Formatter(fmt_str)
-
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 console_handler = logging.StreamHandler(sys.stdout)
@@ -40,6 +40,8 @@ def main(args):
     QThread.currentThread().setObjectName("ui_thread")
     
     window.show()
+    window.prompt_for_password()
+
     code = app.exec_()
 
     root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")

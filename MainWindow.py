@@ -3,6 +3,8 @@ import sys
 import webbrowser
 import yaml
 
+from ui_elements.ui_password_dialog import PasswordDialog
+
 from Utilities.load_config import ROOT_LOGGER_NAME
 
 from PyQt5 import QtCore
@@ -11,7 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
-from manager import  Manager
+from manager import Manager
 from Utilities.load_config import load_configuration
 import logging
 
@@ -60,14 +62,22 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
-    @pyqtSlot()
-    def complete(self):
-        self.logger_signal.emit("Manager routine terminated, resetting manager routine.")
+    def prompt_for_password(self):
+        dlg = PasswordDialog(self)
+        dlg.access_granted_signal.connect(self.password_result)
+        dlg.exec()
+
+    @pyqtSlot(bool)
+    def password_result(self, granted):
+        if not granted:
+            sys.exit()
 
     def configure_signals(self):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
+
+        #Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
         self.manager.created_by_signal.connect(self.created_by_field.setText)
         self.manager.created_on_signal.connect(self.created_on_field.setText)
@@ -75,12 +85,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
 
-    def popup(self, s):
-        popup = QMessageBox()
-        popup.setWindowTitle(" ")
-        popup.setText(s)
-        popup.exec()
-        self.cont_signal.emit()
+    def load_script(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Open file", "", "Script files (*.wtf *.txt)"
+        )
+        self.command_signal.emit('LOAD ' + path)
 
     @pyqtSlot(int)
     def set_num_tasks(self,num_tasks):
@@ -94,9 +103,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.progressBar.setValue((step_number+1)/self.num_tasks*100)
         self.ready = True
 
-    @pyqtSlot(str)
-    def emit_command_signal(self, command):
-        self.command_signal.emit(command)
+    def popup(self, s):
+        popup = QMessageBox()
+        popup.setWindowTitle(" ")
+        popup.setText(s)
+        popup.exec()
+        self.cont_signal.emit()
 
     def setupUi(self, MainWindow):
         super().setupUi(self)
@@ -142,12 +154,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         webbrowser.open("Help.txt")
 
     # Menu bar Actions
-    def load_script(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Open file", "", "Script files (*.wtf *.txt)"
-        )
-        self.command_signal.emit('LOAD ' + path)
-
     def file_saveas(self):
         path, _ = QFileDialog.getSaveFileName(
             self, "Save file", "", "Text documents (*.txt)"
@@ -198,7 +204,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if qReply == QMessageBox.Yes:
             bQuit = True
         if bQuit:
-            self.command_signal.emit("close")
+            self.command_signal.emit("CLOSE")
             event.accept()
         else:
             event.ignore()

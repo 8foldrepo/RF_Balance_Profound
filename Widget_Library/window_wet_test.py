@@ -1634,7 +1634,7 @@ class Ui_MainWindow(object):
         self.ua_pump_indicator.setText(_translate("MainWindow", "UA PUMP OFF"))
         self.ua_on_indicator.setText(_translate("MainWindow", "UA OFF"))
         self.tank_level_indicator.setText(_translate("MainWindow", "TANK LOW"))
-from ui_elements.oscilloscope_widget import Plot
+from ui_elements.ui_oscilloscope_plot import Plot
 from ui_elements.switch import Switch
 
 
