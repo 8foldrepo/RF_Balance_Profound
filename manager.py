@@ -1,9 +1,5 @@
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QLineEdit, QMessageBox
 from typing import Optional
-from Hardware.hardware_galil import GalilDMC41x3
-import re
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 
@@ -19,6 +15,7 @@ motor_logger.setLevel(logging.INFO)
 
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+from Hardware.abstract_motor_controller import AbstractMotorController
 
 class Manager(QThread):
     """
@@ -46,10 +43,14 @@ class Manager(QThread):
     num_tasks_signal = pyqtSignal(int)
     script_name_signal = pyqtSignal(str)
 
+    #Compartmentalize into motor interface thread later
+    MotorCommands = pyqtSignal(str)
+
     step_number_signal = pyqtSignal(int)
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
+    Motors = None
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
@@ -63,9 +64,10 @@ class Manager(QThread):
         self.condition = QWaitCondition()
 
         # -> check if we are simulating hardware
-        self.SIMULATE_HARDWARE = config['WTF']['Motor']['simulate_hw']
+        self.SIMULATE_HARDWARE = config['Debugging']['simulate_hw']
 
-        self.motor = GalilDMC41x3(parent=None, config=config)
+        if self.SIMULATE_HARDWARE:
+            self.Motors = AbstractMotorController
 
     def run(self) -> None:
         """
@@ -113,6 +115,29 @@ class Manager(QThread):
             elif cmd_ray[0] == 'CLOSE':
                 self.stay_alive = False
                 break
+            #Motor commands
+            elif self.cmd == 'Disconnect'.upper():
+                self.Motors.disconnect()
+            elif self.cmd == 'Connect'.upper():
+                self.Motors.connect()
+            elif self.cmd_ray[0] == 'JOG' and self.cmd_ray[1] == 'SPEED':
+                self.Motors.jog_speed = self.cmd_ray[2]
+            elif self.cmd_ray[0] == 'SCAN' and self.cmd_ray[1] == 'SPEED':
+                self.Motors.scan_speed = self.cmd_ray[2]
+            elif self.cmd == 'Begin Motion X+'.upper():
+                self.Motors.jog('X', 1)
+            elif self.cmd == 'Begin Motion X-'.upper():
+                self.Motors.jog('X', -1)
+            elif self.cmd == 'Begin Motion R+'.upper():
+                self.Motors.jog('R', 1)
+            elif self.cmd == 'Begin Motion R-'.upper():
+                self.Motors.jog('R', -1)
+            elif self.cmd == 'Stop Motion'.upper():
+                self.Motors.stop_motion()
+            elif self.cmd == 'Get Position'.upper():
+                self.Motors.get_position()
+
+            #What to do when there is no command
             else:
                 pass
 

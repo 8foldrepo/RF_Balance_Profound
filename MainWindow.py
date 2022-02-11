@@ -49,10 +49,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.config = load_configuration()
 
         self.manager = Manager(parent=None, config=self.config)
+
         self.thread_list.append(self.manager)
 
-        for thread in self.thread_list:
-            thread.start(priority = 4)
+        self.manager.start(priority=4)
 
         self.configure_signals()
 
@@ -64,12 +64,19 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def prompt_for_password(self):
         dlg = PasswordDialog(self)
-        dlg.access_granted_signal.connect(self.password_result)
+        dlg.access_level_signal.connect(self.password_result)
         dlg.exec()
 
-    @pyqtSlot(bool)
-    def password_result(self, granted):
-        if not granted:
+    @pyqtSlot(str)
+    def password_result(self, access_level):
+        if access_level == 'Engineer':
+            pass
+        elif access_level == 'Operator':
+            #Remove position tab, add more stuff like this later
+            self.tabWidget.removeTab(6)
+        elif access_level == 'Administrator':
+            pass
+        else:
             sys.exit()
 
     def configure_signals(self):
@@ -84,6 +91,29 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.description_signal.connect(self.script_description_field.setText)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
+
+        #Hardware control signals
+        self.command_signal.connect(self.manager.exec_command)
+        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion X+"))
+        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
+        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion X-"))
+        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
+        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion R+"))
+        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
+        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion R-"))
+        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
+
+        #Hardware info signals
+        self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
+        self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+
+    @pyqtSlot(float)
+    def update_x_postion(self,text):
+        self.x_pos_lineedit.setText(str(text))
+
+    @pyqtSlot(float)
+    def update_r_postion(self,text):
+        self.theta_pos_lineedit.setText(str(text))
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

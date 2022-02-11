@@ -14,7 +14,7 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
         access_granted_signal: emit when ok is pressed and the password check is successful
 
     """
-    access_granted_signal = pyqtSignal(bool)
+    access_level_signal = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -31,17 +31,26 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
         self.cancel_button.clicked.connect(self.cancel_clicked)
 
     def check_password(self):
-        self.granted = True
-        self.access_granted_signal.emit(True)
-        self.close()
+        if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == "Operator":
+            self.granted = True
+            self.access_level_signal.emit("Operator")
+            self.close()
+        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == "Engineer":
+            self.granted = True
+            self.access_level_signal.emit("Engineer")
+            self.close()
+        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == "Administrator":
+            self.granted = True
+            self.access_level_signal.emit("Administrator")
+            self.close()
 
     def cancel_clicked(self):
-        self.access_granted_signal.emit(False)
+        self.access_level_signal.emit("Denied")
         self.close()
 
     def closeEvent(self, event):
         if not self.granted:
-            self.access_granted_signal.emit(False)
+            self.access_level_signal.emit("Denied")
         event.accept()
 
     def _save_to_path(self, path):

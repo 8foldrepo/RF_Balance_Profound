@@ -1,152 +1,17 @@
-# This file will get read into the application first.
+Dummy_Motors:
+  #steps/mm, float
+  x_calibrate: 1
+  y_calibrate: 1
+  z_calibrate: 1
+  r_calibrate: 1
+  #boolean
+  reverse_x: False
+  reverse_y: False
+  reverse_z: False
+  reverse_r: False
+  #mm/s, float
+  jog_speed: 1
+  scan_speed: 1
 
-WTF:
-  Device: 'RK-300'
-  FGen:
-    brand: 'siglent'
-    ip: '192.168.52.101'
-    port: 5025
-    is_usb: false
-  Scope:
-    brand: 'picoscope'
-    resolution: 14  # -> bits, default for 2 channels
-    simulate_trig: false
-  Motor:
-    brand: 'galil'
-    ip: '192.168.42.101'
-    simulate_hw: true
-    is_usb: false
-  Transducers:
-    TxConfigPath: 'C:\Users\RKPC\Documents\WTF_Instruments\Transducer_Config'
-  Amplifier:
-    AmpConfigPath: 'C:\Users\RKPC\Documents\WTF_Instruments\Amplifier_Config'
-    gain: 27.74  # -> dB
-    CouplerAttenuation: 30.0
-  Data_Directory: 'C:\Users\RKPC\Documents\WTF_Instruments\Experimental_Data'  # -> default data directory
-
-MRI:
-  brand: 'BRUKER'
-
-RealTime_MRI:
-  BRUKER:
-    port: 8888
-  SIEMENS:
-    BOLD:
-      folder: 'C:\Export'
-
-DICOM_Node:
-  AETitle: 'MORPHEUS' 
-  port: 10000
-  acse_timeout: 30
-  dimse_timeout: 30
-  network_timeout: 60
-
-RK-50:
-  Speed: [5, 5, 5]
-  JG: [5, 5, 5]
-  counts_per_mm: [640, 320, 12800]
-
-  MotorLimL: 10
-  MotorLimR: 10
-
-  MotorLimS: 10
-  MotorLimI: 10
-
-  MotorLimA: 10
-  MotorLimP: 10
-
-  LR_scale_factor: 1.0
-  AP_scale_factor: 1.0
-  SI_scale_factor: 1.0
-
-  swap_LR_SI: false
-
-  Phantom:
-    #AJ (02/08/2021): The height of the phantom to the surface in millimeters (mm)
-    height: 12.5
-    #AJ (02/08/2021): The radius of the circular phantom cross seciton where the
-    #height is known in millimeters (mm)
-    radius: 10
-    #AJ (02/08/2021): The angle of the pyramidal phantom geometry in degrees
-    angle: 45
-
-RK-300:
-  UI:
-    num_mri_views: 1
-  # Tuning Parameters along the two axes [A,B]
-  Speed: [8320,6240]  # default speed for ceramic motors
-  TM: 250
-  K1: [100,150]
-  K2: [0,0]
-  K3: [500,500]
-  KD: [300,300]
-  KP: [30,30]
-  KI: [0.12,0.12]
-  DB: [200,200]
-  DS: [50,50]
-  FC: [20,20]
-  FN: [100,100]
-  ZP: [2.4,2.2]
-  ZN: [-2.0,-1.8]
-  JG: [-8320,6240]
-
-  ReturnLatchA: -3432
-  ReturnLatchB: 3432
-
-  MotorLimL: 10
-  MotorLimR: 10
-
-  MotorLimS: 10
-  MotorLimI: 10
-
-  MotorLimA: 10
-  MotorLimP: 10
-
-  counts_per_mm: 312
-
-  LR_scale_factor: 1.375
-  AP_scale_factor: 1.0
-  SI_scale_factor: 1.0
-
-  swap_LR_SI: false
-
-LP-100:
-  UI:
-    num_mri_views: 1
-  # Tuning Parameters along the three axes [A,B,C]
-  Speed: [1500,1500,0]  # default speed for ceramic motors
-  TM: 250
-  K1: [320,320,0]
-  K2: [0,0,0]
-  K3: [950,950,0]
-  KD: [300,300,0]
-  KP: [30,30,0]
-  KI: [0.12,0.12,0]
-  DB: [200,200,0]
-  DS: [50,50,0]
-  FC: [20,20,0]
-  FN: [100,100,0]
-  ZP: [1.2,1,0]
-  ZN: [-0.8,-0.5,0]
-  JG: [1500,1500,0]
-
-  ReturnLatchA: 3120
-  ReturnLatchB: 6240
-  ReturnLatchC: 3120
-
-  MotorLimL: 10
-  MotorLimR: 10
-
-  MotorLimS: 10
-  MotorLimI: 10
-
-  MotorLimA: 10
-  MotorLimP: 10
-
-  counts_per_mm: 312
-
-  LR_scale_factor: 1.0
-  AP_scale_factor: 1.0
-  SI_scale_factor: 1.0
-
-  swap_LR_SI: false
+Debugging:
+  simulate_hw: True
