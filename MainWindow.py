@@ -108,12 +108,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
 
     @pyqtSlot(float)
-    def update_x_postion(self,text):
-        self.x_pos_lineedit.setText(str(text))
+    def update_x_postion(self,mm):
+        self.x_pos_lineedit.setText(str(mm))
 
     @pyqtSlot(float)
-    def update_r_postion(self,text):
-        self.theta_pos_lineedit.setText(str(text))
+    def update_r_postion(self,mm):
+        self.theta_pos_lineedit.setText(str(mm))
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

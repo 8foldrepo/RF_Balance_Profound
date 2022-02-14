@@ -58,6 +58,8 @@ class Manager(QThread):
         self.script = None
         self.stay_alive = True
 
+        self.config = config
+
         self.cmd = 'POS'
 
         self.mutex = QMutex()
@@ -67,7 +69,8 @@ class Manager(QThread):
         self.SIMULATE_HARDWARE = config['Debugging']['simulate_hw']
 
         if self.SIMULATE_HARDWARE:
-            self.Motors = AbstractMotorController
+            self.Motors = AbstractMotorController(config=self.config)
+            self.Motors.connect()
 
     def run(self) -> None:
         """
@@ -86,7 +89,7 @@ class Manager(QThread):
 
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex)
+            wait_bool = self.condition.wait(self.mutex, 50)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
@@ -94,7 +97,6 @@ class Manager(QThread):
 
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
-
             if cmd_ray[0] == 'LOAD':
                 self.log_msg('info', message="Loading script")
                 try:
@@ -120,10 +122,10 @@ class Manager(QThread):
                 self.Motors.disconnect()
             elif self.cmd == 'Connect'.upper():
                 self.Motors.connect()
-            elif self.cmd_ray[0] == 'JOG' and self.cmd_ray[1] == 'SPEED':
-                self.Motors.jog_speed = self.cmd_ray[2]
-            elif self.cmd_ray[0] == 'SCAN' and self.cmd_ray[1] == 'SPEED':
-                self.Motors.scan_speed = self.cmd_ray[2]
+            elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
+                self.Motors.jog_speed = cmd_ray[2]
+            elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
+                self.Motors.scan_speed = cmd_ray[2]
             elif self.cmd == 'Begin Motion X+'.upper():
                 self.Motors.jog('X', 1)
             elif self.cmd == 'Begin Motion X-'.upper():
@@ -136,10 +138,12 @@ class Manager(QThread):
                 self.Motors.stop_motion()
             elif self.cmd == 'Get Position'.upper():
                 self.Motors.get_position()
-
             #What to do when there is no command
             else:
                 pass
+
+            self.Motors.get_position()
+            self.cmd = ""
 
         self.wrap_up()
         self.mutex.unlock()

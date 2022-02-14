@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 import time as t
 from Utilities.useful_methods import bound
 import gclib
-from Hardware.dummy_motors import  DummyMotors
+from Hardware.dummy_motors import DummyMotors
 
 import logging
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
@@ -96,6 +96,8 @@ class AbstractMotorController(QObject):
         logger_signal = pyqtSignal(str)  # Send other information to the logger
 
         x_pos_signal = pyqtSignal(float)
+        y_pos_signal = pyqtSignal(float)
+        z_pos_signal = pyqtSignal(float)
         r_pos_signal = pyqtSignal(float)
 
         # Dummy code, replace when developing a hardware interface
@@ -114,8 +116,6 @@ class AbstractMotorController(QObject):
             self.y = 0
             self.z = 0
             self.r = 0
-
-
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
@@ -136,9 +136,8 @@ class AbstractMotorController(QObject):
             self._r_calibrate = self.config[self.device_key]['r_calibrate']
 
             # Dummy code, replace when developing a hardware interface
-            self.Motors = DummyMotors
+            self.Motors = DummyMotors(parent=None)
             self.dummy_command_signal.connect(self.Motors.command_received)
-
             self.Motors.start(priority=4)
 
         @property
@@ -202,7 +201,7 @@ class AbstractMotorController(QObject):
         @abstractmethod
         def connect(self):
             self.dummy_command_signal.emit("Connect")
-            return self.connected()
+            #return self.connected()
 
         @abstractmethod
         def disconnect(self):
@@ -216,6 +215,8 @@ class AbstractMotorController(QObject):
         @abstractmethod
         def jog(self, axis=None, direction=None, feedback=True):
             # Dummy code, replace when developing a hardware interface
+            self.jogging = True
+
             if axis == 'R' and direction > 0:
                 self.dummy_command_signal.emit('Begin Motion R+')
             elif axis == 'R' and direction < 0:
@@ -224,9 +225,12 @@ class AbstractMotorController(QObject):
                 self.dummy_command_signal.emit('Begin Motion X+')
             elif axis == 'X' and direction < 0:
                 self.dummy_command_signal.emit('Begin Motion X-')
+            else:
+                self.jogging = False
 
         @abstractmethod
         def stop_motion(self):
+            self.jogging = False
             self.dummy_command_signal.emit("Stop Motion")
 
         @abstractmethod
@@ -335,17 +339,17 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def is_moving(self):
-            return self.Motors.dR == 0 and self.Motors.dX == 0
+            return not (self.Motors.dR == 0 and self.Motors.dX == 0)
 
         @abstractmethod
         def get_position(self):
             self.x = self.Motors.x
             self.r = self.Motors.r
 
-            self.x_pos_signal.emit(f"X: {self.x} mm")
-            self.y_pos_signal.emit(f"Y: {self.y} mm")
-            self.z_pos_signal.emit(f"Z: {self.z} mm")
-            self.r_pos_signal.emit(f"R: {self.r} mm")
+            self.x_pos_signal.emit(self.x)
+            self.y_pos_signal.emit(self.y)
+            self.z_pos_signal.emit(self.z)
+            self.r_pos_signal.emit(self.r)
 
         def center_r(self, degreesMax):
             try:

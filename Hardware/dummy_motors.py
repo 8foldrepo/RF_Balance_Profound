@@ -33,7 +33,7 @@ class DummyMotors(QThread):
     r_pos_signal = pyqtSignal(float)
 
     def __init__(self, parent: Optional[QObject]):
-        super().__init__(parent=parent, objectName=u"manager_thread")
+        super().__init__(parent=parent, objectName="manager_thread")
 
         self.stay_alive = True
 
@@ -68,17 +68,15 @@ class DummyMotors(QThread):
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
 
-
-
             if self.connected:
                 if self.cmd == 'Disconnect'.upper():
                     self.connected = False
-                elif self.cmd_ray[0] == 'JOG' and self.cmd_ray[1] == 'SPEED':
-                    self.jog_speed = float(self.cmd_ray[2])
-                    self.log_msg(f"Jog Speed Set: {self.cmd_ray[2]}")
-                elif self.cmd_ray[0] == 'SCAN' and self.cmd_ray[1] == 'SPEED':
-                    self.scan_speed = float(self.cmd_ray[2])
-                    self.log_msg(f"Jog Speed Set: {self.cmd_ray[2]}")
+                elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
+                    self.jog_speed = float(cmd_ray[2])
+                    self.log_msg(f"Jog Speed Set: {cmd_ray[2]}")
+                elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
+                    self.scan_speed = float(cmd_ray[2])
+                    self.log_msg(f"Jog Speed Set: {cmd_ray[2]}")
                 elif self.cmd == 'Begin Motion X+'.upper():
                     self.dX = 1*self.jog_speed
                 elif self.cmd == 'Begin Motion X-'.upper():
@@ -93,13 +91,15 @@ class DummyMotors(QThread):
                 elif self.cmd == 'Get Position'.upper():
                     self.x_pos_signal.emit(self.x)
                     self.r_pos_signal.emit(self.r)
-                elif self.cmd_ray[0] == 'SET' and self.cmd_ray[1] == 'R':
-                    self.R = float(self.cmd_ray[2])
-                elif self.cmd_ray[0] == 'SET' and self.cmd_ray[1] == 'X':
-                    self.X = float(self.cmd_ray[2])
+                elif cmd_ray[0] == 'SET' and cmd_ray[1] == 'R':
+                    self.R = float(cmd_ray[2])
+                elif cmd_ray[0] == 'SET' and cmd_ray[1] == 'X':
+                    self.X = float(cmd_ray[2])
             else:
                 if self.cmd == 'Connect'.upper():
                     self.connected = True
+
+            self.cmd = ""
 
             self.x = self.x + self.dX
             self.r = self.r + self.dR
@@ -113,6 +113,7 @@ class DummyMotors(QThread):
     def command_received(self, command):
         self.cmd = command
         self.condition.wakeAll()
+        self.log_msg(level='Info', message=command)
 
     def log_msg(self, level: str, message: str) -> None:
         """
