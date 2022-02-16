@@ -117,29 +117,8 @@ class Manager(QThread):
             elif cmd_ray[0] == 'CLOSE':
                 self.stay_alive = False
                 break
-            #Motor commands
-            elif self.cmd == 'Disconnect'.upper():
-                self.Motors.disconnect()
-            elif self.cmd == 'Connect'.upper():
-                self.Motors.connect()
-            elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
-                self.Motors.jog_speed = cmd_ray[2]
-            elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
-                self.Motors.scan_speed = cmd_ray[2]
-            elif self.cmd == 'Begin Motion X+'.upper():
-                self.Motors.jog('X', 1)
-            elif self.cmd == 'Begin Motion X-'.upper():
-                self.Motors.jog('X', -1)
-            elif self.cmd == 'Begin Motion R+'.upper():
-                self.Motors.jog('R', 1)
-            elif self.cmd == 'Begin Motion R-'.upper():
-                self.Motors.jog('R', -1)
-            elif self.cmd == 'Stop Motion'.upper():
-                self.Motors.stop_motion()
-            elif self.cmd == 'Get Position'.upper():
-                self.Motors.get_position()
-            elif cmd_ray[0] == 'GO':
-                self.Motors.go_to_position(axes=['X','Y','Z','R'],coords=cmd_ray[1].split(','))
+            elif cmd_ray[0] == 'MOTOR':
+                self.Motors.exec_command(self.cmd)
             #What to do when there is no command
             else:
                 pass

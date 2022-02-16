@@ -362,6 +362,37 @@ class AbstractMotorController(QObject):
                 else:
                     print(f"error in hardware_galil.center_r: {e}")
 
+        def exec_command(self, command):
+            command = command.upper()
+            cmd_ray = command.split(' ')
+
+            if cmd_ray[0] == 'MOTOR':
+                cmd_ray.pop(0)
+                command = command[6:]
+
+            if command == 'Disconnect'.upper():
+                self.disconnect()
+            elif command == 'Connect'.upper():
+                self.connect()
+            elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
+                self.jog_speed = cmd_ray[2]
+            elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
+                self.scan_speed = cmd_ray[2]
+            elif command == 'Begin Motion X+'.upper():
+                self.jog('X', 1)
+            elif command == 'Begin Motion X-'.upper():
+                self.jog('X', -1)
+            elif command == 'Begin Motion R+'.upper():
+                self.jog('R', 1)
+            elif command == 'Begin Motion R-'.upper():
+                self.jog('R', -1)
+            elif command == 'Stop Motion'.upper():
+                self.stop_motion()
+            elif command == 'Get Position'.upper():
+                self.get_position()
+            elif cmd_ray[0] == 'GO':
+                self.go_to_position(axes=['X','Y','Z','R'],coords=cmd_ray[1].split(','))
+
         def clean_up(self):
             if self.connected():
                 self.handle.GCommand("ST")

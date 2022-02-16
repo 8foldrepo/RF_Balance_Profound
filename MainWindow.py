@@ -94,15 +94,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         #Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
-        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion X+"))
-        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
-        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion X-"))
-        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
-        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion R+"))
-        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
-        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Begin Motion R-"))
-        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Stop Motion"))
-        self.go_x_button.clicked.connect(lambda: self.command_signal.emit("Go 0,0,0,0"))
+        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
+        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X-"))
+        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R+"))
+        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
+        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.go_x_button.clicked.connect(lambda: self.command_signal.emit("Motor Go 0,0,0,0"))
 
         #Hardware info signals
         self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
