@@ -6,13 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8073fbcf-d5eb-4eea-913b-d9d2eda5b663" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hardware/dummy_motors.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/dummy_motors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/useful_methods.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/useful_methods.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,9 +42,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Scantry_Ultra" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -183,13 +174,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Hardware/abstract_motor_controller.py</url>
-          <line>297</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

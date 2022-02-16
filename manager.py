@@ -138,6 +138,8 @@ class Manager(QThread):
                 self.Motors.stop_motion()
             elif self.cmd == 'Get Position'.upper():
                 self.Motors.get_position()
+            elif cmd_ray[0] == 'GO':
+                self.Motors.go_to_position(axes=['X','Y','Z','R'],coords=cmd_ray[1].split(','))
             #What to do when there is no command
             else:
                 pass

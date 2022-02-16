@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 import time as t
 from Utilities.useful_methods import bound
 import gclib
-from Hardware.dummy_motors import DummyMotors
+from Hardware.dummy_motors import  DummyMotors
 
 import logging
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
@@ -276,10 +276,14 @@ class AbstractMotorController(QObject):
 
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
-                self.log_msg(level='error',message="Invalid coordinates")
+                self.log_msg(level='error',message="Axes length does not match coordinates length")
 
-            self.handle.GCommand("ST")
-            self.handle.GCommand("SH ABCD")
+            for i in range(len(coords)):
+                if isinstance(coords[i], str):
+                    try:
+                        coords[i] = float(coords[i])
+                    except TypeError:
+                        self.log_msg(level='Error', message='Invalid coordinate string in go_to_position')
 
             x_coord_str = ''
             y_coord_str = ''
@@ -298,44 +302,26 @@ class AbstractMotorController(QObject):
                     coords[i] = -1 * coords[i]
 
                 if axes[i].upper() == 'X':
-                    self.handle.GCommand("SP %d" % (self._x_calibrate * self.scan_speed))
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._x_calibrate * self.scan_speed)}')
                     x_coord_str = coords[i]*self.config[self.device_key]['x_calibrate']
                     x_ax_str = 'A'
                 elif axes[i].lower() == 'Y':
-                    self.handle.GCommand("SP ,%d" % (self._y_calibrate * self.scan_speed))
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._y_calibrate * self.scan_speed)}')
                     y_coord_str = coords[i] * self.config[self.device_key]['y_calibrate']
                     y_ax_str = 'B'
                 elif axes[i].lower() == 'Z':
-                    self.handle.GCommand("SP ,,%d" % (self._z_calibrate * self.scan_speed))
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._z_calibrate * self.scan_speed)}')
                     z_coord_str = coords[i] * self.config[self.device_key]['z_calibrate']
                     z_ax_str = 'C'
                 elif axes[i].lower() == 'R':
-                    self.handle.GCommand("SP ,,,%d" % (self._r_calibrate * self.scan_speed))
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._r_calibrate * self.scan_speed)}')
                     r_coord_str = coords[i] * self.config[self.device_key]['r_calibrate']
                     r_ax_str = 'D'
 
             self.scanning = True
 
-            if sum(coords) > 1000:
-                self.logger_signal.emit(
-                    "Coordinates entered for the motors are too large. Double check in the code that they are given in mm"
-                )
-                return
-
-            self.dummy_command_signal.emit(f'PA {x_coord_str},{y_coord_str},{z_coord_str},{r_coord_str}')
-            self.dummy_command_signal.emit(f"BG {x_ax_str}{y_ax_str}{z_ax_str}{r_ax_str}")
-            self.get_position()
-
-            while self.is_moving():
-                if not self.scanning:
-                    self.stop_motion()
-                    self.get_position()
-                    return
-
-                t.sleep(0.05)
-                self.get_position()
-            # self.handle.GCommand('ST')
-            self.dummy_command_signal.emit("MO")
+            self.dummy_command_signal.emit(f'GO {x_coord_str},{y_coord_str},{z_coord_str},{r_coord_str}')
+            self.dummy_command_signal.emit(f'BG {x_ax_str}{y_ax_str}{z_ax_str}{r_ax_str}')
 
         @abstractmethod
         def is_moving(self):

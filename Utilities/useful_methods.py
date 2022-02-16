@@ -10,6 +10,13 @@ named_devices = {
     "USB0::0x1AB1::0x0643::DG8A223502692::INSTR": "Rigol 5",
 }
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 def check_directory(path):
     # Check whether the specified path exists or not
     if not os.path.exists(path):
