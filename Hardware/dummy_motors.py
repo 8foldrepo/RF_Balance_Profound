@@ -170,9 +170,9 @@ class DummyMotors(QThread):
     def not_moving(self):
         for speed in self.speeds:
             if not speed == 0:
-                return True
+                return False
 
-        return False
+        return True
 
     def log_msg(self, level: str, message: str) -> None:
         """
