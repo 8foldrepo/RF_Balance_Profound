@@ -91,14 +91,19 @@ class AbstractMotorController(QObject):
         """
 
         # SIGNALS
-
-        position_signal = pyqtSignal(str)  # Send position into position widget
         logger_signal = pyqtSignal(str)  # Send other information to the logger
 
+        num_axes = 2
+        ax_letters = ['X', 'R']
+
+        coords = list()
         x_pos_signal = pyqtSignal(float)
-        y_pos_signal = pyqtSignal(float)
-        z_pos_signal = pyqtSignal(float)
         r_pos_signal = pyqtSignal(float)
+
+        pos_signals = [x_pos_signal,r_pos_signal]
+
+        for i in range(num_axes):
+            coords.append(0)
 
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
@@ -111,11 +116,12 @@ class AbstractMotorController(QObject):
 
             self.config = config
 
+
+
             #For tracking latest known coordinates in steps
-            self.x = 0
-            self.y = 0
-            self.z = 0
-            self.r = 0
+            self.coords = list()
+            for i in range(self.num_axes):
+                self.coords.append(0)
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
@@ -304,19 +310,19 @@ class AbstractMotorController(QObject):
                 if axes[i].upper() == 'X':
                     self.dummy_command_signal.emit(f'Scan Speed {(self._x_calibrate * self.scan_speed)}')
                     x_coord_str = coords[i]*self.config[self.device_key]['x_calibrate']
-                    x_ax_str = 'A'
-                elif axes[i].lower() == 'Y':
+                    x_ax_str = 'X'
+                elif axes[i].upper() == 'Y':
                     self.dummy_command_signal.emit(f'Scan Speed {(self._y_calibrate * self.scan_speed)}')
                     y_coord_str = coords[i] * self.config[self.device_key]['y_calibrate']
-                    y_ax_str = 'B'
-                elif axes[i].lower() == 'Z':
+                    y_ax_str = 'Y'
+                elif axes[i].upper() == 'Z':
                     self.dummy_command_signal.emit(f'Scan Speed {(self._z_calibrate * self.scan_speed)}')
                     z_coord_str = coords[i] * self.config[self.device_key]['z_calibrate']
-                    z_ax_str = 'C'
-                elif axes[i].lower() == 'R':
+                    z_ax_str = 'Z'
+                elif axes[i].upper() == 'R':
                     self.dummy_command_signal.emit(f'Scan Speed {(self._r_calibrate * self.scan_speed)}')
                     r_coord_str = coords[i] * self.config[self.device_key]['r_calibrate']
-                    r_ax_str = 'D'
+                    r_ax_str = 'R'
 
             self.scanning = True
 
@@ -329,13 +335,10 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def get_position(self):
-            self.x = self.Motors.x
-            self.r = self.Motors.r
+            self.coords = self.Motors.coords
 
-            self.x_pos_signal.emit(self.x)
-            self.y_pos_signal.emit(self.y)
-            self.z_pos_signal.emit(self.z)
-            self.r_pos_signal.emit(self.r)
+            self.x_pos_signal.emit(self.coords[self.ax_letters.index('X')])
+            self.r_pos_signal.emit(self.coords[self.ax_letters.index('R')])
 
         def center_r(self, degreesMax):
             try:

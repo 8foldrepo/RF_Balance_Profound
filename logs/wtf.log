@@ -1,3 +1,43 @@
-2022-02-16 16:31:15,953 [INFO] [DummyMotors] [] : Connect
-2022-02-16 16:31:15,953 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
-2022-02-16 16:31:24,754 [INFO] [ui_thread] : app exited with code 0
+2022-02-16 18:04:36,535 [INFO] [DummyMotors] [] : Connect
+2022-02-16 18:04:36,536 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-16 18:04:37,798 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:37,904 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:37,984 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:38,367 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:38,589 [INFO] [DummyMotors] [ui_thread] : Begin Motion X-
+2022-02-16 18:04:38,750 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:39,283 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:39,283 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-16 18:04:39,283 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:39,284 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:39,284 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:39,284 [INFO] [DummyMotors] [ui_thread] : GO 0,0,0,0
+2022-02-16 18:04:39,284 [INFO] [DummyMotors] [manager_thread] : More coordinates were entered than Axes
+2022-02-16 18:04:39,285 [INFO] [DummyMotors] [manager_thread] : More coordinates were entered than Axes
+2022-02-16 18:04:39,285 [INFO] [DummyMotors] [manager_thread] : Invalid axis identifier in Begin Motion
+2022-02-16 18:04:39,285 [INFO] [DummyMotors] [ui_thread] : BG XYZR
+2022-02-16 18:04:39,285 [INFO] [DummyMotors] [manager_thread] : Invalid axis identifier in Begin Motion
+2022-02-16 18:04:50,044 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:50,131 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:50,200 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:50,315 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:50,378 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:50,499 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:51,004 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:51,061 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:51,598 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:51,731 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:52,305 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:52,663 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:52,895 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-16 18:04:53,101 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 18:04:53,763 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:53,763 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-16 18:04:53,764 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:53,764 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:53,764 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-16 18:04:53,764 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-16 18:04:53,764 [INFO] [DummyMotors] [ui_thread] : GO 0,0,0,0
+2022-02-16 18:04:53,765 [INFO] [DummyMotors] [manager_thread] : Invalid axis identifier in Begin Motion
+2022-02-16 18:04:53,765 [INFO] [DummyMotors] [ui_thread] : BG XYZR
+2022-02-16 18:04:53,765 [INFO] [DummyMotors] [manager_thread] : Invalid axis identifier in Begin Motion

@@ -18,26 +18,25 @@ motor_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class DummyMotors(QThread):
-    x = 0
-    y = 0
-    z = 0
-    r = 0
+    num_axes = 2
+    #Must be capital
+    ax_letters= ['X','R']
+    coords = list()
+    speeds = list()
+    motors_on = list()
+    pos_limits = list()
+    neg_limits = list()
+    targets = list()
+    pos_signals = list()
 
-    dX = 0
-    dY = 0
-    dZ = 0
-    dR = 0
-
-    x_motor_on = False
-    r_motor_on = False
-
-    x_target = 0
-    y_target = 0
-    z_target = 0
-    r_target = 0
-
-    x_pos_signal = pyqtSignal(float)
-    r_pos_signal = pyqtSignal(float)
+    for i in range(num_axes):
+        coords.append(0)
+        speeds.append(0)
+        motors_on.append(True)
+        pos_limits.append(50)
+        neg_limits.append(-50)
+        targets.append(0)
+        pos_signals.append(pyqtSignal)
 
     scanning_signal = pyqtSignal(bool)
 
@@ -88,58 +87,53 @@ class DummyMotors(QThread):
                 elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
                     self.scan_speed = float(cmd_ray[2])
                     self.log_msg(level = 'info', message=f"Scan Speed Set: {cmd_ray[2]}")
-                elif self.cmd == 'Begin Motion X+'.upper():
-                    self.dX = 1*self.jog_speed
-                elif self.cmd == 'Begin Motion X-'.upper():
-                    self.dX = -1*self.jog_speed
-                elif self.cmd == 'Begin Motion R+'.upper():
-                    self.dR = 1*self.jog_speed
-                elif self.cmd == 'Begin Motion R-'.upper():
-                    self.dR = -1*self.jog_speed
+
+                #Usage: Begin Motion X+ means jog the x axis in the positive direction
+                elif cmd_ray[0] == 'BEGIN' and cmd_ray[1] == 'MOTION':
+                    ax = cmd_ray[2][0]
+                    dir = cmd_ray[2][1]
+
+                    ax_index = self.ax_letters.index(ax)
+
+                    if dir == '-':
+                        self.speeds[ax_index] = -1 * self.jog_speed
+                    elif dir == '+':
+                        self.speeds[ax_index] = 1 * self.jog_speed
                 elif self.cmd == 'Stop Motion'.upper():
-                    self.dX = 0
-                    self.dR = 0
+                    for i in range(self.num_axes):
+                        self.speeds[i] = 0
                 elif cmd_ray[0] == 'GO':
                     coords = cmd_ray[1].split(',')
-                    if is_number(coords[0]):
-                        self.x_target = coords[0]
-                    if is_number(coords[1]):
-                        self.y_target = coords[0]
-                    if is_number(coords[2]):
-                        self.z_target = coords[0]
-                    if is_number(coords[3]):
-                        self.r_target = coords[0]
+                    for i in range(len(coords)):
+                        try:
+                            if is_number(coords[i]):
+                                self.targets[i] = float(coords[i])
+                        except IndexError:
+                            self.log_msg(level='Error', message='More coordinates were entered than Axes')
+
                 elif cmd_ray[0] == 'BG':
                     axes = cmd_ray[1]
                     self.scanning = True
                     self.scanning_signal.emit(True)
-                    if 'A' in axes:
-                        if self.x_target > self.x:
-                            self.dX = abs(self.scan_speed)
-                        elif self.x_target < self.x:
-                            self.dX = -1 * abs(self.scan_speed)
-                    if 'B' in axes:
-                        if self.y_target > self.y:
-                            self.dY = abs(self.scan_speed)
-                        elif self.y_target < self.y:
-                            self.dY = -1 * abs(self.scan_speed)
-                    if 'C' in axes:
-                        if self.z_target > self.z:
-                            self.dZ = abs(self.scan_speed)
-                        elif self.z_target < self.z:
-                            self.dZ = -1 * abs(self.scan_speed)
-                    if 'D' in axes:
-                        if self.r_target > self.r:
-                            self.dR = abs(self.scan_speed)
-                        elif self.r_target < self.r:
-                            self.dR = -1 * abs(self.scan_speed)
+                    for axis in axes:
+                        try:
+                            ax_index = self.ax_letters.index(axis)
+                        except ValueError:
+                            self.log_msg(level='Error', message='Invalid axis identifier in Begin Motion')
+                        if self.targets[ax_index] > self.coords[ax_index]:
+                            self.speeds[ax_index] = abs(self.scan_speed)
+                        elif self.targets[ax_index] < self.coords[ax_index]:
+                            self.speeds[ax_index] = -1 * abs(self.scan_speed)
+
                 elif self.cmd == 'Get Position'.upper():
-                    self.x_pos_signal.emit(self.x)
-                    self.r_pos_signal.emit(self.r)
-                elif cmd_ray[0] == 'SET' and cmd_ray[1] == 'R':
-                    self.R = float(cmd_ray[2])
-                elif cmd_ray[0] == 'SET' and cmd_ray[1] == 'X':
-                    self.X = float(cmd_ray[2])
+                    for i in range(self.num_axes):
+                        self.pos_signals[i].emit(coords[i])
+
+                elif cmd_ray[0] == 'SET':
+                    ax_letter = cmd_ray[1]
+                    ax_index = self.ax_letters.index(ax_letter)
+                    self.coords[ax_index] = float(self.cmd_ray(2))
+
             else:
                 if self.cmd == 'Connect'.upper():
                     self.connected = True
@@ -147,20 +141,20 @@ class DummyMotors(QThread):
             self.cmd = ""
 
             if self.scanning:
-                if (self.x_target - self.x) * self.dX < 0:
-                    self.dX = 0
-                if (self.y_target - self.y) * self.dY < 0:
-                    self.dY = 0
-                if (self.z_target - self.z) * self.dZ < 0:
-                    self.dZ = 0
-                if (self.r_target - self.r) * self.dR < 0:
-                    self.dR = 0
-                if self.dX == 0 and self.dY == 0 and self.dZ == 0 and self.dR == 0:
+                for i in range(self.num_axes):
+                    print((self.targets[i] - self.coords[i]) * self.speeds[i])
+
+                    if (self.targets[i] - self.coords[i]) * self.speeds[i] <= 0:
+                        self.speeds[i] = 0
+
+                if self.not_moving():
                     self.scanning = False
                     self.scanning_signal.emit(False)
 
-            self.x = self.x + self.dX
-            self.r = self.r + self.dR
+            for i in range(self.num_axes):
+                if self.motors_on[i]:
+                    self.coords[i] = self.coords[i] + self.speeds[i]
+
 
         self.wrap_up()
         self.mutex.unlock()
@@ -172,6 +166,13 @@ class DummyMotors(QThread):
         self.cmd = command
         self.condition.wakeAll()
         self.log_msg(level='Info', message=command)
+
+    def not_moving(self):
+        for speed in self.speeds:
+            if not speed == 0:
+                return True
+
+        return False
 
     def log_msg(self, level: str, message: str) -> None:
         """

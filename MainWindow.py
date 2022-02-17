@@ -105,15 +105,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit("Motor Go 0,0,0,0"))
 
         #Hardware info signals
-        self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
-        self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+        for i in range(self.manager.Motors.num_axes):
+            self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
+            self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
 
     @pyqtSlot(float)
     def update_x_postion(self,mm):
         self.x_pos_lineedit.setText(str(mm))
 
     @pyqtSlot(float)
-    def update_r_postion(self,mm):
+    def update_r_postion(self, mm):
         self.theta_pos_lineedit.setText(str(mm))
 
     def load_script(self):
