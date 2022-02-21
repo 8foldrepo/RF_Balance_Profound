@@ -4,11 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8073fbcf-d5eb-4eea-913b-d9d2eda5b663" name="Changes" comment="">
+    <list default="true" id="8073fbcf-d5eb-4eea-913b-d9d2eda5b663" name="Changes" comment="Changes">
+      <change beforePath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hardware/dummy_motors.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/dummy_motors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
+=======
+>>>>>>> origin/Rameen
       <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
     </list>
@@ -48,8 +53,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="codeWithMe.voiceChat.enabledByDefault" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Scantry_Ultra" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -113,7 +118,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\Isaiah\Anaconda3\envs\RF_balance\python.exe" />
+      <option name="SDK_HOME" value="C:\Users\RKPC\anaconda3\envs\RF_Balance_Profound\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -148,6 +153,12 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.MainWindow" />
+      <item itemvalue="Python.dialog_password" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.ui_password_dialog" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
@@ -178,6 +189,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
