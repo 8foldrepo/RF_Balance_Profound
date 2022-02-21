@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1193</width>
-    <height>803</height>
+    <height>855</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2690,7 +2690,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>150</width>
+          <width>200</width>
           <height>0</height>
          </size>
         </property>
@@ -2758,12 +2758,23 @@
           </disabled>
          </palette>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>6</pointsize>
+         </font>
+        </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="created_on_field">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
         </property>
         <property name="maximumSize">
          <size>
@@ -2959,7 +2970,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QColumnView" name="script_step_view"/>
+       <widget class="QTreeView" name="script_step_view"/>
       </item>
      </layout>
     </item>
@@ -2981,7 +2992,7 @@
       <item>
        <widget class="QTextBrowser" name="script_description_field">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -2989,7 +3000,7 @@
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>20</height>
+          <height>40</height>
          </size>
         </property>
        </widget>
@@ -2998,6 +3009,12 @@
     </item>
     <item row="1" column="3" colspan="4">
      <widget class="QTabWidget" name="tabWidget">
+      <property name="minimumSize">
+       <size>
+        <width>640</width>
+        <height>680</height>
+       </size>
+      </property>
       <property name="currentIndex">
        <number>7</number>
       </property>
@@ -4219,18 +4236,24 @@
        <attribute name="title">
         <string>System Config</string>
        </attribute>
-       <widget class="QWidget" name="gridLayoutWidget_4">
+       <widget class="QFrame" name="gridFrame_4">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>160</width>
+          <width>201</width>
           <height>141</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_16">
          <item row="3" column="0">
           <widget class="QLabel" name="label_56">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Operator</string>
            </property>
@@ -4261,6 +4284,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>PMI_Admin</string>
            </property>
@@ -4268,6 +4297,12 @@
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_57">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Account</string>
            </property>
@@ -4275,6 +4310,12 @@
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_60">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -4282,6 +4323,12 @@
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="label_61">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Administrator</string>
            </property>
@@ -4289,6 +4336,12 @@
          </item>
          <item row="2" column="1">
           <widget class="QLabel" name="label_62">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Password</string>
            </property>
@@ -4299,6 +4352,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -4308,6 +4367,12 @@
           <widget class="QLineEdit" name="operator_pass_field">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="text">
             <string>Operator</string>
@@ -4323,18 +4388,24 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_5">
+       <widget class="QFrame" name="gridFrame_5">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>350</y>
-          <width>211</width>
+          <y>320</y>
+          <width>201</width>
           <height>238</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_17">
          <item row="5" column="0">
           <widget class="QLabel" name="label_65">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Theta_HomeCoord</string>
            </property>
@@ -4342,6 +4413,12 @@
          </item>
          <item row="9" column="0">
           <widget class="QLabel" name="label_69">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>X-Element1</string>
            </property>
@@ -4349,6 +4426,12 @@
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_68">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>X-TankInsertionPoint</string>
            </property>
@@ -4369,6 +4452,12 @@
          </item>
          <item row="10" column="0">
           <widget class="QLabel" name="label_70">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>X-Element pitch (mm)</string>
            </property>
@@ -4376,11 +4465,23 @@
          </item>
          <item row="10" column="1">
           <widget class="QSpinBox" name="x_elementpitch">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>1</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>10</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>5</number>
@@ -4389,11 +4490,23 @@
          </item>
          <item row="11" column="1">
           <widget class="QSpinBox" name="theta_prehomemove">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>2</number>
@@ -4402,16 +4515,34 @@
          </item>
          <item row="9" column="1">
           <widget class="QSpinBox" name="x_element1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
           </widget>
          </item>
          <item row="11" column="0">
           <widget class="QLabel" name="label_72">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>ThetaPreHomeMove</string>
            </property>
@@ -4419,6 +4550,12 @@
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_67">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>XHomeCoord</string>
            </property>
@@ -4426,11 +4563,23 @@
          </item>
          <item row="3" column="1">
           <widget class="QSpinBox" name="x_homecoord">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>263</number>
@@ -4439,11 +4588,23 @@
          </item>
          <item row="7" column="1">
           <widget class="QSpinBox" name="x_insertionpoint">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>108</number>
@@ -4452,11 +4613,23 @@
          </item>
          <item row="5" column="1">
           <widget class="QSpinBox" name="theta_homecoord">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>-90</number>
@@ -4465,6 +4638,12 @@
          </item>
          <item row="12" column="1">
           <widget class="QCheckBox" name="thetaloadenc">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -4492,6 +4671,12 @@
          </item>
          <item row="12" column="0">
           <widget class="QLabel" name="label_73">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>ThetaLoadEnc?</string>
            </property>
@@ -4499,6 +4684,12 @@
          </item>
          <item row="13" column="0">
           <widget class="QLabel" name="label_74">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>CentreHomeTheta?</string>
            </property>
@@ -4506,6 +4697,12 @@
          </item>
          <item row="13" column="1">
           <widget class="QCheckBox" name="centerhometheta">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -4516,18 +4713,24 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_6">
+       <widget class="QFrame" name="gridFrame_6">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>180</y>
-          <width>187</width>
+          <y>170</y>
+          <width>201</width>
           <height>122</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
          <item row="7" column="1">
           <widget class="QComboBox" name="fill_mode">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>Automatic</string>
@@ -4537,6 +4740,12 @@
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_78">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Fill/drain mode</string>
            </property>
@@ -4551,11 +4760,17 @@
          </item>
          <item row="4" column="1">
           <widget class="QSpinBox" name="water_timeout">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>230</number>
@@ -4566,6 +4781,12 @@
           <widget class="QLineEdit" name="daq_devicename">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
            </property>
            <property name="text">
             <string>WTF3</string>
@@ -4594,6 +4815,12 @@
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_75">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Water level timeout (s)</string>
            </property>
@@ -4601,6 +4828,12 @@
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_77">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>DAQ Device Name</string>
            </property>
@@ -4608,31 +4841,24 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_7">
+       <widget class="QFrame" name="gridFrame_7">
         <property name="geometry">
          <rect>
-          <x>240</x>
-          <y>300</y>
-          <width>231</width>
-          <height>300</height>
+          <x>220</x>
+          <y>270</y>
+          <width>201</width>
+          <height>301</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_19">
-         <item row="11" column="1">
-          <widget class="QSpinBox" name="hf_lowlimit">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
          <item row="11" column="0">
           <widget class="QLabel" name="label_85">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>HF.LowFreqLimit(MHz)</string>
            </property>
@@ -4640,57 +4866,36 @@
          </item>
          <item row="9" column="1">
           <widget class="QSpinBox" name="lf_burstcount">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
           <widget class="QLabel" name="label_86">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>LF.LowFreqLimit(MHz)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QSpinBox" name="lf_highlimit">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>-90</number>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="lf_lowlimit">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>263</number>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QSpinBox" name="lf_amplitude">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>108</number>
            </property>
           </widget>
          </item>
@@ -4716,6 +4921,12 @@
          </item>
          <item row="13" column="0">
           <widget class="QLabel" name="label_89">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>HF.Amplitude(mVpp)</string>
            </property>
@@ -4723,6 +4934,12 @@
          </item>
          <item row="12" column="0">
           <widget class="QLabel" name="label_88">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>HF.HighFreqLimit(MHz)</string>
            </property>
@@ -4730,57 +4947,36 @@
          </item>
          <item row="16" column="0">
           <widget class="QLabel" name="label_91">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Search.FineIncr(MHz)</string>
            </property>
           </widget>
          </item>
-         <item row="13" column="1">
-          <widget class="QSpinBox" name="hf_amplitude">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
          <item row="14" column="1">
           <widget class="QSpinBox" name="hf_burstcount">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
-         <item row="16" column="1">
-          <widget class="QSpinBox" name="search_fineincr">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>2</number>
-           </property>
-          </widget>
-         </item>
-         <item row="12" column="1">
-          <widget class="QSpinBox" name="hf_highlimit">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>2</number>
@@ -4789,6 +4985,12 @@
          </item>
          <item row="14" column="0">
           <widget class="QLabel" name="label_90">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>HF.BurstCount</string>
            </property>
@@ -4796,6 +4998,12 @@
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="label_79">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>LF.HighFreqLimit(MHz)</string>
            </property>
@@ -4816,6 +5024,12 @@
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_82">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>LF.Amplitude(mVpp)</string>
            </property>
@@ -4823,6 +5037,12 @@
          </item>
          <item row="9" column="0">
           <widget class="QLabel" name="label_80">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>LF.BurstCount</string>
            </property>
@@ -4830,33 +5050,196 @@
          </item>
          <item row="15" column="0">
           <widget class="QLabel" name="label_84">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Search.CoarseIncr</string>
            </property>
           </widget>
          </item>
          <item row="15" column="1">
-          <widget class="QSpinBox" name="search_coarseincr">
+          <widget class="QDoubleSpinBox" name="search_coarseincr">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="1">
+          <widget class="QDoubleSpinBox" name="search_fineincr">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1">
+          <widget class="QDoubleSpinBox" name="hf_highlimit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>1</number>
+            <double>-9999999999.000000000000000</double>
            </property>
            <property name="maximum">
-            <number>10</number>
+            <double>999999999.000000000000000</double>
            </property>
-           <property name="value">
-            <number>5</number>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QDoubleSpinBox" name="hf_lowlimit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-9999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1">
+          <widget class="QDoubleSpinBox" name="hf_amplitude">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-9999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="lf_lowlimit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-9999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QDoubleSpinBox" name="lf_highlimit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-9999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QDoubleSpinBox" name="lf_amplitude">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-9999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999.000000000000000</double>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_8">
+       <widget class="QFrame" name="gridFrame_8">
         <property name="geometry">
          <rect>
-          <x>242</x>
+          <x>230</x>
           <y>20</y>
-          <width>301</width>
-          <height>121</height>
+          <width>391</width>
+          <height>91</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_20">
@@ -4865,12 +5248,12 @@
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>40</height>
+             <height>20</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>8</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -4885,12 +5268,12 @@
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>40</height>
+             <height>20</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>8</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -4901,14 +5284,26 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLineEdit" name="lineEdit_6">
+          <widget class="QLineEdit" name="ua_results_directory">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA results</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLineEdit" name="lineEdit_7">
+          <widget class="QLineEdit" name="ua_serial_numbers_path">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt</string>
            </property>
@@ -4916,13 +5311,13 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_9">
+       <widget class="QFrame" name="gridFrame_9">
         <property name="geometry">
          <rect>
-          <x>210</x>
-          <y>160</y>
-          <width>161</width>
-          <height>92</height>
+          <x>440</x>
+          <y>130</y>
+          <width>181</width>
+          <height>91</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_21">
@@ -4933,33 +5328,16 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="water_timeout_2">
-           <property name="minimum">
-            <number>-500</number>
-           </property>
-           <property name="maximum">
-            <number>500</number>
-           </property>
-           <property name="value">
-            <number>230</number>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_98">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>Min time of flight (s)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="daq_devicename_2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>WTF3</string>
            </property>
           </widget>
          </item>
@@ -4985,8 +5363,58 @@
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_96">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="text">
             <string>Max time of flight (s)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QDoubleSpinBox" name="max_time_of_flight">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-99999999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="min_time_of_flight">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <double>-99999999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999999999.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -5028,18 +5456,24 @@
          <string>Save</string>
         </property>
        </widget>
-       <widget class="QWidget" name="gridLayoutWidget_10">
+       <widget class="QFrame" name="gridFrame_10">
         <property name="geometry">
          <rect>
-          <x>380</x>
-          <y>150</y>
-          <width>201</width>
+          <x>220</x>
+          <y>130</y>
+          <width>211</width>
           <height>125</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_22">
          <item row="4" column="1">
-          <widget class="QComboBox" name="comboBox_4">
+          <widget class="QComboBox" name="interrupt_action">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>No dialog (abort)</string>
@@ -5049,6 +5483,12 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_99">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Retries</string>
            </property>
@@ -5076,18 +5516,30 @@
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_100">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Pass fail action</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QSpinBox" name="water_timeout_4">
+          <widget class="QSpinBox" name="retries">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="minimum">
-            <number>-500</number>
+            <number>-999999999</number>
            </property>
            <property name="maximum">
-            <number>500</number>
+            <number>999999999</number>
            </property>
            <property name="value">
             <number>0</number>
@@ -5096,13 +5548,25 @@
          </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_102">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Interrupt action</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QComboBox" name="comboBox_3">
+          <widget class="QComboBox" name="pass_fail_action">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
            <item>
             <property name="text">
              <string>No dialog (abort)</string>
@@ -5111,10 +5575,29 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QSpinBox" name="spinBox_2"/>
+          <widget class="QSpinBox" name="dialog_timeout">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="minimum">
+            <number>-999999999</number>
+           </property>
+           <property name="maximum">
+            <number>999999999</number>
+           </property>
+          </widget>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="label_92">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>15</height>
+            </size>
+           </property>
            <property name="text">
             <string>Dialog Timeout (s)</string>
            </property>

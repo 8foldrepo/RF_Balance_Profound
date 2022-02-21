@@ -1,8 +1,56 @@
+Autoset timebase:
+  Max time of flight (us): 50.0
+  Min time of flight (us): 42.0
+Debugging:
+  simulate_hw: true
 Dummy_Motors:
-  xCalibrate: 1
-  yCalibrate: 1
-  zCalibrate: 1
-  rCalibrate: 1
-  reverseX: False
-  reverseY: False
-  reverseZ: False
+  jog_speed: 1
+  r_calibrate: 1
+  reverse_r: false
+  reverse_x: false
+  reverse_y: false
+  reverse_z: false
+  scan_speed: 1
+  x_calibrate: 1
+  y_calibrate: 1
+  z_calibrate: 1
+FrequencyParameters:
+  HF:
+    HF.Amplitude(mVpp): 50.0
+    HF.BurstCount: 65
+    HighFreqLimit(MHz): 13.8
+    LowFreqLimit(MHz): 12.8
+  LF:
+    Amplitude(mVpp): 50.0
+    BurstCount: 50
+    HighFreqLimit(MHz): 4.8
+    LowFreqLimit(MHz): 4.0
+  Search:
+    CoarseIncr(MHz): 0.1
+    FineIncr(MHz): 0.01
+Paths:
+  UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
+    numbers.txt
+  UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
+Sequence pass/fail:
+  Dialog timeout (s): 0
+  Interrupt action: No dialog (abort)
+  Pass fail action: No dialog (abort)
+  Retries: 0
+User Accounts:
+  Administrator: PMI_Admin
+  Engineer: Engineer
+  Operator: Operator
+WTF_DIO:
+  DAQ Device name: WTF3
+  Fill/Drain mode: Automatic
+  Water level timeout (s): 230
+WTF_PositionParameters:
+  CentreHomeTheta?: true
+  ThetaHomeCoord: -90
+  ThetaLoadEnc?: false
+  ThetaPreHomeMove: 2
+  X-Element pitch (mm): 5
+  X-Element1: 0
+  X-TankInsertionPoint: 108
+  XHomeCoord: 263

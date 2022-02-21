@@ -1,3 +1,2 @@
-2022-02-21 12:16:07,879 [INFO] [DummyMotors] [] : Connect
-2022-02-21 12:16:07,880 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
-2022-02-21 12:16:11,372 [INFO] [ui_thread] : app exited with code 0
+2022-02-21 16:39:44,594 [INFO] [DummyMotors] [] : Connect
+2022-02-21 16:39:44,598 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True

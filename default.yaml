@@ -21,7 +21,7 @@ User Accounts:
   Engineer: "Engineer"
   Administrator: "PMI_Admin"
 
-WTF_PositionPaarameters:
+WTF_PositionParameters:
   XHomeCoord: 263
   ThetaHomeCoord: -90
   X-TankInsertionPoint: 108
@@ -64,5 +64,5 @@ Autoset timebase:
   Max time of flight (us): 50
 
 Paths:
-  UA results root directory: "C:\Users\Isaiah\OneDrive\Documents\UA results"
-  UA Serial numbers file: "C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt"
+  UA results root directory: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA results"
+  UA Serial numbers file: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"

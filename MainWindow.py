@@ -10,7 +10,9 @@ from Utilities.load_config import ROOT_LOGGER_NAME
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
+from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QFont, QColor
 from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
 from manager import Manager
@@ -62,6 +64,113 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
+    #Populate fields in config tab with settings from the config file
+    def populate_config_ui(self):
+        self.operator_pass_field.setText(self.config["User Accounts"]["Operator"])
+        self.engineer_pass_field.setText(self.config["User Accounts"]["Engineer"])
+        self.admin_pass_field.setText(self.config["User Accounts"]["Administrator"])
+
+        self.x_homecoord.setValue(self.config["WTF_PositionParameters"]["XHomeCoord"])
+        self.theta_homecoord.setValue(self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
+        self.x_insertionpoint.setValue(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])
+        self.x_element1.setValue(self.config["WTF_PositionParameters"]["X-Element1"])
+        self.x_elementpitch.setValue(self.config["WTF_PositionParameters"]["X-Element pitch (mm)"])
+        self.theta_prehomemove.setValue(self.config["WTF_PositionParameters"]["ThetaPreHomeMove"])
+        self.thetaloadenc.setChecked(self.config["WTF_PositionParameters"]["ThetaLoadEnc?"])
+        self.centerhometheta.setChecked(self.config["WTF_PositionParameters"]["CentreHomeTheta?"])
+
+        self.lf_lowlimit.setValue(self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"])
+        self.lf_highlimit.setValue(self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"])
+        self.lf_amplitude.setValue(self.config["FrequencyParameters"]["LF"]["Amplitude(mVpp)"])
+        self.lf_burstcount.setValue(self.config["FrequencyParameters"]["LF"]["BurstCount"])
+        self.hf_lowlimit.setValue(self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"])
+        self.hf_highlimit.setValue(self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"])
+        self.hf_amplitude.setValue(self.config["FrequencyParameters"]["HF"]["HF.Amplitude(mVpp)"])
+        self.hf_burstcount.setValue(self.config["FrequencyParameters"]["HF"]["HF.BurstCount"])
+        self.search_coarseincr.setValue(self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"])
+        self.search_fineincr.setValue(self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"])
+
+        self.retries.setValue(self.config["Sequence pass/fail"]["Retries"])
+        self.pass_fail_action.setCurrentText(self.config["Sequence pass/fail"]["Pass fail action"])
+        self.interrupt_action.setCurrentText(self.config["Sequence pass/fail"]["Interrupt action"])
+        self.dialog_timeout.setValue(self.config["Sequence pass/fail"]["Dialog timeout (s)"])
+
+        self.daq_devicename.setText(self.config["WTF_DIO"]["DAQ Device name"])
+        self.water_timeout.setValue(self.config["WTF_DIO"]["Water level timeout (s)"])
+        self.fill_mode.setCurrentText(self.config["WTF_DIO"]["Fill/Drain mode"])
+
+        self.min_time_of_flight.setValue(self.config["Autoset timebase"]["Min time of flight (us)"])
+        self.max_time_of_flight.setValue(self.config["Autoset timebase"]["Max time of flight (us)"])
+
+        self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
+        self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
+
+    #Save the settings input into the UI field to the local.yaml config file
+    def save_config(self):
+        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text()
+        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text()
+        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text()
+
+        self.config["WTF_PositionParameters"]["XHomeCoord"] = self.x_homecoord.value()
+        self.config["WTF_PositionParameters"]["ThetaHomeCoord"] = self.theta_homecoord.value()
+        self.config["WTF_PositionParameters"]["X-TankInsertionPoint"] = self.x_insertionpoint.value()
+        self.config["WTF_PositionParameters"]["X-Element1"] = self.x_element1.value()
+        self.config["WTF_PositionParameters"]["X-Element pitch (mm)"] = self.x_elementpitch.value()
+        self.config["WTF_PositionParameters"]["ThetaPreHomeMove"] = self.theta_prehomemove.value()
+        self.config["WTF_PositionParameters"]["ThetaLoadEnc?"] = self.thetaloadenc.isChecked()
+        self.config["WTF_PositionParameters"]["CentreHomeTheta?"] = self.centerhometheta.isChecked()
+
+        self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"] = self.lf_lowlimit.value()
+        self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"] = self.lf_highlimit.value()
+        self.config["FrequencyParameters"]["LF"]["Amplitude(mVpp)"] = self.lf_amplitude.value()
+        self.config["FrequencyParameters"]["LF"]["BurstCount"] = self.lf_burstcount.value()
+        self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"] = self.hf_lowlimit.value()
+        self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"] = self.hf_highlimit.value()
+        self.config["FrequencyParameters"]["HF"]["HF.Amplitude(mVpp)"] = self.hf_amplitude.value()
+        self.config["FrequencyParameters"]["HF"]["HF.BurstCount"] = self.hf_burstcount.value()
+        self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"] = self.search_coarseincr.value()
+        self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"] = self.search_fineincr.value()
+
+        self.config["Sequence pass/fail"]["Retries"] = self.retries.value()
+        self.config["Sequence pass/fail"]["Pass fail action"] = self.pass_fail_action.currentText()
+        self.config["Sequence pass/fail"]["Interrupt action"] = self.interrupt_action.currentText()
+        self.config["Sequence pass/fail"]["Dialog timeout (s)"] = self.dialog_timeout.value()
+
+        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text()
+        self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
+        self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
+
+        self.config["Autoset timebase"]["Min time of flight (us)"] = self.min_time_of_flight.value()
+        self.config["Autoset timebase"]["Max time of flight (us)"] = self.max_time_of_flight.value()
+
+        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
+        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
+
+        with open('local.yaml', 'w') as f:
+            yaml.dump(self.config, f)
+
+    def show_config(self):
+        webbrowser.open("local.yaml")
+
+    #Display the task names and arguments from the script parser with a QTreeView
+    def visualize_script(self, arg_dicts:list):
+        treeModel = QStandardItemModel()
+        rootNode = treeModel.invisibleRootItem()
+
+        for i in range(len(arg_dicts)):
+            task = QStandardItem(arg_dicts[i]["Task type"])
+
+            for key in arg_dicts[i]:
+                if not key == "Task type":
+                    arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
+                    task.appendRow(arg)
+
+            rootNode.appendRow(task)
+
+        self.script_step_view.setModel(treeModel)
+        self.script_step_view.expandAll()
+        self.script_step_view.setHeaderHidden(True)
+
     def prompt_for_password(self):
         dlg = PasswordDialog(self)
         dlg.access_level_signal.connect(self.password_result)
@@ -84,6 +193,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
 
+        self.save_config_button.clicked.connect(self.save_config)
+        self.show_config_button.clicked.connect(self.show_config)
+
         #Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
         self.manager.created_by_signal.connect(self.created_by_field.setText)
@@ -91,6 +203,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.description_signal.connect(self.script_description_field.setText)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
+        self.manager.script_info_signal.connect(self.visualize_script)
 
         #Hardware control signals
         self.command_signal.connect(self.manager.exec_command)

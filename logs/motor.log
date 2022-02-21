@@ -1,2 +1,2 @@
-2022-02-21 12:16:07,880 [INFO] [DummyMotors] [] : Connect
-2022-02-21 12:16:07,880 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-21 16:39:44,595 [INFO] [DummyMotors] [] : Connect
+2022-02-21 16:39:44,650 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
