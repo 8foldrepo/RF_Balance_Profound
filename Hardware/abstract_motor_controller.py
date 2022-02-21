@@ -283,6 +283,7 @@ class AbstractMotorController(QObject):
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
                 self.log_msg(level='error',message="Axes length does not match coordinates length")
+                return;
 
             for i in range(len(coords)):
                 if isinstance(coords[i], str):
