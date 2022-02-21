@@ -1,22 +1,2 @@
-2022-02-16 15:48:56,830 [INFO] [DummyMotors] [] : Connect
-2022-02-16 15:48:56,831 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
-2022-02-16 15:49:01,728 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-16 15:49:02,904 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:03,363 [INFO] [DummyMotors] [ui_thread] : Begin Motion X-
-2022-02-16 15:49:03,875 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:04,070 [INFO] [DummyMotors] [ui_thread] : Begin Motion R-
-2022-02-16 15:49:04,084 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:04,672 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-16 15:49:05,307 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:05,473 [INFO] [DummyMotors] [ui_thread] : Begin Motion X-
-2022-02-16 15:49:05,960 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:06,104 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-16 15:49:06,730 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:06,864 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-16 15:49:07,084 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:07,157 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-16 15:49:07,555 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:07,698 [INFO] [DummyMotors] [ui_thread] : Begin Motion R-
-2022-02-16 15:49:08,131 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-16 15:49:08,249 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-16 15:49:08,685 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-16 16:28:14,883 [INFO] [DummyMotors] [] : Connect
+2022-02-16 16:28:14,883 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
