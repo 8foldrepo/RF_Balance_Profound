@@ -48,8 +48,6 @@ class Manager(QThread):
 
     step_number_signal = pyqtSignal(int)
 
-    script_info_signal = pyqtSignal(list)
-
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
     Motors = None
@@ -91,7 +89,7 @@ class Manager(QThread):
 
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex)
+            wait_bool = self.condition.wait(self.mutex, 50)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
@@ -159,9 +157,6 @@ class Manager(QThread):
                 self.created_by_signal.emit(ray[1].replace('"', ""))
             elif ray[0] == 'DESCRIPTION':
                 self.description_signal.emit(ray[1].replace('"', ""))
-
-        self.script_info_signal.emit(
-            [{"Task type": "Task 1", "Arg 1": 5, "Arg 2": "banana"}, {"Task type": "Task 2", "Arg 3": 12}])
 
     def run_script(self):
         for command in self.script:

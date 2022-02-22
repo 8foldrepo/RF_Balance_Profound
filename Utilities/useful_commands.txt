@@ -1,6 +1,3 @@
 #Convert .ui file to .py (files made with QT designer to widget library file)
 #CAUTION: target .py file will be overwritten
 python -m PyQt5.uic.pyuic -x [FILENAME].ui -o [FILENAME].py
-
-cd widget_library
-python -m PyQt5.uic.pyuic -x window_wet_test.ui -o window_wet_test.py
