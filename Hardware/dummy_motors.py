@@ -18,11 +18,14 @@ motor_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class DummyMotors(QThread):
-    num_axes = 2
-    #Must be capital
-    ax_letters= ['X','R']
+    num_axes = 0
+    ax_letters= None
+
+    #not all signals will be used for every application of this class
     x_pos_signal = pyqtSignal(float)
+    y_pos_signal = pyqtSignal(float)
     r_pos_signal = pyqtSignal(float)
+    z_pos_signal = pyqtSignal(float)
 
     coords = list()
     speeds = list()
@@ -31,25 +34,16 @@ class DummyMotors(QThread):
     neg_limits = list()
     targets = list()
 
-    for i in range(num_axes):
-        coords.append(0)
-        speeds.append(0)
-        motors_on.append(True)
-        pos_limits.append(50)
-        neg_limits.append(-50)
-        targets.append(0)
-
     scanning_signal = pyqtSignal(bool)
 
     def __init__(self, parent: Optional[QObject]):
         super().__init__(parent=parent, objectName="manager_thread")
-
+        self.device_key = 'Dummy_Motors'
         self.stay_alive = True
 
         self.cmd = 'NONE'
 
         self.connected = False
-
         self.scanning = False
 
         self.jog_speed = 1
@@ -57,6 +51,20 @@ class DummyMotors(QThread):
 
         self.mutex = QMutex()
         self.condition = QWaitCondition()
+
+    def set_config(self, config):
+        self.config = config
+        self.ax_letters = self.config[self.device_key]['axes']
+
+        self.num_axes = len(self.ax_letters)
+
+        for i in range(self.num_axes):
+            self.coords.append(0)
+            self.speeds.append(0)
+            self.motors_on.append(True)
+            self.pos_limits.append(50)
+            self.neg_limits.append(-50)
+            self.targets.append(0)
 
     def run(self) -> None:
         """

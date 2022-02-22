@@ -1,1087 +1,180 @@
-2022-02-22 17:18:58,477 [INFO] [DummyMotors] [] : Connect
-2022-02-22 17:18:58,484 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
-2022-02-22 17:19:05,800 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-22 17:19:05,980 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 17:19:06,220 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-22 17:19:06,980 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 17:19:08,380 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
-2022-02-22 17:19:08,380 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 17:19:08,380 [INFO] [DummyMotors] [ui_thread] : GO 0
-2022-02-22 17:19:08,380 [INFO] [DummyMotors] [ui_thread] : BG X
-2022-02-22 17:19:08,880 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
-2022-02-22 17:19:08,880 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 17:19:08,880 [INFO] [DummyMotors] [ui_thread] : GO 0
-2022-02-22 17:19:08,880 [INFO] [DummyMotors] [ui_thread] : BG R
-2022-02-22 17:19:12,190 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-22 17:19:12,660 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 17:19:12,810 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-22 17:19:13,560 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 17:19:15,560 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 17:19:15,560 [INFO] [DummyMotors] [ui_thread] : GO 0
-2022-02-22 17:19:15,560 [INFO] [DummyMotors] [ui_thread] : BG X
-2022-02-22 17:19:17,790 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-22 17:19:17,870 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 17:19:19,664 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 17:19:19,664 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
-2022-02-22 17:19:19,664 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 17:19:19,664 [INFO] [DummyMotors] [ui_thread] : GO 0,0
-2022-02-22 17:19:19,664 [INFO] [DummyMotors] [ui_thread] : BG XR
-2022-02-22 17:19:27,633 [INFO] [DummyMotors] [ui_thread] : Set X 0
-2022-02-22 17:19:27,633 [INFO] [DummyMotors] [ui_thread] : Set R 0
-2022-02-22 17:20:39,412 [INFO] [Manager] [manager_thread] : Loading script
-2022-02-22 17:20:40,816 [INFO] [Manager] [manager_thread] : Running script
-2022-02-22 17:20:40,816 [INFO] [Manager] [manager_thread] : [TASK0]
-
-2022-02-22 17:20:40,816 [INFO] [Manager] [manager_thread] : TASK TYPE = "PRE-TEST INITIALISATION"
-
-2022-02-22 17:20:40,816 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,816 [INFO] [Manager] [manager_thread] : [TASK1]
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N""
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT = "ELEMENT 1"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.250000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : DATA STORAGE = "DO NOT STORE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.200000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "FALSE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "0"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : [TASK2]
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : [TASK3]
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N"_1"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:40,826 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.200000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : DATA STORAGE = "STORE PROFILES ONLY"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.400000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "5"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : [TASK4]
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : [TASK5]
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS_1"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : [TASK6]
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:40,836 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : [TASK7]
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_1"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "HIGH FREQUENCY"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "175.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "2.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:40,846 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : [TASK8]
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_2"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : [TASK9]
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP_1"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : [TASK10]
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : TASK TYPE = "SAVE RESULTS"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : SAVE SUMMARY FILE = "TRUE"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : WRITE UA CALIBRATION = "TRUE"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : PROMPTFORCALWRITE = "FALSE"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : [TASK11]
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : TASK TYPE = "PROMPT USER FOR ACTION"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : PROMPT TYPE = "DISABLE UA PUMP"
-
-2022-02-22 17:20:40,856 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : [TASK12]
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM"
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "THETA"
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : [TASK13]
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM_1"
-
-2022-02-22 17:20:40,866 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "X"
-
-2022-02-22 17:20:41,586 [INFO] [Manager] [manager_thread] : Running script
-2022-02-22 17:20:43,835 [INFO] [Manager] [manager_thread] : Loading script
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : Running script
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : [TASK0]
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : TASK TYPE = "PRE-TEST INITIALISATION"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : [TASK1]
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N""
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT = "ELEMENT 1"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.250000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : DATA STORAGE = "DO NOT STORE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.200000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "FALSE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "0"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : [TASK2]
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : [TASK3]
-
-2022-02-22 17:20:44,600 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N"_1"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.200000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : DATA STORAGE = "STORE PROFILES ONLY"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.400000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "5"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : [TASK4]
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : [TASK5]
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS_1"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : [TASK6]
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)"
-
-2022-02-22 17:20:44,610 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : [TASK7]
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_1"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "HIGH FREQUENCY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "175.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "2.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : [TASK8]
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_2"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:44,620 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : [TASK9]
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP_1"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : [TASK10]
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : TASK TYPE = "SAVE RESULTS"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : SAVE SUMMARY FILE = "TRUE"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : WRITE UA CALIBRATION = "TRUE"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : PROMPTFORCALWRITE = "FALSE"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : [TASK11]
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : TASK TYPE = "PROMPT USER FOR ACTION"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : PROMPT TYPE = "DISABLE UA PUMP"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : [TASK12]
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "THETA"
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : [TASK13]
-
-2022-02-22 17:20:44,630 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM_1"
-
-2022-02-22 17:20:44,640 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "X"
-
-2022-02-22 17:20:46,586 [INFO] [Manager] [manager_thread] : Loading script
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : Running script
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : [TASK0]
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : TASK TYPE = "PRE-TEST INITIALISATION"
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : [TASK1]
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N""
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : ELEMENT = "ELEMENT 1"
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.250000"
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:47,106 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : DATA STORAGE = "DO NOT STORE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.200000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "FALSE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "0"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : [TASK2]
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : [TASK3]
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : TASK TYPE = "FIND ELEMENT "N"_1"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : X INCR. (MM) = "0.200000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : X #PTS. = "21"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : THETA INCR. (DEG) = "-0.400000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : THETA #PTS. = "41"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : SCOPE CHANNEL = "CHANNEL 1"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ACQUISITION TYPE = "N AVERAGED WAVEFORM"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : AVERAGES = "16"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : DATA STORAGE = "STORE PROFILES ONLY"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : MAX. POSITION ERROR (+/- MM) = "0.400000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : ELEMENTPOSITIONTEST = "FALSE"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : MAX ANGLE VARIATION (DEG) = "2.000000"
-
-2022-02-22 17:20:47,116 [INFO] [Manager] [manager_thread] : BEAMANGLETEST = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : FREQUENCY SETTINGS = "AVG. LOW FREQUENCY"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : AUTO SET TIMEBASE = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : #CYCLES.CAPTURE = "10"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : #CYCLES.DELAY = "5"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.400000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : AMPLITUDE (MV) = "50.000000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : BURST COUNT = "50"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : [TASK4]
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : [TASK5]
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : TASK TYPE = "LOOP OVER ELEMENTS_1"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 1 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 2 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 3 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 4 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 5 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 6 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 7 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 8 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 9 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT 10 = "TRUE"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : [TASK6]
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:47,126 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : [TASK7]
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_1"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "HIGH FREQUENCY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "175.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "2.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : [TASK8]
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : TASK TYPE = "MEASURE ELEMENT EFFICIENCY (RFB)_2"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : ELEMENT = "CURRENT"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : FREQUENCY RANGE = "LOW FREQUENCY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.#ON/OFF CYCLES = "3"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.ON TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.OFF TIME (S) = "10.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.THRESHOLD = "0.050000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB.OFFSET = "0.500000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : SET FREQUENCY OPTIONS = "COMMON PEAK FREQUENCY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : FREQUENCY (MHZ) = "4.200000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : AMPLITUDE (MVPP) = "100.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : STORAGE LOCATION = "UA RESULTS DIRECTORY"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : DATA DIRECTORY = ""
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB TARGET POSITION = "AVERAGE UA RFB POSITION"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : RFB TARGET ANGLE = "-90.000000"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : EFFICIENCYTEST = "TRUE"
-
-2022-02-22 17:20:47,136 [INFO] [Manager] [manager_thread] : PA MAX (TARGET, W) = "4.000000"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : PF MAX (LIMIT, W) = "12.000000"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : REFLECTION LIMIT (%) = "70.000000"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : [TASK9]
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : TASK TYPE = "END LOOP_1"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : [TASK10]
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : TASK TYPE = "SAVE RESULTS"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : SAVE SUMMARY FILE = "TRUE"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : WRITE UA CALIBRATION = "TRUE"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : PROMPTFORCALWRITE = "FALSE"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : [TASK11]
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : TASK TYPE = "PROMPT USER FOR ACTION"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : PROMPT TYPE = "DISABLE UA PUMP"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : [TASK12]
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "THETA"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : 
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : [TASK13]
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : TASK TYPE = "HOME SYSTEM_1"
-
-2022-02-22 17:20:47,146 [INFO] [Manager] [manager_thread] : AXIS TO HOME = "X"
-
+2022-02-22 17:57:40,915 [INFO] [DummyMotors] [] : Connect
+2022-02-22 17:57:40,915 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-22 17:57:45,439 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-22 17:57:45,699 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 17:57:45,829 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-22 17:57:45,999 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 17:57:46,449 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:46,449 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:46,449 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:46,559 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:47,579 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:47,579 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:47,689 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:47,939 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-22 17:57:48,489 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 17:57:48,809 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:48,809 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:48,919 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:51,354 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:51,354 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:51,354 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:51,464 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:52,304 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:52,304 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:52,304 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:52,414 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:52,464 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:52,464 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:52,574 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:52,724 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:52,724 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:52,834 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:52,914 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:52,914 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 17:57:53,024 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:55,877 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:55,877 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:55,877 [INFO] [DummyMotors] [ui_thread] : GO 5.0
+2022-02-22 17:57:55,987 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:56,727 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:56,727 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:56,727 [INFO] [DummyMotors] [ui_thread] : GO 5.0
+2022-02-22 17:57:56,837 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:56,867 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:56,867 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:56,867 [INFO] [DummyMotors] [ui_thread] : GO 5.0
+2022-02-22 17:57:56,977 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:57,347 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:57,347 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:57:57,347 [INFO] [DummyMotors] [ui_thread] : GO 5.0
+2022-02-22 17:57:57,457 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:57:58,616 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:57:58,616 [INFO] [DummyMotors] [ui_thread] : GO 10.0
+2022-02-22 17:57:58,726 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:00,375 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:00,375 [INFO] [DummyMotors] [ui_thread] : GO 15.0
+2022-02-22 17:58:00,493 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:01,891 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:01,891 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:01,891 [INFO] [DummyMotors] [ui_thread] : GO 20.0
+2022-02-22 17:58:01,991 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:03,523 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:03,523 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:03,523 [INFO] [DummyMotors] [ui_thread] : GO 25.0
+2022-02-22 17:58:03,633 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:05,250 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:05,250 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:05,360 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:05,410 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:05,410 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:05,410 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:05,520 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:05,610 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:05,610 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:05,610 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:05,720 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:05,780 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:05,780 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:05,780 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:05,900 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:05,930 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:05,930 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:06,040 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:06,090 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:06,090 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:06,090 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:06,200 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:06,274 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:06,274 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:06,274 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:06,381 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:06,440 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:06,440 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:06,440 [INFO] [DummyMotors] [ui_thread] : GO 30.0
+2022-02-22 17:58:06,551 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:07,497 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:07,497 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:07,497 [INFO] [DummyMotors] [ui_thread] : GO 35.0
+2022-02-22 17:58:07,610 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:07,747 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:07,747 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:07,747 [INFO] [DummyMotors] [ui_thread] : GO 35.0
+2022-02-22 17:58:07,862 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:07,915 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:07,915 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:07,916 [INFO] [DummyMotors] [ui_thread] : GO 35.0
+2022-02-22 17:58:08,019 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:08,123 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:08,123 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:08,124 [INFO] [DummyMotors] [ui_thread] : GO 35.0
+2022-02-22 17:58:08,223 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:08,339 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:08,339 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:08,340 [INFO] [DummyMotors] [ui_thread] : GO 35.0
+2022-02-22 17:58:08,444 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:09,675 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:09,675 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:09,676 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:09,788 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:09,843 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:09,843 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:09,844 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:09,958 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:09,987 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:09,987 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:09,988 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:10,098 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:10,139 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:10,140 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:10,141 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:10,241 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:10,386 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:10,387 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:10,388 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:10,495 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:10,538 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:10,538 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:10,541 [INFO] [DummyMotors] [ui_thread] : GO 40.0
+2022-02-22 17:58:10,650 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:11,451 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:11,451 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:11,453 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:11,565 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:11,587 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:11,587 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:11,589 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:11,690 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:11,732 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:11,732 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:11,733 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:11,838 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:11,858 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:11,858 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:11,858 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:11,968 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:11,988 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:11,988 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:11,998 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:12,103 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:12,139 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:12,139 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:12,140 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:12,248 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:12,288 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:12,288 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:12,288 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:12,394 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:12,434 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:12,434 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:12,434 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:12,544 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:14,874 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:14,874 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:14,874 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:14,984 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:15,024 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 17:58:15,024 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 17:58:15,024 [INFO] [DummyMotors] [ui_thread] : GO 45.0
+2022-02-22 17:58:15,134 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 17:58:16,844 [INFO] [ui_thread] : app exited with code 0

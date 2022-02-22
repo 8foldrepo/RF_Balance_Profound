@@ -137,12 +137,12 @@ class AbstractMotorController(QObject):
             self.ax_letters = self.config[self.device_key]['axes']
             self.calibrate_ray = self.config[self.device_key]['calibrate_ray']
 
-
             self._jog_speed = self.config[self.device_key]['jog_speed']
             self._scan_speed = self.config[self.device_key]['scan_speed']
 
             # Dummy code, replace when developing a hardware interface
             self.Motors = DummyMotors(parent=None)
+            self.Motors.set_config(self.config)
             self.dummy_command_signal.connect(self.Motors.command_received)
             self.Motors.start(priority=4)
 
@@ -293,6 +293,8 @@ class AbstractMotorController(QObject):
 
 
             self.dummy_command_signal.emit(f'GO {",".join(coord_strings)}')
+            #TODO: replace later with a check that the motor is ready
+            t.sleep(.1)
             self.dummy_command_signal.emit(f'BG {"".join(ax_strings)}')
 
         @abstractmethod

@@ -219,11 +219,44 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
         self.manual_home_button.clicked.connect(self.manual_home_clicked)
+        self.insert_button.clicked.connect(self.insert_button_clicked)
+        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
+        self.insert_ua_button.clicked.connect(self.insert_button_clicked)
+        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
+        self.go_element_button.clicked.connect(self.go_element_button_clicked)
 
         #Hardware info signals
         for i in range(self.manager.Motors.num_axes):
             self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
             self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+
+    """Command the motors to go to the insertion point"""
+    @pyqtSlot()
+    def insert_button_clicked(self):
+        print(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])
+        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
+
+    """Command the motors to retract until a sensor is reached"""
+    @pyqtSlot()
+    def retract_button_clicked(self):
+        #TODO: fill in later with the code that uses the retraction sensor
+        self.command_signal.emit(f"Motor Go {-50}")
+
+    """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
+    @pyqtSlot()
+    def go_element_button_clicked(self):
+        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
+        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
+
+        if is_number(self.go_element_combo.currentText()):
+            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
+            target_position = element_1_pos + offset
+            self.command_signal.emit(f"Motor Go {target_position}")
+        else:
+            #TODO: fill in later to handle "current" element condition
+            return
+
+
 
     @pyqtSlot()
     def manual_home_clicked(self):
