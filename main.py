@@ -40,7 +40,8 @@ def main(args):
     QThread.currentThread().setObjectName("ui_thread")
     
     window.show()
-    #window.prompt_for_password()
+    window.populate_config_ui()
+    window.prompt_for_password()
 
     code = app.exec_()
 

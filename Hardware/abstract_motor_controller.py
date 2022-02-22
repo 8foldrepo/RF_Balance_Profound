@@ -8,7 +8,6 @@ from Hardware.dummy_motors import  DummyMotors
 
 import logging
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import create_coord_rays
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
@@ -98,8 +97,6 @@ class AbstractMotorController(QObject):
         ax_letters = ['X', 'R']
 
         coords = list()
-        home_coords = list()
-
         x_pos_signal = pyqtSignal(float)
         r_pos_signal = pyqtSignal(float)
 
@@ -121,7 +118,6 @@ class AbstractMotorController(QObject):
 
 
 
-
             #For tracking latest known coordinates in steps
             self.coords = list()
             for i in range(self.num_axes):
@@ -133,13 +129,17 @@ class AbstractMotorController(QObject):
             self.fields_setup()
 
         def fields_setup(self):
-            self.reverse_ray = self.config[self.device_key]['reverse_ray']
-            self.ax_letters = self.config[self.device_key]['axes']
-            self.calibrate_ray = self.config[self.device_key]['calibrate_ray']
-
+            self.reverseX = self.config[self.device_key]['reverse_x']
+            self.reverseY = self.config[self.device_key]['reverse_y']
+            self.reverseZ = self.config[self.device_key]['reverse_z']
+            self.reverseR = self.config[self.device_key]['reverse_r']
 
             self._jog_speed = self.config[self.device_key]['jog_speed']
             self._scan_speed = self.config[self.device_key]['scan_speed']
+            self._x_calibrate = self.config[self.device_key]['x_calibrate']
+            self._y_calibrate = self.config[self.device_key]['y_calibrate']
+            self._z_calibrate = self.config[self.device_key]['z_calibrate']
+            self._r_calibrate = self.config[self.device_key]['r_calibrate']
 
             # Dummy code, replace when developing a hardware interface
             self.Motors = DummyMotors(parent=None)
@@ -185,6 +185,18 @@ class AbstractMotorController(QObject):
                 print("failed to set scan speed")
                 raise Exception
 
+        @calibrate.setter
+        def calibrate(self, value):
+            print("calibration setter called")
+
+            if type(value) is int:
+                print(f"scan speed set: {value}")
+                self._calibrate = value
+                self.logger_signal.emit(f"calibration factor set: {value}")
+            else:
+                self.logger_signal.emit("failed to set calibration factor")
+                raise Exception
+
         # Hardware interfacing functions
         def toggle_connection(self):
             if self.connected():
@@ -228,35 +240,42 @@ class AbstractMotorController(QObject):
             self.dummy_command_signal.emit("Stop Motion")
 
         @abstractmethod
-        def set_origin(self, origin_mm: list):
-            origin_steps = list()
+        def set_origin(self, x=0, y=0, z=0, r=0):
+            xHome = -1 * x * self._x_calibrate + float(self.x)
+            yHome = -1 * y * self._y_calibrate + float(self.y)
+            zHome = -1 * z * self._z_calibrate + float(self.z)
+            rHome = -1 * r * self._r_calibrate + float(self.r)
 
-            for i in range(len(self.ax_letters)):
-                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords[i])
-                if self.reverse_ray[i]:
-                    origin_steps[i] = origin_steps * -1
+            if self.reverseX:
+                xHome = xHome * -1
+            if self.reverseY:
+                yHome = yHome * -1
+            if self.reverseZ:
+                zHome = zHome * -1
+            if self.reverseR:
+                rHome = rHome * -1
 
-                self.dummy_command_signal.emit(f'Set {self.ax_letters[i]} {origin_steps}')
+            self.dummy_command_signal.emit(f"Set X {xHome}")
+            self.dummy_command_signal.emit(f"Set Y {yHome}")
+            self.dummy_command_signal.emit(f"Set Z {zHome}")
+            self.dummy_command_signal.emit(f"Set R {rHome}")
 
             self.get_position()
 
         @abstractmethod
         def set_origin_here(self):
-            for i in range(len(self.ax_letters)):
-                self.dummy_command_signal.emit(f"Set {self.ax_letters[i]} 0")
+            self.dummy_command_signal.emit(f"Set X {0}")
+            self.dummy_command_signal.emit(f"Set Y {0}")
+            self.dummy_command_signal.emit(f"Set Z {0}")
+            self.dummy_command_signal.emit(f"Set R {0}")
 
         @abstractmethod
         def set_origin_here_1d(self, axis):
             self.dummy_command_signal.emit(f"Set {axis} {0}")
-            self.dummy_command_signal.emit(f"")
 
         @abstractmethod
         def go_home(self):
-            zeroes = list()
-            for i in range(len(self.ax_letters)):
-                zeroes.append(0)
-
-            self.go_to_position(self.ax_letters, zeroes)
+            self.go_to_position(0, 0, 0)
 
         # Tells one axis what coordinate to travel to
         # Axis must be 'x' , 'y' , 'z' , or 'r'
@@ -264,7 +283,7 @@ class AbstractMotorController(QObject):
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
                 self.log_msg(level='error',message="Axes length does not match coordinates length")
-                return
+                return;
 
             for i in range(len(coords)):
                 if isinstance(coords[i], str):
@@ -272,29 +291,44 @@ class AbstractMotorController(QObject):
                         coords[i] = float(coords[i])
                     except TypeError:
                         self.log_msg(level='Error', message='Invalid coordinate string in go_to_position')
-                        return
 
-            coord_strings = list()
-            ax_strings = list()
+            x_coord_str = ''
+            y_coord_str = ''
+            z_coord_str = ''
+            r_coord_str = ''
+            x_ax_str = ''
+            y_ax_str = ''
+            z_ax_str = ''
+            r_ax_str = ''
 
             for i in range(len(coords)):
-                ax_index = self.ax_letters.index(axes[i])
-
-                #Zero coordinates that are too close to zero (they have caused bugs)
                 coords[i] = bound(coords[i])
-                #Reverse the direction if the config says to
-                if self.reverse_ray[ax_index]:
+
+                #Reverse directions when the config file says to
+                if self.config[self.device_key][f'reverse_{axes[i].lower()}']:
                     coords[i] = -1 * coords[i]
 
-                self.dummy_command_signal.emit(f'Scan Speed {(self.calibrate_ray[ax_index] * self.scan_speed)}')
-                coord_strings.append(str(coords[i] * self.calibrate_ray[ax_index]))
-                ax_strings.append(axes[i].upper())
+                if axes[i].upper() == 'X':
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._x_calibrate * self.scan_speed)}')
+                    x_coord_str = coords[i]*self.config[self.device_key]['x_calibrate']
+                    x_ax_str = 'X'
+                elif axes[i].upper() == 'Y':
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._y_calibrate * self.scan_speed)}')
+                    y_coord_str = coords[i] * self.config[self.device_key]['y_calibrate']
+                    y_ax_str = 'Y'
+                elif axes[i].upper() == 'Z':
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._z_calibrate * self.scan_speed)}')
+                    z_coord_str = coords[i] * self.config[self.device_key]['z_calibrate']
+                    z_ax_str = 'Z'
+                elif axes[i].upper() == 'R':
+                    self.dummy_command_signal.emit(f'Scan Speed {(self._r_calibrate * self.scan_speed)}')
+                    r_coord_str = coords[i] * self.config[self.device_key]['r_calibrate']
+                    r_ax_str = 'R'
 
             self.scanning = True
 
-
-            self.dummy_command_signal.emit(f'GO {",".join(coord_strings)}')
-            self.dummy_command_signal.emit(f'BG {"".join(ax_strings)}')
+            self.dummy_command_signal.emit(f'GO {x_coord_str},{y_coord_str},{z_coord_str},{r_coord_str}')
+            self.dummy_command_signal.emit(f'BG {x_ax_str}{y_ax_str}{z_ax_str}{r_ax_str}')
 
         @abstractmethod
         def is_moving(self):
@@ -361,11 +395,7 @@ class AbstractMotorController(QObject):
             elif command == 'Get Position'.upper():
                 self.get_position()
             elif cmd_ray[0] == 'GO':
-                axes, coords = create_coord_rays(cmd_ray[1], self.ax_letters)
-                self.go_to_position(axes=axes, coords=coords)
-            elif cmd_ray[0] == 'Origin'.upper():
-                if cmd_ray[1] == 'Here'.upper():
-                    self.set_origin_here()
+                self.go_to_position(axes=['X','Y','Z','R'],coords=cmd_ray[1].split(','))
 
         def clean_up(self):
             if self.connected():
