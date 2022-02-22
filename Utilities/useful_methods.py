@@ -10,6 +10,24 @@ named_devices = {
     "USB0::0x1AB1::0x0643::DG8A223502692::INSTR": "Rigol 5",
 }
 
+#Inputs:
+#A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+#A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+#Output:
+#A list containing the axis letters of the coordinates provided, and a list of equal length containing the coordinates.
+#With the given inputs the output should be axes: [Z,R] coords [3,2]
+
+def create_coord_rays(coords:str,ax_letters:list):
+    axes = list()
+    coords = coords.split(',')
+    for i in range(len(coords)):
+        if not coords[i] == '':
+            axes.append(ax_letters[i])
+
+    # Remove empty elements
+    coords = list(filter(lambda val: val != '', coords))
+    return axes, coords
+
 def is_number(s):
     try:
         float(s)

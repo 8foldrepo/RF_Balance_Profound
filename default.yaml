@@ -1,14 +1,9 @@
 Dummy_Motors:
+  axes: ['X','R']
   #steps/mm, float
-  x_calibrate: 1
-  y_calibrate: 1
-  z_calibrate: 1
-  r_calibrate: 1
+  calibrate_ray: [1,1]
   #boolean
-  reverse_x: False
-  reverse_y: False
-  reverse_z: False
-  reverse_r: False
+  reverse_ray: [False,False]
   #mm/s, float
   jog_speed: 1
   scan_speed: 1

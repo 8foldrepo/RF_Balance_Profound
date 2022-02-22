@@ -21,13 +21,15 @@ class DummyMotors(QThread):
     num_axes = 2
     #Must be capital
     ax_letters= ['X','R']
+    x_pos_signal = pyqtSignal(float)
+    r_pos_signal = pyqtSignal(float)
+
     coords = list()
     speeds = list()
     motors_on = list()
     pos_limits = list()
     neg_limits = list()
     targets = list()
-    pos_signals = list()
 
     for i in range(num_axes):
         coords.append(0)
@@ -36,7 +38,6 @@ class DummyMotors(QThread):
         pos_limits.append(50)
         neg_limits.append(-50)
         targets.append(0)
-        pos_signals.append(pyqtSignal)
 
     scanning_signal = pyqtSignal(bool)
 
@@ -126,13 +127,20 @@ class DummyMotors(QThread):
                             self.speeds[ax_index] = -1 * abs(self.scan_speed)
 
                 elif self.cmd == 'Get Position'.upper():
-                    for i in range(self.num_axes):
-                        self.pos_signals[i].emit(coords[i])
+                    if 'X' in self.ax_letters:
+                        self.x_pos_signal.emit(coords(self.ax_letters.index('X')))
+                    if 'Y' in self.ax_letters:
+                        self.y_pos_signal.emit(coords(self.ax_letters.index('Y')))
+                    if 'Z' in self.ax_letters:
+                        self.z_pos_signal.emit(coords(self.ax_letters.index('Z')))
+                    if 'R' in self.ax_letters:
+                        self.r_pos_signal.emit(coords(self.ax_letters.index('R')))
 
                 elif cmd_ray[0] == 'SET':
                     ax_letter = cmd_ray[1]
                     ax_index = self.ax_letters.index(ax_letter)
-                    self.coords[ax_index] = float(self.cmd_ray(2))
+                    self.coords[ax_index] = float(cmd_ray[2])
+                    self.cmd = 'Get Position'
 
             else:
                 if self.cmd == 'Connect'.upper():
@@ -142,8 +150,6 @@ class DummyMotors(QThread):
 
             if self.scanning:
                 for i in range(self.num_axes):
-                    print((self.targets[i] - self.coords[i]) * self.speeds[i])
-
                     if (self.targets[i] - self.coords[i]) * self.speeds[i] <= 0:
                         self.speeds[i] = 0
 

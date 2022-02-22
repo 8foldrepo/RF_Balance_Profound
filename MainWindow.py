@@ -102,12 +102,24 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
         self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
         self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.go_x_button.clicked.connect(lambda: self.command_signal.emit("Motor Go 0,0,0,0"))
+        self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
+        self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
+        self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
+        self.manual_home_button.clicked.connect(self.manual_home_clicked)
 
         #Hardware info signals
         for i in range(self.manager.Motors.num_axes):
             self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
             self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+
+    @pyqtSlot()
+    def manual_home_clicked(self):
+        if self.x_home_radio.isChecked():
+            self.command_signal.emit("Motor go 0")
+        elif self.theta_home_radio.isChecked():
+            self.command_signal.emit("Motor go ,0")
+        elif self.all_axes_radio.isChecked():
+            self.command_signal.emit("Motor go 0,0")
 
     @pyqtSlot(float)
     def update_x_postion(self,mm):
