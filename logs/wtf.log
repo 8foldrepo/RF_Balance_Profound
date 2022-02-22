@@ -1,23 +1,21 @@
-2022-02-22 16:29:52,150 [INFO] [DummyMotors] [] : Connect
-2022-02-22 16:29:52,150 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
-2022-02-22 16:29:54,067 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-22 16:29:54,347 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 16:29:54,747 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-22 16:29:55,297 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 16:29:55,973 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 16:29:55,973 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 16:29:55,973 [INFO] [DummyMotors] [ui_thread] : GO 0,0
-2022-02-22 16:29:55,973 [INFO] [DummyMotors] [ui_thread] : BG XR
-2022-02-22 16:29:57,511 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
-2022-02-22 16:29:57,691 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 16:29:57,811 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
-2022-02-22 16:29:58,551 [INFO] [DummyMotors] [ui_thread] : Stop Motion
-2022-02-22 16:30:00,298 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
-2022-02-22 16:30:00,298 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 16:30:00,298 [INFO] [DummyMotors] [ui_thread] : GO 0
-2022-02-22 16:30:00,298 [INFO] [DummyMotors] [ui_thread] : BG X
-2022-02-22 16:30:01,548 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
-2022-02-22 16:30:01,548 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
-2022-02-22 16:30:01,548 [INFO] [DummyMotors] [ui_thread] : GO 0
-2022-02-22 16:30:01,548 [INFO] [DummyMotors] [ui_thread] : BG R
-2022-02-22 16:30:09,743 [INFO] [ui_thread] : app exited with code 0
+2022-02-22 16:48:47,942 [INFO] [DummyMotors] [] : Connect
+2022-02-22 16:48:47,944 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-22 16:48:49,491 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-22 16:48:49,718 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:50,147 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
+2022-02-22 16:48:50,622 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:51,043 [INFO] [DummyMotors] [ui_thread] : Begin Motion R-
+2022-02-22 16:48:51,374 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:51,587 [INFO] [DummyMotors] [ui_thread] : Begin Motion X-
+2022-02-22 16:48:52,078 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:52,283 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-22 16:48:52,910 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:53,187 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
+2022-02-22 16:48:55,078 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-22 16:48:56,159 [INFO] [DummyMotors] [manager_thread] : Scan Speed Set: 1
+2022-02-22 16:48:56,159 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 16:48:56,159 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 16:48:56,160 [INFO] [DummyMotors] [ui_thread] : BG X
+2022-02-22 16:48:56,966 [INFO] [DummyMotors] [ui_thread] : Scan Speed 1
+2022-02-22 16:48:56,967 [INFO] [DummyMotors] [ui_thread] : GO 0
+2022-02-22 16:48:56,967 [INFO] [DummyMotors] [ui_thread] : BG R
