@@ -121,7 +121,6 @@ class AbstractMotorController(QObject):
 
 
 
-
             #For tracking latest known coordinates in steps
             self.coords = list()
             for i in range(self.num_axes):
@@ -248,7 +247,6 @@ class AbstractMotorController(QObject):
         @abstractmethod
         def set_origin_here_1d(self, axis):
             self.dummy_command_signal.emit(f"Set {axis} {0}")
-            self.dummy_command_signal.emit(f"")
 
         @abstractmethod
         def go_home(self):

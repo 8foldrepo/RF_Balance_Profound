@@ -10,3 +10,54 @@ Dummy_Motors:
 
 Debugging:
   simulate_hw: True
+
+User Accounts:
+  Operator: "Operator"
+  Engineer: "Engineer"
+  Administrator: "PMI_Admin"
+
+WTF_PositionParameters:
+  XHomeCoord: 263
+  ThetaHomeCoord: -90
+  X-TankInsertionPoint: 108
+  X-Element1: 0
+  X-Element pitch (mm): 5
+  ThetaPreHomeMove: 2
+  ThetaLoadEnc?: False
+  CentreHomeTheta?: True
+
+FrequencyParameters:
+  LF:
+    LowFreqLimit(MHz): 4
+    HighFreqLimit(MHz): 4.8
+    Amplitude(mVpp): 50
+    BurstCount: 50
+  HF:
+    LowFreqLimit(MHz): 12.8
+    HighFreqLimit(MHz): 13.8
+    HF.Amplitude(mVpp): 50
+    HF.BurstCount: 65
+  Search:
+    CoarseIncr(MHz):
+      0.1
+    FineIncr(MHz):
+      0.01
+
+Sequence pass/fail:
+  Retries: 0
+  Pass fail action: "No dialog (abort)"
+  Interrupt action: "No dialog (abort)"
+  Dialog timeout (s): 0
+
+WTF_DIO:
+  DAQ Device name: "WTF3"
+  Water level timeout (s): 230
+  Fill/Drain mode: "Automatic"
+
+Autoset timebase:
+  Min time of flight (us): 42
+  Max time of flight (us): 50
+
+Paths:
+  UA results root directory: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA results"
+  UA Serial numbers file: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"
