@@ -61,9 +61,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.style_ui()
         self.activateWindow()
 
-        self.rfb_indicator.setChecked(True)
-        self.rfb_indicator.dPtr.animate(True)
-
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
@@ -182,12 +179,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(str)
     def password_result(self, access_level):
         if access_level == 'Engineer':
-            pass
+
+            self.tabWidget.removeTab(7)
         elif access_level == 'Operator':
             #Remove position tab, add more stuff like this later
             self.tabWidget.removeTab(6)
+            self.tabWidget.removeTab(6)
         elif access_level == 'Administrator':
-            pass
+            self.tabWidget.removeTab(6)
         else:
             sys.exit()
 

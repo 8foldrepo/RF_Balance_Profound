@@ -101,6 +101,10 @@ class Switch(QAbstractButton):
         self.setCheckable(True)
         # self.clicked.connect(self.dPtr.animate)
 
+    def setChecked(self, checked:bool):
+        super().setChecked(checked)
+        self.dPtr.animate(checked)
+
     def sizeHint(self):
         return QSize(84, 42)
 

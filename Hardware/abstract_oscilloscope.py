@@ -266,7 +266,7 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def capture(self):
-
+            pass
 
         def exec_command(self, command):
             command = command.upper()
