@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from PyQt5.QtCore import *
 import time as t
 from Utilities.useful_methods import bound
-import gclib
+# import gclib
 from Hardware.dummy_motors import  DummyMotors
 
 import logging
