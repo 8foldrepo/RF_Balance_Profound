@@ -61,6 +61,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.style_ui()
         self.activateWindow()
 
+        self.rfb_indicator.setChecked(True)
+        self.rfb_indicator.dPtr.animate(True)
+
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
@@ -172,7 +175,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_step_view.setHeaderHidden(True)
 
     def prompt_for_password(self):
-        dlg = PasswordDialog(self)
+        dlg = PasswordDialog(parent = self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
         dlg.exec()
 
@@ -233,7 +236,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
     def insert_button_clicked(self):
-        print(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])
         self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     """Command the motors to retract until a sensor is reached"""
@@ -256,8 +258,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             #TODO: fill in later to handle "current" element condition
             return
 
-
-
     @pyqtSlot()
     def manual_home_clicked(self):
         if self.x_home_radio.isChecked():
@@ -269,11 +269,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(float)
     def update_x_postion(self,mm):
-        self.x_pos_lineedit.setText(str(mm))
+        try:
+            self.x_pos_lineedit.setText(str(mm))
+        except KeyboardInterrupt:
+            pass
 
     @pyqtSlot(float)
     def update_r_postion(self, mm):
-        self.theta_pos_lineedit.setText(str(mm))
+        try:
+            self.theta_pos_lineedit.setText(str(mm))
+        except KeyboardInterrupt:
+            pass
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

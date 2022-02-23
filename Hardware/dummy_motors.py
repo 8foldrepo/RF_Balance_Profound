@@ -112,37 +112,31 @@ class DummyMotors(QThread):
                     for i in range(self.num_axes):
                         self.speeds[i] = 0
                 elif cmd_ray[0] == 'GO':
-                    coords = cmd_ray[1].split(',')
-                    for i in range(len(coords)):
+                    targ_coords = cmd_ray[1].split(',')
+                    for i in range(len(targ_coords)):
                         try:
-                            if is_number(coords[i]):
-                                self.targets[i] = float(coords[i])
+                            if is_number(targ_coords[i]):
+                                self.targets[i] = float(targ_coords[i])
+
+                                if self.targets[i] > self.coords[i]:
+                                    self.scanning = True
+                                    self.speeds[i] = abs(self.scan_speed)
+                                elif self.targets[i] < self.coords[i]:
+                                    self.scanning = True
+                                    self.speeds[i] = -1 * abs(self.scan_speed)
+
                         except IndexError:
                             self.log_msg(level='Error', message='More coordinates were entered than Axes')
 
-                elif cmd_ray[0] == 'BG':
-                    axes = cmd_ray[1]
-                    self.scanning = True
-                    self.scanning_signal.emit(True)
-                    for axis in axes:
-                        try:
-                            ax_index = self.ax_letters.index(axis)
-                        except ValueError:
-                            self.log_msg(level='Error', message='Invalid axis identifier in Begin Motion')
-                        if self.targets[ax_index] > self.coords[ax_index]:
-                            self.speeds[ax_index] = abs(self.scan_speed)
-                        elif self.targets[ax_index] < self.coords[ax_index]:
-                            self.speeds[ax_index] = -1 * abs(self.scan_speed)
-
                 elif self.cmd == 'Get Position'.upper():
                     if 'X' in self.ax_letters:
-                        self.x_pos_signal.emit(coords(self.ax_letters.index('X')))
+                        self.x_pos_signal.emit(self.coords(self.ax_letters.index('X')))
                     if 'Y' in self.ax_letters:
-                        self.y_pos_signal.emit(coords(self.ax_letters.index('Y')))
+                        self.y_pos_signal.emit(self.coords(self.ax_letters.index('Y')))
                     if 'Z' in self.ax_letters:
-                        self.z_pos_signal.emit(coords(self.ax_letters.index('Z')))
+                        self.z_pos_signal.emit(self.coords(self.ax_letters.index('Z')))
                     if 'R' in self.ax_letters:
-                        self.r_pos_signal.emit(coords(self.ax_letters.index('R')))
+                        self.r_pos_signal.emit(self.coords(self.ax_letters.index('R')))
 
                 elif cmd_ray[0] == 'SET':
                     ax_letter = cmd_ray[1]
@@ -178,7 +172,7 @@ class DummyMotors(QThread):
     @pyqtSlot(str)
     def command_received(self, command):
         self.cmd = command
-        self.condition.wakeAll()
+        #self.condition.wakeAll()
         self.log_msg(level='Info', message=command)
 
     def not_moving(self):

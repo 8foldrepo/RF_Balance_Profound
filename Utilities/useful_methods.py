@@ -2,6 +2,7 @@ import os
 import time as t
 import numpy as np
 import yaml
+
 named_devices = {
     "USB0::0x1AB1::0x0643::DG8A223502685::INSTR": "Rigol 1",
     "USB0::0x1AB1::0x0643::DG8A221701373::INSTR": "Rigol 2",

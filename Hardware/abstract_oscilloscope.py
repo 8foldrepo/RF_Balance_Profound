@@ -91,32 +91,16 @@ class AbstractMotorController(QObject):
                 stop motors, and disconnect form the controller if connected
         """
 
-        #Signals
-        x_pos_signal = pyqtSignal(float)
-        r_pos_signal = pyqtSignal(float)
-
-        num_axes = 2
-        ax_letters = ['X', 'R']
-
-        coords = list()
-        home_coords = list()
-
-        for i in range(num_axes):
-            coords.append(0)
-
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
         # For accessing parameters in config file
-        device_key = 'Dummy_Motors'
+        device_key = 'Dummy_Oscilloscope'
 
         def __init__(self, config: dict):
             super().__init__()
 
             self.config = config
-
-
-
 
             #For tracking latest known coordinates in steps
             self.coords = list()
@@ -129,22 +113,34 @@ class AbstractMotorController(QObject):
             self.fields_setup()
 
         def fields_setup(self):
-            self.reverse_ray = self.config[self.device_key]['reverse_ray']
-            self.ax_letters = self.config[self.device_key]['axes']
-            self.calibrate_ray = self.config[self.device_key]['calibrate_ray']
-
-            self._jog_speed = self.config[self.device_key]['jog_speed']
-            self._scan_speed = self.config[self.device_key]['scan_speed']
-
-            # Dummy code, replace when developing a hardware interface
-            self.Motors = DummyMotors(parent=None)
-            self.Motors.set_config(self.config)
-            self.dummy_command_signal.connect(self.Motors.command_received)
-            self.Motors.start(priority=4)
+            self.range = self.config[self.device_key]['range']
+            self.channel = self.config[self.device_key]['channel']
+            self.averages = self.config[self.device_key]['averages']
+            self.capture_period_ns = self.config[self.device_key]['capture_period_ns']
+            self.signal_frequency_MHz = 4.2
+            self.signal_period_ns = 1/self.signal_frequency_MHz * 1000
+            self.cycles = self.config[self.device_key]['cycles']
+            self.captures = int(self.cycles*self.signal_period_ns/self.capture_period_ns)
 
         @property
-        def jog_speed(self):
-            return self._jog_speed
+        def configure(self, parameters:dict):
+            for key in parameters:
+                if key == 'range':
+                    self.range = parameters[key]
+                if key == 'channel':
+                    self.channel = parameters[key]
+                if key == 'averages':
+                    self.averages = parameters[key]
+                if key == 'capture_period_ns':
+                    self.capture_period_ns = parameters[key]
+                if key == 'signal_frequency_MHz':
+                    self.signal_frequency_MHz = parameters[key]
+                    self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
+                    self.captures = int(self.cycles*self.signal_period_ns/self.capture_period_ns)
+                if key == 'cycles':
+                    self.cycles = parameters[key]
+                    self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
+                    self.captures = int(self.cycles * self.signal_period_ns / self.capture_period_ns)
 
         @property
         def scan_speed(self):
@@ -160,27 +156,6 @@ class AbstractMotorController(QObject):
                 self._r_calibrate,
             )
 
-        # Setters for each class property
-        @jog_speed.setter
-        def jog_speed(self, value):
-            if type(value) is int:
-                print(f"jog speed set: {value}")
-                self._jog_speed = value
-
-                self.dummy_command_signal.emit("Jog Speed")
-            else:
-                print("failed to set jog speed")
-                raise Exception
-
-        @scan_speed.setter
-        def scan_speed(self, value):
-            if type(value) is int:
-                self._scan_speed = value
-                print(f"scan speed set: {value}")
-            else:
-                print("failed to set scan speed")
-                raise Exception
-
         # Hardware interfacing functions
         def toggle_connection(self):
             if self.connected():
@@ -190,13 +165,12 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def connect(self):
-            self.dummy_command_signal.emit("Connect")
+            self.connected = True
             #return self.connected()
 
         @abstractmethod
         def disconnect(self):
-            self.dummy_command_signal.emit("Disconnect")
-            return not self.connected()
+            self.connected = False
 
         @abstractmethod
         def connected(self):
@@ -291,75 +265,19 @@ class AbstractMotorController(QObject):
             self.dummy_command_signal.emit(f'GO {",".join(coord_strings)}')
 
         @abstractmethod
-        def is_moving(self):
-            return not (self.Motors.dR == 0 and self.Motors.dX == 0)
+        def capture(self):
 
-        @abstractmethod
-        def get_position(self):
-            self.coords = self.Motors.coords
-
-            self.x_pos_signal.emit(self.coords[self.ax_letters.index('X')])
-            self.r_pos_signal.emit(self.coords[self.ax_letters.index('R')])
-
-        def center_r(self, degreesMax):
-            try:
-                rmin = -1 * degreesMax
-                rmax = degreesMax
-
-                self.go_to_position_1d('r', rmin)
-
-                self.get_position()
-                rMinLimit = self.r / self.config["galil_r_degreesConversion"]
-
-                self.go_to_position_1d('r', rmax)
-                rMaxLimit = self.r / self.config["galil_r_degreesConversion"]
-                rCenter = (rMaxLimit + rMinLimit) / 2
-
-                self.go_to_position_1d('r', rCenter)
-                self.set_origin_here_1d('r')
-
-                self.get_position()
-            except gclib.GclibError as e:
-                stop_code = self.tell_error()
-                if stop_code is not None:
-                    print(f"error in hardware_galil.center_r: {stop_code}")
-                else:
-                    print(f"error in hardware_galil.center_r: {e}")
 
         def exec_command(self, command):
             command = command.upper()
             cmd_ray = command.split(' ')
 
-            if cmd_ray[0] == 'MOTOR':
+            if cmd_ray[0] == 'SCOPE':
                 cmd_ray.pop(0)
                 command = command[6:]
 
             if command == 'Disconnect'.upper():
                 self.disconnect()
-            elif command == 'Connect'.upper():
-                self.connect()
-            elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
-                self.jog_speed = cmd_ray[2]
-            elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
-                self.scan_speed = cmd_ray[2]
-            elif command == 'Begin Motion X+'.upper():
-                self.jog('X', 1)
-            elif command == 'Begin Motion X-'.upper():
-                self.jog('X', -1)
-            elif command == 'Begin Motion R+'.upper():
-                self.jog('R', 1)
-            elif command == 'Begin Motion R-'.upper():
-                self.jog('R', -1)
-            elif command == 'Stop Motion'.upper():
-                self.stop_motion()
-            elif command == 'Get Position'.upper():
-                self.get_position()
-            elif cmd_ray[0] == 'GO':
-                axes, coords = create_coord_rays(cmd_ray[1], self.ax_letters)
-                self.go_to_position(axes=axes, coords=coords)
-            elif cmd_ray[0] == 'Origin'.upper():
-                if cmd_ray[1] == 'Here'.upper():
-                    self.set_origin_here()
 
         def clean_up(self):
             if self.connected():
@@ -393,4 +311,3 @@ class AbstractMotorController(QObject):
                 motor_logger.warning(log_entry)
             else:
                 root_logger.info(log_entry)
-                motor_logger.info(log_entry)

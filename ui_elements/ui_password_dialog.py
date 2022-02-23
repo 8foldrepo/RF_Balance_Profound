@@ -16,8 +16,9 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
     """
     access_level_signal = pyqtSignal(str)
 
-    def __init__(self, parent=None):
+    def __init__(self, config, parent=None):
         super().__init__(parent=parent)
+        self.config = config
         self.setupUi(self)
         self.style_ui()
         self.configure_signals()
@@ -31,15 +32,15 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
         self.cancel_button.clicked.connect(self.cancel_clicked)
 
     def check_password(self):
-        if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == "Operator":
+        if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == self.config["User Accounts"]["Operator"]:
             self.granted = True
             self.access_level_signal.emit("Operator")
             self.close()
-        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == "Engineer":
+        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == self.config["User Accounts"]["Engineer"]:
             self.granted = True
             self.access_level_signal.emit("Engineer")
             self.close()
-        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == "Administrator":
+        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == self.config["User Accounts"]["Administrator"]:
             self.granted = True
             self.access_level_signal.emit("Administrator")
             self.close()
