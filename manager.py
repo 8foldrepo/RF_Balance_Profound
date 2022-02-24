@@ -16,6 +16,7 @@ motor_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from Hardware.abstract_motor_controller import AbstractMotorController
+from Hardware.abstract_sensor import AbstractSensor
 
 class Manager(QThread):
     """
@@ -72,7 +73,11 @@ class Manager(QThread):
 
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
-            self.Motors.connect()
+            self.temp_sensor = AbstractSensor(config=self.config)
+
+    def connect_hardware(self):
+        self.Motors.connect()
+        self.temp_sensor.connect()
 
     def run(self) -> None:
         """
@@ -119,6 +124,8 @@ class Manager(QThread):
             elif cmd_ray[0] == 'CLOSE':
                 self.stay_alive = False
                 break
+            elif cmd_ray[0] == 'CONNECT':
+                self.connect_hardware()
             elif cmd_ray[0] == 'MOTOR':
                 self.Motors.exec_command(self.cmd)
             #What to do when there is no command
@@ -126,6 +133,8 @@ class Manager(QThread):
                 pass
 
             self.Motors.get_position()
+
+            self.temp_sensor.get_reading()
             self.cmd = ""
 
         self.wrap_up()

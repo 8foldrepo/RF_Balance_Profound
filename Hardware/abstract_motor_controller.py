@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from PyQt5.QtCore import *
 import time as t
 from Utilities.useful_methods import bound
-# import gclib
 from Hardware.dummy_motors import  DummyMotors
 
 import logging
@@ -93,7 +92,11 @@ class AbstractMotorController(QObject):
 
         #Signals
         x_pos_signal = pyqtSignal(float)
+        y_pos_signal = pyqtSignal(float)
         r_pos_signal = pyqtSignal(float)
+        z_pos_signal = pyqtSignal(float)
+
+        connected_signal = pyqtSignal(bool)
 
         num_axes = 2
         ax_letters = ['X', 'R']
@@ -114,9 +117,6 @@ class AbstractMotorController(QObject):
             super().__init__()
 
             self.config = config
-
-
-
 
             #For tracking latest known coordinates in steps
             self.coords = list()
@@ -190,13 +190,13 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def connect(self):
-            self.dummy_command_signal.emit("Connect")
-            #return self.connected()
+            self.Motors.connected = True
+            self.connected_signal.emit(self.connected())
 
         @abstractmethod
         def disconnect(self):
-            self.dummy_command_signal.emit("Disconnect")
-            return not self.connected()
+            self.Motors.connected = False
+            self.connected_signal.emit(self.connected())
 
         @abstractmethod
         def connected(self):
@@ -300,31 +300,6 @@ class AbstractMotorController(QObject):
 
             self.x_pos_signal.emit(self.coords[self.ax_letters.index('X')])
             self.r_pos_signal.emit(self.coords[self.ax_letters.index('R')])
-
-        def center_r(self, degreesMax):
-            try:
-                rmin = -1 * degreesMax
-                rmax = degreesMax
-
-                self.go_to_position_1d('r', rmin)
-
-                self.get_position()
-                rMinLimit = self.r / self.config["galil_r_degreesConversion"]
-
-                self.go_to_position_1d('r', rmax)
-                rMaxLimit = self.r / self.config["galil_r_degreesConversion"]
-                rCenter = (rMaxLimit + rMinLimit) / 2
-
-                self.go_to_position_1d('r', rCenter)
-                self.set_origin_here_1d('r')
-
-                self.get_position()
-            except gclib.GclibError as e:
-                stop_code = self.tell_error()
-                if stop_code is not None:
-                    print(f"error in hardware_galil.center_r: {stop_code}")
-                else:
-                    print(f"error in hardware_galil.center_r: {e}")
 
         def exec_command(self, command):
             command = command.upper()

@@ -41,7 +41,9 @@ def main(args):
     
     window.show()
     window.populate_config_ui()
-    window.prompt_for_password()
+    #window.prompt_for_password()
+    window.command_signal.emit("CONNECT")
+
 
     code = app.exec_()
 

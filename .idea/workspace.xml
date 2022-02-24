@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4c6215a4-002c-4f58-b496-057c60530a6a" name="Default Changelist" comment="merged">
-      <change afterPath="$PROJECT_DIR$/Widget_Library/Test data capture.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/WTF user prompt.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/WTF user prompt2.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/Write cal data to UA.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/retracting_ua_warning.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="97cccae8-0f59-43c1-99b5-a0d93cd46474" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Hardware/abstract_sensor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_21_2022_10_51_AM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_21_2022_10_51_AM__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/useful_commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/useful_commands.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Widget_Library/window_wet_test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/motor-DESKTOP-KKR3TR1.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/wtf-DESKTOP-KKR3TR1.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui_elements/switch.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui_elements/switch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,35 +24,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitToolBoxStore">
-    <option name="recentBranches">
-      <RecentBranches>
-        <option name="branchesForRepo">
-          <list>
-            <RecentBranchesForRepo>
-              <option name="branches">
-                <list>
-                  <RecentBranch>
-                    <option name="branchName" value="Rameen2" />
-                    <option name="lastUsedInstant" value="1645655396" />
-                  </RecentBranch>
-                  <RecentBranch>
-                    <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1645655395" />
-                  </RecentBranch>
-                </list>
-              </option>
-              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
-            </RecentBranchesForRepo>
-          </list>
-        </option>
-      </RecentBranches>
-    </option>
+  <component name="ProjectId" id="25ZUSbnL9OLOvzEmc8jIVrv7XgF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/manager.py" />
-    <property name="two.files.diff.last.used.file" value="$USER_HOME$/Downloads/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/manager.py" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -71,9 +41,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\isaia\anaconda3\envs\RF_Balance_Profound\python.exe" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
@@ -91,22 +61,31 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="97cccae8-0f59-43c1-99b5-a0d93cd46474" name="Default Changelist" comment="" />
+      <created>1645734103308</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1645734103308</updated>
+    </task>
     <servers />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="merged" />
-    <option name="LAST_COMMIT_MESSAGE" value="merged" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/manager.py</url>
+          <line>136</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/manager.py</url>
+          <line>77</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -226,11 +226,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.insert_ua_button.clicked.connect(self.insert_button_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
         self.go_element_button.clicked.connect(self.go_element_button_clicked)
-
         #Hardware info signals
-        for i in range(self.manager.Motors.num_axes):
-            self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
-            self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+        self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
+        self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
+        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+        self.manager.temp_sensor.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.temp_sensor.reading_signal.connect(self.update_temp_reading)
+
+
+    @pyqtSlot(float)
+    def update_temp_reading(self, temp):
+        self.temp_field.setText(str(temp))
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
