@@ -1,58 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4c6215a4-002c-4f58-b496-057c60530a6a" name="Default Changelist" comment="merged">
-      <change afterPath="$PROJECT_DIR$/Best Practices.md" afterDir="false" />
+    <list default="true" id="97cccae8-0f59-43c1-99b5-a0d93cd46474" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Hardware/MT_balance.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hardware/abstract_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_sensor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/default.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/local.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui_elements/ui_oscilloscope_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui_elements/ui_oscilloscope_plot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitToolBoxStore">
-    <option name="recentBranches">
-      <RecentBranches>
-        <option name="branchesForRepo">
-          <list>
-            <RecentBranchesForRepo>
-              <option name="branches">
-                <list>
-                  <RecentBranch>
-                    <option name="branchName" value="Rameen2" />
-                    <option name="lastUsedInstant" value="1645655396" />
-                  </RecentBranch>
-                  <RecentBranch>
-                    <option name="branchName" value="main" />
-                    <option name="lastUsedInstant" value="1645655395" />
-                  </RecentBranch>
-                </list>
-              </option>
-              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
-            </RecentBranchesForRepo>
-          </list>
-        </option>
-      </RecentBranches>
-    </option>
+  <component name="ProjectId" id="25ZUSbnL9OLOvzEmc8jIVrv7XgF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/manager.py" />
-    <property name="two.files.diff.last.used.file" value="$USER_HOME$/Downloads/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/RF_Balance_Profound-ee0b05424c6a09fcaa6bb00ca9550e011c20ef80/manager.py" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../RF_Balance" />
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -62,9 +43,9 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\isaia\anaconda3\envs\RF_Balance_Profound\python.exe" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
@@ -82,7 +63,15 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="97cccae8-0f59-43c1-99b5-a0d93cd46474" name="Default Changelist" comment="" />
+      <created>1645734103308</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1645734103308</updated>
+    </task>
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -95,9 +84,22 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="merged" />
-    <option name="LAST_COMMIT_MESSAGE" value="merged" />
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/manager.py</url>
+          <line>147</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MainWindow.py</url>
+          <line>152</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
