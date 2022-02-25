@@ -10,6 +10,8 @@ import logging
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import create_coord_rays
 
+import numpy as np
+
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 motor_logger = logging.getLogger('motor_log')
@@ -22,73 +24,9 @@ motor_logger.setLevel(logging.INFO)
 
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-#from Hardware.abstract_motor_controller import  AbstractMotorController
 
-                            #Replace these parentheses with (AbstractMotorController) when inheriting this class
-class AbstractMotorController(QObject):
+class AbstractOscilloscope(QObject):
         """
-        An abstract class that serves as a base for classes that interface with motor controllers.
-        Used on its own, this class will create a DummyMotors object, which runs in a separate thread and simulates a
-        generic motor controller. Remove the DummyMotors object and all uses of the dummy_command_signal when inheriting.
-
-        Signals:
-            logger_signal(str)   : communicates feedback (errors, messages) to the feedback widget
-
-            x_pos_signal(str)    : communicates x position with scan area
-            y_pos_signal(str)    : communicates y position with scan area
-            z_pos_signal(str)    : communicates z position with scan area
-
-        Slots:
-            none
-
-        Attributes:
-            none
-
-        Properties:
-            _jog_speed : used in the jog method, controls how fast the gantry jogs
-            _scan_speed : used in scanning, or any PA command
-
-            each property's setter method raises an error if the type is not an int
-
-        Methods:
-            toggle_connection()
-                attempts to connect to the controller if not connected
-                disconnects from the controller if connected
-
-            connected()
-                checks connection to controller, return true if yes, false if no
-
-            jog(axis, direction)
-                sends jog command to controller given an axis and direction (+/-)
-                uses jog speed property getter
-
-            begin_motion(axis)
-                sends begin motion command to controller given an axis
-                for multiple axes, use 'AB', 'ABC' etc
-
-            stop_motion()
-                sends stop command to controller
-                motors remain on after command is sent
-
-            set_origin()
-                sets coordinate system of controller to 0,0,0
-                good for defining the center of a scan
-
-            go_home()
-                tells gantry to go to position 0,0,0
-
-            mm_to_steps()
-                uses calibrate property to convert a number of mm to a number of steps
-
-            is_moving()
-                poll controller, if the controller is moving return true
-                else return false
-
-            get_position()
-                emits x,y,z position signals with current controller position
-
-            clean_up()
-                stop motors, and disconnect form the controller if connected
         """
 
         # Dummy code, replace when developing a hardware interface
@@ -99,34 +37,27 @@ class AbstractMotorController(QObject):
 
         def __init__(self, config: dict):
             super().__init__()
-
             self.config = config
-
-            #For tracking latest known coordinates in steps
-            self.coords = list()
-            for i in range(self.num_axes):
-                self.coords.append(0)
-
-            #Tracks whther or not the gantry is going to a position
-            self.scanning = False
+            self.connected = False
 
             self.fields_setup()
 
         def fields_setup(self):
-            self.range = self.config[self.device_key]['range']
+            self.range_mv = self.config[self.device_key]['range_mv']
             self.channel = self.config[self.device_key]['channel']
             self.averages = self.config[self.device_key]['averages']
             self.capture_period_ns = self.config[self.device_key]['capture_period_ns']
             self.signal_frequency_MHz = 4.2
             self.signal_period_ns = 1/self.signal_frequency_MHz * 1000
             self.cycles = self.config[self.device_key]['cycles']
+            self.delay_cycles = self.config[self.device_key]['delay_cycles']
             self.captures = int(self.cycles*self.signal_period_ns/self.capture_period_ns)
 
         @property
         def configure(self, parameters:dict):
             for key in parameters:
-                if key == 'range':
-                    self.range = parameters[key]
+                if key == 'range_mv':
+                    self.range_mv = parameters[key]
                 if key == 'channel':
                     self.channel = parameters[key]
                 if key == 'averages':
@@ -141,20 +72,12 @@ class AbstractMotorController(QObject):
                     self.cycles = parameters[key]
                     self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
                     self.captures = int(self.cycles * self.signal_period_ns / self.capture_period_ns)
+                if key == 'delay_cycles':
+                    self.delay_cycles = parameters[key]
 
         @property
         def scan_speed(self):
             return self._scan_speed
-
-        @property
-        def calibrate(self):
-            print("calibration getter called")
-            return (
-                self._x_calibrate,
-                self._y_calibrate,
-                self._z_calibrate,
-                self._r_calibrate,
-            )
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -166,7 +89,6 @@ class AbstractMotorController(QObject):
         @abstractmethod
         def connect(self):
             self.connected = True
-            #return self.connected()
 
         @abstractmethod
         def disconnect(self):
@@ -266,7 +188,17 @@ class AbstractMotorController(QObject):
 
         @abstractmethod
         def capture(self):
-            pass
+            start_time = self.delay_cycles*self.signal_period_ns
+            end_time = start_time + self.captures * self.capture_period_ns
+            time = np.linspace(start_time, end_time, self.captures)
+
+            signal = np.sin(time)
+
+            noise = np.random.rand(self.captures)*.1
+
+            voltage = signal + noise
+
+            return time, voltage
 
         def exec_command(self, command):
             command = command.upper()

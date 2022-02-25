@@ -232,6 +232,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
             self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
 
+        self.manager.plot_signal.connect(self.plot)
+
+    @pyqtSlot(object,object)
+    def plot(self, x, y):
+        self.waveform_plot.plot(x,y, pen = 'k', clear = True)
+
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
     def insert_button_clicked(self):

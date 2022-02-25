@@ -16,6 +16,7 @@ motor_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from Hardware.abstract_motor_controller import AbstractMotorController
+from Hardware.abstract_oscilloscope import AbstractOscilloscope
 
 class Manager(QThread):
     """
@@ -50,6 +51,8 @@ class Manager(QThread):
 
     script_info_signal = pyqtSignal(list)
 
+    plot_signal = pyqtSignal(object,object)
+
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
     Motors = None
@@ -73,6 +76,9 @@ class Manager(QThread):
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
             self.Motors.connect()
+
+            self.Oscilloscope = AbstractOscilloscope(config=self.config)
+            self.Oscilloscope.connect()
 
     def run(self) -> None:
         """
@@ -126,6 +132,8 @@ class Manager(QThread):
                 pass
 
             self.Motors.get_position()
+            time,voltage = self.Oscilloscope.capture()
+            self.plot_signal.emit(time,voltage)
             self.cmd = ""
 
         self.wrap_up()

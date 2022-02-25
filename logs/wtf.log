@@ -1,2 +1,9 @@
-2022-02-23 17:21:40,642 [INFO] [DummyMotors] [] : Connect
-2022-02-23 17:21:40,642 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-23 18:08:59,275 [INFO] [DummyMotors] [] : Connect
+2022-02-23 18:08:59,276 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: True
+2022-02-23 18:12:21,553 [INFO] [DummyMotors] [ui_thread] : Begin Motion X+
+2022-02-23 18:12:22,009 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-23 18:12:22,133 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
+2022-02-23 18:12:22,392 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-23 18:12:22,412 [INFO] [DummyMotors] [ui_thread] : Begin Motion R+
+2022-02-23 18:12:23,204 [INFO] [DummyMotors] [ui_thread] : Stop Motion
+2022-02-25 09:57:14,674 [INFO] [ui_thread] : app exited with code 0

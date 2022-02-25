@@ -5,25 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c6215a4-002c-4f58-b496-057c60530a6a" name="Default Changelist" comment="merged">
-      <change afterPath="$PROJECT_DIR$/Widget_Library/Test data capture.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/WTF user prompt.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/WTF user prompt2.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/Write cal data to UA.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Widget_Library/retracting_ua_warning.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/RF_Balance_Profound.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Best Practices.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_oscilloscope.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utilities/useful_commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Utilities/useful_commands.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Widget_Library/window_wet_test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/default.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/default.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui_elements/switch.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui_elements/switch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui_elements/ui_oscilloscope_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui_elements/ui_oscilloscope_plot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
