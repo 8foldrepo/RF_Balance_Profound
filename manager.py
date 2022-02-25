@@ -17,6 +17,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from Hardware.abstract_motor_controller import AbstractMotorController
 from Hardware.abstract_sensor import AbstractSensor
+from Hardware.MT_balance import MT_balance
 
 class Manager(QThread):
     """
@@ -63,6 +64,8 @@ class Manager(QThread):
 
         self.config = config
 
+        self.devices = list()
+
         self.cmd = 'POS'
 
         self.mutex = QMutex()
@@ -73,11 +76,19 @@ class Manager(QThread):
 
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
-            self.temp_sensor = AbstractSensor(config=self.config)
+            self.thermocouple = AbstractSensor(config=self.config)
+            self.balance = MT_balance(config=self.config)
+            self.devices.append(self.Motors)
+            self.devices.append(self.thermocouple)
+            self.devices.append(self.balance)
 
     def connect_hardware(self):
-        self.Motors.connect()
-        self.temp_sensor.connect()
+        for device in self.devices:
+            device.connect()
+
+    def disconnect_hardware(self):
+        for device in self.devices:
+            device.disconnect()
 
     def run(self) -> None:
         """
@@ -134,7 +145,7 @@ class Manager(QThread):
 
             self.Motors.get_position()
 
-            self.temp_sensor.get_reading()
+            self.thermocouple.get_reading()
             self.cmd = ""
 
         self.wrap_up()

@@ -5,20 +5,16 @@ import time as t
 from Utilities.useful_methods import bound
 from Hardware.dummy_motors import  DummyMotors
 
-import logging
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import create_coord_rays
 
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-
 motor_logger = logging.getLogger('motor_log')
-
 file_handler = logging.FileHandler("./logs/motor.log", mode='w')
 file_handler.setFormatter(log_formatter)
 motor_logger.addHandler(file_handler)
-
 motor_logger.setLevel(logging.INFO)
-
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 #from Hardware.abstract_motor_controller import  AbstractMotorController

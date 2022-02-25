@@ -230,8 +230,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
-        self.manager.temp_sensor.connected_signal.connect(self.tcouple_indicator.setChecked)
-        self.manager.temp_sensor.reading_signal.connect(self.update_temp_reading)
+        self.manager.balance.connected_signal.connect(self.rfb_indicator.setChecked)
+        self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
 
 
     @pyqtSlot(float)

@@ -2,24 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="97cccae8-0f59-43c1-99b5-a0d93cd46474" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Hardware/abstract_sensor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_21_2022_10_51_AM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_21_2022_10_51_AM__Changes_.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Hardware/MT_balance.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_motor_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hardware/abstract_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Hardware/abstract_sensor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MainWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Widget_Library/window_wet_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/motor-DESKTOP-KKR3TR1.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/motor.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/motor.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/wtf-DESKTOP-KKR3TR1.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/wtf.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/wtf.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/local.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/manager.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -32,6 +33,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../RF_Balance" />
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -72,18 +74,30 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/manager.py</url>
-          <line>136</line>
+          <line>147</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/manager.py</url>
-          <line>77</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/MainWindow.py</url>
+          <line>152</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

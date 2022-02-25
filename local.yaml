@@ -4,14 +4,16 @@ Autoset timebase:
 Debugging:
   simulate_hw: true
 Dummy_Motors:
-  #Must be capital letters. Currently, X,Y,Z, and R are supported.
-  axes: ['X','R']
-  #steps/mm, float
-  calibrate_ray: [1,1]
-  #boolean
-  reverse_ray: [False,False]
-  #mm/s, float
+  axes:
+  - X
+  - R
+  calibrate_ray:
+  - 1
+  - 1
   jog_speed: 1
+  reverse_ray:
+  - false
+  - false
   scan_speed: 1
 FrequencyParameters:
   HF:
