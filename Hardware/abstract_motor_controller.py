@@ -115,9 +115,6 @@ class AbstractMotorController(QObject):
 
             self.config = config
 
-
-
-
             #For tracking latest known coordinates in steps
             self.coords = list()
             for i in range(self.num_axes):
