@@ -37,16 +37,8 @@ class AbstractOscilloscope(QObject):
 
         def __init__(self, config: dict):
             super().__init__()
-
             self.config = config
-
-            #For tracking latest known coordinates in steps
-            self.coords = list()
-            for i in range(self.num_axes):
-                self.coords.append(0)
-
-            #Tracks whther or not the gantry is going to a position
-            self.scanning = False
+            self.connected = False
 
             self.fields_setup()
 
