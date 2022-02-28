@@ -6,3 +6,6 @@
 *.log
 *.log
 *.pyc
+*.log
+*.xml
+*.pyc
