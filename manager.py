@@ -20,6 +20,7 @@ from Hardware.abstract_motor_controller import AbstractMotorController
 from Hardware.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
 from Hardware.abstract_oscilloscope import AbstractOscilloscope
+from Hardware.relay_board import Relay_Board
 
 class Manager(QThread):
     """
@@ -80,16 +81,19 @@ class Manager(QThread):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = config['Debugging']['simulate_hw']
 
+        self.Balance = MT_balance(config=self.config)
+        self.Pump = Relay_Board(config=self.config, device_key='Pump')
+        self.devices.append(self.Pump)
+        self.devices.append(self.Balance)
+
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
             self.thermocouple = AbstractSensor(config=self.config)
-            self.balance = MT_balance(config=self.config)
             self.Oscilloscope = AbstractOscilloscope(config=self.config)
-            self.Oscilloscope.connect()
             self.devices.append(self.Oscilloscope)
             self.devices.append(self.Motors)
             self.devices.append(self.thermocouple)
-            self.devices.append(self.balance)
+
 
     def connect_hardware(self):
         for device in self.devices:
@@ -159,10 +163,11 @@ class Manager(QThread):
                 self.thermocouple.get_reading()
                 time,voltage = self.Oscilloscope.capture()
                 #The plot exists in the parent MainWindow Class, but has been moved to this Qthread
-                if self.parent.plot_ready:
+                if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
                     self.parent.waveform_plot.plot(time, voltage, pen='k', clear=True)
                 else:
-                    self.log_msg("Plot blocked")
+                    pass
+                    #self.log_msg("Plot blocked") #debug
 
             self.cmd = ""
 

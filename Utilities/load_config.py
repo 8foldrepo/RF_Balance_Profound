@@ -4,28 +4,27 @@ import os
 ROOT_LOGGER_NAME = 'wtf_log'
 
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-
+from definitions import DEFAULT_CONFIG_PATH
+from definitions import  LOCAL_CONFIG_PATH
 
 def load_configuration() -> dict:
     """
     Load the configuration .yaml file into a dictionary
     """
 
-    with open(search_for('default.yaml'), 'r') as fh:
+    with open(DEFAULT_CONFIG_PATH, 'r') as fh:
         configuration = yaml.load(fh, Loader=yaml.SafeLoader)
 
-    local_config_path = search_for('local.yaml')
+    if os.path.isfile(LOCAL_CONFIG_PATH) is False:  # -> file does not exist
+        print(f"[-] File: {LOCAL_CONFIG_PATH} does not exist")
 
-    if os.path.isfile(local_config_path) is False:  # -> file does not exist
-        print(f"[-] File: {local_config_path} does not exist")
-
-        with open('./config/local.yaml', 'r') as fh:
+        with open(LOCAL_CONFIG_PATH, 'r') as fh:
             update_dict_recursive(
                 configuration, yaml.load(fh, Loader=yaml.SafeLoader)
             )
 
     else:
-        with open(local_config_path, 'r') as fh:
+        with open(LOCAL_CONFIG_PATH, 'r') as fh:
             update_dict_recursive(
                 configuration, yaml.load(fh, Loader=yaml.SafeLoader)
             )

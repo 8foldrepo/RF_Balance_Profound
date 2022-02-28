@@ -17,7 +17,19 @@ from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
 from manager import Manager
 from Utilities.load_config import load_configuration
+
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
+log_formatter = logging.Formatter(LOGGER_FORMAT)
+
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('sensor_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/sensor.log"), mode='w')
+file_handler.setFormatter(log_formatter)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
+root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
@@ -55,9 +67,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.plot_ready = True
         self.thread_list.append(self.manager)
 
-        self.manager.start(priority=4)
+
 
         self.configure_signals()
+        self.manager.connect_hardware()
+        self.manager.start(priority=4)
 
         self.style_ui()
         self.activateWindow()
@@ -233,7 +247,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
-        self.manager.balance.connected_signal.connect(self.rfb_indicator.setChecked)
+        self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
@@ -420,6 +434,30 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def log_msg(self, message: str, level: str = None) -> None:
+        print(message)
+        """
+        Convenience function to log messages in a compact way with useful info.
+
+            Parameters:
+                level (str): A string indicating the logger level, can be either
+                'info', 'debug' or 'error'
+                message (str): A string that contains the message to be logged
+
+            Returns:
+                None
+        """
+        thread_name = QThread.currentThread().objectName()
+        log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
+        if level == 'debug':
+            root_logger.debug(log_entry)
+        elif level == 'error':
+            root_logger.error(log_entry)
+        elif level == 'warning':
+            root_logger.warning(log_entry)
+        else:
+            root_logger.info(log_entry)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

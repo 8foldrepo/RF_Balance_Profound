@@ -16,6 +16,20 @@ Dummy_Oscilloscope:
   cycles: 10
   delay_cycles: 0
 
+Pump:
+  timeout_s: 1
+  on_by_default: False
+  port: "COM5"
+
+WTF_Interface_Board:
+  timeout_s: 1
+  on_by_default: False
+  port: "COM6"
+
+MT_Balance:
+  timeout_s: 30
+  port: "COM4"
+
 Debugging:
   simulate_hw: True
 

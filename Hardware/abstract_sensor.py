@@ -6,8 +6,11 @@ import random
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
+
+import os
+from definitions import ROOT_DIR
 sensor_logger = logging.getLogger('sensor_log')
-file_handler = logging.FileHandler("./logs/sensor.log", mode='w')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/sensor.log"), mode='w')
 file_handler.setFormatter(log_formatter)
 sensor_logger.addHandler(file_handler)
 sensor_logger.setLevel(logging.INFO)
@@ -38,7 +41,7 @@ class AbstractSensor(QObject):
          signal = 23.2 + noise
          self.reading_signal.emit(round(signal,1))
 
-    def log_msg(self, level: str, message: str) -> None:
+    def log_msg(self, message: str, level: str='info') -> None:
         """
         Convenience function to log messages in a compact way with useful info.
 
