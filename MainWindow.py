@@ -36,6 +36,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     command_signal = QtCore.pyqtSignal(str)
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+    plot_ready = QtCore.pyqtSignal(str)
     num_tasks = 0
     #Tracks whether the thread is doing something
     ready = True
@@ -50,8 +51,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.thread_list = list()
         self.config = load_configuration()
 
-        self.manager = Manager(parent=None, config=self.config)
-
+        self.manager = Manager(parent=self, config=self.config)
+        self.plot_ready = True
         self.thread_list.append(self.manager)
 
         self.manager.start(priority=4)
@@ -162,7 +163,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             if not '# of Tasks' in arg_dicts[i].keys():
                 task = QStandardItem(arg_dicts[i]["Task type"])
 
-
                 for key in arg_dicts[i]:
                     if not key == "Task type":
                         arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
@@ -236,17 +236,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
+        self.manager.plot_signal.connect(self.plot)
 
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
         self.temp_field.setText(str(temp))
 
-        self.manager.plot_signal.connect(self.plot)
-
     @pyqtSlot(object,object)
     def plot(self, x, y):
+        self.plot_ready = False
         self.waveform_plot.plot(x,y, pen = 'k', clear = True)
+        self.plot_ready = True
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()

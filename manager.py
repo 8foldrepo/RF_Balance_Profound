@@ -62,6 +62,7 @@ class Manager(QThread):
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.parent = parent
 
         self.script = None
         self.stay_alive = True
@@ -117,7 +118,7 @@ class Manager(QThread):
 
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex, 100)
+            wait_bool = self.condition.wait(self.mutex, 50)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
@@ -126,7 +127,7 @@ class Manager(QThread):
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
             if cmd_ray[0] == 'LOAD':
-                self.log_msg('info', message="Loading script")
+                self.log_msg(level='info', message="Loading script")
                 try:
                     cmd_ray.pop(0)
                     path = ' '.join(cmd_ray)
@@ -135,7 +136,7 @@ class Manager(QThread):
                     self.log_msg("info", f"Error in load script: {e}")
                 self.cmd = ''
             elif cmd_ray[0] == 'RUN':
-                self.log_msg('info', message="Running script")
+                self.log_msg(level='info', message="Running script")
                 try:
                     self.run_script()
                 except Exception as e:
@@ -157,7 +158,11 @@ class Manager(QThread):
                 self.Motors.get_position()
                 self.thermocouple.get_reading()
                 time,voltage = self.Oscilloscope.capture()
-                self.plot_signal.emit(time,voltage)
+                #The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+                if self.parent.plot_ready:
+                    self.parent.waveform_plot.plot(time, voltage, pen='k', clear=True)
+                else:
+                    self.log_msg("Plot blocked")
 
             self.cmd = ""
 
@@ -294,7 +299,7 @@ class Manager(QThread):
 
         for command in self.script:
             command = command.upper()
-            self.log_msg('info', message=command)
+            self.log_msg(level='info', message=command)
             if '[TASK' in command:
                 step_number = int(command.replace('[TASK', '').replace(']', ''))
                 self.step_number_signal.emit(step_number)
@@ -347,7 +352,7 @@ class Manager(QThread):
     def printList2(self, list2):
         print(str(list2)[1:-1])
 
-    def log_msg(self, level: str, message: str) -> None:
+    def log_msg(self, message: str,level: str='info') -> None:
         """
         Convenience function to log messages in a compact way with useful info.
 

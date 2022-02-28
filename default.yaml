@@ -12,7 +12,7 @@ Dummy_Oscilloscope:
   range_mv: 10
   channel: 1
   averages: 16
-  capture_period_ns: 8
+  capture_period_ns: 100
   cycles: 10
   delay_cycles: 0
 
