@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="forward_power">
+    <file>forward power.png</file>
+  </qresource>
+  <qresource prefix="reverse_power">
+    <file>reverse power.png</file>
+  </qresource>
+  <qresource prefix="extrapolated">
+    <file>extrapolated.png</file>
+  </qresource>
+  <qresource prefix="transition points">
+    <file>xsition pts.png</file>
+  </qresource>
+</RCC>
