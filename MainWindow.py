@@ -2,6 +2,7 @@ import os
 import sys
 import webbrowser
 import yaml
+import csv
 
 from ui_elements.ui_password_dialog import PasswordDialog
 
