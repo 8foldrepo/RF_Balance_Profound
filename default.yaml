@@ -8,6 +8,14 @@ Dummy_Motors:
   jog_speed: 1
   scan_speed: 1
 
+Dummy_Oscilloscope:
+  range_mv: 10
+  channel: 1
+  averages: 16
+  capture_period_ns: 8
+  cycles: 10
+  delay_cycles: 0
+
 Debugging:
   simulate_hw: True
 

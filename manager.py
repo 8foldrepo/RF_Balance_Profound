@@ -52,6 +52,8 @@ class Manager(QThread):
 
     script_info_signal = pyqtSignal(list)
 
+    plot_signal = pyqtSignal(object,object)
+
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
     Motors = None
@@ -63,7 +65,6 @@ class Manager(QThread):
         self.stay_alive = True
 
         self.config = config
-
         self.devices = list()
 
         self.cmd = 'POS'
@@ -78,6 +79,9 @@ class Manager(QThread):
             self.Motors = AbstractMotorController(config=self.config)
             self.thermocouple = AbstractSensor(config=self.config)
             self.balance = MT_balance(config=self.config)
+            self.Oscilloscope = AbstractOscilloscope(config=self.config)
+            self.Oscilloscope.connect()
+            self.devices.append(self.Oscilloscope)
             self.devices.append(self.Motors)
             self.devices.append(self.thermocouple)
             self.devices.append(self.balance)
@@ -89,6 +93,8 @@ class Manager(QThread):
     def disconnect_hardware(self):
         for device in self.devices:
             device.disconnect()
+
+
 
     def run(self) -> None:
         """
@@ -146,6 +152,8 @@ class Manager(QThread):
             self.Motors.get_position()
 
             self.thermocouple.get_reading()
+            time,voltage = self.Oscilloscope.capture()
+            self.plot_signal.emit(time,voltage)
             self.cmd = ""
 
         self.wrap_up()
