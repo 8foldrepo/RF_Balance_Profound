@@ -158,14 +158,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         rootNode = treeModel.invisibleRootItem()
 
         for i in range(len(arg_dicts)):
-            task = QStandardItem(arg_dicts[i]["Task type"])
 
-            for key in arg_dicts[i]:
-                if not key == "Task type":
-                    arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
-                    task.appendRow(arg)
+            if not '# of Tasks' in arg_dicts[i].keys():
+                task = QStandardItem(arg_dicts[i]["Task type"])
 
-            rootNode.appendRow(task)
+
+                for key in arg_dicts[i]:
+                    if not key == "Task type":
+                        arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
+                        task.appendRow(arg)
+
+                rootNode.appendRow(task)
 
         self.script_step_view.setModel(treeModel)
         self.script_step_view.expandAll()

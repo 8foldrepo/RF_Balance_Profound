@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, Qt, pyqtSignal, pyqtSlot
 from typing import Optional
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+import distutils.util
 import logging
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -18,6 +19,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 from Hardware.abstract_motor_controller import AbstractMotorController
 from Hardware.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
+from Hardware.abstract_oscilloscope import AbstractOscilloscope
 
 class Manager(QThread):
     """
@@ -67,6 +69,8 @@ class Manager(QThread):
         self.config = config
         self.devices = list()
 
+        self.scripting = False
+
         self.cmd = 'POS'
 
         self.mutex = QMutex()
@@ -113,7 +117,7 @@ class Manager(QThread):
 
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex, 50)
+            wait_bool = self.condition.wait(self.mutex, 100)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
@@ -149,11 +153,12 @@ class Manager(QThread):
             else:
                 pass
 
-            self.Motors.get_position()
+            if not self.scripting:
+                self.Motors.get_position()
+                self.thermocouple.get_reading()
+                time,voltage = self.Oscilloscope.capture()
+                self.plot_signal.emit(time,voltage)
 
-            self.thermocouple.get_reading()
-            time,voltage = self.Oscilloscope.capture()
-            self.plot_signal.emit(time,voltage)
             self.cmd = ""
 
         self.wrap_up()
@@ -162,6 +167,8 @@ class Manager(QThread):
         return super().run()
 
     def load_script(self, path):
+        self.scripting = True
+
         self.script = open(path, "r")
 
         # Send name of script to UI
@@ -169,35 +176,176 @@ class Manager(QThread):
         name = split_path[len(split_path)-1]
         self.script_name_signal.emit(name)
 
-        # Load the top level metadata and emit it to the UI
+        tasks = []  # the upper layer of our variable list
+        loops = []
+        taskExecOrder = []
+        elementNamesForLoop = []
+        taskNoForLoop = []
+        currentLine = -1
+        addingElementsToLoop = False
+        buildingLoop = False
+        taskVars = dict()  # the list of variables for the individual task
+        taskNo = -2  # keeps track of the task number for indexing
+        f = open(path, "r")
         for line in self.script:
-            line = line.upper()
-            # If an empty line is detected that means the end of the metadata is reached.
-            print(line)
-            if line == '\n' or line == '[TASK0]':
-                break
-
             ray = line.split(' = ')
 
-            if ray[0] == '# OF TASKS':
+            if ray[0].upper() == '# OF TASKS':
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
-            elif ray[0] == 'CREATEDON':
+            elif ray[0].upper() == 'CREATEDON':
                 self.created_on_signal.emit(ray[1].replace('"', ""))
-            if ray[0] == 'CREATEDBY':
+            if ray[0].upper() == 'CREATEDBY':
                 self.created_by_signal.emit(ray[1].replace('"', ""))
-            elif ray[0] == 'DESCRIPTION':
+            elif ray[0].upper() == 'DESCRIPTION':
                 self.description_signal.emit(ray[1].replace('"', ""))
 
-        self.script_info_signal.emit(
-            [{"Task type": "Task 1", "Arg 1": 5, "Arg 2": "banana"}, {"Task type": "Task 2", "Arg 3": 12}])
+            currentLine = currentLine + 1
+            if line == '\n':
+                if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+                    tasks.append(dict(taskVars))
+                    taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
+                if addingElementsToLoop:  # detects if we're done with the element name block for the loop in script
+                    addingElementsToLoop = False  # we're done with the block so set the flag to false
+                continue  # move forward one line
+            elif '[' in line:  # if the line we're on is a task line
+                taskNo = taskNo + 1  # increments the task number counter since we've moved to the next task
+                if "Task" in line and not buildingLoop:
+                    taskExecOrder.append(taskNo)  # adding task number to the execution list
+            else:  # above ensures we're not parsing a task header nor blank line
+                x = (line.split('='))  # all other lines are variable assignment lines, no need to check for '='
+                x0 = x[0].strip()  # remove trailing/leading spaces
+                x1 = x[1].strip().replace('"', "")  # does above but also removes quotation marks
+                taskVars[x0] = x1  # add the temporary variable pair to the task's variable list
+
+                if "# of Tasks" in x0:
+                    numberOfTasks = x1
+
+                if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
+                    buildingLoop = True  # set a flag that we're building a loop for the script
+                    addingElementsToLoop = True  # set a flag that we're adding element names from script for loop
+
+                if addingElementsToLoop and "Element" in x0:  # if we're on a line that adds an element name for the loop
+                    elementNamePre = x0.split(' ')  # split the left side of the variable assigner by space
+                    elementName = elementNamePre[
+                        1]  # retrieve the second word of the left side, that's the element name
+                    elementNamesForLoop.append(int(elementName))
+
+                if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
+                    buildingLoop = False  # set the building loop flag to false since the loop block is done
+                    loops.append(list([list(elementNamesForLoop), list(taskNoForLoop)]))
+                    elementNamesForLoop.clear()
+                    taskNoForLoop.clear()
+                    taskExecOrder.pop()
+
+                    for i in range(len(loops[len(loops) - 1][0])):
+                        for j in range(len(loops[len(loops) - 1][1])):
+                            taskExecOrder.append([loops[len(loops) - 1][1][j], i + 1])
+
+                if buildingLoop and not addingElementsToLoop:  # if we're building a loop & are not in the name adding phase
+                    if taskNo not in taskNoForLoop:  # ensure the task no. isn't already in the task list for the loop
+                        taskNoForLoop.append(
+                            taskNo)  # add the current task no. to the list of tasks we need to run in loop
+
+        if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+            tasks.append(dict(taskVars))
+            taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
+
+        for i in range(len(taskExecOrder)):
+            if not isinstance(taskExecOrder[i], list):
+                taskNoRemember = taskExecOrder[i]
+                toReplace = [taskNoRemember, None]
+                taskExecOrder[i] = toReplace
+
+        taskNames = list()
+        for i in range(len(taskExecOrder)):
+            taskNames.append(tasks[taskExecOrder[i][0] + 1]['Task type'])
+
+        taskArgs = list()
+        for i in range(len(taskExecOrder)):
+            #tasks[taskExecOrder[i][0] + 1].pop("Task type", None)
+            taskArgs.append(tasks[taskExecOrder[i][0] + 1])
+
+        for i in range(len(taskNames)):
+            name = taskNames[i]
+            args = taskArgs[i]
+
+            if not taskExecOrder[i][1] is None:  # if the element in the taskExecOrder isn't None
+                args['Element'] = taskExecOrder[i][1]  # set the element to be operated on to the one in taskExecOrder
+
+            if "Measure element efficiency (RFB)".upper() in name.upper():
+                self.measure_element_efficiency_rfb(args)
+            elif name.upper() == "Pre-test initialization".upper():
+                pretest_initialization(args)
+            elif "Find element n".upper() in name.upper():
+                self.find_element(args)
+            elif name.upper() == "Save results".upper():
+                self.save_results(args)
+            elif name.upper() == "Prompt user for action".upper():
+                self.prompt_user_for_action(args)
+            elif "Home system".upper() in name.upper():
+                self.home_system(args)
+        print(tasks)
+        self.script_info_signal.emit(tasks)
+
+        self.scripting = False
 
     def run_script(self):
+        self.scripting = True
+
         for command in self.script:
             command = command.upper()
             self.log_msg('info', message=command)
             if '[TASK' in command:
                 step_number = int(command.replace('[TASK', '').replace(']', ''))
                 self.step_number_signal.emit(step_number)
+
+        self.scripting = False
+
+    def measure_element_efficiency_rfb(self, varlist):
+        element = varlist['Element']
+        freqRange = varlist['Frequency range']
+        on_off_cycles = varlist['RFB.#on/off cycles']
+        return
+
+    def pretest_initialization(self, varlist):
+        return
+
+    def find_element(self, varlist):
+        element = varlist['Element']
+        xIncrMM = varlist['X Incr. (mm)']
+        XPts = varlist['X #Pts.']
+        thetaIncrDeg = varlist['Theta Incr. (deg)']
+        thetaPts = varlist['Theta #Pts.']
+        scopeChannel = varlist['Scope channel']
+        AcquisitionType = varlist['Acquisition type']
+        averages = varlist['Averages']
+        dataStorage = varlist['Data storage']
+        storageLocation = varlist['Storage location']
+        dataDirectory = varlist["Data directory"]
+        maxPosErrMM = varlist["Max. position error (+/- mm)"]
+        elemPosTest = varlist["ElementPositionTest"]
+        return
+
+    def save_results(self, varlist):
+        saveSummaryFile = bool(distutils.util.strtobool(varlist["Save summary file"]))
+        WriteUACalibration = bool(distutils.util.strtobool(varlist["Write UA Calibration"]))
+        PromptForCalWrite = bool(distutils.util.strtobool(varlist["PromptForCalWrite"]))
+        return
+
+    def prompt_user_for_action(self, varlist):
+        promptType = varlist["Prompt type"]
+        return
+
+    def home_system(self, varlist):
+        axisToHome = varlist['Axis to home']
+        return
+
+    def printList(self, list2):
+        for x in range(len(list2)):
+            print(list2[x])
+
+    def printList2(self, list2):
+        print(str(list2)[1:-1])
 
     def log_msg(self, level: str, message: str) -> None:
         """
