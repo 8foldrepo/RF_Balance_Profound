@@ -358,30 +358,6 @@ class Manager(QThread):
     def printList2(self, list2):
         print(str(list2)[1:-1])
 
-    def log_msg(self, message: str, level: str = None) -> None:
-        print(message)
-        """
-        Convenience function to log messages in a compact way with useful info.
-
-            Parameters:
-                level (str): A string indicating the logger level, can be either
-                'info', 'debug' or 'error'
-                message (str): A string that contains the message to be logged
-
-            Returns:
-                None
-        """
-        thread_name = QThread.currentThread().objectName()
-        log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
-        if level == 'debug':
-            root_logger.debug(log_entry)
-        elif level == 'error':
-            root_logger.error(log_entry)
-        elif level == 'warning':
-            root_logger.warning(log_entry)
-        else:
-            root_logger.info(log_entry)
-
     @pyqtSlot(str)
     def exec_command(self, command):
         self.cmd = command

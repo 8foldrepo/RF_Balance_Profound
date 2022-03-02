@@ -171,7 +171,6 @@ def get_rigol_addresses(rm = None):
 
 def log_msg(self, root_logger, message: str, level: str = None) -> None:
     from PyQt5.QtCore import QThread
-    print(message)
     """
     Convenience function to log messages in a compact way with useful info.
 
