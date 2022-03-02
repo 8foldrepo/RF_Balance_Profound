@@ -46,7 +46,7 @@ class Plot(pg.PlotWidget):
         # Add Title
         # plotWidget.setTitle("Your Title Here", color="b", size="15pt")
         # Add Axis Labels
-        self.setLabel("left", "Voltage (V)", **self.styles)
+        self.setLabel("left", "m", "Voltage (V)", **self.styles)
         self.setLabel("bottom", "Time (s)", **self.styles)
         font = QFont()
         font.setPixelSize(30)
