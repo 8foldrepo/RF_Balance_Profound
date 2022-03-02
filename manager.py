@@ -65,6 +65,10 @@ class Manager(QThread):
         super().__init__(parent=parent, objectName=u"manager_thread")
         self.parent = parent
 
+        self.taskArgs = None
+        self.taskExecOrder = None
+        self.taskArgs = None
+
         self.script = None
         self.stay_alive = True
 
@@ -164,10 +168,9 @@ class Manager(QThread):
                 time,voltage = self.Oscilloscope.capture()
                 #The plot exists in the parent MainWindow Class, but has been moved to this Qthread
                 if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
-                    self.parent.waveform_plot.plot(time, voltage, pen='k', clear=True)
+                    self.plot_signal.emit(time, voltage)
                 else:
                     pass
-                    #self.log_msg("Plot blocked") #debug
 
             self.cmd = ""
 
@@ -188,7 +191,7 @@ class Manager(QThread):
 
         tasks = []  # the upper layer of our variable list
         loops = []
-        taskExecOrder = []
+        self.taskExecOrder = []
         elementNamesForLoop = []
         taskNoForLoop = []
         currentLine = -1
@@ -220,7 +223,7 @@ class Manager(QThread):
             elif '[' in line:  # if the line we're on is a task line
                 taskNo = taskNo + 1  # increments the task number counter since we've moved to the next task
                 if "Task" in line and not buildingLoop:
-                    taskExecOrder.append(taskNo)  # adding task number to the execution list
+                    self.taskExecOrder.append(taskNo)  # adding task number to the execution list
             else:  # above ensures we're not parsing a task header nor blank line
                 x = (line.split('='))  # all other lines are variable assignment lines, no need to check for '='
                 x0 = x[0].strip()  # remove trailing/leading spaces
@@ -245,11 +248,11 @@ class Manager(QThread):
                     loops.append(list([list(elementNamesForLoop), list(taskNoForLoop)]))
                     elementNamesForLoop.clear()
                     taskNoForLoop.clear()
-                    taskExecOrder.pop()
+                    self.taskExecOrder.pop()
 
                     for i in range(len(loops[len(loops) - 1][0])):
                         for j in range(len(loops[len(loops) - 1][1])):
-                            taskExecOrder.append([loops[len(loops) - 1][1][j], i + 1])
+                            self.taskExecOrder.append([loops[len(loops) - 1][1][j], i + 1])
 
                 if buildingLoop and not addingElementsToLoop:  # if we're building a loop & are not in the name adding phase
                     if taskNo not in taskNoForLoop:  # ensure the task no. isn't already in the task list for the loop
@@ -260,32 +263,42 @@ class Manager(QThread):
             tasks.append(dict(taskVars))
             taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
 
-        for i in range(len(taskExecOrder)):
-            if not isinstance(taskExecOrder[i], list):
-                taskNoRemember = taskExecOrder[i]
+        for i in range(len(self.taskExecOrder)):
+            if not isinstance(self.taskExecOrder[i], list):
+                taskNoRemember = self.taskExecOrder[i]
                 toReplace = [taskNoRemember, None]
-                taskExecOrder[i] = toReplace
+                self.taskExecOrder[i] = toReplace
 
-        taskNames = list()
-        for i in range(len(taskExecOrder)):
-            taskNames.append(tasks[taskExecOrder[i][0] + 1]['Task type'])
+        self.taskNames = list()
+        for i in range(len(self.taskExecOrder)):
+            self.taskNames.append(tasks[self.taskExecOrder[i][0] + 1]['Task type'])
 
-        taskArgs = list()
-        for i in range(len(taskExecOrder)):
-            #tasks[taskExecOrder[i][0] + 1].pop("Task type", None)
-            taskArgs.append(tasks[taskExecOrder[i][0] + 1])
+        self.taskArgs = list()
+        for i in range(len(self.taskExecOrder)):
+            #tasks[self.taskExecOrder[i][0] + 1].pop("Task type", None)
+            self.taskArgs.append(tasks[self.taskExecOrder[i][0] + 1])
 
-        for i in range(len(taskNames)):
-            name = taskNames[i]
-            args = taskArgs[i]
+        self.script_info_signal.emit(tasks)
 
-            if not taskExecOrder[i][1] is None:  # if the element in the taskExecOrder isn't None
-                args['Element'] = taskExecOrder[i][1]  # set the element to be operated on to the one in taskExecOrder
+        self.scripting = False
+
+    def run_script(self):
+        if self.taskArgs is None or self.taskArgs is None or self.taskExecOrder is None:
+            return
+
+        self.scripting = True
+
+        for i in range(len(self.taskNames)):
+            name = self.taskNames[i]
+            args = self.taskArgs[i]
+
+            if not self.taskExecOrder[i][1] is None:  # if the element in the self.taskExecOrder isn't None
+                args['Element'] = self.taskExecOrder[i][1]  # set the element to be operated on to the one in self.taskExecOrder
 
             if "Measure element efficiency (RFB)".upper() in name.upper():
                 self.measure_element_efficiency_rfb(args)
             elif name.upper() == "Pre-test initialization".upper():
-                pretest_initialization(args)
+                self.pretest_initialization(args)
             elif "Find element n".upper() in name.upper():
                 self.find_element(args)
             elif name.upper() == "Save results".upper():
@@ -294,20 +307,8 @@ class Manager(QThread):
                 self.prompt_user_for_action(args)
             elif "Home system".upper() in name.upper():
                 self.home_system(args)
-        print(tasks)
-        self.script_info_signal.emit(tasks)
 
-        self.scripting = False
-
-    def run_script(self):
-        self.scripting = True
-
-        for command in self.script:
-            command = command.upper()
-            self.log_msg(level='info', message=command)
-            if '[TASK' in command:
-                step_number = int(command.replace('[TASK', '').replace(']', ''))
-                self.step_number_signal.emit(step_number)
+            self.step_number_signal.emit(self.taskExecOrder[i][0] + 1)
 
         self.scripting = False
 

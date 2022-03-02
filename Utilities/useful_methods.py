@@ -29,6 +29,14 @@ def create_coord_rays(coords:str,ax_letters:list):
     coords = list(filter(lambda val: val != '', coords))
     return axes, coords
 
+def printList(self, list2):
+    for x in range(len(list2)):
+        print(list2[x])
+
+def printList2(self, list2):
+    print(str(list2)[1:-1])
+
+
 def is_number(s):
     try:
         float(s)
