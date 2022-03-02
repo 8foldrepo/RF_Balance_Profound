@@ -24,7 +24,7 @@ class KeysightAWG:
                     except:
                         pass
             if self.inst == None:
-                self.logger_signal.emit("Siglent function generator not found")
+                Print("Siglent function generator not found")
 
         self.setup("1", frequency, amplitude, period, cycles, C1output)
         self.setup("2", frequency, amplitude, period, cycles, C2output)
