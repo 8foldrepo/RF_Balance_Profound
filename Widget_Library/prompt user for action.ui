@@ -13,56 +13,55 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>258</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="prompt_message_vert">
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Prompt message</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="prompt_message_inputbox"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>66</width>
-     <height>13</height>
+     <width>133</width>
+     <height>41</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Select prompt</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="comboBox">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>50</y>
-     <width>131</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>Fill measurement tank</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>90</y>
-     <width>79</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Prompt message</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="textEdit">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>110</y>
-     <width>301</width>
-     <height>161</height>
-    </rect>
-   </property>
+   <layout class="QVBoxLayout" name="sel_prompt_vert">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Select prompt</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="sel_prompt_combo">
+      <item>
+       <property name="text">
+        <string>Fill measurement tank</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

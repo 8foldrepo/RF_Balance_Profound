@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>loop_over_elements_config</class>
+ <widget class="QWidget" name="loop_over_elements_config">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,7 +26,7 @@
     <string>Element Selection</string>
    </property>
   </widget>
-  <widget class="QFrame" name="frame">
+  <widget class="QFrame" name="elements_frame">
    <property name="geometry">
     <rect>
      <x>70</x>
@@ -184,7 +184,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label_12">
+  <widget class="QLabel" name="loop_over_elem_notes">
    <property name="geometry">
     <rect>
      <x>250</x>

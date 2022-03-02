@@ -79,6 +79,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
+        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
+        self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
+        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
+        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
 
     #Populate fields in config tab with settings from the config file
     def populate_config_ui(self):

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>371</width>
+    <height>308</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTabWidget" name="move_tabs">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>261</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <widget class="QWidget" name="mov_to_pos_tab">
+    <attribute name="title">
+     <string>Move to position</string>
+    </attribute>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>63</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Script - Move</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="move_pos_frame">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>211</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:rgb(220, 242, 255)</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>171</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="mov_type_vert">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Move type</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="move_type_combo">
+         <property name="styleSheet">
+          <string notr="true">background:white</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Go To</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>70</y>
+        <width>79</width>
+        <height>75</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="move_axis_toggle_switch">
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Move Axis?</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="move_axis_toggle_vert">
+         <item>
+          <widget class="Switch" name="x_move_axis_switch">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Switch" name="theta_move_switch">
+           <property name="text">
+            <string>PushButton</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>101</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="mov_pos_vert">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>10</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Position</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="x_theta_mov_frame">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>4</x>
+            <y>3</y>
+            <width>94</width>
+            <height>48</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="x_theta_pos_vert">
+           <property name="horizontalSpacing">
+            <number>8</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="x_pos_spin">
+             <property name="styleSheet">
+              <string notr="true">background:white</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Theta</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="theta_pos_spin">
+             <property name="styleSheet">
+              <string notr="true">background:white</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="mov_to_elem_tab">
+    <attribute name="title">
+     <string>Move to element</string>
+    </attribute>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>121</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="elem_orientation_vert">
+      <property name="spacing">
+       <number>37</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="elem_vert">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Element</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="element_combo">
+          <item>
+           <property name="text">
+            <string>Element 1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Current</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 3</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 4</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 5</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 6</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 7</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 9</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Element 10</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="orientation_vert">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Orientation/target</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="orientation_target_combo">
+          <item>
+           <property name="text">
+            <string>Hydrophone</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Switch</class>
+   <extends>QPushButton</extends>
+   <header location="global">ui_elements.switch</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

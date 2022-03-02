@@ -3,6 +3,7 @@ from typing import Optional
 import distutils.util
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+from Hardware.abstract_oscilloscope import AbstractOscilloscope
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
