@@ -6,9 +6,19 @@ import random
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
+
 import serial
+
+from Utilities.useful_methods import log_msg
 import os
 from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
+file_handler.setFormatter(log_formatter)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
+root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+
 from Utilities.load_config import load_configuration
 from Hardware.abstract_sensor import AbstractSensor
 import time as t
@@ -44,7 +54,7 @@ class Relay_Board(AbstractSensor):
             self.connected = True
         except serial.serialutil.SerialException:
             self.connected = False
-            self.log_msg(level='info', message=
+            log_msg(self, root_logger, level='info', message=
             "Radiation force balance not connected. Check that it is plugged in and look at Device manager "
             "to determine which COM port to use. It is currently hard coded")
         self.connected_signal.emit(self.connected)
@@ -54,7 +64,7 @@ class Relay_Board(AbstractSensor):
 
     def disconnect_sensor(self):
         if self.ser is None:
-            self.log_msg(level='error', message=f'{self.device_key} not connected')
+            log_msg(self, root_logger,level='error', message=f'{self.device_key} not connected')
             return
 
         self.connected = False
@@ -62,7 +72,7 @@ class Relay_Board(AbstractSensor):
 
     def get_reading(self):
         if self.ser is None:
-            self.log_msg(level='error', message=f'{self.device_key} not connected')
+            log_msg(self, root_logger,level='error', message=f'{self.device_key} not connected')
             return
 
         self.ser.write(b"\xFF\x01\x03\n") #Check state command
@@ -72,19 +82,19 @@ class Relay_Board(AbstractSensor):
             reply = self.ser.readline()
             if reply == b'\xff\x01\x01': #On reply
                 self.on = True
-                self.log_msg(f"{self.device_key} is ON")
+                log_msg(self, root_logger,f"{self.device_key} is ON")
                 self.reading_signal.emit(1)
                 return True
             elif reply == b'\xff\x01\x00': #Off reply
                 self.on = False
-                self.log_msg(f"{self.device_key} is OFF")
+                log_msg(self, root_logger,f"{self.device_key} is OFF")
                 self.reading_signal.emit(0)
                 return False
 
 
     def relay_write(self, on: bool):
         if self.ser is None:
-            self.log_msg(level='error', message=f'{self.device_key} not connected')
+            log_msg(self, root_logger,level='error', message=f'{self.device_key} not connected')
             return
 
         if on:

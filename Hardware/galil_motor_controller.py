@@ -404,7 +404,7 @@ class Galil(AbstractMotorController):
 
         def go_to_position(self, axes: list, coords: list):
             if not len(axes) == len(coords):
-                self.log_msg(level='error', message="Invalid coordinates")
+                log_msg(self, root_logger,level='error', message="Invalid coordinates")
 
             self.handle.GCommand("ST")
             self.handle.GCommand("SH ABCD")

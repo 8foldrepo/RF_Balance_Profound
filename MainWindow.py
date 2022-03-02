@@ -9,7 +9,7 @@ from ui_elements.ui_password_dialog import PasswordDialog
 from Utilities.load_config import ROOT_LOGGER_NAME
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, QThread
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
@@ -25,8 +25,8 @@ log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import os
 from definitions import ROOT_DIR
-balance_logger = logging.getLogger('sensor_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/sensor.log"), mode='w')
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)

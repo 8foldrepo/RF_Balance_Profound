@@ -8,13 +8,18 @@ from Hardware.dummy_motors import  DummyMotors
 from Utilities.useful_methods import create_coord_rays
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-motor_logger = logging.getLogger('motor_log')
-file_handler = logging.FileHandler("./logs/motor.log", mode='w')
+
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-motor_logger.addHandler(file_handler)
-motor_logger.setLevel(logging.INFO)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 #from Hardware.abstract_motor_controller import  AbstractMotorController
@@ -254,7 +259,7 @@ class AbstractMotorController(QObject):
 
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
-                self.log_msg(level='error',message="Axes length does not match coordinates length")
+                log_msg(self, root_logger,level='error',message="Axes length does not match coordinates length")
                 return
 
             for i in range(len(coords)):
@@ -262,7 +267,7 @@ class AbstractMotorController(QObject):
                     try:
                         coords[i] = float(coords[i])
                     except TypeError:
-                        self.log_msg(level='Error', message='Invalid coordinate string in go_to_position')
+                        log_msg(self, root_logger,level='Error', message='Invalid coordinate string in go_to_position')
                         return
 
             coord_strings = list()

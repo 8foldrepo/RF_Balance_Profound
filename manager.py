@@ -1,19 +1,19 @@
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, Qt, pyqtSignal, pyqtSlot
 from typing import Optional
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import distutils.util
-import logging
 
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
-motor_logger = logging.getLogger('motor_log')
-
-file_handler = logging.FileHandler("./logs/motor.log", mode='w')
+from Utilities.useful_methods import log_msg
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-motor_logger.addHandler(file_handler)
-
-motor_logger.setLevel(logging.INFO)
-
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from Hardware.abstract_motor_controller import AbstractMotorController
@@ -118,7 +118,7 @@ class Manager(QThread):
 
         # -> try to connect to the motor
         msg = f"SIMULATE HARDWARE is: {self.SIMULATE_HARDWARE}"
-        self.log_msg(level='info', message=msg)
+        log_msg(self, root_logger,level='info', message=msg)
 
         self.stay_alive = True
 
@@ -135,20 +135,20 @@ class Manager(QThread):
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
             if cmd_ray[0] == 'LOAD':
-                self.log_msg(level='info', message="Loading script")
+                log_msg(self, root_logger,level='info', message="Loading script")
                 try:
                     cmd_ray.pop(0)
                     path = ' '.join(cmd_ray)
                     self.load_script(path)
                 except Exception as e:
-                    self.log_msg("info", f"Error in load script: {e}")
+                    log_msg(self, root_logger,"info", f"Error in load script: {e}")
                 self.cmd = ''
             elif cmd_ray[0] == 'RUN':
-                self.log_msg(level='info', message="Running script")
+                log_msg(self, root_logger,level='info', message="Running script")
                 try:
                     self.run_script()
                 except Exception as e:
-                    self.log_msg("info", f"Error in run script: {e}")
+                    log_msg(self, root_logger,"info", f"Error in run script: {e}")
 
                 self.cmd == ''
             elif cmd_ray[0] == 'CLOSE':
@@ -358,7 +358,8 @@ class Manager(QThread):
     def printList2(self, list2):
         print(str(list2)[1:-1])
 
-    def log_msg(self, message: str,level: str='info') -> None:
+    def log_msg(self, message: str, level: str = None) -> None:
+        print(message)
         """
         Convenience function to log messages in a compact way with useful info.
 
@@ -374,16 +375,12 @@ class Manager(QThread):
         log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
         if level == 'debug':
             root_logger.debug(log_entry)
-            motor_logger.debug(log_entry)
         elif level == 'error':
             root_logger.error(log_entry)
-            motor_logger.error(log_entry)
         elif level == 'warning':
             root_logger.warning(log_entry)
-            motor_logger.warning(log_entry)
         else:
             root_logger.info(log_entry)
-            motor_logger.info(log_entry)
 
     @pyqtSlot(str)
     def exec_command(self, command):

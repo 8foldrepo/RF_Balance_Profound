@@ -4,17 +4,17 @@ import logging
 from typing import Optional
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import is_number
+import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
-motor_logger = logging.getLogger('motor_log')
-
-file_handler = logging.FileHandler("./logs/motor.log", mode='w')
+from Utilities.useful_methods import log_msg, is_number
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-motor_logger.addHandler(file_handler)
-
-motor_logger.setLevel(logging.INFO)
-
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class DummyMotors(QThread):
@@ -92,10 +92,10 @@ class DummyMotors(QThread):
                     self.connected = False
                 elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
                     self.jog_speed = float(cmd_ray[2])
-                    self.log_msg(level = 'info', message=f"Jog Speed Set: {cmd_ray[2]}")
+                    log_msg(self, root_logger,level = 'info', message=f"Jog Speed Set: {cmd_ray[2]}")
                 elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
                     self.scan_speed = float(cmd_ray[2])
-                    self.log_msg(level = 'info', message=f"Scan Speed Set: {cmd_ray[2]}")
+                    log_msg(self, root_logger,level = 'info', message=f"Scan Speed Set: {cmd_ray[2]}")
 
                 #Usage: Begin Motion X+ means jog the x axis in the positive direction
                 elif cmd_ray[0] == 'BEGIN' and cmd_ray[1] == 'MOTION':
@@ -126,7 +126,7 @@ class DummyMotors(QThread):
                                     self.speeds[i] = -1 * abs(self.scan_speed)
 
                         except IndexError:
-                            self.log_msg(level='Error', message='More coordinates were entered than Axes')
+                            log_msg(self, root_logger,level='Error', message='More coordinates were entered than Axes')
 
                 elif self.cmd == 'Get Position'.upper():
                     if 'X' in self.ax_letters:
@@ -173,7 +173,7 @@ class DummyMotors(QThread):
     def command_received(self, command):
         self.cmd = command
         #self.condition.wakeAll()
-        self.log_msg(level='Info', message=command)
+        log_msg(self, root_logger,level='Info', message=command)
 
     def not_moving(self):
         for speed in self.speeds:

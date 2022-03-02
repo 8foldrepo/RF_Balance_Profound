@@ -6,22 +6,21 @@ from Utilities.useful_methods import bound
 import gclib
 from Hardware.dummy_motors import  DummyMotors
 
-import logging
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import create_coord_rays
 
 import numpy as np
 
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
-motor_logger = logging.getLogger('motor_log')
-
-file_handler = logging.FileHandler("./logs/motor.log", mode='w')
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-motor_logger.addHandler(file_handler)
-
-motor_logger.setLevel(logging.INFO)
-
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 
@@ -165,7 +164,7 @@ class AbstractOscilloscope(QObject):
 
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
-                self.log_msg(level='error',message="Axes length does not match coordinates length")
+                log_msg(self, root_logger,level='error',message="Axes length does not match coordinates length")
                 return
 
             for i in range(len(coords)):
@@ -173,7 +172,7 @@ class AbstractOscilloscope(QObject):
                     try:
                         coords[i] = float(coords[i])
                     except TypeError:
-                        self.log_msg(level='Error', message='Invalid coordinate string in go_to_position')
+                        log_msg(self, root_logger,level='Error', message='Invalid coordinate string in go_to_position')
                         return
 
             coord_strings = list()
@@ -245,12 +244,9 @@ class AbstractOscilloscope(QObject):
             log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
             if level == 'debug':
                 root_logger.debug(log_entry)
-                motor_logger.debug(log_entry)
             elif level == 'error':
                 root_logger.error(log_entry)
-                motor_logger.error(log_entry)
             elif level == 'warning':
                 root_logger.warning(log_entry)
-                motor_logger.warning(log_entry)
             else:
                 root_logger.info(log_entry)
