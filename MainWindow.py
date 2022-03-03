@@ -24,6 +24,7 @@ import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import os
+from Utilities.useful_methods import log_msg
 from definitions import ROOT_DIR
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')

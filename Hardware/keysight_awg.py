@@ -2,35 +2,96 @@ import pyvisa
 import time as t
 from PyQt5 import QtCore
 from PyQt5.QtCore import QThread
+from Utilities.load_config import load_configuration
 
-rm = pyvisa.ResourceManager()
+from Hardware.abstract_device import AbstractDevice
 
-import logging
+import os
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import create_coord_rays
+import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-file_handler = logging.FileHandler("./logs/motor.log", mode='w')
+from Utilities.useful_methods import log_msg
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class KeysightAWG:
-    def __init__(self):
+class KeysightAWG(AbstractDevice):
+    def __init__(self, resource_manager = None, config = None, device_key = 'Keysight_AWG'):
+        if resource_manager is not None:
+            self.rm = resource_manager
+        else:
+            self.rm = pyvisa.ResourceManager()
+
+        self.address = None
+        self.config = config
+        self.device_key = device_key
+        self.inst = None
+        self.state = dict()
+        self.fields_setup()
+
+    def fields_setup(self):
+        if self.config is None:
+            self.config = load_configuration()
+        #self.timeout_s = self.config[self.device_key]['timeout_s']
+        #self.port = self.config[self.device_key]['port']
+
+    def connect_hardware(self):
+        self.rm = pyvisa.ResourceManager()
+        resources = self.rm.list_resources()
         self.inst = None
 
-    def connect(self):
-        resources = rm.list_resources()
-        self.inst = None
-        for resource in self.resources:
+        for resource in resources:
             if "0x2507" in resource:
-                try:
-                    self.inst = rm.open_resource(resource)
-                except:
-                    pass
+                self.address = resource
+                self.inst = self.rm.open_resource(resource)
         if self.inst == None:
             log_msg(self, root_logger,"Keysight 33509B Series function generator not found")
 
-    def setup(self, channel, frequency, amplitude, period, cycles, output):
-        self.SetOutput(channel, output)
+        self.get_state()
+        self.connected_signal.emit(True)
+
+    def disconnect_hardware(self):
+        try:
+            self.rm.close()
+        except:
+            pass
+        self.connected_signal.emit(False)
+
+    """Sets all settings of the awg with one command and wait until it is done configuring"""
+    def setup(self, frequency_Hz, amplitude_V, burst = False, ext_trig = False, burst_period_s=.00001,burst_cycles = 50, offset_V = 0, output=False, output_Impedance = 50):
+        self.SetOutput(output)
+        self.SetFrequency_Hz(frequency_Hz)
+        self.SetAmplitude_V(amplitude_V)
+        self.SetCycles(burst_cycles)
+        self.SetBurst(burst)
+        self.SetTrigger(external=ext_trig,period_s=burst_period_s)
+        self.SetOffset_V(offset_V)
+        self.SetOutputImpedence(output_Impedance)
+
+        self.wait_til_complete()
+
+    """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
+    def get_state(self):
+        self.Get_Output()
+        self.GetFrequency_Hz()
+        self.GetAmplitude_V()
+        self.GetBurst()
+        self.GetTrigger()
+        self.GetOffset_V()
+        self.GetOutputImpedence()
+
+        return self.state
+
+    def Reset(self):
+        self.inst.write(f"*RST")
+        self.wait_til_complete()
+
+    def wait_til_complete(self):
+        self.inst.write(f"*OPC?")
 
     """Turns the output on or off"""
     def SetOutput(self, on: bool):
@@ -38,79 +99,124 @@ class KeysightAWG:
             self.inst.write('OUTP ON')
         else:
             self.inst.write('OUTP OFF')
-        t.sleep(0.03)
+
+    def Get_Output(self):
+        self.inst.write('OUTP?')
+        reply = self.inst.read()
+        self.state["output"] = "1" in reply
+        return self.state["output"]
 
     """Sets the frequency of the signal"""
     def SetFrequency_Hz(self, frequency):
         self.inst.write(f"FREQ {frequency}")
-        t.sleep(0.03)
+
+    def GetFrequency_Hz(self):
+        self.inst.write(f"FREQ?")
+        self.state["frequency_Hz"] = float(self.inst.read())
+        return self.state["frequency_Hz"]
 
     """Sets the peak to peak amplitude of the waveform in volts"""
     def SetAmplitude_V(self, amplitude):
         self.inst.write(f"VOLT {amplitude}")
-        t.sleep(0.03)
+
+    def GetAmplitude_V(self):
+        self.inst.write(f"VOLT?")
+        self.state["amplitude_V"] = float(self.inst.read())
+        return self.state["amplitude_V"]
 
     """Sets the dc offset of the waveform in volts"""
     def SetOffset_V(self, offset):
-        self.inst.write(f"VOLT:OFF {offset}")
-        t.sleep(0.03)
+        self.inst.write(f"VOLT:OFFS {offset}")
 
+    def GetOffset_V(self):
+        self.inst.write(f"VOLT:OFFS?")
+        return float(self.inst.read())
 
     """Shows text on the AWG screen"""
     def DisplayText(self, text):
         self.inst.write(f"DISP:TEXT {text}")
-        t.sleep(0.03)
 
     def SetFunction(self, func = "SIN"):
         self.inst.write(f"FUNC {func}:")
 
+    def GetFunction(self):
+        self.inst.write(f"FUNC?")
+        return self.inst.read()
+
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-    def SetTrigger(self, external:bool, period_s = .010, delay_s = 0, level_v = 3.3):
-        self.inst.write(f"TRIG:DELAY {delay_s}")
-        self.inst.write(f"TRIG:LEVEL {level_v}")
+    def SetTrigger(self, external:bool, period_s = .000010, delay_s = 0):
+        self.inst.write(f"TRIG1:DEL {delay_s}")
         if external:
-            self.inst.write(f"TRIG:SOUR EXT")
+            self.inst.write(f"TRIG1:SOUR EXT")
         else:
-            self.inst.write(f"TRIG SOUR TIM")
-            self.inst.write(f"TRIG TIM {period_s}")
-        t.sleep(0.03)
+            self.inst.write(f"TRIG1:SOUR TIM")
+            self.inst.write(f"TRIG1:TIM {period_s}")
+
+    """Returns info about the trigger: source, delay_s, period_s"""
+    def GetTrigger(self):
+        self.inst.write(f"TRIG:SOUR?")
+        self.state['trig_source'] = self.inst.read().strip('\n')
+        self.inst.write(f"TRIG:DEL?")
+        self.state['trig_delay_s'] = float(self.inst.read())
+        self.inst.write(f"TRIG:TIM?")
+        self.state['trig_period_s'] = float(self.inst.read())
+        return self.state['trig_source'],self.state['trig_delay_s'],self.state['trig_period_s']
 
     def SetBurst(self, on = True):
-        if self.phase_degrees is not None:
-            self.inst.write(f"BURS:PHAS {self.phase_degrees}")
+        if "Phase_degrees" in self.state.keys():
+            self.inst.write(f"BURS:PHAS {self.state['Phase_degrees']}")
         if on:
             self.inst.write("BURS ON")
         else:
             self.inst.write("BURS OFF")
 
+    """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
+    def GetBurst(self):
+        self.inst.write(f"BURS?")
+        self.state['burst_on'] = "1" in self.inst.read()
+        self.inst.write(f"BURS:NCYC?")
+        self.state['burst_ncyc'] = int(float(self.inst.read()))
+        return self.state['burst_on'], self.state['burst_ncyc']
+
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):
         if HiZ:
-            self.inst.write("LOAD INF")
+            self.inst.write("OUTP:LOAD INF")
         else:
-            self.inst.write(f"LOAD {impedence_ohms}")
-        t.sleep(0.03)
+            self.inst.write(f"OUTP:LOAD {impedence_ohms}")
 
-    def SetPhase(self, phase_degrees=0):
+    def GetOutputImpedence(self):
+        self.inst.write(f"OUTP:LOAD?")
+        return float(self.inst.read())
+
+    def SetPhaseDegrees(self, phase_degrees=0):
         self.phase_degrees = phase_degrees
         self.inst.write(f"UNIT:ANGL DEG")
         self.inst.write(f"SOUR:PHASE{self.phase_degrees}")
-        t.sleep(0.03)
 
-    """Sets the burst period of the waveform in seconds"""
-    def SetPeriod_s(self, channel, period):
-        self.Period = period
-        Peri = "C" + channel + ":BTWV PRD,{}".format(self.Period)
-        self.inst.write(Peri)
-        t.sleep(0.03)
+    def GetPhaseDegrees(self):
+        self.inst.write(f"UNIT:ANGL DEG")
+        self.inst.write(f"SOUR:PHASE?")
+        self.state["phase degrees"] = self.inst.read()
+        return self.state["phase degrees"]
 
-    def SetCycles(self, channel, cycle):
-        self.Cycle = cycle
-        Cycl = "C" + channel + ":BTWV TIME," + self.Cycle
-        self.inst.write(Cycl)
-        t.sleep(0.03)
+    def SetCycles(self, cycles):
+        self.inst.write(f"BURS:NCYC {cycles}")
+
+    def GetCycles(self):
+        self.inst.write(f"BURS:NCYC?")
+        self.state["burst_cycles"] = self.inst.read()
+        return self.state["burst_cycles"]
+
+    """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+    def __str__(self):
+        self.get_state()
+        return "Keysight 33500B Series Waveform Generator\nSettings:\n"+str(self.state)
 
 if __name__ == "__main__":
     awg = KeysightAWG()
     awg.connect()
-    awg.SetAmplitude_V(1)
-    awg.SetBurst(True)
+    awg.Reset()
+    print(awg)
+    awg.setup(frequency_Hz=4290000,amplitude_V=.2, burst=True,burst_cycles=50,ext_trig=False,
+              burst_period_s=.10,offset_V=0,output=True,output_Impedance=50)
+    print(awg)

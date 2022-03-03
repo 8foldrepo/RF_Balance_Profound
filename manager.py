@@ -1,3 +1,4 @@
+import pyvisa
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, Qt, pyqtSignal, pyqtSlot
 from typing import Optional
 import distutils.util
@@ -22,6 +23,7 @@ from Hardware.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
 from Hardware.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.relay_board import Relay_Board
+from Hardware.keysight_awg import KeysightAWG
 
 class Manager(QThread):
     """
@@ -86,8 +88,12 @@ class Manager(QThread):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = config['Debugging']['simulate_hw']
 
+        self.rm = pyvisa.ResourceManager()
+
         self.Balance = MT_balance(config=self.config)
         self.Pump = Relay_Board(config=self.config, device_key='Pump')
+        self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
+        #self.Oscilloscope = KeysightOscilloscope(config=self.config,resource_manager=self.rm)
         self.devices.append(self.Pump)
         self.devices.append(self.Balance)
 
@@ -99,16 +105,13 @@ class Manager(QThread):
             self.devices.append(self.Motors)
             self.devices.append(self.thermocouple)
 
-
     def connect_hardware(self):
         for device in self.devices:
-            device.connect()
+            device.connect_hardware()
 
     def disconnect_hardware(self):
         for device in self.devices:
-            device.disconnect()
-
-
+            device.disconnect_hardware()
 
     def run(self) -> None:
         """

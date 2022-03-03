@@ -27,12 +27,12 @@ class AbstractSensor(QObject):
         self.connected = True
 
     @abstractmethod
-    def connect(self):
+    def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
 
     @abstractmethod
-    def disconnect_sensor(self):
+    def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 

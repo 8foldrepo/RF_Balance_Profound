@@ -16,6 +16,9 @@ Dummy_Oscilloscope:
   cycles: 10
   delay_cycles: 0
 
+Keysight_AWG:
+
+
 Pump:
   timeout_s: 1
   on_by_default: False

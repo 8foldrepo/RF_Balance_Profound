@@ -75,7 +75,7 @@ class MT_balance(QObject):
         log_msg(self, root_logger,level='error', message=f'{self.device_key} timed out')
 
     #TODO: make code recognize the com port without hard coding it
-    def connect(self):
+    def connect_hardware(self):
         try:
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
@@ -94,7 +94,7 @@ class MT_balance(QObject):
                          )
         self.connected_signal.emit(self.connected)
 
-    def disconnect_sensor(self):
+    def disconnect_hardware(self):
         if self.ser is None:
             log_msg(self, root_logger,level='error', message=f'{self.device_key} not connected')
             return

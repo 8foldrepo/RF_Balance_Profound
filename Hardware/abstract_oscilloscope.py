@@ -96,12 +96,12 @@ class AbstractOscilloscope(QObject):
                 return self.disconnect()
 
         @abstractmethod
-        def connect(self):
+        def connect_hardware(self):
             self.connected = True
             #return self.connected()
 
         @abstractmethod
-        def disconnect(self):
+        def disconnect_hardware(self):
             self.connected = False
 
         @abstractmethod

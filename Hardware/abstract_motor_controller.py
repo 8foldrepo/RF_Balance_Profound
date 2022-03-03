@@ -22,10 +22,9 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-#from Hardware.abstract_motor_controller import  AbstractMotorController
+from Hardware.abstract_device import AbstractDevice
 
-                            #Replace these parentheses with (AbstractMotorController) when inheriting this class
-class AbstractMotorController(QObject):
+class AbstractMotorController(AbstractDevice):
         """
         An abstract class that serves as a base for classes that interface with motor controllers.
         Used on its own, this class will create a DummyMotors object, which runs in a separate thread and simulates a
@@ -111,11 +110,8 @@ class AbstractMotorController(QObject):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        # For accessing parameters in config file
-        device_key = 'Dummy_Motors'
-
-        def __init__(self, config: dict):
-            super().__init__()
+        def __init__(self, config: dict, device_key = 'Dummy_Motors'):
+            super().__init__(config=config, device_key=device_key)
 
             self.config = config
 
@@ -185,17 +181,17 @@ class AbstractMotorController(QObject):
         # Hardware interfacing functions
         def toggle_connection(self):
             if self.connected():
-                return self.connect()
+                return self.connect_hardware()
             else:
-                return self.disconnect()
+                return self.disconnect_hardware()
 
         @abstractmethod
-        def connect(self):
+        def connect_hardware(self):
             self.Motors.connected = True
             self.connected_signal.emit(self.connected())
 
         @abstractmethod
-        def disconnect(self):
+        def disconnect_hardware(self):
             self.Motors.connected = False
             self.connected_signal.emit(self.connected())
 

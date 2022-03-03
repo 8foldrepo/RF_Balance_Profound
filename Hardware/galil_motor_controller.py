@@ -82,7 +82,7 @@ class Galil(AbstractMotorController):
         z_pos_signal = pyqtSignal(str)
         r_pos_signal = pyqtSignal(str)
 
-        def __init__(self, config=None):
+        def __init__(self, config=None, device_key = 'Galil'):
             self.x = 0  # The galil may not actually start at the origin, but these will be updated when get_position is called
             self.y = 0
             self.z = 0
@@ -91,7 +91,7 @@ class Galil(AbstractMotorController):
             self.paused = False
             self.scanning = False
             self.config = None
-            super().__init__()
+            super().__init__(config = config, device_key= device_key)
 
             self.handle = gclib.py()  # initialize the library object
 

@@ -41,7 +41,7 @@ class Relay_Board(AbstractSensor):
         self.on_by_default = self.config[self.device_key]['on_by_default']
         self.port = self.config[self.device_key]['port']
 
-    def connect(self):
+    def connect_hardware(self):
         try:
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
@@ -62,7 +62,7 @@ class Relay_Board(AbstractSensor):
 
         self.relay_write(self.on_by_default)
 
-    def disconnect_sensor(self):
+    def disconnect_hardware(self):
         if self.ser is None:
             log_msg(self, root_logger,level='error', message=f'{self.device_key} not connected')
             return
