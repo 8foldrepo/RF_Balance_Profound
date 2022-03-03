@@ -1,4 +1,5 @@
 import os
+import smtplib
 import sys
 import webbrowser
 import yaml
@@ -256,7 +257,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
+        self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
 
@@ -444,8 +447,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         if qReply == QMessageBox.Yes:
             bQuit = True
-        if bQuit:
             self.command_signal.emit("CLOSE")
+            t.sleep(.1)
+            self.manager.exit()
+        if bQuit:
             event.accept()
         else:
             event.ignore()

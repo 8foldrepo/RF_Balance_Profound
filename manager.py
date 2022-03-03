@@ -1,12 +1,13 @@
 import pyvisa
-from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from typing import Optional
 import distutils.util
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Hardware.abstract_oscilloscope import AbstractOscilloscope
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
+
+import time as t
 
 from Utilities.useful_methods import log_msg
 import os
@@ -18,10 +19,10 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-from Hardware.abstract_motor_controller import AbstractMotorController
-from Hardware.abstract_sensor import AbstractSensor
+from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
-from Hardware.abstract_oscilloscope import AbstractOscilloscope
+from Hardware.keysight_oscilloscope import KeysightOscilloscope
 from Hardware.relay_board import Relay_Board
 from Hardware.keysight_awg import KeysightAWG
 
@@ -93,15 +94,15 @@ class Manager(QThread):
         self.Balance = MT_balance(config=self.config)
         self.Pump = Relay_Board(config=self.config, device_key='Pump')
         self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
-        #self.Oscilloscope = KeysightOscilloscope(config=self.config,resource_manager=self.rm)
+        self.Oscilloscope = KeysightOscilloscope(config=self.config,resource_manager=self.rm)
         self.devices.append(self.Pump)
         self.devices.append(self.Balance)
+        self.devices.append(self.AWG)
+        self.devices.append(self.Oscilloscope)
 
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
             self.thermocouple = AbstractSensor(config=self.config)
-            self.Oscilloscope = AbstractOscilloscope(config=self.config)
-            self.devices.append(self.Oscilloscope)
             self.devices.append(self.Motors)
             self.devices.append(self.thermocouple)
 
@@ -127,7 +128,6 @@ class Manager(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
             wait_bool = self.condition.wait(self.mutex, 50)
@@ -156,8 +156,8 @@ class Manager(QThread):
 
                 self.cmd == ''
             elif cmd_ray[0] == 'CLOSE':
-                self.stay_alive = False
-                break
+                print("wrapping up")
+                self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
             elif cmd_ray[0] == 'MOTOR':
@@ -169,12 +169,17 @@ class Manager(QThread):
             if not self.scripting:
                 self.Motors.get_position()
                 self.thermocouple.get_reading()
-                time,voltage = self.Oscilloscope.capture()
-                #The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+
                 if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
-                    self.plot_signal.emit(time, voltage)
-                else:
-                    pass
+                    # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+                    try:
+                        starttime = t.time()
+                        time, voltage = self.Oscilloscope.capture(channel=1)
+                        print(1/(t.time() - starttime))
+                        self.plot_signal.emit(time, voltage)
+                    except pyvisa.errors.InvalidSession:
+                        self.log("Could not plot, oscilloscope resource closed")
+
 
             self.cmd = ""
 
@@ -364,8 +369,18 @@ class Manager(QThread):
 
     @pyqtSlot(str)
     def exec_command(self, command):
+        if 'CLOSE' in command.upper():
+            self.log('Wrapping up')
+            self.wrap_up()
+            return
         self.cmd = command
         self.condition.wakeAll()
 
     def wrap_up(self):
-        pass
+        for device in self.devices:
+            device.wrap_up()
+        self.stay_alive = False
+
+    def log(self, message, level='info'):
+        log_msg(self, root_logger=root_logger, message=message, level=level)
+

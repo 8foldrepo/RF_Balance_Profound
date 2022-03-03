@@ -1,28 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from PyQt5.QtCore import *
-import time as t
 from Utilities.useful_methods import bound
-from Hardware.dummy_motors import  DummyMotors
+from Hardware.Simulators.dummy_motors import  DummyMotors
 
 from Utilities.useful_methods import create_coord_rays, create_comma_string
 
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-import logging
-from Utilities.useful_methods import log_msg
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-import os
-from definitions import ROOT_DIR
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
-file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
-root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-
-from Hardware.abstract_device import AbstractDevice
+from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractMotorController(AbstractDevice):
         """
@@ -112,9 +96,6 @@ class AbstractMotorController(AbstractDevice):
 
         def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
-
-            self.config = config
-
             #For tracking latest known coordinates in steps
             self.coords = list()
             for i in range(self.num_axes):
@@ -161,17 +142,17 @@ class AbstractMotorController(AbstractDevice):
             if type(value) is float:
                 self._jog_speed = value
                 self.dummy_command_signal.emit(f'Jog Speed {axis} {self.scan_speed}')
-                log_msg(self,root_logger,f"scan speed set: {value}")
+                self.log(f"scan speed set: {value}")
             else:
-                log_msg(self,root_logger,level='error',message="failed to set jog speed")
+                self.log(level='error',message="failed to set jog speed")
 
         def set_scan_speed(self, axis, value):
             if type(value) is float:
                 self._scan_speed = value
                 self.dummy_command_signal.emit(f'Scan Speed {axis} {self.scan_speed}')
-                log_msg(self,root_logger,f"scan speed set: {value}")
+                self.log(f"scan speed set: {value}")
             else:
-                log_msg(self,root_logger,level='error',message="failed to set scan speed")
+                self.log(level='error',message="failed to set scan speed")
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -189,6 +170,7 @@ class AbstractMotorController(AbstractDevice):
         def disconnect_hardware(self):
             self.Motors.connected = False
             self.connected_signal.emit(self.connected())
+            self.dummy_command_signal.emit("CLOSE")
 
         @abstractmethod
         def connected(self):
@@ -250,7 +232,7 @@ class AbstractMotorController(AbstractDevice):
 
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
-                log_msg(self, root_logger,level='error',message="Axes length does not match coordinates length")
+                self.log(level='error',message="Axes length does not match coordinates length")
                 return
 
             for i in range(len(coords)):
@@ -258,7 +240,7 @@ class AbstractMotorController(AbstractDevice):
                     try:
                         coords[i] = float(coords[i])
                     except TypeError:
-                        log_msg(self, root_logger,level='Error', message='Invalid coordinate string in go_to_position')
+                        self.log(level='Error', message='Invalid coordinate string in go_to_position')
                         return
 
             coord_strings = list()
@@ -328,8 +310,6 @@ class AbstractMotorController(AbstractDevice):
                 if cmd_ray[1] == 'Here'.upper():
                     self.set_origin_here()
 
-        def clean_up(self):
-            if self.connected():
-                self.handle.GCommand("ST")
-                self.handle.GCommand("MO")
-                self.handle.GClose()
+        def wrap_up(self):
+            self.disconnect_hardware()
+            self.dummy_command_signal.emit("CLOSE")

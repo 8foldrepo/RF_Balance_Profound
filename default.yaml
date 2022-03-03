@@ -19,6 +19,14 @@ Dummy_Oscilloscope:
 Keysight_AWG:
 
 
+Keysight_Oscilloscope:
+  range_mv: 10
+  channel: 1
+  averages: 16
+  capture_period_ns: 100
+  cycles: 10
+  delay_cycles: 0
+
 Pump:
   timeout_s: 1
   on_by_default: False

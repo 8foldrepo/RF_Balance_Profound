@@ -1,31 +1,42 @@
 import pyvisa
 import time as t
-from PyQt5 import QtCore
-from PyQt5.QtCore import QThread
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
-
-
-rm = pyvisa.ResourceManager()
-
-import logging
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import create_coord_rays, log_msg
-
-class KeysightOscilloscope:
-    def __init__(self):
+class KeysightOscilloscope(AbstractOscilloscope):
+    def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
+        super().__init__(device_key = device_key, config = config, parent = parent)
+        if resource_manager is not None:
+            self.rm = resource_manager
+        else:
+            self.rm = pyvisa.ResourceManager()
         self.inst = None
 
-    def connect(self):
-        resources = rm.list_resources()
+    def connect_hardware(self):
+        resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
-            if "0x0957" in resource:
+            if "0x179B" in resource:
                 try:
-                    self.inst = rm.open_resource(resource)
+                    self.inst = self.rm.open_resource(resource)
+                    self.inst.write("*OPC?")
+                    self.inst.read()
                 except:
                     pass
         if self.inst == None:
-            print(self,"Keysight oscilloscope not found")
+            self.log("Keysight oscilloscope not found", level='error')
+        self.connected_signal.emit(True)
+
+
+
+
+    def disconnect_hardware(self):
+        try:
+            self.inst.close()
+            self.rm.close()
+        except:
+            pass
+        self.connected_signal.emit(False)
+        pass
 
     def setup(self, channel, frequency, amplitude, period, cycles, output):
         self.SetOutput(channel, output)
@@ -88,44 +99,40 @@ class KeysightOscilloscope:
         print(float(self.inst.read()))
         t.sleep(0.03)
 
-    def getWaveform(self, channel):
+    def capture(self, channel):
         self.inst.write("WAV:POIN:MODE RAW")
-        t.sleep(0.03)
-
         self.inst.write(f"WAV:SOUR:CHAN{channel}")
-        t.sleep(0.03)
-
         self.inst.write("WAV:FORM ASCII")
-        t.sleep(0.03)
-
         self.inst.write("WAV:PRE?")
-        t.sleep(0.03)
-
         a = self.inst.read().split(",")
-        t.sleep(0.03)
 
         # print(a)
 
-        if(a[1] == "+0"):
-            print("normal\n")
-        elif(a[1] == "+1"):
-            print("peak\n")
-        elif(a[1] == "+2"):
-            print("average\n")
-        else:
-            print("HRESolution\n")
+        #if(a[1] == "+0"):
+            #print("normal")
+        #elif(a[1] == "+1"):
+            #print("peak")
+        #elif(a[1] == "+2"):
+            #print("average")
+        #else:
+            #print("HRESolution")
 
         self.inst.write("WAV:DATA?")
-        t.sleep(0.03)
 
         y_axis = self.inst.read().split(",")
         temp = y_axis[0].split()[-1]
 
         y_axis[0] = temp
 
-        x_axis = (list(range(0, len(y_axis)+1)))
+        x_axis = (list(range(0, len(y_axis)-1)))
 
-        print(len(y_axis))
+        #removes the metadata at the beginning
+        y_axis.pop(0)
+
+        for i in range(len(y_axis)):
+            y_axis[i] = float(y_axis[i])
+
+        return x_axis, y_axis
 
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
@@ -154,7 +161,7 @@ class KeysightOscilloscope:
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
-    osc.connect()
+    osc.connect_hardware()
 
     # osc.setVertScale_V(0.05, 1)
     # osc.getVertScale_V(1)
@@ -164,5 +171,5 @@ if __name__ == "__main__":
     # osc.getHorzOffset_sec()
     # osc.getFreq_Hz()
     # osc.getAmp_V()
-    osc.getWaveform(1)
-
+    osc.capture(1)
+    osc.disconnect_hardware()

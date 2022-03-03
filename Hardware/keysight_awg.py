@@ -1,43 +1,25 @@
 import pyvisa
-import time as t
-from PyQt5 import QtCore
-from PyQt5.QtCore import QThread
-from Utilities.load_config import load_configuration
+from Utilities.load_config import *
 
-from Hardware.abstract_device import AbstractDevice
-
-import os
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-import logging
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-from Utilities.useful_methods import log_msg
-from definitions import ROOT_DIR
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
-file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
-root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+from Hardware.Abstract.abstract_device import AbstractDevice
 
 class KeysightAWG(AbstractDevice):
-    def __init__(self, resource_manager = None, config = None, device_key = 'Keysight_AWG'):
+    def __init__(self, resource_manager = None, config = None, device_key = 'Keysight_AWG', parent = None):
+        super().__init__(config = config, device_key= device_key, parent = parent)
         if resource_manager is not None:
             self.rm = resource_manager
         else:
             self.rm = pyvisa.ResourceManager()
 
         self.address = None
-        self.config = config
-        self.device_key = device_key
         self.inst = None
         self.state = dict()
         self.fields_setup()
 
+    #Todo: add default settings to config file and switch to them here
     def fields_setup(self):
         if self.config is None:
             self.config = load_configuration()
-        #self.timeout_s = self.config[self.device_key]['timeout_s']
-        #self.port = self.config[self.device_key]['port']
 
     def connect_hardware(self):
         self.rm = pyvisa.ResourceManager()
@@ -49,20 +31,21 @@ class KeysightAWG(AbstractDevice):
                 self.address = resource
                 self.inst = self.rm.open_resource(resource)
         if self.inst == None:
-            log_msg(self, root_logger,"Keysight 33509B Series function generator not found")
+            self.log("Keysight 33509B Series function generator not found", level='error')
 
         self.get_state()
         self.connected_signal.emit(True)
 
     def disconnect_hardware(self):
         try:
-            self.rm.close()
+            self.inst.close()
         except:
             pass
         self.connected_signal.emit(False)
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
-    def setup(self, frequency_Hz, amplitude_V, burst = False, ext_trig = False, burst_period_s=.00001,burst_cycles = 50, offset_V = 0, output=False, output_Impedance = 50):
+    def setup(self, frequency_Hz, amplitude_V, burst = False, ext_trig = False, burst_period_s=.00001,burst_cycles = 50,
+              offset_V = 0, output=False, output_Impedance = 50):
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
@@ -214,9 +197,9 @@ class KeysightAWG(AbstractDevice):
 
 if __name__ == "__main__":
     awg = KeysightAWG()
-    awg.connect()
+    awg.connect_hardware()
     awg.Reset()
     print(awg)
-    awg.setup(frequency_Hz=4290000,amplitude_V=.2, burst=True,burst_cycles=50,ext_trig=False,
+    awg.setup(frequency_Hz=4290000,amplitude_V=.2, burst=False,burst_cycles=50,ext_trig=False,
               burst_period_s=.10,offset_V=0,output=True,output_Impedance=50)
     print(awg)
