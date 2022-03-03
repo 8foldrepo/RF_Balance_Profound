@@ -5,14 +5,14 @@ import time as t
 from Utilities.useful_methods import bound
 from Hardware.dummy_motors import  DummyMotors
 
-from Utilities.useful_methods import create_coord_rays
+from Utilities.useful_methods import create_coord_rays, create_comma_string
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
+from Utilities.useful_methods import log_msg
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-
 import os
 from definitions import ROOT_DIR
 balance_logger = logging.getLogger('wtf_log')
@@ -110,8 +110,8 @@ class AbstractMotorController(AbstractDevice):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        def __init__(self, config: dict, device_key = 'Dummy_Motors'):
-            super().__init__(config=config, device_key=device_key)
+        def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
+            super().__init__(parent = parent, config=config, device_key=device_key)
 
             self.config = config
 
@@ -157,26 +157,21 @@ class AbstractMotorController(AbstractDevice):
                 self._r_calibrate,
             )
 
-        # Setters for each class property
-        @jog_speed.setter
-        def jog_speed(self, value):
-            if type(value) is int:
-                print(f"jog speed set: {value}")
+        def set_jog_speed(self, axis, value):
+            if type(value) is float:
                 self._jog_speed = value
-
-                self.dummy_command_signal.emit("Jog Speed")
+                self.dummy_command_signal.emit(f'Jog Speed {axis} {self.scan_speed}')
+                log_msg(self,root_logger,f"scan speed set: {value}")
             else:
-                print("failed to set jog speed")
-                raise Exception
+                log_msg(self,root_logger,level='error',message="failed to set jog speed")
 
-        @scan_speed.setter
-        def scan_speed(self, value):
-            if type(value) is int:
+        def set_scan_speed(self, axis, value):
+            if type(value) is float:
                 self._scan_speed = value
-                print(f"scan speed set: {value}")
+                self.dummy_command_signal.emit(f'Scan Speed {axis} {self.scan_speed}')
+                log_msg(self,root_logger,f"scan speed set: {value}")
             else:
-                print("failed to set scan speed")
-                raise Exception
+                log_msg(self,root_logger,level='error',message="failed to set scan speed")
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -278,14 +273,14 @@ class AbstractMotorController(AbstractDevice):
                 if self.reverse_ray[ax_index]:
                     coords[i] = -1 * coords[i]
 
-                self.dummy_command_signal.emit(f'Scan Speed {(self.calibrate_ray[ax_index] * self.scan_speed)}')
                 coord_strings.append(str(coords[i] * self.calibrate_ray[ax_index]))
                 ax_strings.append(axes[i].upper())
 
             self.scanning = True
 
+            comma_string = create_comma_string(axes=axes,coords=coords,ax_letters=self.ax_letters)
 
-            self.dummy_command_signal.emit(f'GO {",".join(coord_strings)}')
+            self.dummy_command_signal.emit(f'GO {comma_string}')
 
         @abstractmethod
         def is_moving(self):
@@ -311,9 +306,9 @@ class AbstractMotorController(AbstractDevice):
             elif command == 'Connect'.upper():
                 self.connect()
             elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
-                self.jog_speed = cmd_ray[2]
+                self.set_jog_speed(cmd_ray[2],float(cmd_ray[3]))
             elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
-                self.scan_speed = cmd_ray[2]
+                self.set_scan_speed(axis=cmd_ray[2],value=float(cmd_ray[3]))
             elif command == 'Begin Motion X+'.upper():
                 self.jog('X', 1)
             elif command == 'Begin Motion X-'.upper():

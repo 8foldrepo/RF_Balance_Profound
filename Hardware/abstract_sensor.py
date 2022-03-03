@@ -6,6 +6,7 @@ import random
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
+from Hardware.abstract_device import AbstractDevice
 
 from Utilities.useful_methods import log_msg
 import os
@@ -17,12 +18,12 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class AbstractSensor(QObject):
+class AbstractSensor(AbstractDevice):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
-    def __init__(self, config):
-        super().__init__()
+    def __init__(self, config, parent=None, device_key = None):
+        super().__init__(parent=parent,config=config,  device_key = device_key)
         self.config = config
         self.connected = True
 

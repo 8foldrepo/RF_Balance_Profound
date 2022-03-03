@@ -22,12 +22,12 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class MT_balance(QObject):
+class MT_balance(AbstractSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
-    def __init__(self, config, device_key = "MT_Balance"):
-        super().__init__()
+    def __init__(self, config, device_key = "MT_Balance", parent = None):
+        super().__init__(config=config)
         self.config = config
         self.device_key = device_key
 

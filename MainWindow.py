@@ -243,6 +243,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
+        self.lin_incr_double_sb.valueChanged.connect(self.update_x_speed)
+        self.ang_inc_double_sb.valueChanged.connect(self.update_r_speed)
         self.manual_home_button.clicked.connect(self.manual_home_clicked)
         self.insert_button.clicked.connect(self.insert_button_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
@@ -258,6 +260,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
 
+    @pyqtSlot()
+    def update_x_speed(self):
+        self.command_signal.emit(f"MOTOR SCAN SPEED X {self.lin_incr_double_sb.value()}")
+
+    @pyqtSlot()
+    def update_r_speed(self):
+        self.command_signal.emit(f"MOTOR SCAN SPEED R {self.ang_inc_double_sb.value()}")
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):

@@ -30,7 +30,7 @@ class Relay_Board(AbstractSensor):
         self.ser = None
         self.fields_setup()
 
-        super().__init__(config = config)
+        super().__init__(config=config)
         self.on = False
 
     def fields_setup(self):
