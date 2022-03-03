@@ -115,7 +115,7 @@ class KeysightAWG(AbstractDevice):
         self.inst.write(f"VOLT:OFFS?")
         return float(self.inst.read())
 
-    """Shows text on the AWG screen"""
+    """Shows text_item on the AWG screen"""
     def DisplayText(self, text):
         self.inst.write(f"DISP:TEXT {text}")
 

@@ -26,9 +26,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.log("Keysight oscilloscope not found", level='error')
         self.connected_signal.emit(True)
 
-
-
-
     def disconnect_hardware(self):
         try:
             self.inst.close()
@@ -49,7 +46,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.inst.write('OUTP OFF')
         t.sleep(0.03)
 
-    """Shows text on the oscilloscope screen"""
+    """Shows text_item on the oscilloscope screen"""
     def DisplayText(self, text):
         self.inst.write(f"DISP:TEXT {text}")
         t.sleep(0.03)

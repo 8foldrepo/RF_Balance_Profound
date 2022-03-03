@@ -29,7 +29,7 @@ class MT_balance(AbstractSensor):
     """Zeroes the scale with the next stale weight reading"""
     def zero_balance(self):
         # Command: I2 Inquiry of balance data.
-        # Response: I2 A Balance data as "text".
+        # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected == False:
             self.log("Device is not connected")
             return
@@ -138,7 +138,7 @@ class MT_balance(AbstractSensor):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
         #Command: I2 Inquiry of balance data.
-        #Response: I2 A Balance data as "text".
+        #Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
         self.log("Getting stable weight, please wait")
 

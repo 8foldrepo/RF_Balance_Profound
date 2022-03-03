@@ -60,6 +60,7 @@ class Manager(QThread):
     script_info_signal = pyqtSignal(list)
 
     plot_signal = pyqtSignal(object,object)
+    refresh_rate_signal = pyqtSignal(float)
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
@@ -175,7 +176,7 @@ class Manager(QThread):
                     try:
                         starttime = t.time()
                         time, voltage = self.Oscilloscope.capture(channel=1)
-                        print(1/(t.time() - starttime))
+                        self.refresh_rate_signal.emit(round(1/(t.time() - starttime),1))
                         self.plot_signal.emit(time, voltage)
                     except pyvisa.errors.InvalidSession:
                         self.log("Could not plot, oscilloscope resource closed")

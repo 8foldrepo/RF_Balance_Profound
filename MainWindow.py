@@ -70,8 +70,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.plot_ready = True
         self.thread_list.append(self.manager)
 
-
-
         self.configure_signals()
         self.manager.connect_hardware()
         self.manager.start(priority=4)
@@ -129,9 +127,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     #Save the settings input into the UI field to the local.yaml config file
     def save_config(self):
-        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text()
-        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text()
-        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text()
+        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text_item()
+        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text_item()
+        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text_item()
 
         self.config["WTF_PositionParameters"]["XHomeCoord"] = self.x_homecoord.value()
         self.config["WTF_PositionParameters"]["ThetaHomeCoord"] = self.theta_homecoord.value()
@@ -158,15 +156,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.config["Sequence pass/fail"]["Interrupt action"] = self.interrupt_action.currentText()
         self.config["Sequence pass/fail"]["Dialog timeout (s)"] = self.dialog_timeout.value()
 
-        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text()
+        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text_item()
         self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
         self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
 
         self.config["Autoset timebase"]["Min time of flight (us)"] = self.min_time_of_flight.value()
         self.config["Autoset timebase"]["Max time of flight (us)"] = self.max_time_of_flight.value()
 
-        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
-        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
+        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text_item()
+        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text_item()
 
         with open('local.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -262,6 +260,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
+        self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
 
     @pyqtSlot()
     def update_x_speed(self):
@@ -278,8 +277,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(object,object)
     def plot(self, x, y):
         self.plot_ready = False
-        self.waveform_plot.plot(x,y, pen = 'k', clear = True)
+        self.waveform_plot.refresh(x,y, pen = 'k', clear = True)
         self.plot_ready = True
+
+    @pyqtSlot(float)
+    def update_refresh_rate(self, refresh_rate):
+        x_position_ratio = .05
+        y_position_ratio = .75
+        axX = self.waveform_plot.getAxis('bottom')
+        x_pos = axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
+        axY = self.waveform_plot.getAxis('left')
+        y_pos = axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
+        self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
