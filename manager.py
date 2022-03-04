@@ -131,7 +131,7 @@ class Manager(QThread):
         while self.stay_alive is True:
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex, 50)
+            wait_bool = self.condition.wait(self.mutex, 5)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:

@@ -169,7 +169,7 @@ class MT_balance(AbstractSensor):
 
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())
-    balance.connect()
+    balance.connect_hardware()
     balance.reset()
     balance.zero_balance()
     input('press enter when weight is on scale')

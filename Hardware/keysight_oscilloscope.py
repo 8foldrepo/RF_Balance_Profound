@@ -20,8 +20,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     self.inst = self.rm.open_resource(resource)
                     self.inst.write("*OPC?")
                     self.inst.read()
-                except:
+
+                    try:
+                        self.inst.read()
+                    except:
+                        pass
                     pass
+                except pyvisa.errors.VisaIOError as e:
+                    self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
         self.connected_signal.emit(True)
@@ -101,36 +107,46 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.inst.write(f"WAV:SOUR:CHAN{channel}")
         self.inst.write("WAV:FORM ASCII")
         self.inst.write("WAV:PRE?")
-        a = self.inst.read().split(",")
+        preamble = self.inst.read().split(",")
 
-        # print(a)
+        #check that data is in ascii format
+        if not preamble[0] == '+4':
+            self.log(level='error', message='Oscilloscope data in unrecognized format, try restarting it.')
 
-        #if(a[1] == "+0"):
-            #print("normal")
-        #elif(a[1] == "+1"):
-            #print("peak")
-        #elif(a[1] == "+2"):
-            #print("average")
-        #else:
-            #print("HRESolution")
+        #Interpret preamble
+        if preamble[1] == "+0":
+            mode = "normal"
+        elif preamble[1] == "+1":
+            mode = "peak"
+        elif preamble[1] == "+2":
+            mode = "average"
+        else:
+            mode = "HRESolution"
+        average_num = preamble[2]
+        num_points = int(preamble[3])
+        sample_interval_s = float(preamble[4])
+        x_origin = float(preamble[5])
+        x_reference = float(preamble[6])
+        voltage_resolution_v = float(preamble[7])
+        y_origin = float(preamble[8])
+        y_reference = float(preamble[9])
 
+        #Capture data
         self.inst.write("WAV:DATA?")
+        voltages_v = self.inst.read().split(",")
+        temp = voltages_v[0].split()[-1]
+        voltages_v[0] = temp
+        # removes the metadata at the beginning
+        voltages_v.pop(0)
+        for i in range(len(voltages_v)):
+            voltages_v[i] = float(voltages_v[i])
 
-        y_axis = self.inst.read().split(",")
-        temp = y_axis[0].split()[-1]
+        #Create time array
+        times_s = [0]*num_points
+        for i in range(num_points):
+            times_s[i] = (i-x_reference)*sample_interval_s + x_origin
 
-        y_axis[0] = temp
-
-        x_axis = (list(range(0, len(y_axis)-1)))
-
-        #removes the metadata at the beginning
-        y_axis.pop(0)
-
-        for i in range(len(y_axis)):
-            y_axis[i] = float(y_axis[i])
-
-        return x_axis, y_axis
-
+        return times_s, voltages_v
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
     def SetTrigger(self, external:bool, period_s = .010, delay_s = 0, level_v = 3.3):
@@ -159,7 +175,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
-
     # osc.setVertScale_V(0.05, 1)
     # osc.getVertScale_V(1)
     # osc.setHorzScale_Sec(.000000013)
@@ -169,4 +184,5 @@ if __name__ == "__main__":
     # osc.getFreq_Hz()
     # osc.getAmp_V()
     osc.capture(1)
+    osc.getHorzScale_V()
     osc.disconnect_hardware()
