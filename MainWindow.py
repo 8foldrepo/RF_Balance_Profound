@@ -9,6 +9,7 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
+
 from ui_elements.ui_pretest_dialog import PretestDialog
 
 from PyQt5 import QtCore
