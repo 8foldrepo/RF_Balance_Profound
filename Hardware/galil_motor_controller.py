@@ -1,11 +1,11 @@
 #Used on its own, this class will act as a simulated motor controller
-from PyQt5.QtCore import QObject, pyqtSignal
 from Utilities.load_config import load_configuration
 import time as t
 from Utilities.useful_methods import bound
 import gclib
 from PyQt5 import QtWidgets
-from Hardware.abstract_motor_controller import AbstractMotorController
+from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+
 
 class Galil(AbstractMotorController):
         """
@@ -72,17 +72,9 @@ class Galil(AbstractMotorController):
                 stop motors, and disconnect form the controller if connected
         """
 
-        # SIGNALS
+        def __init__(self, config=None, device_key = 'Galil', parent = None):
+            super().__init__(config=config, device_key=device_key, parent=None)
 
-        position_signal = pyqtSignal(str)  # Send position into position widget
-        logger_signal = pyqtSignal(str)  # Send other information to the logger
-
-        x_pos_signal = pyqtSignal(str)
-        y_pos_signal = pyqtSignal(str)
-        z_pos_signal = pyqtSignal(str)
-        r_pos_signal = pyqtSignal(str)
-
-        def __init__(self, config=None):
             self.x = 0  # The galil may not actually start at the origin, but these will be updated when get_position is called
             self.y = 0
             self.z = 0
@@ -91,7 +83,6 @@ class Galil(AbstractMotorController):
             self.paused = False
             self.scanning = False
             self.config = None
-            super().__init__()
 
             self.handle = gclib.py()  # initialize the library object
 
@@ -404,7 +395,7 @@ class Galil(AbstractMotorController):
 
         def go_to_position(self, axes: list, coords: list):
             if not len(axes) == len(coords):
-                log_msg(self, root_logger,level='error', message="Invalid coordinates")
+                self.log(level='error', message="Invalid coordinates")
 
             self.handle.GCommand("ST")
             self.handle.GCommand("SH ABCD")

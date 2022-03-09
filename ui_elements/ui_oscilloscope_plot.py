@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtGui, QtCore
-
+import time
 
 class Plot(pg.PlotWidget):
     def __init__(self, parent=None):
@@ -21,12 +21,25 @@ class Plot(pg.PlotWidget):
         self.pgHoffset = 55
         self.pgWoffset = 75
 
+        self.text = ""
+        self.text_item = pg.TextItem(self.text, anchor=(0, 0))
+        # text2.setParentItem(point)
+        self.text_item.setColor('Black')
+        self.text_item.setPos(100, 0)
+        self.addItem(self.text_item)
+
         self.format_plot()
 
     def refresh(self, time, volts, pen="k", clear="True"):
         self.plot(time, volts, pen=pen, clear=clear)
+        self.addItem(self.text_item)
         self.app.processEvents()
         pass
+
+    def set_text(self, text, x, y):
+        self.text = text
+        self.text_item.setText(text)
+        self.text_item.setPos(x, y)
 
     def format_plot(self):
         color = self.palette().color(

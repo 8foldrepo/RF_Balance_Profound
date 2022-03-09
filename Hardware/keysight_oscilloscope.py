@@ -1,31 +1,45 @@
 import pyvisa
 import time as t
-from PyQt5 import QtCore
-from PyQt5.QtCore import QThread
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
-
-
-rm = pyvisa.ResourceManager()
-
-import logging
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import create_coord_rays, log_msg
-
-class KeysightOscilloscope:
-    def __init__(self):
+class KeysightOscilloscope(AbstractOscilloscope):
+    def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
+        super().__init__(device_key = device_key, config = config, parent = parent)
+        if resource_manager is not None:
+            self.rm = resource_manager
+        else:
+            self.rm = pyvisa.ResourceManager()
         self.inst = None
 
-    def connect(self):
-        resources = rm.list_resources()
+    def connect_hardware(self):
+        resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
-            if "0x0957" in resource:
+            if "0x179B" in resource:
                 try:
-                    self.inst = rm.open_resource(resource)
-                except:
+                    self.inst = self.rm.open_resource(resource)
+                    self.inst.write("*OPC?")
+                    self.inst.read()
+
+                    try:
+                        self.inst.read()
+                    except:
+                        pass
                     pass
+                except pyvisa.errors.VisaIOError as e:
+                    self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
         if self.inst == None:
-            print(self,"Keysight oscilloscope not found")
+            self.log("Keysight oscilloscope not found", level='error')
+        self.connected_signal.emit(True)
+
+    def disconnect_hardware(self):
+        try:
+            self.inst.close()
+            self.rm.close()
+        except:
+            pass
+        self.connected_signal.emit(False)
+        pass
 
     def setup(self, channel, frequency, amplitude, period, cycles, output):
         self.SetOutput(channel, output)
@@ -38,7 +52,7 @@ class KeysightOscilloscope:
             self.inst.write('OUTP OFF')
         t.sleep(0.03)
 
-    """Shows text on the oscilloscope screen"""
+    """Shows text_item on the oscilloscope screen"""
     def DisplayText(self, text):
         self.inst.write(f"DISP:TEXT {text}")
         t.sleep(0.03)
@@ -88,45 +102,51 @@ class KeysightOscilloscope:
         print(float(self.inst.read()))
         t.sleep(0.03)
 
-    def getWaveform(self, channel):
+    def capture(self, channel):
         self.inst.write("WAV:POIN:MODE RAW")
-        t.sleep(0.03)
-
         self.inst.write(f"WAV:SOUR:CHAN{channel}")
-        t.sleep(0.03)
-
         self.inst.write("WAV:FORM ASCII")
-        t.sleep(0.03)
-
         self.inst.write("WAV:PRE?")
-        t.sleep(0.03)
+        preamble = self.inst.read().split(",")
 
-        a = self.inst.read().split(",")
-        t.sleep(0.03)
+        #check that data is in ascii format
+        if not preamble[0] == '+4':
+            self.log(level='error', message='Oscilloscope data in unrecognized format, try restarting it.')
 
-        # print(a)
-
-        if(a[1] == "+0"):
-            print("normal\n")
-        elif(a[1] == "+1"):
-            print("peak\n")
-        elif(a[1] == "+2"):
-            print("average\n")
+        #Interpret preamble
+        if preamble[1] == "+0":
+            mode = "normal"
+        elif preamble[1] == "+1":
+            mode = "peak"
+        elif preamble[1] == "+2":
+            mode = "average"
         else:
-            print("HRESolution\n")
+            mode = "HRESolution"
+        average_num = preamble[2]
+        num_points = int(preamble[3])
+        sample_interval_s = float(preamble[4])
+        x_origin = float(preamble[5])
+        x_reference = float(preamble[6])
+        voltage_resolution_v = float(preamble[7])
+        y_origin = float(preamble[8])
+        y_reference = float(preamble[9])
 
+        #Capture data
         self.inst.write("WAV:DATA?")
-        t.sleep(0.03)
+        voltages_v = self.inst.read().split(",")
+        temp = voltages_v[0].split()[-1]
+        voltages_v[0] = temp
+        # removes the metadata at the beginning
+        voltages_v.pop(0)
+        for i in range(len(voltages_v)):
+            voltages_v[i] = float(voltages_v[i])
 
-        y_axis = self.inst.read().split(",")
-        temp = y_axis[0].split()[-1]
+        #Create time array
+        times_s = [0]*num_points
+        for i in range(num_points):
+            times_s[i] = (i-x_reference)*sample_interval_s + x_origin
 
-        y_axis[0] = temp
-
-        x_axis = (list(range(0, len(y_axis)+1)))
-
-        print(len(y_axis))
-
+        return times_s, voltages_v
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
     def SetTrigger(self, external:bool, period_s = .010, delay_s = 0, level_v = 3.3):
@@ -154,8 +174,7 @@ class KeysightOscilloscope:
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
-    osc.connect()
-
+    osc.connect_hardware()
     # osc.setVertScale_V(0.05, 1)
     # osc.getVertScale_V(1)
     # osc.setHorzScale_Sec(.000000013)
@@ -164,5 +183,6 @@ if __name__ == "__main__":
     # osc.getHorzOffset_sec()
     # osc.getFreq_Hz()
     # osc.getAmp_V()
-    osc.getWaveform(1)
-
+    osc.capture(1)
+    osc.getHorzScale_V()
+    osc.disconnect_hardware()

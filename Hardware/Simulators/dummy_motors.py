@@ -1,17 +1,13 @@
 from PyQt5.QtCore import *
-import logging
-
+from Utilities.useful_methods import *
 from typing import Optional
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-
-from Utilities.useful_methods import log_msg, is_number
 import os
 from definitions import ROOT_DIR
 balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
@@ -33,6 +29,8 @@ class DummyMotors(QThread):
     pos_limits = list()
     neg_limits = list()
     targets = list()
+    jog_speeds = list()
+    scan_speeds = list()
 
     scanning_signal = pyqtSignal(bool)
 
@@ -45,9 +43,6 @@ class DummyMotors(QThread):
 
         self.connected = False
         self.scanning = False
-
-        self.jog_speed = 1
-        self.scan_speed = 1
 
         self.mutex = QMutex()
         self.condition = QWaitCondition()
@@ -65,6 +60,8 @@ class DummyMotors(QThread):
             self.pos_limits.append(50)
             self.neg_limits.append(-50)
             self.targets.append(0)
+            self.jog_speeds.append(1)
+            self.scan_speeds.append(1)
 
     def run(self) -> None:
         """
@@ -75,7 +72,6 @@ class DummyMotors(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
             wait_bool = self.condition.wait(self.mutex, 50)
@@ -91,11 +87,11 @@ class DummyMotors(QThread):
                 if self.cmd == 'Disconnect'.upper():
                     self.connected = False
                 elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
-                    self.jog_speed = float(cmd_ray[2])
-                    log_msg(self, root_logger,level = 'info', message=f"Jog Speed Set: {cmd_ray[2]}")
+                    self.jog_speeds[self.ax_letters.index(cmd_ray[2])] = float(cmd_ray[3])
+                    self.log(level = 'info', message=f"Jog Speed Set: {cmd_ray[2]}")
                 elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
-                    self.scan_speed = float(cmd_ray[2])
-                    log_msg(self, root_logger,level = 'info', message=f"Scan Speed Set: {cmd_ray[2]}")
+                    self.scan_speeds[self.ax_letters.index(cmd_ray[2])] = float(cmd_ray[3])
+                    self.log(level = 'info', message=f"Scan Speed Set: {cmd_ray[2]}")
 
                 #Usage: Begin Motion X+ means jog the x axis in the positive direction
                 elif cmd_ray[0] == 'BEGIN' and cmd_ray[1] == 'MOTION':
@@ -105,9 +101,9 @@ class DummyMotors(QThread):
                     ax_index = self.ax_letters.index(ax)
 
                     if dir == '-':
-                        self.speeds[ax_index] = -1 * self.jog_speed
+                        self.speeds[ax_index] = -1 * self.jog_speeds[ax_index]
                     elif dir == '+':
-                        self.speeds[ax_index] = 1 * self.jog_speed
+                        self.speeds[ax_index] = 1 * self.jog_speeds[ax_index]
                 elif self.cmd == 'Stop Motion'.upper():
                     for i in range(self.num_axes):
                         self.speeds[i] = 0
@@ -120,13 +116,13 @@ class DummyMotors(QThread):
 
                                 if self.targets[i] > self.coords[i]:
                                     self.scanning = True
-                                    self.speeds[i] = abs(self.scan_speed)
+                                    self.speeds[i] = abs(self.scan_speeds[i])
                                 elif self.targets[i] < self.coords[i]:
                                     self.scanning = True
-                                    self.speeds[i] = -1 * abs(self.scan_speed)
+                                    self.speeds[i] = -1 * abs(self.scan_speeds[i])
 
                         except IndexError:
-                            log_msg(self, root_logger,level='Error', message='More coordinates were entered than Axes')
+                            self.log(level='Error', message='More coordinates were entered than Axes')
 
                 elif self.cmd == 'Get Position'.upper():
                     if 'X' in self.ax_letters:
@@ -143,6 +139,8 @@ class DummyMotors(QThread):
                     ax_index = self.ax_letters.index(ax_letter)
                     self.coords[ax_index] = float(cmd_ray[2])
                     self.cmd = 'Get Position'
+                elif cmd_ray[0] == 'CLOSE':
+                    self.stay_alive = False
 
             else:
                 if self.cmd == 'Connect'.upper():
@@ -172,8 +170,8 @@ class DummyMotors(QThread):
     @pyqtSlot(str)
     def command_received(self, command):
         self.cmd = command
-        #self.condition.wakeAll()
-        log_msg(self, root_logger,level='Info', message=command)
+        self.condition.wakeAll()
+        self.log(level='Info', message=command)
 
     def not_moving(self):
         for speed in self.speeds:
@@ -181,3 +179,6 @@ class DummyMotors(QThread):
                 return False
 
         return True
+
+    def log(self, message, level = 'info'):
+        log_msg(self,root_logger=root_logger,message=message,level=level)

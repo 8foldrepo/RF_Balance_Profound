@@ -29,13 +29,24 @@ def create_coord_rays(coords:str,ax_letters:list):
     coords = list(filter(lambda val: val != '', coords))
     return axes, coords
 
+#Inverse of create coord_rays
+def create_comma_string(axes:list,coords:list,ax_letters:list):
+    answer = ""
+    for i in range(len(ax_letters)):
+        if ax_letters[i] in axes:
+            answer = answer + str((coords[axes.index(ax_letters[i])]))
+
+        answer = answer + ","
+
+    print(answer)
+    return  answer
+
 def printList(self, list2):
     for x in range(len(list2)):
         print(list2[x])
 
 def printList2(self, list2):
     print(str(list2)[1:-1])
-
 
 def is_number(s):
     try:

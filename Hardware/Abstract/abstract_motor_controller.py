@@ -1,31 +1,14 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from PyQt5.QtCore import *
-import time as t
 from Utilities.useful_methods import bound
-from Hardware.dummy_motors import  DummyMotors
+from Hardware.Simulators.dummy_motors import  DummyMotors
 
-from Utilities.useful_methods import create_coord_rays
+from Utilities.useful_methods import create_coord_rays, create_comma_string
 
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+from Hardware.Abstract.abstract_device import AbstractDevice
 
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-import logging
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-
-import os
-from definitions import ROOT_DIR
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
-file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
-root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-
-#from Hardware.abstract_motor_controller import  AbstractMotorController
-
-                            #Replace these parentheses with (AbstractMotorController) when inheriting this class
-class AbstractMotorController(QObject):
+class AbstractMotorController(AbstractDevice):
         """
         An abstract class that serves as a base for classes that interface with motor controllers.
         Used on its own, this class will create a DummyMotors object, which runs in a separate thread and simulates a
@@ -111,14 +94,8 @@ class AbstractMotorController(QObject):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        # For accessing parameters in config file
-        device_key = 'Dummy_Motors'
-
-        def __init__(self, config: dict):
-            super().__init__()
-
-            self.config = config
-
+        def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
+            super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
             self.coords = list()
             for i in range(self.num_axes):
@@ -161,43 +138,39 @@ class AbstractMotorController(QObject):
                 self._r_calibrate,
             )
 
-        # Setters for each class property
-        @jog_speed.setter
-        def jog_speed(self, value):
-            if type(value) is int:
-                print(f"jog speed set: {value}")
+        def set_jog_speed(self, axis, value):
+            if type(value) is float:
                 self._jog_speed = value
-
-                self.dummy_command_signal.emit("Jog Speed")
+                self.dummy_command_signal.emit(f'Jog Speed {axis} {self.scan_speed}')
+                self.log(f"scan speed set: {value}")
             else:
-                print("failed to set jog speed")
-                raise Exception
+                self.log(level='error',message="failed to set jog speed")
 
-        @scan_speed.setter
-        def scan_speed(self, value):
-            if type(value) is int:
+        def set_scan_speed(self, axis, value):
+            if type(value) is float:
                 self._scan_speed = value
-                print(f"scan speed set: {value}")
+                self.dummy_command_signal.emit(f'Scan Speed {axis} {self.scan_speed}')
+                self.log(f"scan speed set: {value}")
             else:
-                print("failed to set scan speed")
-                raise Exception
+                self.log(level='error',message="failed to set scan speed")
 
         # Hardware interfacing functions
         def toggle_connection(self):
             if self.connected():
-                return self.connect()
+                return self.connect_hardware()
             else:
-                return self.disconnect()
+                return self.disconnect_hardware()
 
         @abstractmethod
-        def connect(self):
+        def connect_hardware(self):
             self.Motors.connected = True
             self.connected_signal.emit(self.connected())
 
         @abstractmethod
-        def disconnect(self):
+        def disconnect_hardware(self):
             self.Motors.connected = False
             self.connected_signal.emit(self.connected())
+            self.dummy_command_signal.emit("CLOSE")
 
         @abstractmethod
         def connected(self):
@@ -259,7 +232,7 @@ class AbstractMotorController(QObject):
 
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
-                log_msg(self, root_logger,level='error',message="Axes length does not match coordinates length")
+                self.log(level='error',message="Axes length does not match coordinates length")
                 return
 
             for i in range(len(coords)):
@@ -267,7 +240,7 @@ class AbstractMotorController(QObject):
                     try:
                         coords[i] = float(coords[i])
                     except TypeError:
-                        log_msg(self, root_logger,level='Error', message='Invalid coordinate string in go_to_position')
+                        self.log(level='Error', message='Invalid coordinate string in go_to_position')
                         return
 
             coord_strings = list()
@@ -282,14 +255,14 @@ class AbstractMotorController(QObject):
                 if self.reverse_ray[ax_index]:
                     coords[i] = -1 * coords[i]
 
-                self.dummy_command_signal.emit(f'Scan Speed {(self.calibrate_ray[ax_index] * self.scan_speed)}')
                 coord_strings.append(str(coords[i] * self.calibrate_ray[ax_index]))
                 ax_strings.append(axes[i].upper())
 
             self.scanning = True
 
+            comma_string = create_comma_string(axes=axes,coords=coords,ax_letters=self.ax_letters)
 
-            self.dummy_command_signal.emit(f'GO {",".join(coord_strings)}')
+            self.dummy_command_signal.emit(f'GO {comma_string}')
 
         @abstractmethod
         def is_moving(self):
@@ -315,9 +288,9 @@ class AbstractMotorController(QObject):
             elif command == 'Connect'.upper():
                 self.connect()
             elif cmd_ray[0] == 'JOG' and cmd_ray[1] == 'SPEED':
-                self.jog_speed = cmd_ray[2]
+                self.set_jog_speed(cmd_ray[2],float(cmd_ray[3]))
             elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
-                self.scan_speed = cmd_ray[2]
+                self.set_scan_speed(axis=cmd_ray[2],value=float(cmd_ray[3]))
             elif command == 'Begin Motion X+'.upper():
                 self.jog('X', 1)
             elif command == 'Begin Motion X-'.upper():
@@ -337,8 +310,6 @@ class AbstractMotorController(QObject):
                 if cmd_ray[1] == 'Here'.upper():
                     self.set_origin_here()
 
-        def clean_up(self):
-            if self.connected():
-                self.handle.GCommand("ST")
-                self.handle.GCommand("MO")
-                self.handle.GClose()
+        def wrap_up(self):
+            self.disconnect_hardware()
+            self.dummy_command_signal.emit("CLOSE")

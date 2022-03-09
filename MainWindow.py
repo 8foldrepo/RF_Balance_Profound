@@ -1,4 +1,5 @@
 import os
+import smtplib
 import sys
 import webbrowser
 import yaml
@@ -8,7 +9,8 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
-from Widget_Library.test_data_capture import Ui_test_data_capture
+
+from ui_elements.ui_pretest_dialog import PretestDialog
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot, QThread
@@ -26,6 +28,7 @@ import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import os
+from Utilities.useful_methods import log_msg
 from definitions import ROOT_DIR
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
@@ -70,8 +73,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.plot_ready = True
         self.thread_list.append(self.manager)
 
-
-
         self.configure_signals()
         self.manager.connect_hardware()
         self.manager.start(priority=4)
@@ -85,6 +86,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
         self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
+
+        y = range(0, 100)
+        x = range(0, 100)
+        self.profile_plot.refresh(x,y)
+        self.widget_4.refresh(x,y)
 
     #Populate fields in config tab with settings from the config file
     def populate_config_ui(self):
@@ -255,13 +261,23 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
+        self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
         #Manager communication signals
         self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
 
+        self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
 
+    @pyqtSlot()
+    def update_x_speed(self):
+        self.command_signal.emit(f"MOTOR SCAN SPEED X {self.lin_incr_double_sb.value()}")
+
+    @pyqtSlot()
+    def update_r_speed(self):
+        self.command_signal.emit(f"MOTOR SCAN SPEED R {self.ang_inc_double_sb.value()}")
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
@@ -270,8 +286,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(object,object)
     def plot(self, x, y):
         self.plot_ready = False
-        self.waveform_plot.plot(x,y, pen = 'k', clear = True)
+        self.waveform_plot.refresh(x,y, pen = 'k', clear = True)
         self.plot_ready = True
+
+    @pyqtSlot(float)
+    def update_refresh_rate(self, refresh_rate):
+        x_position_ratio = .05
+        y_position_ratio = .75
+        axX = self.waveform_plot.getAxis('bottom')
+        x_pos = axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
+        axY = self.waveform_plot.getAxis('left')
+        y_pos = axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
+        self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
@@ -439,15 +465,19 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         if qReply == QMessageBox.Yes:
             bQuit = True
-        if bQuit:
             self.command_signal.emit("CLOSE")
+            t.sleep(.1)
+            self.manager.exit()
+        if bQuit:
             event.accept()
         else:
             event.ignore()
 
     @pyqtSlot()
     def show_pretest_dialog(self):
-        dlg = Ui_test_data_capture()
+        dlg = PretestDialog()
+        dlg.pretest_signal.connect(self.manager.pretest_info_slot)
+        dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
 if __name__ == "__main__":

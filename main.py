@@ -39,7 +39,6 @@ def main(args):
     window.populate_config_ui()
     #window.prompt_for_password()
 
-
     code = app.exec_()
 
     root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")
