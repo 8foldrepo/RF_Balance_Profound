@@ -21,6 +21,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.MT_balance import MT_balance
 from Hardware.keysight_oscilloscope import KeysightOscilloscope
 from Hardware.relay_board import Relay_Board
@@ -95,17 +96,22 @@ class Manager(QThread):
         self.Balance = MT_balance(config=self.config)
         self.Pump = Relay_Board(config=self.config, device_key='Pump')
         self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
-        self.Oscilloscope = KeysightOscilloscope(config=self.config,resource_manager=self.rm)
+
         self.devices.append(self.Pump)
         self.devices.append(self.Balance)
         self.devices.append(self.AWG)
-        self.devices.append(self.Oscilloscope)
+
 
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
             self.thermocouple = AbstractSensor(config=self.config)
+            self.Oscilloscope = AbstractOscilloscope()
             self.devices.append(self.Motors)
             self.devices.append(self.thermocouple)
+        else:
+            self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
+
+        self.devices.append(self.Oscilloscope)
 
     def connect_hardware(self):
         for device in self.devices:
@@ -121,7 +127,7 @@ class Manager(QThread):
         function.
         """
         self.mutex.lock()
-
+        starttime = t.time()
         # -> try to connect to the motor
         msg = f"SIMULATE HARDWARE is: {self.SIMULATE_HARDWARE}"
         log_msg(self, root_logger,level='info', message=msg)
@@ -174,12 +180,16 @@ class Manager(QThread):
                 if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
                     # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
                     try:
-                        starttime = t.time()
                         time, voltage = self.Oscilloscope.capture(channel=1)
-                        self.refresh_rate_signal.emit(round(1/(t.time() - starttime),1))
+                        time_elapsed = t.time() - starttime
+                        if time_elapsed != 0:
+                            self.refresh_rate_signal.emit(round(1/(time_elapsed),1))
+
                         self.plot_signal.emit(time, voltage)
+                        starttime = t.time()
                     except pyvisa.errors.InvalidSession:
                         self.log("Could not plot, oscilloscope resource closed")
+
 
 
             self.cmd = ""

@@ -278,6 +278,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def plot(self, x, y):
         self.plot_ready = False
         self.waveform_plot.refresh(x,y, pen = 'k', clear = True)
+        y = range(0, 100)
+        x = range(0, 100)
+        self.profile_plot.refresh(x,y)
         self.plot_ready = True
 
     @pyqtSlot(float)
