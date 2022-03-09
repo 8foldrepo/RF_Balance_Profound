@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>test_data_capture</class>
- <widget class="QDialog" name="test_data_capture">
+ <class>wtf_user_prompt</class>
+ <widget class="QDialog" name="wtf_user_prompt">
   <property name="geometry">
    <rect>
     <x>0</x>

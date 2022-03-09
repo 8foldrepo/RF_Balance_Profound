@@ -11,17 +11,17 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_test_data_capture(object):
-    def setupUi(self, test_data_capture):
-        test_data_capture.setObjectName("test_data_capture")
-        test_data_capture.resize(499, 280)
-        self.user_prompt_output = QtWidgets.QTextBrowser(test_data_capture)
+class Ui_wtf_user_prompt(object):
+    def setupUi(self, wtf_user_prompt):
+        wtf_user_prompt.setObjectName("wtf_user_prompt")
+        wtf_user_prompt.resize(499, 280)
+        self.user_prompt_output = QtWidgets.QTextBrowser(wtf_user_prompt)
         self.user_prompt_output.setGeometry(QtCore.QRect(10, 10, 481, 191))
         self.user_prompt_output.setFrameShape(QtWidgets.QFrame.Panel)
         self.user_prompt_output.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.user_prompt_output.setLineWidth(2)
         self.user_prompt_output.setObjectName("user_prompt_output")
-        self.layoutWidget = QtWidgets.QWidget(test_data_capture)
+        self.layoutWidget = QtWidgets.QWidget(wtf_user_prompt)
         self.layoutWidget.setGeometry(QtCore.QRect(230, 230, 261, 41))
         self.layoutWidget.setObjectName("layoutWidget")
         self.buttons_horz = QtWidgets.QHBoxLayout(self.layoutWidget)
@@ -59,22 +59,22 @@ class Ui_test_data_capture(object):
         self.continue_button.setObjectName("continue_button")
         self.buttons_horz.addWidget(self.continue_button)
 
-        self.retranslateUi(test_data_capture)
-        QtCore.QMetaObject.connectSlotsByName(test_data_capture)
+        self.retranslateUi(wtf_user_prompt)
+        QtCore.QMetaObject.connectSlotsByName(wtf_user_prompt)
 
-    def retranslateUi(self, test_data_capture):
+    def retranslateUi(self, wtf_user_prompt):
         _translate = QtCore.QCoreApplication.translate
-        test_data_capture.setWindowTitle(_translate("test_data_capture", "WTF user prompt"))
-        self.abort_button.setText(_translate("test_data_capture", "Abort"))
-        self.retry_button.setText(_translate("test_data_capture", "Retry"))
-        self.continue_button.setText(_translate("test_data_capture", "Continue"))
+        wtf_user_prompt.setWindowTitle(_translate("wtf_user_prompt", "WTF user prompt"))
+        self.abort_button.setText(_translate("wtf_user_prompt", "Abort"))
+        self.retry_button.setText(_translate("wtf_user_prompt", "Retry"))
+        self.continue_button.setText(_translate("wtf_user_prompt", "Continue"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    test_data_capture = QtWidgets.QDialog()
-    ui = Ui_test_data_capture()
-    ui.setupUi(test_data_capture)
-    test_data_capture.show()
+    wtf_user_prompt = QtWidgets.QDialog()
+    ui = Ui_wtf_user_prompt()
+    ui.setupUi(wtf_user_prompt)
+    wtf_user_prompt.show()
     sys.exit(app.exec_())
