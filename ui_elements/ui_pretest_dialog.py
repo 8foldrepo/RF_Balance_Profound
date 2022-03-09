@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSignal
 
 
 class PretestDialog(QDialog, test_data_capture.Ui_test_data_capture):
-    pretest_signal = pyqtSignal(str, str, str)  # signal from MainWindow to manager
+    pretest_signal = pyqtSignal(str, str, str)  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
     def __init__(self):

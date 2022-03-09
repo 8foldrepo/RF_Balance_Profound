@@ -343,6 +343,7 @@ class Manager(QThread):
             if "Measure element efficiency (RFB)".upper() in name.upper():
                 self.measure_element_efficiency_rfb(args)
             elif name.upper() == "Pre-test initialisation".upper():
+                print("pre-test init task detected")
                 self.pretest_initialization(args)
             elif "Find element n".upper() in name.upper():
                 self.find_element(args)
@@ -397,6 +398,7 @@ class Manager(QThread):
         return
 
     def pretest_initialization(self, varlist):
+        print("entering pretest init method")
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 

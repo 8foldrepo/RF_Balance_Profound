@@ -488,8 +488,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             event.ignore()
 
-    @pyqtSlot()
+    @pyqtSlot(str)
     def show_pretest_dialog(self, formatted_date):
+        print("showing pretest dialog method called")
         dlg = PretestDialog()
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
