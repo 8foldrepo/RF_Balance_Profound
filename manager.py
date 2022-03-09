@@ -87,6 +87,7 @@ class Manager(QThread):
         self.continue_var = False
 
         self.abort_var = False  # keep track of whether user has aborted script process, default false
+        self.retry_var = False  # keep track of whether user wants to try script iteration, default false
 
         self.parent = parent
 
@@ -354,6 +355,13 @@ class Manager(QThread):
 
             self.step_number_signal.emit(self.taskExecOrder[i][0] + 1)
 
+            # below: this should allow for the retry function by setting the iteration variable backwards 1
+            # so when it gets incremented it returns to the previous position
+            if self.retry_var is True:
+                i = i-1
+                self.retry_var = False  # sets the retry variable to false so the retry function can happen again
+
+
         self.scripting = False
 
     @pyqtSlot()  # latches info from user in MainWindow to manager local vars
@@ -369,15 +377,17 @@ class Manager(QThread):
 
     # Todo: make this method retry the failed current step in the script
     def retry(self):
-        pass
+        self.retry_var = True
+        return
 
     # Todo: make this method continue to the next step in the script
     def cont(self):
         self.continue_var = True  # sets the continue variable to true so script know to continue
         return
 
-    # Todo: make this method write calibration data to UA
     def write_cal_data_to_ua_button(self):
+        # Todo: make this method write calibration data to UA
+        self.continue_var = True  # this statement should run after writing calibration data to UA
         pass
 
     def measure_element_efficiency_rfb(self, varlist):
@@ -392,7 +402,7 @@ class Manager(QThread):
 
         self.pretest_dialog_signal.emit(formatted_date)
 
-        while not self.continue_var:
+        while not self.continue_var and not self.abort_var:
             pass  # until the user clicks continue in the dialog box, will wait
 
         self.continue_var = False  # sets the continue switch back to false for the next pause
@@ -413,6 +423,19 @@ class Manager(QThread):
     # cal_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, cal_data):
         self.write_cal_data_to_ua_signal.emit(cal_data)
+
+        while not self.continue_var and not self.abort_var:
+            pass  # until the user clicks write ua or abort in the dialog box, will wait
+
+        return
+
+    def retract_ua_warning(self):
+        self.retracting_ua_warning_signal.emit()
+
+        while not self.continue_var and not self.abort_var:
+            pass  # until the user clicks continue or abort in the dialog box, will wait
+
+        self.continue_var = False  # sets the continue switch back to false for the next pause
         return
 
     def find_element(self, varlist):
