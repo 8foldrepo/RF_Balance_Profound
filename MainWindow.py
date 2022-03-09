@@ -9,7 +9,7 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
-from Widget_Library.Test_data_capture import Ui_test_data_capture
+from ui_elements.ui_pretest_dialog import PretestDialog
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot, QThread
@@ -86,6 +86,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
         self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
 
+        y = range(0, 100)
+        x = range(0, 100)
+        self.profile_plot.refresh(x,y)
+        self.widget_4.refresh(x,y)
+
     #Populate fields in config tab with settings from the config file
     def populate_config_ui(self):
         self.operator_pass_field.setText(self.config["User Accounts"]["Operator"])
@@ -129,9 +134,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     #Save the settings input into the UI field to the local.yaml config file
     def save_config(self):
-        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text_item()
-        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text_item()
-        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text_item()
+        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text()
+        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text()
+        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text()
 
         self.config["WTF_PositionParameters"]["XHomeCoord"] = self.x_homecoord.value()
         self.config["WTF_PositionParameters"]["ThetaHomeCoord"] = self.theta_homecoord.value()
@@ -158,15 +163,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.config["Sequence pass/fail"]["Interrupt action"] = self.interrupt_action.currentText()
         self.config["Sequence pass/fail"]["Dialog timeout (s)"] = self.dialog_timeout.value()
 
-        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text_item()
+        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text()
         self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
         self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
 
         self.config["Autoset timebase"]["Min time of flight (us)"] = self.min_time_of_flight.value()
         self.config["Autoset timebase"]["Max time of flight (us)"] = self.max_time_of_flight.value()
 
-        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text_item()
-        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text_item()
+        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
+        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
 
         with open('local.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -281,9 +286,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def plot(self, x, y):
         self.plot_ready = False
         self.waveform_plot.refresh(x,y, pen = 'k', clear = True)
-        y = range(0, 100)
-        x = range(0, 100)
-        self.profile_plot.refresh(x,y)
         self.plot_ready = True
 
     @pyqtSlot(float)
@@ -472,7 +474,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot()
     def show_pretest_dialog(self):
-        dlg = Ui_test_data_capture()
+        dlg = PretestDialog()
+        dlg.pretest_signal.connect(self.manager.pretest_info_slot)
+        dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
 if __name__ == "__main__":

@@ -32,15 +32,15 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
         self.cancel_button.clicked.connect(self.cancel_clicked)
 
     def check_password(self):
-        if self.access_level_combo.currentText() == "Operator" and self.password_field.text_item() == self.config["User Accounts"]["Operator"]:
+        if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == self.config["User Accounts"]["Operator"]:
             self.granted = True
             self.access_level_signal.emit("Operator")
             self.close()
-        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text_item() == self.config["User Accounts"]["Engineer"]:
+        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == self.config["User Accounts"]["Engineer"]:
             self.granted = True
             self.access_level_signal.emit("Engineer")
             self.close()
-        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text_item() == self.config["User Accounts"]["Administrator"]:
+        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == self.config["User Accounts"]["Administrator"]:
             self.granted = True
             self.access_level_signal.emit("Administrator")
             self.close()

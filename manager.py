@@ -333,6 +333,15 @@ class Manager(QThread):
 
         self.scripting = False
 
+    @pyqtSlot()
+    def pretest_info_slot(self, operator_name, ua_serial_no):
+        self.operator_name = operator_name
+        self.ua_serial_number = ua_serial_no
+
+    #Todo: make this method abort the current script
+    def abort(self):
+        pass
+
     def measure_element_efficiency_rfb(self, varlist):
         element = varlist['Element']
         freqRange = varlist['Frequency range']
