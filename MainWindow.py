@@ -9,6 +9,8 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
+from Widget_Library.Test_data_capture import Ui_test_data_capture
+
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot, QThread
 from PyQt5.QtGui import QIcon
@@ -242,8 +244,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
-        self.lin_incr_double_sb.valueChanged.connect(self.update_x_speed)
-        self.ang_inc_double_sb.valueChanged.connect(self.update_r_speed)
         self.manual_home_button.clicked.connect(self.manual_home_clicked)
         self.insert_button.clicked.connect(self.insert_button_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
@@ -260,6 +260,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
+        #Manager communication signals
+        self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
+
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
 
     @pyqtSlot()
@@ -466,6 +469,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             event.accept()
         else:
             event.ignore()
+
+    @pyqtSlot()
+    def show_pretest_dialog(self):
+        dlg = Ui_test_data_capture()
+        dlg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

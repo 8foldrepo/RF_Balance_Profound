@@ -46,6 +46,7 @@ class Manager(QThread):
     Methods:
 
     """
+    pretest_dialog_signal = pyqtSignal()
     #Script metadata
     description_signal = pyqtSignal(str)
     created_on_signal = pyqtSignal(str)
@@ -317,7 +318,7 @@ class Manager(QThread):
 
             if "Measure element efficiency (RFB)".upper() in name.upper():
                 self.measure_element_efficiency_rfb(args)
-            elif name.upper() == "Pre-test initialization".upper():
+            elif name.upper() == "Pre-test initialisation".upper():
                 self.pretest_initialization(args)
             elif "Find element n".upper() in name.upper():
                 self.find_element(args)
@@ -339,6 +340,8 @@ class Manager(QThread):
         return
 
     def pretest_initialization(self, varlist):
+        self.pretest_dialog_signal.emit()
+        print("inside pretest_init_manager")
         return
 
     def find_element(self, varlist):
