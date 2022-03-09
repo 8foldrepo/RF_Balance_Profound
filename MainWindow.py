@@ -8,7 +8,7 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
-from Widget_Library.Test_data_capture import Ui_test_data_capture
+from Widget_Library.test_data_capture import Ui_test_data_capture
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot, QThread
