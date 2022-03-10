@@ -9,8 +9,12 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
 
-
 from ui_elements.ui_pretest_dialog import PretestDialog
+from ui_elements.ui_user_prompt import WTFUserPrompt
+from ui_elements.ui_retracting_ua_warning import UARetractDialog
+from ui_elements.ui_write_cal_to_ua import WriteCalDataToUA
+from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
+from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot, QThread
@@ -25,17 +29,20 @@ from Utilities.load_config import load_configuration
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
+
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import os
 from Utilities.useful_methods import log_msg
 from definitions import ROOT_DIR
+
 balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR,"./logs/wtf.log"), mode='w')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+
 
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
@@ -56,7 +63,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
     plot_ready = QtCore.pyqtSignal(str)
     num_tasks = 0
-    #Tracks whether the thread is doing something
+    # Tracks whether the thread is doing something
     ready = True
 
     def __init__(self):
@@ -89,10 +96,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         y = range(0, 100)
         x = range(0, 100)
-        self.profile_plot.refresh(x,y)
-        self.widget_4.refresh(x,y)
+        self.profile_plot.refresh(x, y)
+        self.widget_4.refresh(x, y)
 
-    #Populate fields in config tab with settings from the config file
+    # Populate fields in config tab with settings from the config file
     def populate_config_ui(self):
         self.operator_pass_field.setText(self.config["User Accounts"]["Operator"])
         self.engineer_pass_field.setText(self.config["User Accounts"]["Engineer"])
@@ -133,7 +140,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
         self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
 
-    #Save the settings input into the UI field to the local.yaml config file
+    # Save the settings input into the UI field to the local.yaml config file
     def save_config(self):
         self.config["User Accounts"]["Operator"] = self.operator_pass_field.text()
         self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text()
@@ -180,8 +187,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def show_config(self):
         webbrowser.open("local.yaml")
 
-    #Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script(self, arg_dicts:list):
+    # Display the task names and arguments from the script parser with a QTreeView
+    def visualize_script(self, arg_dicts: list):
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
 
@@ -202,7 +209,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_step_view.setHeaderHidden(True)
 
     def prompt_for_password(self):
-        dlg = PasswordDialog(parent = self, config=self.config)
+        dlg = PasswordDialog(parent=self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
         dlg.exec()
 
@@ -212,7 +219,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             self.tabWidget.removeTab(7)
         elif access_level == 'Operator':
-            #Remove position tab, add more stuff like this later
+            # Remove position tab, add more stuff like this later
             self.tabWidget.removeTab(6)
             self.tabWidget.removeTab(6)
         elif access_level == 'Administrator':
@@ -228,7 +235,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
 
-        #Script metadata signals
+        # Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
         self.manager.created_by_signal.connect(self.created_by_field.setText)
         self.manager.created_on_signal.connect(self.created_on_field.setText)
@@ -237,7 +244,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.step_number_signal.connect(self.calc_progress)
         self.manager.script_info_signal.connect(self.visualize_script)
 
-        #Hardware control signals
+        # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
         self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
         self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
@@ -256,7 +263,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.insert_ua_button.clicked.connect(self.insert_button_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
         self.go_element_button.clicked.connect(self.go_element_button_clicked)
-        #Hardware info signals
+        # Hardware info signals
         self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
@@ -266,8 +273,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
-        #Manager communication signals
+        # Manager communication signals
         self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
+        self.manager.user_prompt_signal.connect(self.show_user_prompt)
+        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
+        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
 
@@ -283,10 +295,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def update_temp_reading(self, temp):
         self.temp_field.setText(str(temp))
 
-    @pyqtSlot(object,object)
+    @pyqtSlot(object, object)
     def plot(self, x, y):
         self.plot_ready = False
-        self.waveform_plot.refresh(x,y, pen = 'k', clear = True)
+        self.waveform_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
 
     @pyqtSlot(float)
@@ -294,23 +306,26 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         x_position_ratio = .05
         y_position_ratio = .75
         axX = self.waveform_plot.getAxis('bottom')
-        x_pos = axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
+        x_pos = axX.range[0] + (axX.range[1] - axX.range[0]) * x_position_ratio  # <------- get range of x axis
         axY = self.waveform_plot.getAxis('left')
-        y_pos = axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
-        self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
+        y_pos = axY.range[0] + (axY.range[1] - axY.range[0]) * y_position_ratio
+        self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos, y_pos)
 
     """Command the motors to go to the insertion point"""
+
     @pyqtSlot()
     def insert_button_clicked(self):
         self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     """Command the motors to retract until a sensor is reached"""
+
     @pyqtSlot()
     def retract_button_clicked(self):
-        #TODO: fill in later with the code that uses the retraction sensor
+        # TODO: fill in later with the code that uses the retraction sensor
         self.command_signal.emit(f"Motor Go {-50}")
 
     """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
+
     @pyqtSlot()
     def go_element_button_clicked(self):
         element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
@@ -321,7 +336,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             target_position = element_1_pos + offset
             self.command_signal.emit(f"Motor Go {target_position}")
         else:
-            #TODO: fill in later to handle "current" element condition
+            # TODO: fill in later to handle "current" element condition
             return
 
     @pyqtSlot()
@@ -334,7 +349,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.command_signal.emit("Motor go 0,0")
 
     @pyqtSlot(float)
-    def update_x_postion(self,mm):
+    def update_x_postion(self, mm):
         try:
             self.x_pos_lineedit.setText(str(mm))
         except KeyboardInterrupt:
@@ -354,7 +369,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.emit('LOAD ' + path)
 
     @pyqtSlot(int)
-    def set_num_tasks(self,num_tasks):
+    def set_num_tasks(self, num_tasks):
         self.num_tasks = num_tasks
 
     @pyqtSlot(int)
@@ -362,7 +377,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if self.ready == False:
             return
         self.ready = False
-        self.progressBar.setValue((step_number+1)/self.num_tasks*100)
+        self.progressBar.setValue((step_number + 1) / self.num_tasks * 100)
         self.ready = True
 
     def popup(self, s):
@@ -473,12 +488,91 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             event.ignore()
 
-    @pyqtSlot()
-    def show_pretest_dialog(self):
+    @pyqtSlot(str)
+    def show_pretest_dialog(self, formatted_date):
+        print("showing pretest dialog method called")
         dlg = PretestDialog()
+        dlg.date_output.setText(formatted_date)
+        # below: calls method in manager that latches all input variables from dialog box to variables in manager class
+        # when OK button is clicked
         dlg.pretest_signal.connect(self.manager.pretest_info_slot)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
+
+    @pyqtSlot()
+    def show_user_prompt(self, message):
+        dlg = WTFUserPrompt()
+        dlg.user_prompt_output.setText(message)
+        dlg.abort_signal.connect(self.manager.abort)
+        dlg.retry_signal.connect(self.manager.retry)
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.exec()
+
+    @pyqtSlot()
+    def show_ua_retract_warn_prompt(self):
+        dlg = UARetractDialog()
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.cancel_signal.connect(self.manager.abort)
+        dlg.exec()
+
+    @pyqtSlot()
+    def show_write_cal_data_prompt(self, calibration_data):  # calibration data var is 2d list
+        dlg = WriteCalDataToUA()
+        dlg.schema.setText(calibration_data[0][0])
+        dlg.serial_no.setText(calibration_data[0][1])
+        dlg.prod_date.setText(calibration_data[0][2])
+        dlg.hardware_code.setText(calibration_data[0][3])
+        dlg.common_lo_freq.setText(calibration_data[0][4])
+        dlg.common_hi_freq.setText(calibration_data[0][5])
+        dlg.beam_align.setText(calibration_data[0][6])
+        dlg.command.setText(calibration_data[0][7])
+        dlg.status.setText(calibration_data[0][8])
+        dlg.fw_version.setText(calibration_data[0][9])
+        
+        dlg.schema_lo.setText(calibration_data[1][0])
+        dlg.serial_no_lo.setText(calibration_data[1][1])
+        dlg.prod_date_lo.setText(calibration_data[1][2])
+        dlg.hardware_code_lo.setText(calibration_data[1][3])
+        dlg.common_lo_freq_lo.setText(calibration_data[1][4])
+        dlg.common_hi_freq_lo.setText(calibration_data[1][5])
+        dlg.beam_align_lo.setText(calibration_data[1][6])
+        dlg.command_lo.setText(calibration_data[1][7])
+        dlg.status_lo.setText(calibration_data[1][8])
+        dlg.fw_version_lo.setText(calibration_data[1][9])
+        
+        dlg.schema_hi.setText(calibration_data[2][0])
+        dlg.serial_no_hi.setText(calibration_data[2][1])
+        dlg.prod_date_hi.setText(calibration_data[2][2])
+        dlg.hardware_code_hi.setText(calibration_data[2][3])
+        dlg.common_lo_freq_hi.setText(calibration_data[2][4])
+        dlg.common_hi_freq_hi.setText(calibration_data[2][5])
+        dlg.beam_align_hi.setText(calibration_data[2][6])
+        dlg.command_hi.setText(calibration_data[2][7])
+        dlg.status_hi.setText(calibration_data[2][8])
+        dlg.fw_version_hi.setText(calibration_data[2][9])
+        
+        dlg.write_ua_signal.connect(self.manager.write_cal_data_to_ua_button)
+        dlg.cancel_signal.connect(self.manager.abort)
+        dlg.exec()
+
+    @pyqtSlot()
+    def show_user_prompt_pump_not_running(self, pump_status):
+        dlg = WTFUserPromptPumpNotRunning()
+        dlg.label.setText(pump_status)
+        # todo: have ua_pump_status switch react to pump_status var
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.abort)
+        dlg.exec()
+
+    @pyqtSlot()
+    def show_user_prompt_water_too_low(self, water_level):
+        dlg = WTFUserPromptWaterTooLow()
+        dlg.label.setText(water_level)
+        # todo: have ua_water_level switch react to water_level var
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.abort)
+        dlg.exec()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
