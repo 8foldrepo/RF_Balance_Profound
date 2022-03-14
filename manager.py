@@ -179,8 +179,6 @@ class Manager(QThread):
                 log_msg(self, root_logger, level='info', message="Running script")
                 self.abort_var = False  # when we run a new script, this variable should be false
                 self.scripting = True   # set variables that will trigger the execution of the script in the main loop
-                self.step_index = 0
-
                 self.cmd == ''
             elif cmd_ray[0] == 'CLOSE':
                 print("wrapping up")
@@ -193,13 +191,14 @@ class Manager(QThread):
             else:
                 pass
 
-            #advance to the next step if the previous has been completed
-            if self.step_complete:
-                self.step_index = self.step_index + 1
-
             if self.retry_var is True:
                 self.step_index = self.step_index - 1
+                self.step_complete = True
                 self.retry_var = False  # sets the retry variable to false so the retry function can happen again
+
+            #advance to the next step if the previous has been completed
+            if self.scripting and self.step_complete:
+                self.step_index = self.step_index + 1
 
             #if a script is being executed, and the step index is valid, and the previous step is complete,
             #run the next script step
@@ -397,13 +396,16 @@ class Manager(QThread):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
+        print("emitted pretest_dialog_signal from manager (before line)")
         self.pretest_dialog_signal.emit(formatted_date)
+        print("emitted pretest_dialog_signal from manager (after line)")
 
     @pyqtSlot(str,str,str)  # latches info from user in MainWindow to manager local vars
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
         self.operator_name = operator_name
         self.ua_serial_number = ua_serial_no
         self.test_comment = comment
+
         self.step_complete = True
 
     def user_prompt(self, message):  # message var is message user is to see when dialog box opens

@@ -39,7 +39,7 @@ WTF_Interface_Board:
 
 MT_Balance:
   timeout_s: 30
-  port: "COM4"
+  port: "COM7"
 
 Debugging:
   simulate_hw: True
