@@ -87,7 +87,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.style_ui()
         self.activateWindow()
-        self.disable_buttons()
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
