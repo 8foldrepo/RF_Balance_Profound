@@ -52,7 +52,7 @@ class Manager(QThread):
 
     """
     # Dialog signals
-    pretest_dialog_signal = pyqtSignal(str)  # str is date
+    pretest_dialog_signal = pyqtSignal(str)  # str is date (man -> mainwindow)
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal(str)  # str is water level
@@ -412,10 +412,18 @@ class Manager(QThread):
 
     def user_prompt_water_too_low(self, tank_status):
         self.user_prompt_signal_water_too_low_signal.emit(tank_status)
+
+        while not self.continue_var and not self.abort_var:
+            pass  # until the user clicks continue or abort in the dialog box, will wait
+
         return
 
-    def user_prompt_pump_not_running(self, pump_status):
+    def user_prompt_pump_not_running(self, pump_status):  # has a continue and abort button
         self.user_prompt_pump_not_running_signal.emit(pump_status)
+
+        while not self.continue_var and not self.abort_var:
+            pass  # until the user clicks continue or abort in the dialog box, will wait
+
         return
 
     # cal_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
@@ -452,10 +460,14 @@ class Manager(QThread):
         elemPosTest = varlist["ElementPositionTest"]
         return
 
-    def save_results(self, varlist):
+    def save_results(self, varlist, cal_data):  # cal_data is the data gathered by the UA test
         save_summary_file = bool(distutils.util.strtobool(varlist["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(varlist["Write UA Calibration"]))
-        prompt_for_calibration_write = bool(distutils.util.strtobool(varlist["PromptForCalWrite"]))
+        prompt_for_calibration_write = bool(distutils.util.strtobool(varlist["prompt_for_calibration_write"]))
+
+        if prompt_for_calibration_write:  # displays the write to UA dialog box if this variable is true
+            self.write_cal_data_to_ua_dialog(cal_data)
+
         return
 
     def prompt_user_for_action(self, varlist):
