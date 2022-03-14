@@ -134,6 +134,8 @@ class Manager(QThread):
 
         self.devices.append(self.Oscilloscope)
 
+        self.starttime = t.time()
+
     def connect_hardware(self):
         for device in self.devices:
             device.connect_hardware()
@@ -174,14 +176,13 @@ class Manager(QThread):
                     self.load_script(path)
                 except Exception as e:
                     log_msg(self, root_logger, "info", f"Error in load script: {e}")
-                self.cmd = ''
             elif cmd_ray[0] == 'RUN':
                 log_msg(self, root_logger, level='info', message="Running script")
                 self.abort_var = False  # when we run a new script, this variable should be false
                 self.scripting = True   # set variables that will trigger the execution of the script in the main loop
-                self.cmd == ''
+                self.step_complete = True
+                self.continue_var = True
             elif cmd_ray[0] == 'CLOSE':
-                print("wrapping up")
                 self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
@@ -189,40 +190,8 @@ class Manager(QThread):
                 self.Motors.exec_command(self.cmd)
             # What to do when there is no command
             else:
-                pass
-
-            if self.retry_var is True:
-                self.step_index = self.step_index - 1
-                self.step_complete = True
-                self.retry_var = False  # sets the retry variable to false so the retry function can happen again
-
-            #advance to the next step if the previous has been completed
-            if self.scripting and self.step_complete:
-                self.step_index = self.step_index + 1
-
-            #if a script is being executed, and the step index is valid, and the previous step is complete,
-            #run the next script step
-            if self.scripting and 0 <= self.step_index < len(self.taskNames):
-                if  self.step_complete:
-                    self.step_complete = False
-                    self.execute_script_step(self.step_index)
-            else:
-                #Do these things if a script is not being run
-                self.Motors.get_position()
-                self.thermocouple.get_reading()
-
-                if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
-                    # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
-                    try:
-                        time, voltage = self.Oscilloscope.capture(channel=1)
-                        time_elapsed = t.time() - starttime
-                        if time_elapsed != 0:
-                            self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
-
-                        self.plot_signal.emit(time, voltage)
-                        starttime = t.time()
-                    except pyvisa.errors.InvalidSession:
-                        self.log("Could not plot, oscilloscope resource closed")
+                self.advance_script()
+                self.capture_and_plot()
 
             self.cmd = ""
 
@@ -230,6 +199,43 @@ class Manager(QThread):
         self.mutex.unlock()
 
         return super().run()
+
+    def capture_and_plot(self):
+        # Do these things if a script is not being run
+        self.Motors.get_position()
+        self.thermocouple.get_reading()
+
+        if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
+            # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+            try:
+                time, voltage = self.Oscilloscope.capture(channel=1)
+                time_elapsed = t.time() - self.starttime
+                if time_elapsed != 0:
+                    self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
+
+                self.plot_signal.emit(time, voltage)
+            except pyvisa.errors.InvalidSession:
+                self.log("Could not plot, oscilloscope resource closed")
+
+        self.starttime = t.time()
+
+    def advance_script(self):
+        if self.retry_var is True:
+            self.step_index = self.step_index - 1
+            self.step_complete = True
+            self.retry_var = False  # sets the retry variable to false so the retry function can happen again
+
+        # advance to the next step if the previous has been completed
+        if self.scripting and self.step_complete:
+            self.step_index = self.step_index + 1
+
+        # if a script is being executed, and the step index is valid, and the previous step is complete,
+        # run the next script step
+
+        if self.scripting and 0 <= self.step_index < len(self.taskNames):
+            if self.step_complete:
+                self.step_complete = False
+                self.execute_script_step(self.step_index)
 
     def load_script(self, path):
         self.scripting = True

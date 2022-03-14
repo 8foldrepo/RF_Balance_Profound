@@ -22,12 +22,10 @@ def load_configuration() -> dict:
             update_dict_recursive(
                 configuration, yaml.load(fh, Loader=yaml.SafeLoader)
             )
-
     else:
         with open(LOCAL_CONFIG_PATH, 'r') as fh:
-            update_dict_recursive(
-                configuration, yaml.load(fh, Loader=yaml.SafeLoader)
-            )
+            local_config = yaml.load(fh, Loader=yaml.SafeLoader)
+            configuration.update(local_config)
 
     return configuration
 
@@ -46,5 +44,7 @@ def search_for(filename):
 
     return file_path
 
+if __name__ == '__main__':
+    print(load_configuration())
 def update_dict_recursive(d, u) -> dict:
     pass
