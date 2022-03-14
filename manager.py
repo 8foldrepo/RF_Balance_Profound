@@ -85,6 +85,8 @@ class Manager(QThread):
 
         # below: continue variable that let's script know when to continue; starts as false by default
         self.continue_var = False
+        self.step_complete = True
+        self.step_index = -1
 
         self.abort_var = False  # keep track of whether user has aborted script process, default false
         self.retry_var = False  # keep track of whether user wants to try script iteration, default false
@@ -175,10 +177,9 @@ class Manager(QThread):
                 self.cmd = ''
             elif cmd_ray[0] == 'RUN':
                 log_msg(self, root_logger, level='info', message="Running script")
-                try:
-                    self.run_script()
-                except Exception as e:
-                    log_msg(self, root_logger, "info", f"Error in run script: {e}")
+                self.abort_var = False  # when we run a new script, this variable should be false
+                self.scripting = True   # set variables that will trigger the execution of the script in the main loop
+                self.step_index = 0
 
                 self.cmd == ''
             elif cmd_ray[0] == 'CLOSE':
@@ -192,7 +193,22 @@ class Manager(QThread):
             else:
                 pass
 
-            if not self.scripting:
+            #advance to the next step if the previous has been completed
+            if self.step_complete:
+                self.step_index = self.step_index + 1
+
+            if self.retry_var is True:
+                self.step_index = self.step_index - 1
+                self.retry_var = False  # sets the retry variable to false so the retry function can happen again
+
+            #if a script is being executed, and the step index is valid, and the previous step is complete,
+            #run the next script step
+            if self.scripting and 0 <= self.step_index < len(self.taskNames):
+                if  self.step_complete:
+                    self.step_complete = False
+                    self.execute_script_step(self.step_index)
+            else:
+                #Do these things if a script is not being run
                 self.Motors.get_position()
                 self.thermocouple.get_reading()
 
@@ -319,69 +335,49 @@ class Manager(QThread):
 
         self.scripting = False
 
-    def run_script(self):
-        
-        self.abort_var = False  # when we run a new script, this variable should be false
-        
+    def execute_script_step(self, step_index):
         if self.taskArgs is None or self.taskArgs is None or self.taskExecOrder is None:
+            self.scripting = False
             return
 
-        self.scripting = True
+        if self.abort_var is True:  # checks to see if the abort variable is true
+            self.scripting = False
+            # exits the tasks loop, the user has aborted the script
 
-        for i in range(len(self.taskNames)):  # loops through all tasks in the script
+        name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
+        args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
-            if self.abort_var is True:  # checks to see if the abort variable is true
-                break  # exits the tasks loop, the user has aborted the script
+        if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
+            args['Element'] = self.taskExecOrder[step_index][
+                1]  # set the element to be operated on to the one in self.taskExecOrder
 
-            name = self.taskNames[i]  # sets name (str) to current iteration in taskNames list
-            args = self.taskArgs[i]  # sets args (list) to current iteration in taskArgs list
+        if "Measure element efficiency (RFB)".upper() in name.upper():
+            self.measure_element_efficiency_rfb(args)
+        elif name.upper() == "Pre-test initialisation".upper():
+            print("pre-test init task detected")
+            self.pretest_initialization(args)
+        elif "Find element n".upper() in name.upper():
+            self.find_element(args)
+        elif name.upper() == "Save results".upper():
+            self.save_results(args)
+        elif name.upper() == "Prompt user for action".upper():
+            self.prompt_user_for_action(args)
+        elif "Home system".upper() in name.upper():
+            self.home_system(args)
 
-            if not self.taskExecOrder[i][1] is None:  # if the element in the self.taskExecOrder isn't None
-                args['Element'] = self.taskExecOrder[i][
-                    1]  # set the element to be operated on to the one in self.taskExecOrder
+        self.step_number_signal.emit(self.taskExecOrder[step_index][0] + 1)
 
-            if "Measure element efficiency (RFB)".upper() in name.upper():
-                self.measure_element_efficiency_rfb(args)
-            elif name.upper() == "Pre-test initialisation".upper():
-                print("pre-test init task detected")
-                self.pretest_initialization(args)
-            elif "Find element n".upper() in name.upper():
-                self.find_element(args)
-            elif name.upper() == "Save results".upper():
-                self.save_results(args)
-            elif name.upper() == "Prompt user for action".upper():
-                self.prompt_user_for_action(args)
-            elif "Home system".upper() in name.upper():
-                self.home_system(args)
+        # below: this should allow for the retry function by setting the iteration variable backwards 1
+        # so when it gets incremented it returns to the previous position
 
-            self.step_number_signal.emit(self.taskExecOrder[i][0] + 1)
-
-            # below: this should allow for the retry function by setting the iteration variable backwards 1
-            # so when it gets incremented it returns to the previous position
-            if self.retry_var is True:
-                i = i-1
-                self.retry_var = False  # sets the retry variable to false so the retry function can happen again
-
-
-        self.scripting = False
-
-    @pyqtSlot()  # latches info from user in MainWindow to manager local vars
-    def pretest_info_slot(self, operator_name, ua_serial_no, comment):
-        self.operator_name = operator_name
-        self.ua_serial_number = ua_serial_no
-        self.test_comment = comment
-
-    # Todo: make this method abort the current script and stop moving UA
     def abort(self):
         self.abort_var = True  # sets the abort variable to true if this method is called
         return
 
-    # Todo: make this method retry the failed current step in the script
     def retry(self):
         self.retry_var = True
         return
 
-    # Todo: make this method continue to the next step in the script
     def cont(self):
         self.continue_var = True  # sets the continue variable to true so script know to continue
         return
@@ -398,17 +394,17 @@ class Manager(QThread):
         return
 
     def pretest_initialization(self, varlist):
-        print("entering pretest init method")
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
         self.pretest_dialog_signal.emit(formatted_date)
 
-        while not self.continue_var and not self.abort_var:
-            pass  # until the user clicks continue in the dialog box, will wait
-
-        self.continue_var = False  # sets the continue switch back to false for the next pause
-        return
+    @pyqtSlot(str,str,str)  # latches info from user in MainWindow to manager local vars
+    def pretest_info_slot(self, operator_name, ua_serial_no, comment):
+        self.operator_name = operator_name
+        self.ua_serial_number = ua_serial_no
+        self.test_comment = comment
+        self.step_complete = True
 
     def user_prompt(self, message):  # message var is message user is to see when dialog box opens
         self.user_prompt_signal.emit(message)  # passes message var to be carried by signal
@@ -459,7 +455,7 @@ class Manager(QThread):
     def save_results(self, varlist):
         save_summary_file = bool(distutils.util.strtobool(varlist["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(varlist["Write UA Calibration"]))
-        prompt_for_calibration_write = bool(distutils.util.strtobool(varlist["prompt_for_calibration_write"]))
+        prompt_for_calibration_write = bool(distutils.util.strtobool(varlist["PromptForCalWrite"]))
         return
 
     def prompt_user_for_action(self, varlist):

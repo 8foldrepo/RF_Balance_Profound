@@ -60,7 +60,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
 
     command_signal = QtCore.pyqtSignal(str)
-    pretest_info_signal = QtCore.pyqtSignal(str,str,str)
 
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
     plot_ready = QtCore.pyqtSignal(str)
@@ -284,7 +283,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
-        self.pretest_info_signal.connect(self.manager.pretest_info_slot)
 
     @pyqtSlot()
     def update_x_speed(self):

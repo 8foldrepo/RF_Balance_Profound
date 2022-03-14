@@ -25,7 +25,6 @@ class KeysightAWG(AbstractDevice):
         self.rm = pyvisa.ResourceManager()
         resources = self.rm.list_resources()
         self.inst = None
-
         for resource in resources:
             if "0x2507" in resource:
                 self.address = resource
