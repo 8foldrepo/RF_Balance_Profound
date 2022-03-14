@@ -30,11 +30,11 @@ class KeysightAWG(AbstractDevice):
             if "0x2507" in resource:
                 self.address = resource
                 self.inst = self.rm.open_resource(resource)
+                self.get_state()
+                self.connected_signal.emit(True)
         if self.inst == None:
             self.log("Keysight 33509B Series function generator not found", level='error')
-
-        self.get_state()
-        self.connected_signal.emit(True)
+            self.connected_signal.emit(False)
 
     def disconnect_hardware(self):
         try:
