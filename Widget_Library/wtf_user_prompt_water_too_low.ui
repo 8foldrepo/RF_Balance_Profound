@@ -266,8 +266,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>10</x>
      <y>100</y>
-     <width>40</width>
-     <height>13</height>
+     <width>91</width>
+     <height>16</height>
     </rect>
    </property>
    <property name="font">

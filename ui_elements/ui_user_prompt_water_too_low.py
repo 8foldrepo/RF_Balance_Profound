@@ -7,9 +7,12 @@ class WTFUserPromptWaterTooLow(QDialog, wtf_user_prompt_water_too_low.Ui_wtf_use
     continue_signal = pyqtSignal()
     abort_signal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, high = False):
         super().__init__()
         self.setupUi(self)
+        if high:
+            self.user_prompt_output.setPlainText("Measurement tank water too high.\n\nPlease fill the measurement tank and click to continue.")
+        self.configure_signals()
 
     def configure_signals(self):
         self.continue_button.clicked.connect(self.continue_clicked)

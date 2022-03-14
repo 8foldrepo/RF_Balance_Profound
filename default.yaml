@@ -18,6 +18,7 @@ Dummy_Oscilloscope:
 
 Keysight_AWG:
 
+Water_Level_Sensor:
 
 Keysight_Oscilloscope:
   range_mv: 10
@@ -30,7 +31,7 @@ Keysight_Oscilloscope:
 Pump:
   timeout_s: 1
   on_by_default: False
-  port: "COM5"
+  port: "COM7"
 
 WTF_Interface_Board:
   timeout_s: 1

@@ -30,6 +30,10 @@ from Hardware.MT_balance import MT_balance
 from Hardware.keysight_oscilloscope import KeysightOscilloscope
 from Hardware.relay_board import Relay_Board
 from Hardware.keysight_awg import KeysightAWG
+from Hardware.water_level_sensor import  WaterLevelSensor
+
+pump_status = ""
+tank_status = ""
 
 
 class Manager(QThread):
@@ -80,11 +84,16 @@ class Manager(QThread):
     finished_signal = pyqtSignal()
     Motors = None
 
+    script_highlight_signal = pyqtSignal(str)
+
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
 
-        # below: continue variable that let's script know when to continue; starts as false by default
-        self.continue_var = False
+        self.water_level_good = None  # boolean variable to see if the water is level in the tank
+        self.test_comment = None
+        self.ua_serial_number = None
+        self.operator_name = None
+
         self.step_complete = True
         self.step_index = -1
 
@@ -118,6 +127,7 @@ class Manager(QThread):
         self.Balance = MT_balance(config=self.config)
         self.Pump = Relay_Board(config=self.config, device_key='Pump')
         self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
+        self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
 
         self.devices.append(self.Pump)
         self.devices.append(self.Balance)
@@ -353,22 +363,27 @@ class Manager(QThread):
         args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
         if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
-            args['Element'] = self.taskExecOrder[step_index][
-                1]  # set the element to be operated on to the one in self.taskExecOrder
+            # below: set the element to be operated on to the one in self.taskExecOrder
+            args['Element'] = self.taskExecOrder[step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb(args)
+            self.script_highlight_signal(name)
         elif name.upper() == "Pre-test initialisation".upper():
-            print("pre-test init task detected")
             self.pretest_initialization(args)
+            self.script_highlight_signal(name)
         elif "Find element n".upper() in name.upper():
             self.find_element(args)
+            self.script_highlight_signal(name)
         elif name.upper() == "Save results".upper():
             self.save_results(args)
+            self.script_highlight_signal(name)
         elif name.upper() == "Prompt user for action".upper():
             self.prompt_user_for_action(args)
+            self.script_highlight_signal(name)
         elif "Home system".upper() in name.upper():
             self.home_system(args)
+            self.script_highlight_signal(name)
 
         self.step_number_signal.emit(self.taskExecOrder[step_index][0] + 1)
 
@@ -383,28 +398,22 @@ class Manager(QThread):
         self.retry_var = True
         return
 
-    def cont(self):
-        self.continue_var = True  # sets the continue variable to true so script know to continue
-        return
-
     def write_cal_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
-        self.continue_var = True  # this statement should run after writing calibration data to UA
+        self.step_complete = True  # this statement should run after writing calibration data to UA
         pass
 
-    def measure_element_efficiency_rfb(self, varlist):
-        element = varlist['Element']
-        frequency_range = varlist['Frequency range']
-        on_off_cycles = varlist['RFB.#on/off cycles']
+    def measure_element_efficiency_rfb(self, variable_list):
+        element = variable_list['Element']
+        frequency_range = variable_list['Frequency range']
+        on_off_cycles = variable_list['RFB.#on/off cycles']
         return
 
-    def pretest_initialization(self, varlist):
+    def pretest_initialization(self, variable_list):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
-        print("emitted pretest_dialog_signal from manager (before line)")
-        self.pretest_dialog_signal.emit(formatted_date)
-        print("emitted pretest_dialog_signal from manager (after line)")
+        self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
 
     @pyqtSlot(str,str,str)  # latches info from user in MainWindow to manager local vars
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
@@ -412,79 +421,118 @@ class Manager(QThread):
         self.ua_serial_number = ua_serial_no
         self.test_comment = comment
 
-        self.step_complete = True
+        if self.Pump.get_reading() and self.Water_Level_Sensor.get_reading() == 'level':  # if the ua pump is running and the water level is good
+            self.step_complete = True  # continue to the next step via setting bool var to true
+        else:
+            if not self.Pump.get_reading():  # if the pump is not running
+                self.user_prompt_pump_not_running()  # launch the dialog box signifying this issue
+            if not self.Water_Level_Sensor.get_reading() == 'level':  # if the water level is not good
+                self.user_prompt_water_too_low()  # launch the dialog box signifying this issue
 
-    def user_prompt(self, message):  # message var is message user is to see when dialog box opens
-        self.user_prompt_signal.emit(message)  # passes message var to be carried by signal
-        return
+        return  # at this point this step is done, and we can return from the method
 
-    def user_prompt_water_too_low(self, tank_status):
-        self.user_prompt_signal_water_too_low_signal.emit(tank_status)
-
-        while not self.continue_var and not self.abort_var:
-            pass  # until the user clicks continue or abort in the dialog box, will wait
-
-        return
-
-    def user_prompt_pump_not_running(self, pump_status):  # has a continue and abort button
+    def user_prompt_pump_not_running(self):  # this dialog box has a "continue" and an "abort" button
         self.user_prompt_pump_not_running_signal.emit(pump_status)
 
-        while not self.continue_var and not self.abort_var:
-            pass  # until the user clicks continue or abort in the dialog box, will wait
+        if self.step_complete:  # if user clicks continue
+            if not self.Pump.get_reading():  # but the issue has not been resolved
+                self.step_complete = False  # set the step complete variable to false
+                # below: relaunch this method, window will relaunch and will close recursively
+                self.user_prompt_pump_not_running()
+            else:  # however, if the issue has been solved
+                return  # leave the method
 
-        return
+        return  # will return from root and recursively called instance of this method
 
-    # cal_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
-    def write_cal_data_to_ua_dialog(self, cal_data):
-        self.write_cal_data_to_ua_signal.emit(cal_data)
+    def user_prompt_water_too_low(self):  # this dialog box has a "continue" and an "abort" button
+        self.user_prompt_signal_water_too_low_signal.emit(self.Water_Level_Sensor.get_reading())
 
-        while not self.continue_var and not self.abort_var:
-            pass  # until the user clicks write ua or abort in the dialog box, will wait
+        if self.step_complete:  # if user clicks continue
+            if self.water_level != "level":  # but the issue has not been resolved
+                self.step_complete = False  # set the step complete variable to false
+                # below: relaunch this method, window will relaunch and will close recursively
+                self.user_prompt_water_too_low()
+            else:  # however, if the issue has been solved
+                return  # leave the method
 
-        return
+        return  # will return from root and recursively called instance of this method
+
+    def user_prompt(self, message):  # message var is message user should see when dialog box opens
+        self.user_prompt_signal.emit(message)  # passes message var to be carried by signal
+
+        if self.step_complete:  # if the user selects the continue button
+            return  # leave this method
+
+        elif self.abort_var:  # if the user has selected the abort button
+            return  # leave this method, the "execute script" method will handle aborting the script
+
+        elif self.retry_var:  # if the user selects the retry button
+            return  # leave this method, the "execute script" method will handle retrying the current step
+
 
     def retract_ua_warning(self):
         self.retracting_ua_warning_signal.emit()
 
-        while not self.continue_var and not self.abort_var:
-            pass  # until the user clicks continue or abort in the dialog box, will wait
+        if self.step_complete:  # the user has clicked the continue button
+            return  # leave the method, the step_complete var will remain true
 
-        self.continue_var = False  # sets the continue switch back to false for the next pause
+        elif self.abort_var:  # the user has clicked the abort button
+            return  # leave the method, the "execute script" method will handle abandoning the script
+
+    def find_element(self, variable_list):
+        element = variable_list['Element']
+        x_increment_MM = variable_list['X Incr. (mm)']
+        XPts = variable_list['X #Pts.']
+        thetaIncrDeg = variable_list['Theta Incr. (deg)']
+        thetaPts = variable_list['Theta #Pts.']
+        scope_channel = variable_list['Scope channel']
+        acquisition_type = variable_list['Acquisition type']
+        averages = variable_list['Averages']
+        data_storage = variable_list['Data storage']
+        storage_location = variable_list['Storage location']
+        data_directory = variable_list["Data directory"]
+        maxPosErrMM = variable_list["Max. position error (+/- mm)"]
+        elemPosTest = variable_list["ElementPositionTest"]
         return
 
-    def find_element(self, varlist):
-        element = varlist['Element']
-        x_increment_MM = varlist['X Incr. (mm)']
-        XPts = varlist['X #Pts.']
-        thetaIncrDeg = varlist['Theta Incr. (deg)']
-        thetaPts = varlist['Theta #Pts.']
-        scope_channel = varlist['Scope channel']
-        acquisition_type = varlist['Acquisition type']
-        averages = varlist['Averages']
-        data_storage = varlist['Data storage']
-        storage_location = varlist['Storage location']
-        data_directory = varlist["Data directory"]
-        maxPosErrMM = varlist["Max. position error (+/- mm)"]
-        elemPosTest = varlist["ElementPositionTest"]
-        return
+    def save_results(self, variable_list, calibration_data):  # calibration_data is the data gathered by the UA test
+        save_summary_file = bool(distutils.util.strtobool(variable_list["Save summary file"]))
+        write_uac_calibration = bool(distutils.util.strtobool(variable_list["Write UA Calibration"]))
+        prompt_for_calibration_write = bool(distutils.util.strtobool(variable_list["prompt_for_calibration_write"]))
 
-    def save_results(self, varlist, cal_data):  # cal_data is the data gathered by the UA test
-        save_summary_file = bool(distutils.util.strtobool(varlist["Save summary file"]))
-        write_uac_calibration = bool(distutils.util.strtobool(varlist["Write UA Calibration"]))
-        prompt_for_calibration_write = bool(distutils.util.strtobool(varlist["prompt_for_calibration_write"]))
-
-        if prompt_for_calibration_write:  # displays the write to UA dialog box if this variable is true
-            self.write_cal_data_to_ua_dialog(cal_data)
+        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
+            self.write_cal_data_to_ua_dialog(calibration_data)
 
         return
 
-    def prompt_user_for_action(self, varlist):
-        prompt_type = varlist["Prompt type"]
+    def prompt_user_for_action(self, variable_list):
+        prompt_type = variable_list["Prompt type"]
         return
 
-    def home_system(self, varlist):
-        axis_to_home = varlist['Axis to home']
+    def home_system(self, variable_list):
+        axis_to_home = variable_list['Axis to home']
+        if axis_to_home == 'X':
+            self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
+
+        if self.step_complete:  # if the user clicks the continue button in the warning box
+            self.step_complete = False  # set the variable back to false in order to signify when movement is done
+            pass  # TODO: have the pump home in the desired direction
+            self.step_complete = True  # movement is done, this step has been completed
+
+        elif self.abort_var:  # if the user click the abort button in the dialog box
+            return  # leave this method, the "execute script" method will handle abandoning the currently running script
+
         return
+
+    # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
+    def write_cal_data_to_ua_dialog(self, calibration_data):
+        self.write_cal_data_to_ua_signal.emit(calibration_data)
+
+        if self.step_complete:  # if the user presses the "write to UA" button in the dialog box
+            return  # we already did the code logic to write the calibration data to the ua, so just continue
+
+        elif self.abort_var:  # if the user click the abort button in the dialog box
+            return  # leave this method, the "execute script" method will handle abandoning the currently running script
 
     def printList(self, list2):
         for x in range(len(list2)):

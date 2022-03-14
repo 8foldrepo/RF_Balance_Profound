@@ -61,7 +61,7 @@ class Ui_wtf_user_prompt_pump_not_running(object):
         self.user_prompt_output.setLineWidth(2)
         self.user_prompt_output.setObjectName("user_prompt_output")
         self.ua_pump_status = Switch(wtf_user_prompt_pump_not_running)
-        self.ua_pump_status.setEnabled(False)
+        self.ua_pump_status.setEnabled(True)
         self.ua_pump_status.setGeometry(QtCore.QRect(10, 120, 71, 21))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(0, 197, 0))
