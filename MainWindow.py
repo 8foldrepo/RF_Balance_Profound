@@ -87,6 +87,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.style_ui()
         self.activateWindow()
+        self.disable_buttons()
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -140,6 +141,28 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
         self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
+
+    def disable_buttons(self):
+        self.x_pos_button.setEnabled(False)
+        self.x_neg_button.setEnabled(False)
+        self.run_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.load_button.setEnabled(False)
+        self.go_element_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
+        self.retract_ua_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.show_config_button.setEnabled(False)
+        self.save_config_button.setEnabled(False)
+        self.abort_button.setEnabled(False)
+        self.manual_home_button.setEnabled(False)
+        self.pushButton.setEnabled(False)
+        self.theta_pos_button.setEnabled(False)
+        self.theta_neg_button.setEnabled(False)
+        self.retract_button.setEnabled(False)
+        self.reset_zero_button.setEnabled(False)
+        self.go_theta_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
 
     # Save the settings input into the UI field to the local.yaml config file
     def save_config(self):
