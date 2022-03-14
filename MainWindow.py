@@ -21,7 +21,7 @@ from PyQt5.QtCore import pyqtSlot, QThread
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QColor, QBrush
 from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
 from manager import Manager
@@ -209,6 +209,21 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_step_view.expandAll()
         self.script_step_view.setHeaderHidden(True)
 
+    @pyqtSlot(int, int)  # loop number and item number
+    def highlight_item(self, current_item):
+        # TODO: have function highlight which item it's on
+        pass
+
+    @pyqtSlot(str)
+    def highlight_step(self, current_step):  # current_step should match "Task type" from above
+        for i in range(0, len(self.script_step_view)):
+            self.script_step_view[i].setBackground(QBrush().setColor("white"))
+
+        item_to_highlight = self.script_step_view.findItems(current_step)  # should set var to QStandardItem
+        item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
+
+        self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
+
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
@@ -244,6 +259,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
         self.manager.script_info_signal.connect(self.visualize_script)
+        self.manager.script_highlight_signal.connect(self.highlight_step)
 
         # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
@@ -556,19 +572,31 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.cancel_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot()
+    @pyqtSlot(str)
     def show_user_prompt_pump_not_running(self, pump_status):
         dlg = WTFUserPromptPumpNotRunning()
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
+        dlg.set_pump_signal.connect(self.manager.Pump.relay_write)
         dlg.exec()
 
-    @pyqtSlot()
+    @pyqtSlot(str)
     def show_user_prompt_water_too_low(self, water_level):
-        dlg = WTFUserPromptWaterTooLow()
-        dlg.label.setText(water_level)
+        if water_level == 'above_level':
+            dlg = WTFUserPromptWaterTooLow(high=True)
+        else:
+            dlg = WTFUserPromptWaterTooLow(high=False)
+
+        if water_level == 'above_level':
+            dlg.label.setText("Above level")
+        elif water_level == 'below_level':
+            dlg.label.setText("Below level")
+        elif water_level == 'level':
+            dlg.label.setText("Water level is good")
+
+
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)

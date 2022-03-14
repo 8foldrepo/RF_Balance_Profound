@@ -106,7 +106,7 @@ class Ui_wtf_user_prompt_water_too_low(object):
         self.ua_pump_status.setText("")
         self.ua_pump_status.setObjectName("ua_pump_status")
         self.label = QtWidgets.QLabel(wtf_user_prompt_water_too_low)
-        self.label.setGeometry(QtCore.QRect(10, 100, 40, 13))
+        self.label.setGeometry(QtCore.QRect(10, 100, 91, 16))
         font = QtGui.QFont()
         font.setBold(False)
         font.setWeight(50)

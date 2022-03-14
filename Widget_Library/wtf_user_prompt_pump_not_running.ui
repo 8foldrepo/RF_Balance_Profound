@@ -123,7 +123,7 @@ p, li { white-space: pre-wrap; }
   </widget>
   <widget class="Switch" name="ua_pump_status">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
