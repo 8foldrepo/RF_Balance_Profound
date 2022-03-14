@@ -282,12 +282,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(float)
     def update_refresh_rate(self, refresh_rate):
-        x_position_ratio = .05
-        y_position_ratio = .75
+        #x_position_ratio = .5
+        #y_position_ratio = .5
         axX = self.waveform_plot.getAxis('bottom')
-        x_pos = axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
+        x_pos = 0 #axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
         axY = self.waveform_plot.getAxis('left')
-        y_pos = axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
+        y_pos = 0 #axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
         self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
 
     """Command the motors to go to the insertion point"""

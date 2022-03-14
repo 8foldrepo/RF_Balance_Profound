@@ -122,8 +122,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             mode = "average"
         else:
             mode = "HRESolution"
-        average_num = preamble[2]
-        num_points = int(preamble[3])
+        num_points = int(preamble[2])
+        average_num = preamble[3]
         sample_interval_s = float(preamble[4])
         x_origin = float(preamble[5])
         x_reference = float(preamble[6])
@@ -134,15 +134,17 @@ class KeysightOscilloscope(AbstractOscilloscope):
         #Capture data
         self.inst.write("WAV:DATA?")
         voltages_v = self.inst.read().split(",")
-        temp = voltages_v[0].split()[-1]
-        voltages_v[0] = temp
+        #temp = voltages_v[0].split()[-1]
+        #voltages_v[0] = temp
         # removes the metadata at the beginning
-        voltages_v.pop(0)
+        if '#' in voltages_v[0]:
+            voltages_v[0] = voltages_v[0][10:]
+
         for i in range(len(voltages_v)):
             voltages_v[i] = float(voltages_v[i])
 
         #Create time array
-        times_s = [0]*num_points
+        times_s = [0]*(num_points)
         for i in range(num_points):
             times_s[i] = (i-x_reference)*sample_interval_s + x_origin
 
