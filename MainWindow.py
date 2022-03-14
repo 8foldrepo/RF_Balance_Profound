@@ -378,7 +378,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if self.ready == False:
             return
         self.ready = False
-        self.progressBar.setValue((step_number + 1) / self.num_tasks * 100)
+        self.progressBar.setValue(int((step_number + 1) / self.num_tasks * 100))
         self.ready = True
 
     def popup(self, s):
@@ -491,7 +491,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_pretest_dialog(self, formatted_date):
-        print("showing pretest dialog method called")
+        print("show_pretest_dialog method called")
         dlg = PretestDialog()
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
