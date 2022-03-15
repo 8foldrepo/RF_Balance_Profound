@@ -80,7 +80,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager = Manager(parent=self, config=self.config)
         self.plot_ready = True
         self.thread_list.append(self.manager)
-
+        self.tree_items = None
+        self.arg_dicts = None
         self.configure_signals()
         self.manager.connect_hardware()
         self.manager.start(priority=4)
@@ -220,72 +221,57 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def visualize_script(self, arg_dicts: list):
         #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
 
+        self.arg_dicts = arg_dicts
+
         task_dict = {}
-        for i in range(len(arg_dicts)):
-            if not '# of Tasks' in arg_dicts[i].keys():
+        print(self.arg_dicts)
+        for i in range(len(self.arg_dicts)):
+            if not '# of Tasks' in self.arg_dicts[i].keys():
                 arg_list = list()
-
-                for key in arg_dicts[i]:
+                for key in self.arg_dicts[i]:
                     if not key == "Task type":
-                        arg_list.append([key,arg_dicts[i][key]])
+                        arg_list.append([key,self.arg_dicts[i][key]])
 
-                task_dict[arg_dicts[i]["Task type"]] = arg_list
+                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
 
-
-
-
-        items = []
+        self.tree_items = []
         for key, values in task_dict.items():
             item = QTreeWidgetItem([key])
             for value in values:
                 child = QTreeWidgetItem(value)
                 item.addChild(child)
-            items.append(item)
 
-        self.script_step_view.insertTopLevelItems(0, items)
+            self.tree_items.append(item)
 
-        print(self.script_step_view.model())
+        self.script_step_view.insertTopLevelItems(0, self.tree_items)
 
-        self.script_step_view.setCurrentIndex(self.script_step_view.model().createIndex(2,0,self.script_step_view.invisibleRootItem()))
-        print(self.script_step_view.currentIndex().row())
-
-        self.script_step_view.itemClicked.connect(self.on_item_clicked)
-
-    def on_item_clicked(self):
-        index = self.script_step_view.currentIndex()
-        print(index.row())
-        print(index.column())
+    def update_script_visual_element_number(self, element_number):
+        if 'Element' in element_number:
+            return
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        rootItem = self.script_step_view.invisibleRootItem()
+        for i in range(rootItem.childCount()):
+            task = rootItem.child(i)
+            for j in range(task.childCount()):
+                var = task.child(j)
+                var_name = var.text(0)
+                var_value = var.text(1)
+                #If the variable is an element number that is looped
+                if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
+                    var.setText(1,f'Current: {self.live_element_field.text()}')
 
     @pyqtSlot(int, int)  # loop number and item number
     def highlight_item(self, current_item):
         # TODO: have function highlight which item it's on
         pass
 
-    @pyqtSlot(str)
-    def highlight_step(self, current_step):  # current_step should match "Task type" from above
-
-        rootItem = self.script_step_view.model().invisibleRootItem()
-
-        row_count = rootItem.rowCount()
-        print(self.script_step_view.model())
-
-        brush = QBrush()
-        brush.setColor(QColor(255,255,255))
-
-        for i in range(0, row_count):
-            rootItem.child(i).setBackground(brush)
-
-        brush.setColor(QColor(0, 0, 0))
-
-        for j in range(row_count):
-            if rootItem.child(j).text() == current_step:
-                rootItem.child(j).setBackground(brush)
-
-
-        #item_to_highlight = self.rootItem.findItems(current_step)  # should set var to QStandardItem
-        #item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
-
-        #self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
+    @pyqtSlot(int)
+    def expand_step(self, step_index):  # current_step should match "Task type" from above
+        if self.tree_items is not None:
+            for item in self.tree_items:
+                item.setExpanded(False)
+            if 0<= step_index < len(self.tree_items):
+                self.tree_items[step_index].setExpanded(True)
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
@@ -310,6 +296,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
+        self.abort_button.clicked.connect(lambda: self.command_signal.emit("ABORT"))
 
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
@@ -321,8 +308,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.description_signal.connect(self.script_description_field.setText)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
+        self.manager.expand_step_signal.connect(self.expand_step)
         self.manager.script_info_signal.connect(self.visualize_script)
-        self.manager.script_highlight_signal.connect(self.highlight_step)
+        self.manager.element_number_signal.connect(self.live_element_field.setText)
+        self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
@@ -659,12 +648,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         elif water_level == 'level':
             dlg.label.setText("Water level is good")
 
-
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

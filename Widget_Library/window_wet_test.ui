@@ -79,7 +79,7 @@
          <item>
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEdit_5">
+            <widget class="QLineEdit" name="live_element_field">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -3022,7 +3022,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>8</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -5573,6 +5573,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Operator</string>
            </property>
@@ -5609,6 +5614,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>PMI_Admin</string>
            </property>
@@ -5621,6 +5631,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Account</string>
@@ -5635,6 +5650,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -5648,6 +5668,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Administrator</string>
            </property>
@@ -5660,6 +5685,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Password</string>
@@ -5677,6 +5707,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -5692,6 +5727,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Operator</string>
@@ -5725,6 +5765,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Theta_HomeCoord</string>
            </property>
@@ -5738,6 +5783,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>X-Element1</string>
            </property>
@@ -5750,6 +5800,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>X-TankInsertionPoint</string>
@@ -5777,6 +5832,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>X-Element pitch (mm)</string>
            </property>
@@ -5795,6 +5855,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -5821,6 +5886,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5846,6 +5916,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5862,6 +5937,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>ThetaPreHomeMove</string>
            </property>
@@ -5874,6 +5954,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>XHomeCoord</string>
@@ -5893,6 +5978,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -5919,6 +6009,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5944,6 +6039,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5962,6 +6062,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string/>
@@ -5996,6 +6101,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>ThetaLoadEnc?</string>
            </property>
@@ -6009,6 +6119,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>CentreHomeTheta?</string>
            </property>
@@ -6021,6 +6136,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string/>
@@ -6050,6 +6170,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <item>
             <property name="text">
              <string>Automatic</string>
@@ -6064,6 +6189,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Fill/drain mode</string>
@@ -6084,6 +6214,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -6106,6 +6241,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>WTF3</string>
@@ -6140,6 +6280,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Water level timeout (s)</string>
            </property>
@@ -6152,6 +6297,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>DAQ Device Name</string>
@@ -6178,6 +6328,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.LowFreqLimit(MHz)</string>
            </property>
@@ -6197,6 +6352,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6212,6 +6372,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>LF.LowFreqLimit(MHz)</string>
@@ -6246,6 +6411,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.Amplitude(mVpp)</string>
            </property>
@@ -6259,6 +6429,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.HighFreqLimit(MHz)</string>
            </property>
@@ -6271,6 +6446,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Search.FineIncr(MHz)</string>
@@ -6291,6 +6471,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6310,6 +6495,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.BurstCount</string>
            </property>
@@ -6322,6 +6512,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>LF.HighFreqLimit(MHz)</string>
@@ -6349,6 +6544,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>LF.Amplitude(mVpp)</string>
            </property>
@@ -6362,6 +6562,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>LF.BurstCount</string>
            </property>
@@ -6374,6 +6579,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Search.CoarseIncr</string>
@@ -6394,6 +6604,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
            </property>
@@ -6413,6 +6628,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
            </property>
@@ -6431,6 +6651,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6454,6 +6679,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6475,6 +6705,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6498,6 +6733,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6520,6 +6760,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6541,6 +6786,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6572,7 +6822,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>8</pointsize>
+             <pointsize>7</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -6592,7 +6842,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>8</pointsize>
+             <pointsize>7</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -6610,6 +6860,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA results</string>
            </property>
@@ -6622,6 +6877,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt</string>
@@ -6654,6 +6914,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Min time of flight (s)</string>
@@ -6688,6 +6953,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Max time of flight (s)</string>
            </property>
@@ -6706,6 +6976,11 @@
              <width>50</width>
              <height>40</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-99999999999999.000000000000000</double>
@@ -6728,6 +7003,11 @@
              <width>50</width>
              <height>40</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-99999999999999.000000000000000</double>
@@ -6793,6 +7073,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <item>
             <property name="text">
              <string>No dialog (abort)</string>
@@ -6807,6 +7092,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Retries</string>
@@ -6841,6 +7131,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Pass fail action</string>
            </property>
@@ -6853,6 +7148,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -6873,6 +7173,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Interrupt action</string>
            </property>
@@ -6885,6 +7190,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <item>
             <property name="text">
@@ -6901,6 +7211,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6916,6 +7231,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Dialog Timeout (s)</string>
