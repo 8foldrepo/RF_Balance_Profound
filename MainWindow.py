@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
-        self.widget_4.refresh(x, y)
+        self.rfb_graph.refresh(x, y)
 
     # Populate fields in config tab with settings from the config file
     def populate_config_ui(self):

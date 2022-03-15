@@ -204,8 +204,10 @@ class Manager(QThread):
                 self.Motors.exec_command(self.cmd)
             # What to do when there is no command
             else:
-                self.advance_script()
-                self.capture_and_plot()
+                if self.scripting:
+                    self.advance_script()
+                else:
+                    self.capture_and_plot()
 
             self.cmd = ""
 
