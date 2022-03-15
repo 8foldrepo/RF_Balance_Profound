@@ -1,3 +1,4 @@
+import copy
 from configparser import ConfigParser
 
 import os
@@ -232,13 +233,42 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         webbrowser.open("local.yaml")
 
     # Display the task names and arguments from the script parser with a QTreeView
+    def visualize_script_editor(self, arg_dicts: list):
+        print(arg_dicts)
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        self.script_editor.treeWidget.clear()
+        self.arg_dicts = arg_dicts
+
+        task_dict = {}
+        for i in range(len(self.arg_dicts)):
+            if not '# of Tasks' in self.arg_dicts[i].keys():
+                arg_list = list()
+                for key in self.arg_dicts[i]:
+                    if not key == "Task type":
+                        arg_list.append([key,self.arg_dicts[i][key]])
+
+                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
+
+        tree_items = []
+        for key, values in task_dict.items():
+            item = QTreeWidgetItem([key])
+            for value in values:
+                child = QTreeWidgetItem(value)
+                item.addChild(child)
+
+            tree_items.append(item)
+
+        self.script_editor.treeWidget.setHeaderHidden(True)
+        self.script_editor.treeWidget.insertTopLevelItems(0, tree_items)
+
+    # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
+        print(arg_dicts)
         #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
         self.arg_dicts = arg_dicts
 
         task_dict = {}
-        print(self.arg_dicts)
         for i in range(len(self.arg_dicts)):
             if not '# of Tasks' in self.arg_dicts[i].keys():
                 arg_list = list()
@@ -257,6 +287,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             self.tree_items.append(item)
 
+        self.script_step_view.setHeaderHidden(True)
         self.script_step_view.insertTopLevelItems(0, self.tree_items)
 
     def update_script_visual_element_number(self, element_number):
@@ -310,7 +341,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
-        self.abort_button.clicked.connect(lambda: self.command_signal.emit("ABORT"))
+        self.abort_button.clicked.connect(self.manager.abort)
 
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
@@ -324,6 +355,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.step_number_signal.connect(self.calc_progress)
         self.manager.expand_step_signal.connect(self.expand_step)
         self.manager.script_info_signal.connect(self.visualize_script)
+        self.manager.script_info_signal.connect(self.visualize_script_editor)
         self.manager.element_number_signal.connect(self.live_element_field.setText)
         self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
@@ -573,7 +605,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_pretest_dialog(self, formatted_date):
-        print("show_pretest_dialog method called")
         dlg = PretestDialog()
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class

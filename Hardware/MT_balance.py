@@ -58,7 +58,6 @@ class MT_balance(AbstractSensor):
     #TODO: make code recognize the com port without hard coding it
     def connect_hardware(self):
         try:
-            print(self.port)
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
                 baudrate=1200,

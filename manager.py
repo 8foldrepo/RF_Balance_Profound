@@ -221,7 +221,7 @@ class Manager(QThread):
         self.Motors.get_position()
         self.thermocouple.get_reading()
 
-        if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
+        if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 6:
             # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
             try:
                 time, voltage = self.Oscilloscope.capture(channel=1)
@@ -405,6 +405,7 @@ class Manager(QThread):
     '''Aborts script'''
     @pyqtSlot()
     def abort(self):
+        self.log('Aborting script')
         #Reset script control variables
         self.scripting = False
         self.step_index = -1
@@ -569,10 +570,11 @@ class Manager(QThread):
         if 'CLOSE' in command.upper():
             self.log('Wrapping up')
             self.wrap_up()
+            self.cmd = ''
             return
         if 'ABORT' in command.upper():
-            self.log('Aborting script')
             self.abort()
+            self.cmd = ''
             return
         self.cmd = command
         self.condition.wakeAll()

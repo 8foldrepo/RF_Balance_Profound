@@ -130,7 +130,6 @@ class AbstractMotorController(AbstractDevice):
 
         @property
         def calibrate(self):
-            print("calibration getter called")
             return (
                 self._x_calibrate,
                 self._y_calibrate,

@@ -17,11 +17,6 @@ def load_configuration() -> dict:
 
     if os.path.isfile(LOCAL_CONFIG_PATH) is False:  # -> file does not exist
         print(f"[-] File: {LOCAL_CONFIG_PATH} does not exist")
-
-        with open(LOCAL_CONFIG_PATH, 'r') as fh:
-            update_dict_recursive(
-                configuration, yaml.load(fh, Loader=yaml.SafeLoader)
-            )
     else:
         with open(LOCAL_CONFIG_PATH, 'r') as fh:
             local_config = yaml.load(fh, Loader=yaml.SafeLoader)
@@ -43,8 +38,3 @@ def search_for(filename):
         file_path = os.path.join(grandparent_directory, filename)
 
     return file_path
-
-if __name__ == '__main__':
-    print(load_configuration())
-def update_dict_recursive(d, u) -> dict:
-    pass

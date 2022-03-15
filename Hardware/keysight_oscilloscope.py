@@ -59,7 +59,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getVertScale_V(self, channel):
         self.inst.write(f"CHAN{channel}:SCAL?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
         t.sleep(0.03)
 
     def setVertScale_V(self, volts_per_div, channel):
@@ -68,7 +68,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getVertOffset(self, channel):
         self.inst.write(f"CHAN{channel}:OFFS?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
         t.sleep(0.03)
 
     def setVertOffset_V(self, channel, offset):
@@ -77,7 +77,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getHorzScale_V(self):
         self.inst.write(f"TIM:SCAL?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
 
     def setHorzScale_sec(self, seconds):
         self.inst.write(f"TIM:SCAL {seconds}")
@@ -85,7 +85,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getHorzOffset_sec(self):
         self.inst.write("TIM:POS?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
         t.sleep(0.03)
 
     def setHorzOffset_sec(self, offset):
@@ -94,12 +94,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getFreq_Hz(self):
         self.inst.write("MEAS:FREQ?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
         t.sleep(0.03)
 
     def getAmp_V(self):
         self.inst.write("MEAS:VAMP?")
-        print(float(self.inst.read()))
+        return (float(self.inst.read()))
         t.sleep(0.03)
 
     def capture(self, channel):

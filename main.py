@@ -46,7 +46,5 @@ def main(args):
     sys.exit(code)
 # ==> end of main
 
-
-
 if __name__ == "__main__":
     main(sys.argv)
