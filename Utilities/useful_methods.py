@@ -2,6 +2,7 @@ import os
 import time as t
 import numpy as np
 import yaml
+import collections.abc
 
 named_devices = {
     "USB0::0x1AB1::0x0643::DG8A223502685::INSTR": "Rigol 1",
@@ -40,6 +41,14 @@ def create_comma_string(axes:list,coords:list,ax_letters:list):
 
     print(answer)
     return  answer
+
+def update(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 def printList(self, list2):
     for x in range(len(list2)):

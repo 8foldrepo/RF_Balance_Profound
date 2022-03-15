@@ -36,6 +36,7 @@ def main(args):
     QThread.currentThread().setObjectName("ui_thread")
     
     window.show()
+    window.load_system_info()
     window.populate_config_ui()
     #window.prompt_for_password()
 

@@ -17,10 +17,24 @@ Dummy_Oscilloscope:
   delay_cycles: 0
 
 Keysight_AWG:
+  identifier: "0x2507"
+  #Substring that the code checks for in pyvisa resource name to identify the AWG
+  frequency_Hz: 4290000
+  amplitude_V: .2
+  burst: False
+  burst_cycles: 50
+  ext_trig: False
+  burst_period_s: .10
+  offset_V: 0
+  output: True
+  output_Impedance: 50
+  set_on_startup: True
 
 Water_Level_Sensor:
 
 Keysight_Oscilloscope:
+  identifier: "0x179B"
+  #Substring that the code checks for in pyvisa resource name to identify the scope
   range_mv: 10
   channel: 1
   averages: 16

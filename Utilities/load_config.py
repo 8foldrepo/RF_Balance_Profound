@@ -1,6 +1,6 @@
 import yaml
 import os
-
+from Utilities import useful_methods
 ROOT_LOGGER_NAME = 'wtf_log'
 
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
@@ -25,7 +25,7 @@ def load_configuration() -> dict:
     else:
         with open(LOCAL_CONFIG_PATH, 'r') as fh:
             local_config = yaml.load(fh, Loader=yaml.SafeLoader)
-            configuration.update(local_config)
+            useful_methods.update(configuration, local_config)
 
     return configuration
 

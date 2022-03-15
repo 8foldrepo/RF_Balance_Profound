@@ -15,7 +15,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
-            if "0x179B" in resource:
+            if self.config[self.device_key]["identifier"] in resource:
                 try:
                     self.inst = self.rm.open_resource(resource)
                     self.inst.write("*OPC?")

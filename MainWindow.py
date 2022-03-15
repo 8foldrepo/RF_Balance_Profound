@@ -1,3 +1,5 @@
+from configparser import ConfigParser
+
 import os
 import smtplib
 import sys
@@ -88,6 +90,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.style_ui()
         self.activateWindow()
+
+    def load_system_info(self):
+        output = ''
+        parser = ConfigParser()
+        parser.read("systeminfo.ini")
+        for item in parser:
+            output = output + (f'[{item}]\n')
+            for entry in parser[item]:
+                output = output + (f'{entry}\n')
+            output = output + '\n'
+
+        self.textBrowser.setText(output)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -220,7 +234,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
         #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
-
+        self.script_step_view.clear()
         self.arg_dicts = arg_dicts
 
         task_dict = {}
