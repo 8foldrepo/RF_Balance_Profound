@@ -4,7 +4,7 @@ import sys
 import webbrowser
 import yaml
 import csv
-
+import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
@@ -17,7 +17,7 @@ from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunn
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSlot, QThread
+from PyQt5.QtCore import pyqtSlot, QThread, QItemSelectionModel, QModelIndex
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
@@ -95,6 +95,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
         self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
 
+        #Format treewidget
+        self.script_step_view.setColumnCount(2)
+        self.script_step_view.setHeaderLabels(["Task", "Arguments"])
+        self.script_step_view.header().resizeSection(0, 220)
+
+        #add default data to plots
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
@@ -212,24 +218,43 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
-        treeModel = QStandardItemModel()
-        rootNode = treeModel.invisibleRootItem()
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
 
+        task_dict = {}
         for i in range(len(arg_dicts)):
-
             if not '# of Tasks' in arg_dicts[i].keys():
-                task = QStandardItem(arg_dicts[i]["Task type"])
+                arg_list = list()
 
                 for key in arg_dicts[i]:
                     if not key == "Task type":
-                        arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
-                        task.appendRow(arg)
+                        arg_list.append([key,arg_dicts[i][key]])
 
-                rootNode.appendRow(task)
+                task_dict[arg_dicts[i]["Task type"]] = arg_list
 
-        self.script_step_view.setModel(treeModel)
-        self.script_step_view.expandAll()
-        self.script_step_view.setHeaderHidden(True)
+
+
+
+        items = []
+        for key, values in task_dict.items():
+            item = QTreeWidgetItem([key])
+            for value in values:
+                child = QTreeWidgetItem(value)
+                item.addChild(child)
+            items.append(item)
+
+        self.script_step_view.insertTopLevelItems(0, items)
+
+        print(self.script_step_view.model())
+
+        self.script_step_view.setCurrentIndex(self.script_step_view.model().createIndex(2,0,self.script_step_view.invisibleRootItem()))
+        print(self.script_step_view.currentIndex().row())
+
+        self.script_step_view.itemClicked.connect(self.on_item_clicked)
+
+    def on_item_clicked(self):
+        index = self.script_step_view.currentIndex()
+        print(index.row())
+        print(index.column())
 
     @pyqtSlot(int, int)  # loop number and item number
     def highlight_item(self, current_item):
@@ -238,13 +263,29 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def highlight_step(self, current_step):  # current_step should match "Task type" from above
-        for i in range(0, len(self.script_step_view)):
-            self.script_step_view[i].setBackground(QBrush().setColor("white"))
 
-        item_to_highlight = self.script_step_view.findItems(current_step)  # should set var to QStandardItem
-        item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
+        rootItem = self.script_step_view.model().invisibleRootItem()
 
-        self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
+        row_count = rootItem.rowCount()
+        print(self.script_step_view.model())
+
+        brush = QBrush()
+        brush.setColor(QColor(255,255,255))
+
+        for i in range(0, row_count):
+            rootItem.child(i).setBackground(brush)
+
+        brush.setColor(QColor(0, 0, 0))
+
+        for j in range(row_count):
+            if rootItem.child(j).text() == current_step:
+                rootItem.child(j).setBackground(brush)
+
+
+        #item_to_highlight = self.rootItem.findItems(current_step)  # should set var to QStandardItem
+        #item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
+
+        #self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)

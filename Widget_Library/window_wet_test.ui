@@ -1078,7 +1078,7 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLineEdit" name="lineEdit">
+            <widget class="QLineEdit" name="temp_field">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -2593,7 +2593,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QTreeView" name="script_step_view"/>
+       <widget class="QTreeWidget" name="script_step_view">
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </item>
@@ -3016,7 +3022,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">

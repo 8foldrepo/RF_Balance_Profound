@@ -368,22 +368,22 @@ class Manager(QThread):
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
         elif name.upper() == "Pre-test initialisation".upper():
             self.pretest_initialization(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
         elif "Find element n".upper() in name.upper():
             self.find_element(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
         elif name.upper() == "Save results".upper():
             self.save_results(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
         elif name.upper() == "Prompt user for action".upper():
             self.prompt_user_for_action(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
         elif "Home system".upper() in name.upper():
             self.home_system(args)
-            self.script_highlight_signal(name)
+            self.script_highlight_signal.emit(name)
 
         self.step_number_signal.emit(self.taskExecOrder[step_index][0] + 1)
 
@@ -392,11 +392,12 @@ class Manager(QThread):
 
     def abort(self):
         self.abort_var = True  # sets the abort variable to true if this method is called
-        return
+
+    def cont(self):
+        self.continue_var = True
 
     def retry(self):
         self.retry_var = True
-        return
 
     def write_cal_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
