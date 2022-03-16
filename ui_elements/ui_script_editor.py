@@ -17,7 +17,6 @@ class ScriptEditor(QWidget, Ui_Form):
     def updateTree(self):
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
-        self.arg_dicts = arg_dicts
 
         [{'# of Tasks': '14', 'Createdby': 'PSM', 'Createdon': '25/08/2016',
           'Description': 'Script runs through finding elements (Beam angle test), HF and LF efficiency only. Manual setting of frequency at start of test.'},
