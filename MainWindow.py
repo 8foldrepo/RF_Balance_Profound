@@ -101,6 +101,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.rfb_tab.set_config(self.config)
         self.rfb_tab.set_balance(self.manager.Balance)
 
+        self.results_tab.set_config(self.config)
+        self.results_tab.set_manager(self.manager)
+
 
     def load_system_info(self):
         output = ''

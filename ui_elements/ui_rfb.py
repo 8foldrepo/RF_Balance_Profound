@@ -10,7 +10,6 @@ class RFB(QWidget, Ui_Form):
         self.balance = None
         self.manager = None
         self.config = None
-
         # add default data to plots
         y = range(0, 100)
         x = range(0, 100)
@@ -29,5 +28,4 @@ class RFB(QWidget, Ui_Form):
         # add default data to plots
         y = range(0, 100)
         x = range(0, 100)
-        self.profile_plot.refresh(x, y)
         self.rfb_graph.refresh(x, y)
