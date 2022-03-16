@@ -21,6 +21,7 @@ class ScriptEditor(QWidget, Ui_Form):
         self.move_cmd_down_button.clicked.connect(self.move_selection_down)
         self.move_cmd_up_button.clicked.connect(self.move_selection_up)
         self.update_tree_button.clicked.connect(self.updateTree)
+        self.save_script_button.clicked.connect(self.save_script)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
@@ -170,6 +171,24 @@ class ScriptEditor(QWidget, Ui_Form):
         self.treeWidget.insertTopLevelItems(index, [self.dict_to_tree_item(new_arg_dict)])
 
         print(self.arg_dicts)
+
+    def save_script(self):
+        path = QFileDialog.getSaveFileName(parent=self,caption='Save script',filter='Script files (*.wtf)')[0]
+
+        with open(path, 'w') as f:
+            #Write header info
+            f.write('[Top Level]\n')
+            for arg in self.arg_dicts[0].keys():
+                f.write(f"{arg} = \"{self.arg_dicts[0][arg]}\"\n")
+            f.write("\n")
+
+            #Write arguments of each step
+            for i in range(len(self.arg_dicts)-1):
+                f.write(f'[Task{i}]\n')
+                task_args = self.arg_dicts[i+1]
+                for arg in task_args.keys():
+                    f.write(f"{arg} = \"{task_args[arg]}\"\n")
+                f.write("\n")
 
 if __name__ == '__main__':
     editor = ScriptEditor()

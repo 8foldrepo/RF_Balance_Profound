@@ -72,7 +72,6 @@ class Relay_Board(AbstractSensor):
                 return False
         return False
 
-
     def relay_write(self, on: bool):
         if self.ser is None:
             self.log(level='error', message=f'{self.device_key} not connected')
@@ -86,6 +85,7 @@ class Relay_Board(AbstractSensor):
             self.get_reading()
 
         #self.on = on
+
 
 if __name__ == '__main__':
     switch = Relay_Board()

@@ -3,6 +3,7 @@ from datetime import date
 import pyvisa
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from typing import Optional
+from collections import OrderedDict
 import distutils.util
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
@@ -253,7 +254,7 @@ class Manager(QThread):
         currentLine = -1
         addingElementsToLoop = False
         buildingLoop = False
-        taskVars = dict()  # the list of variables for the individual task
+        taskVars = OrderedDict()  # the list of variables for the individual task
         taskNo = -2  # keeps track of the task number for indexing
         f = open(path, "r")
         for line in self.script:
