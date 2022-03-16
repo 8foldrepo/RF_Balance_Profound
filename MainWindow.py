@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.threading = False
 
         self.setupUi(self)
+        self.app = QApplication.instance()
 
         self.thread_list = list()
         self.config = load_configuration()
@@ -282,6 +283,30 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
+        self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
+        self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
+
+    @pyqtSlot(str)
+    def update_water_level_indicator(self, water_level):
+        print(f"inside update water lvl indicator method; water_level = {water_level}")
+        if water_level == "below_level":
+            self.tank_level_indicator.setStyleSheet("background-color:red")
+            self.tank_level_indicator.setText("TANK LOW")
+        elif water_level == "above_level":
+            self.tank_level_indicator.setStyleSheet("background-color:red")
+            self.tank_level_indicator.setText("TANK HIGH")
+        elif water_level == "level":
+            self.tank_level_indicator.setStyleSheet("background-color:green")
+            self.tank_level_indicator.setText("TANK LEVEL")
+
+    @pyqtSlot(bool)
+    def update_pump_indicator(self, is_on):
+        if is_on:
+            self.ua_pump_indicator.setStyleSheet("background-color: green")
+            self.ua_pump_indicator.setText("UA PUMP ON")
+        else:
+            self.ua_pump_indicator.setStyleSheet("background-color: grey")
+            self.ua_pump_indicator.setText("UA PUMP OFF")
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
