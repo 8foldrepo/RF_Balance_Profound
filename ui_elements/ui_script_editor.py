@@ -88,30 +88,20 @@ class ScriptEditor(QWidget, Ui_Form):
     def end_loop_dict(self):
         return {'Task type': 'End loop'}
 
-    def dict_to_tree_item(self, dict):
-        task_dict = {}
-        for i in range(len(self.arg_dicts)):
-            if not '# of Tasks' in self.arg_dicts[i].keys():
-                arg_list = list()
-                for key in self.arg_dicts[i]:
-                    if not key == "Task type":
-                        arg_list.append([key, self.arg_dicts[i][key]])
-
-                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
-
-        item = QTreeWidgetItem([dict["Task type"]])
+    def dict_to_tree_item(self, task_dict):
+        item = QTreeWidgetItem([task_dict["Task type"]])
 
         arg_list = list()
-        for key in dict:
+        for key in task_dict:
             if not key == "Task type":
-                arg_list.append([key, dict[key]])
+                arg_list.append([key, task_dict[key]])
 
         #Add parameters as child items
-        for key, values in task_dict.items():
-            item = QTreeWidgetItem([key])
-            for value in values:
-                child = QTreeWidgetItem(value)
-                item.addChild(child)
+        print(task_dict)
+
+        for parameter in arg_list:
+            child = QTreeWidgetItem(parameter)
+            item.addChild(child)
 
         return  item
 
@@ -177,8 +167,6 @@ class ScriptEditor(QWidget, Ui_Form):
         self.treeWidget.insertTopLevelItems(index, [self.dict_to_tree_item(new_arg_dict)])
 
         print(self.arg_dicts)
-
-
 
 if __name__ == '__main__':
     editor = ScriptEditor()
