@@ -97,6 +97,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.position_tab.set_motors(self.manager.Motors)
         self.position_tab.configure_signals()
 
+        self.rfb_tab.set_manager(self.manager)
+        self.rfb_tab.set_config(self.config)
+        self.rfb_tab.set_balance(self.manager.Balance)
+
+
     def load_system_info(self):
         output = ''
         parser = ConfigParser()
@@ -125,7 +130,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
-        self.rfb_graph.refresh(x, y)
 
     def disable_buttons(self):
         self.x_pos_button.setEnabled(False)
