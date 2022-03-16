@@ -9,6 +9,7 @@ import time
 from Widget_Library.widget_script_editor import  Ui_Form
 from collections import  OrderedDict
 
+#Todo: add the rest of the methods to the dropdown
 class ScriptEditor(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -30,6 +31,19 @@ class ScriptEditor(QWidget, Ui_Form):
         self.update_tree_button.clicked.connect(self.updateTree)
         self.save_script_button.clicked.connect(self.save_script)
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
+        self.delete_step_button.clicked.connect(self.delete_step)
+        self.delete_all_button.clicked.connect(self.delete_all)
+
+    def delete_step(self):
+        index = self.treeWidget.currentIndex().row()
+        self.treeWidget.takeTopLevelItem(index)
+        self.arg_dicts.pop(index + 1) #account for header
+        pass
+
+    def delete_all(self):
+        self.treeWidget.clear()
+        self.arg_dicts = list()
+        pass
 
     def on_item_clicked(self):
         index = self.treeWidget.currentIndex()
