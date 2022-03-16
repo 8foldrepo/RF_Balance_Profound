@@ -181,7 +181,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             self.tree_items.append(item)
 
-        self.script_step_view.setHeaderHidden(True)
         self.script_step_view.insertTopLevelItems(0, self.tree_items)
 
     def update_script_visual_element_number(self, element_number):
@@ -330,7 +329,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if self.ready == False:
             return
         self.ready = False
-        self.progressBar.setValue(int((step_number + 1) / self.num_tasks * 100))
+        if not self.num_tasks == 0:
+            self.progressBar.setValue(int((step_number + 1) / self.num_tasks * 100))
         self.ready = True
 
     def popup(self, s):

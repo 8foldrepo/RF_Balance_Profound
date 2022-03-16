@@ -7,14 +7,21 @@ from PyQt5.QtGui import QIcon
 from PyQt5 import QtGui, QtCore
 import time
 from Widget_Library.widget_script_editor import  Ui_Form
+from collections import  OrderedDict
 
 class ScriptEditor(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
+        self.style_ui()
         self.configure_signals()
-
         self.arg_dicts = None
+
+    def style_ui(self):
+        # Format treewidget
+        self.treeWidget.setColumnCount(2)
+        self.treeWidget.setHeaderLabels(["Task", "Arguments"])
+        self.treeWidget.header().resizeSection(0, 220)
 
     def configure_signals(self):
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
@@ -22,6 +29,27 @@ class ScriptEditor(QWidget, Ui_Form):
         self.move_cmd_up_button.clicked.connect(self.move_selection_up)
         self.update_tree_button.clicked.connect(self.updateTree)
         self.save_script_button.clicked.connect(self.save_script)
+        self.treeWidget.itemClicked.connect(self.on_item_clicked)
+
+    def on_item_clicked(self):
+        index = self.treeWidget.currentIndex()
+        if not index.column() == 1:
+            return
+        #Click is in the variable column
+        item = self.treeWidget.currentItem()
+        value = item.text(1)
+
+        is_task = item.parent() is self.treeWidget.invisibleRootItem() or item.parent() is None
+        if is_task:
+            return
+
+
+
+        #Clicked cell contains a variable value
+        #Prompt user to edit value
+        value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
+        if value is not None and value != '':
+            item.setText(1, value)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
@@ -55,45 +83,51 @@ class ScriptEditor(QWidget, Ui_Form):
 
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
 
-        self.treeWidget.setHeaderHidden(True)
         # self.script_editor.treeWidget.insertTopLevelItems(0, tre)
 
     def header_dict(self):
-        return {'# of Tasks': '14', 'Createdby': 'PSM', 'Createdon': '25/08/2016',
-         'Description': 'Script runs through finding elements (Beam angle test), '
-                        'HF and LF efficiency only. Manual setting of frequency at start of test.'}
+        return OrderedDict([('# of Tasks', '14'), ('Createdon', '25/08/2016'), ('Createdby', 'PSM'),
+                            ('Description', 'Script runs through finding elements (Beam angle test), '
+                                    'HF and LF efficiency only. Manual setting of frequency at start of test.')])
 
     def measure_effeciency_dict(self):
-        return {'Amplitude (mVpp)': '100.000000', 'Data directory': '', 'EfficiencyTest': 'TRUE', 'Element': 'Current',
-         'Frequency (MHz)': '4.200000', 'Frequency range': 'Low frequency', 'Pa max (target, W)': '4.000000',
-         'Pf max (limit, W)': '12.000000', 'RFB target angle': '-90.000000',
-         'RFB target position': 'Average UA RFB position', 'RFB.#on/off cycles': '3', 'RFB.Off time (s)': '10.000000',
-         'RFB.Offset': '0.500000', 'RFB.On time (s)': '10.000000', 'RFB.Threshold': '0.050000',
-         'Reflection limit (%)': '70.000000', 'Set frequency options': 'Common peak frequency',
-         'Storage location': 'UA results directory', 'Task type': 'Measure element efficiency (RFB)'}
+        return OrderedDict([('Task type', 'Measure element efficiency (RFB)'), ('Element', 'Current'),
+                            ('Frequency range', 'Low frequency'), ('RFB.#on/off cycles', '3'),
+                            ('RFB.On time (s)', '10.000000'), ('RFB.Off time (s)', '10.000000'),
+                            ('RFB.Threshold', '0.050000'), ('RFB.Offset', '0.500000'),
+                            ('Set frequency options', 'Common peak frequency'), ('Frequency (MHz)', '4.200000'),
+                            ('Amplitude (mVpp)', '100.000000'), ('Storage location', 'UA results directory'),
+                            ('Data directory', ''), ('RFB target position', 'Average UA RFB position'),
+                            ('RFB target angle', '-90.000000'), ('EfficiencyTest', 'TRUE'),
+                            ('Pa max (target, W)', '4.000000'), ('Pf max (limit, W)', '12.000000'),
+                            ('Reflection limit (%)', '70.000000')])
 
     def pre_test_dict(self):
-        return  {'Task type': 'Pre-test initialisation'}
+        return  OrderedDict([('Task type', 'Pre-test initialisation')])
 
     def find_element_dict(self):
-        return {'#Cycles.Capture': '10', '#Cycles.Delay': '0', 'Acquisition type': 'N Averaged Waveform',
-         'Amplitude (mV)': '50.000000', 'Auto set timebase': 'TRUE', 'Averages': '16', 'BeamAngleTest': 'FALSE',
-         'Burst count': '50', 'Data directory': '', 'Data storage': 'Do not store', 'Element': 'Element 1',
-         'ElementPositionTest': 'FALSE', 'Frequency (MHz)': '4.400000', 'Frequency settings': 'Avg. Low frequency',
-         'Max angle variation (deg)': '2.000000', 'Max. position error (+/- mm)': '0.200000',
-         'Scope channel': 'Channel 1', 'Storage location': 'UA results directory', 'Task type': 'Find element n',
-         'Theta #Pts.': '41', 'Theta Incr. (deg)': '-0.400000', 'X #Pts.': '21', 'X Incr. (mm)': '0.250000'}
+        return OrderedDict([('Task type', 'Find element \"n\"'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
+                            ('X #Pts.', '21'), ('Theta Incr. (deg)', '-0.400000'), ('Theta #Pts.', '41'),
+                            ('Scope channel', 'Channel 1'), ('Acquisition type', 'N Averaged Waveform'),
+                            ('Averages', '16'), ('Data storage', 'Do not store'),
+                            ('Storage location', 'UA results directory'), ('Data directory', ''),
+                            ('Max. position error (+/- mm)', '0.200000'), ('ElementPositionTest', 'FALSE'),
+                            ('Max angle variation (deg)', '2.000000'), ('BeamAngleTest', 'FALSE'),
+                            ('Frequency settings', 'Avg. Low frequency'), ('Auto set timebase', 'TRUE'),
+                            ('#Cycles.Capture', '10'), ('#Cycles.Delay', '0'), ('Frequency (MHz)', '4.400000'),
+                            ('Amplitude (mV)', '50.000000'), ('Burst count', '50')])
 
     def loop_over_elements_dict(self):
-        return {'Element 1': 'TRUE', 'Element 10': 'TRUE', 'Element 2': 'TRUE', 'Element 3': 'TRUE', 'Element 4': 'TRUE',
-         'Element 5': 'TRUE', 'Element 6': 'TRUE', 'Element 7': 'TRUE', 'Element 8': 'TRUE', 'Element 9': 'TRUE',
-         'Task type': 'Loop over elements'}
+        return OrderedDict([('Task type', 'Loop over elements'), ('Element 1', 'TRUE'), ('Element 2', 'TRUE'),
+                            ('Element 3', 'TRUE'), ('Element 4', 'TRUE'), ('Element 5', 'TRUE'), ('Element 6', 'TRUE'),
+                            ('Element 7', 'TRUE'), ('Element 8', 'TRUE'), ('Element 9', 'TRUE'),
+                            ('Element 10', 'TRUE')])
 
     def home_system_dict(self):
-        return {'Axis to home': 'Theta', 'Task type': 'Home system'}
+        return OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'X')])
 
     def end_loop_dict(self):
-        return {'Task type': 'End loop'}
+        return OrderedDict([('Task type', 'End loop_1')])
 
     def dict_to_tree_item(self, task_dict):
         item = QTreeWidgetItem([task_dict["Task type"]])
@@ -192,5 +226,3 @@ class ScriptEditor(QWidget, Ui_Form):
 
 if __name__ == '__main__':
     editor = ScriptEditor()
-
-    editor.script_

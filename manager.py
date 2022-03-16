@@ -186,6 +186,7 @@ class Manager(QThread):
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
             if cmd_ray[0] == 'LOAD':
+                self.abort()
                 log_msg(self, root_logger, level='info', message="Loading script")
                 try:
                     cmd_ray.pop(0)
@@ -272,7 +273,7 @@ class Manager(QThread):
             currentLine = currentLine + 1
             if line == '\n':
                 if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
-                    tasks.append(dict(taskVars))
+                    tasks.append(OrderedDict(taskVars))
                     taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
                 if addingElementsToLoop:  # detects if we're done with the element name block for the loop in script
                     addingElementsToLoop = False  # we're done with the block so set the flag to false
@@ -282,9 +283,8 @@ class Manager(QThread):
                 if "Task" in line and not buildingLoop:
                     self.taskExecOrder.append(taskNo)  # adding task number to the execution list
             else:  # above ensures we're not parsing a task header nor blank line
-                x = (line.split('='))  # all other lines are variable assignment lines, no need to check for '='
-                x0 = x[0].strip()  # remove trailing/leading spaces
-                x1 = x[1].strip().replace('"', "")  # does above but also removes quotation marks
+                x0 = ray[0].strip()  # remove trailing/leading spaces
+                x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
                 taskVars[x0] = x1  # add the temporary variable pair to the task's variable list
 
                 if "# of Tasks" in x0:
@@ -317,7 +317,7 @@ class Manager(QThread):
                             taskNo)  # add the current task no. to the list of tasks we need to run in loop
 
         if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
-            tasks.append(dict(taskVars))
+            tasks.append(OrderedDict(taskVars))
             taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
 
         for i in range(len(self.taskExecOrder)):
@@ -361,14 +361,12 @@ class Manager(QThread):
             if self.step_complete:
                 self.step_complete = False
                 self.execute_script_step(self.step_index)
-                #todo: remove delay (its for demo purposes)
-                t.sleep(1)
         elif self.step_index >= len(self.taskNames):
             self.abort()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
     def execute_script_step(self, step_index):
-        if self.taskArgs is None or self.taskArgs is None or self.taskExecOrder is None:
+        if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
             return
 
