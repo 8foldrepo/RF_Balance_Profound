@@ -37,7 +37,7 @@ def main(args):
     
     window.show()
     window.load_system_info()
-    window.populate_config_ui()
+    window.system_config.populate_config_ui()
     #window.prompt_for_password()
 
     code = app.exec_()
