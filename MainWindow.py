@@ -258,8 +258,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             tree_items.append(item)
 
+        self.script_editor.treeWidget.invisibleRootItem().addChildren(tree_items)
+
         self.script_editor.treeWidget.setHeaderHidden(True)
-        self.script_editor.treeWidget.insertTopLevelItems(0, tree_items)
+        #self.script_editor.treeWidget.insertTopLevelItems(0, tre)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):

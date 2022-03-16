@@ -16,8 +16,6 @@ class ScriptEditor(QWidget, Ui_Form):
 
     def updateTree(self):
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
-        self.script_step_view.clear()
-        self.arg_dicts = arg_dicts
 
         [{'# of Tasks': '14', 'Createdby': 'PSM', 'Createdon': '25/08/2016',
           'Description': 'Script runs through finding elements (Beam angle test), HF and LF efficiency only. Manual setting of frequency at start of test.'},
@@ -92,6 +90,15 @@ class ScriptEditor(QWidget, Ui_Form):
 
     def configure_signals(self):
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
+        self.move_cmd_down_button.clicked.connect(self.move_selection_down)
+
+    def move_selection_down(self):
+        index = self.treeWidget.currentIndex()
+        self.treeWidget.setCurrentIndex(index.sibling(index.row()+1, index.column()))
+
+    def move_selection_up(self):
+        index = self.treeWidget.currentIndex()
+        self.treeWidget.setCurrentIndex(index.sibling(index.row()-1, index.column()))
 
     def add_cmd_to_script_clicked(self):
         self.treeWidget.insertTopLevelItems(0, [QTreeWidgetItem([self.script_cmd_dropdown.currentText()])])
