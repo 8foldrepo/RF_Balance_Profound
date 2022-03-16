@@ -4,6 +4,8 @@ from PyQt5.QtCore import pyqtSignal
 from Utilities.load_config import load_configuration
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 import time as t
+from PyQt5.QtCore import pyqtSignal
+
 
 class Relay_Board(AbstractSensor):
     reading_signal = pyqtSignal(bool)

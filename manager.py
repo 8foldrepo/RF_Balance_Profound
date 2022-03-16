@@ -31,7 +31,7 @@ from Hardware.MT_balance import MT_balance
 from Hardware.keysight_oscilloscope import KeysightOscilloscope
 from Hardware.relay_board import Relay_Board
 from Hardware.keysight_awg import KeysightAWG
-from Hardware.water_level_sensor import  WaterLevelSensor
+from Hardware.water_level_sensor import WaterLevelSensor
 
 pump_status = ""
 tank_status = ""
@@ -92,35 +92,35 @@ class Manager(QThread):
 
         self.config = config
 
-        #Stores latest command to be executed in the event loop
+        # Stores latest command to be executed in the event loop
         self.cmd = ''
 
-        #Event loop control vars
+        # Event loop control vars
         self.mutex = QMutex()
         self.condition = QWaitCondition()
 
-        #Test Data
+        # Test Data
         self.test_data = None
 
-        #Test Metadata
+        # Test Metadata
         self.test_comment = ""
         self.ua_serial_number = ""
         self.operator_name = ""
 
-        #Script file
+        # Script file
         self.script = None
 
-        #Script data
+        # Script data
         self.taskArgs = None
         self.taskExecOrder = None
-        self.taskNames = None
+        self.taskArgs = None
 
-        #Script control vars
+        # Script control vars
         self.scripting = False
         self.continue_var = True
         self.retry_var = False  # keep track of whether user wants to try script iteration, default false
 
-        #Keeps track of script step in progress
+        # Keeps track of script step in progress
         self.step_complete = True
         self.step_index = -1
 
@@ -141,6 +141,7 @@ class Manager(QThread):
         self.devices.append(self.Pump)
         self.devices.append(self.Balance)
         self.devices.append(self.AWG)
+        self.devices.append(self.Water_Level_Sensor)
 
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
@@ -186,7 +187,6 @@ class Manager(QThread):
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
             if cmd_ray[0] == 'LOAD':
-                self.abort()
                 log_msg(self, root_logger, level='info', message="Loading script")
                 try:
                     cmd_ray.pop(0)
@@ -340,7 +340,7 @@ class Manager(QThread):
 
         self.scripting = False
 
-    #Updates script step and executes the next step if applicable, and implements abort, continue, and retry
+    # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
     def advance_script(self):
         if self.scripting is False:
             return
@@ -374,7 +374,7 @@ class Manager(QThread):
         args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
         print(name)
-        self.step_number_signal.emit(step_index-1)
+        self.step_number_signal.emit(step_index - 1)
         t.sleep(.1)
 
         self.expand_step_signal.emit(self.taskExecOrder[step_index][0])
@@ -402,17 +402,18 @@ class Manager(QThread):
         # so when it gets incremented it returns to the previous position
 
     '''Aborts script'''
+
     @pyqtSlot()
     def abort(self):
         self.log('Aborting script')
-        #Reset script control variables
+        # Reset script control variables
         self.scripting = False
         self.step_index = -1
         self.step_complete = True
         self.continue_var = True
         self.step_number_signal.emit(-1)
 
-        #Todo: add option to save before exiting
+        # Todo: add option to save before exiting
 
         self.erase_metadata()
 
@@ -422,19 +423,22 @@ class Manager(QThread):
         self.operator_name = None
 
     '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
+
     def wait_for_cont(self):
         self.continue_var = False
         while not self.continue_var:
             if self.scripting == False:
-                #Always handle this exception
+                # Always handle this exception
                 raise AbortException
 
     '''Continues execution of script'''
+
     @pyqtSlot()
     def cont(self):
         self.continue_var = True
 
     '''Retries current step'''
+
     @pyqtSlot()
     def retry(self):
         self.retry_var = True
@@ -443,14 +447,12 @@ class Manager(QThread):
         # Todo: make this method write calibration data to UA
         pass
 
-
-
     '''Collects metadata from user and prompts user until water level is ok'''
     def pretest_initialization(self, variable_list):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
-        #Show dialog until name and serial number are input
+        # Show dialog until name and serial number are input
         while self.operator_name == "" or self.ua_serial_number == "":
             self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
             try:
@@ -458,7 +460,7 @@ class Manager(QThread):
             except AbortException:
                 return self.abort()
 
-        #Show dialogs until proceed until pump is on and the water sensor reads level
+        # Show dialogs until proceed until pump is on and the water sensor reads level
         while True:
             if not self.Pump.get_reading() == 1:  # if the pump is not running
                 # launch the dialog box signifying this issue
@@ -476,12 +478,13 @@ class Manager(QThread):
                         self.wait_for_cont()
                     except AbortException:
                         return
-                else: break
+                else:
+                    break
 
         self.step_complete = True
 
     '''latches info from user in MainWindow to manager local vars'''
-    @pyqtSlot(str,str,str)
+    @pyqtSlot(str, str, str)
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
         self.operator_name = operator_name
         self.ua_serial_number = ua_serial_no
@@ -547,11 +550,9 @@ class Manager(QThread):
 
         self.step_complete = True
 
-
     '''Warn the user that the UA is being retracted in x'''
     def retract_ua_warning(self):
         self.retracting_ua_warning_signal.emit()
-
 
     # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):
