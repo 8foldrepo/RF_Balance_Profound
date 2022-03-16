@@ -233,37 +233,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         webbrowser.open("local.yaml")
 
     # Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script_editor(self, arg_dicts: list):
-        print(arg_dicts)
-        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
-        self.script_editor.treeWidget.clear()
-        self.arg_dicts = arg_dicts
-
-        task_dict = {}
-        for i in range(len(self.arg_dicts)):
-            if not '# of Tasks' in self.arg_dicts[i].keys():
-                arg_list = list()
-                for key in self.arg_dicts[i]:
-                    if not key == "Task type":
-                        arg_list.append([key,self.arg_dicts[i][key]])
-
-                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
-
-        tree_items = []
-        for key, values in task_dict.items():
-            item = QTreeWidgetItem([key])
-            for value in values:
-                child = QTreeWidgetItem(value)
-                item.addChild(child)
-
-            tree_items.append(item)
-
-        self.script_editor.treeWidget.invisibleRootItem().addChildren(tree_items)
-
-        self.script_editor.treeWidget.setHeaderHidden(True)
-        #self.script_editor.treeWidget.insertTopLevelItems(0, tre)
-
-    # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
         print(arg_dicts)
         #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
@@ -362,8 +331,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
         self.manager.expand_step_signal.connect(self.expand_step)
+
+        #When manager loads a script, visualize it in the left pane as well as loading it into the script editor
         self.manager.script_info_signal.connect(self.visualize_script)
-        self.manager.script_info_signal.connect(self.visualize_script_editor)
+        self.manager.script_info_signal.connect(self.script_editor.visualize_script)
+
         self.manager.element_number_signal.connect(self.live_element_field.setText)
         self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
