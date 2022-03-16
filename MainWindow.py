@@ -29,7 +29,6 @@ from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
 from manager import Manager
 from Utilities.load_config import load_configuration
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 
@@ -80,6 +79,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.thread_list = list()
         self.config = load_configuration()
         self.system_config.set_config(self.config)
+        self.position_tab.set_config(self.config)
 
         self.manager = Manager(parent=self, config=self.config)
         self.plot_ready = True
@@ -90,10 +90,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.connect_hardware()
         self.manager.start(priority=4)
 
-
-
         self.style_ui()
         self.activateWindow()
+
+        self.position_tab.set_manager(self.manager)
+        self.position_tab.set_motors(self.manager.Motors)
+        self.position_tab.configure_signals()
 
     def load_system_info(self):
         output = ''
@@ -278,34 +280,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware control signals
-        self.command_signal.connect(self.manager.exec_command)
-        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
-        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X-"))
-        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R+"))
-        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
-        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
-        self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
-        self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
-        self.manual_home_button.clicked.connect(self.manual_home_clicked)
+        self.command_signal.connect(self.manager.exec_command)  # deplicate of line 262
         self.insert_button.clicked.connect(self.insert_button_clicked)
-        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
-        self.insert_ua_button.clicked.connect(self.insert_button_clicked)
-        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
-        self.go_element_button.clicked.connect(self.go_element_button_clicked)
+
         # Hardware info signals
-        self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
-        self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
-        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
         self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
+        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+
         # Manager communication signals
         self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
@@ -315,6 +301,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
+
+    """Command the motors to go to the insertion point"""
+    @pyqtSlot()
+    def insert_button_clicked(self):
+        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     @pyqtSlot()
     def update_x_speed(self):
@@ -343,57 +334,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         axY = self.waveform_plot.getAxis('left')
         y_pos = 0 #axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
         self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
-
-    """Command the motors to go to the insertion point"""
-
-    @pyqtSlot()
-    def insert_button_clicked(self):
-        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
-
-    """Command the motors to retract until a sensor is reached"""
-
-    @pyqtSlot()
-    def retract_button_clicked(self):
-        # TODO: fill in later with the code that uses the retraction sensor
-        self.command_signal.emit(f"Motor Go {-50}")
-
-    """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
-
-    @pyqtSlot()
-    def go_element_button_clicked(self):
-        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
-        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
-
-        if is_number(self.go_element_combo.currentText()):
-            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
-            target_position = element_1_pos + offset
-            self.command_signal.emit(f"Motor Go {target_position}")
-        else:
-            # TODO: fill in later to handle "current" element condition
-            return
-
-    @pyqtSlot()
-    def manual_home_clicked(self):
-        if self.x_home_radio.isChecked():
-            self.command_signal.emit("Motor go 0")
-        elif self.theta_home_radio.isChecked():
-            self.command_signal.emit("Motor go ,0")
-        elif self.all_axes_radio.isChecked():
-            self.command_signal.emit("Motor go 0,0")
-
-    @pyqtSlot(float)
-    def update_x_postion(self, mm):
-        try:
-            self.x_pos_lineedit.setText(str(mm))
-        except KeyboardInterrupt:
-            pass
-
-    @pyqtSlot(float)
-    def update_r_postion(self, mm):
-        try:
-            self.theta_pos_lineedit.setText(str(mm))
-        except KeyboardInterrupt:
-            pass
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

@@ -1,16 +1,10 @@
 import os
-import webbrowser
 
-import pyqtgraph as pg
 import yaml
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtGui import QIcon
-from PyQt5 import QtGui, QtCore
-import time
+
 from Widget_Library.widget_system_config import Ui_Form
+
 
 class SystemConfig(QWidget, Ui_Form):
     def __init__(self, parent=None, config = None):
