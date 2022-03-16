@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>792</width>
-    <height>626</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,7 +70,7 @@
    </item>
    <item>
     <property name="text">
-     <string>Find element &quot;n&quot;</string>
+     <string>Find element n</string>
     </property>
    </item>
    <item>
@@ -232,7 +232,7 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QPushButton" name="delete_step_button_2">
+     <widget class="QPushButton" name="update_tree_button">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -256,7 +256,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="delete_step_button_3">
+     <widget class="QPushButton" name="save_script_button">
       <property name="minimumSize">
        <size>
         <width>0</width>

@@ -112,7 +112,7 @@ class Manager(QThread):
         #Script data
         self.taskArgs = None
         self.taskExecOrder = None
-        self.taskArgs = None
+        self.taskNames = None
 
         #Script control vars
         self.scripting = False

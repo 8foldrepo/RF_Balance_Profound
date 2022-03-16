@@ -16,6 +16,12 @@ class ScriptEditor(QWidget, Ui_Form):
 
         self.arg_dicts = None
 
+    def configure_signals(self):
+        self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
+        self.move_cmd_down_button.clicked.connect(self.move_selection_down)
+        self.move_cmd_up_button.clicked.connect(self.move_selection_up)
+        self.update_tree_button.clicked.connect(self.updateTree)
+
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
         self.arg_dicts = arg_dicts
@@ -74,7 +80,7 @@ class ScriptEditor(QWidget, Ui_Form):
          'Burst count': '50', 'Data directory': '', 'Data storage': 'Do not store', 'Element': 'Element 1',
          'ElementPositionTest': 'FALSE', 'Frequency (MHz)': '4.400000', 'Frequency settings': 'Avg. Low frequency',
          'Max angle variation (deg)': '2.000000', 'Max. position error (+/- mm)': '0.200000',
-         'Scope channel': 'Channel 1', 'Storage location': 'UA results directory', 'Task type': 'Find element',
+         'Scope channel': 'Channel 1', 'Storage location': 'UA results directory', 'Task type': 'Find element n',
          'Theta #Pts.': '41', 'Theta Incr. (deg)': '-0.400000', 'X #Pts.': '21', 'X Incr. (mm)': '0.250000'}
 
     def loop_over_elements_dict(self):
@@ -106,18 +112,28 @@ class ScriptEditor(QWidget, Ui_Form):
         return  item
 
     def updateTree(self):
-        counter = 0
-        for task in self.arg_dicts:
-            if "Measure element efficiency (RFB)" in task["Task type"]:
-                if counter == 0:
-                    task["Task type"] = "Measure element efficiency (RFB)"
+        arg_dict_copy = list(self.arg_dicts)
 
-                counter = counter + 1
+        task_names = [self.script_cmd_dropdown.itemText(i) for i in range(self.script_cmd_dropdown.count())]
+        print(arg_dict_copy)
+        print(type(arg_dict_copy))
 
-    def configure_signals(self):
-        self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
-        self.move_cmd_down_button.clicked.connect(self.move_selection_down)
-        self.move_cmd_up_button.clicked.connect(self.move_selection_up)
+        #For each task name,
+        for task_name in task_names:
+            #Count the occurrences of that task name,
+            counter = 0
+            for i in range(len(arg_dict_copy)):
+                if "Task type" in arg_dict_copy[i].keys():
+                    if task_name in arg_dict_copy[i]["Task type"]:
+                        if counter == 0:
+                            arg_dict_copy[i]["Task type"] = f"{task_name}"
+                        else:
+                            #And number each one after the first one
+                            arg_dict_copy[i]["Task type"] = f"{task_name}_{counter}"
+                        counter = counter + 1
+
+        #Refresh the visualizer
+        self.visualize_script(arg_dict_copy)
 
     def move_selection_down(self):
         index = self.treeWidget.currentIndex()
@@ -143,13 +159,13 @@ class ScriptEditor(QWidget, Ui_Form):
             new_arg_dict = self.measure_effeciency_dict()
         elif task_name == 'Pre-test initialisation':
             new_arg_dict = self.pre_test_dict()
-        elif task_name == 'Find element "n"':
+        elif task_name == 'Find element n':
             new_arg_dict = self.find_element_dict()
         elif task_name == 'Loop over elements':
             new_arg_dict = self.loop_over_elements_dict()
 
         #add the new dictionary to arg_dicts at the correct index
-        self.arg_dicts.insert(row, new_arg_dict)
+        self.arg_dicts.insert(row+1, new_arg_dict)
 
         self.treeWidget.insertTopLevelItems(index, [self.dict_to_tree_item(new_arg_dict)])
 

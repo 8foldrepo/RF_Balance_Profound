@@ -104,7 +104,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.results_tab.set_config(self.config)
         self.results_tab.set_manager(self.manager)
 
-
     def load_system_info(self):
         output = ''
         parser = ConfigParser()

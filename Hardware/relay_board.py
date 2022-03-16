@@ -1,9 +1,13 @@
 import serial
+from PyQt5.QtCore import pyqtSignal
+
 from Utilities.load_config import load_configuration
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 import time as t
 
 class Relay_Board(AbstractSensor):
+    reading_signal = pyqtSignal(bool)
+
     def __init__(self, config = None, device_key = 'Pump', parent = None):
         super().__init__(config=config,device_key=device_key, parent = None)
         self.ser = None
@@ -59,12 +63,12 @@ class Relay_Board(AbstractSensor):
             if reply == b'\xff\x01\x01': #On reply
                 self.on = True
                 self.log(f"{self.device_key} is ON")
-                self.reading_signal.emit(1)
+                self.reading_signal.emit(True)
                 return True
             elif reply == b'\xff\x01\x00': #Off reply
                 self.on = False
                 self.log(f"{self.device_key} is OFF")
-                self.reading_signal.emit(0)
+                self.reading_signal.emit(False)
                 return False
         return False
 
