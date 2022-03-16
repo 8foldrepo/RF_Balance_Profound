@@ -70,10 +70,10 @@ class Manager(QThread):
     num_tasks_signal = pyqtSignal(int)
     script_name_signal = pyqtSignal(str)
 
-    # Compartmentalize into motor interface thread later
-    MotorCommands = pyqtSignal(str)
-
     step_number_signal = pyqtSignal(int)
+    expand_step_signal = pyqtSignal(int)
+
+    element_number_signal = pyqtSignal(str)
 
     script_info_signal = pyqtSignal(list)
 
@@ -84,43 +84,51 @@ class Manager(QThread):
     finished_signal = pyqtSignal()
     Motors = None
 
-    script_highlight_signal = pyqtSignal(str)
-
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
-
-        self.water_level_good = None  # boolean variable to see if the water is level in the tank
-        self.test_comment = None
-        self.ua_serial_number = None
-        self.operator_name = None
-        
-        self.step_complete = True
-        self.step_index = -1
-
-        self.abort_var = False  # keep track of whether user has aborted script process, default false
-        self.retry_var = False  # keep track of whether user wants to try script iteration, default false
-
         self.parent = parent
+        self.stay_alive = True
 
+        self.config = config
+
+        #Stores latest command to be executed in the event loop
+        self.cmd = ''
+
+        #Event loop control vars
+        self.mutex = QMutex()
+        self.condition = QWaitCondition()
+
+        #Test Data
+        self.test_data = None
+
+        #Test Metadata
+        self.test_comment = ""
+        self.ua_serial_number = ""
+        self.operator_name = ""
+
+        #Script file
+        self.script = None
+
+        #Script data
         self.taskArgs = None
         self.taskExecOrder = None
         self.taskArgs = None
 
-        self.script = None
-        self.stay_alive = True
-
-        self.config = config
-        self.devices = list()
-
+        #Script control vars
         self.scripting = False
+        self.continue_var = True
+        self.retry_var = False  # keep track of whether user wants to try script iteration, default false
 
-        self.cmd = 'POS'
+        #Keeps track of script step in progress
+        self.step_complete = True
+        self.step_index = -1
 
-        self.mutex = QMutex()
-        self.condition = QWaitCondition()
+        self.devices = list()
+        self.add_devices()
 
+    def add_devices(self):
         # -> check if we are simulating hardware
-        self.SIMULATE_HARDWARE = config['Debugging']['simulate_hw']
+        self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
 
         self.rm = pyvisa.ResourceManager()
 
@@ -158,7 +166,7 @@ class Manager(QThread):
         function.
         """
         self.mutex.lock()
-        start_time = t.time()
+        self.starttime = t.time()
         # -> try to connect to the motor
         msg = f"SIMULATE HARDWARE is: {self.SIMULATE_HARDWARE}"
         log_msg(self, root_logger, level='info', message=msg)
@@ -168,7 +176,7 @@ class Manager(QThread):
         while self.stay_alive is True:
             # root_logger.info('Waiting in motor thread.')
             # wait_bool = self.condition.wait(self.mutex)
-            wait_bool = self.condition.wait(self.mutex, 5)
+            wait_bool = self.condition.wait(self.mutex, 50)
             # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
@@ -184,13 +192,11 @@ class Manager(QThread):
                     self.load_script(path)
                 except Exception as e:
                     log_msg(self, root_logger, "info", f"Error in load script: {e}")
-                self.cmd = ''
             elif cmd_ray[0] == 'RUN':
                 log_msg(self, root_logger, level='info', message="Running script")
-                self.abort_var = False  # when we run a new script, this variable should be false
-                self.scripting = True   # set variables that will trigger the execution of the script in the main loop
+                self.abort()
+                self.scripting = True
             elif cmd_ray[0] == 'CLOSE':
-                print("wrapping up")
                 self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
@@ -198,40 +204,10 @@ class Manager(QThread):
                 self.Motors.exec_command(self.cmd)
             # What to do when there is no command
             else:
-                pass
-
-            if self.retry_var is True:
-                self.step_index = self.step_index - 1
-                self.step_complete = True
-                self.retry_var = False  # sets the retry variable to false so the retry function can happen again
-
-            #advance to the next step if the previous has been completed
-            if self.scripting and self.step_complete:
-                self.step_index = self.step_index + 1
-
-            #if a script is being executed, and the step index is valid, and the previous step is complete,
-            #run the next script step
-            if self.scripting and 0 <= self.step_index < len(self.taskNames):
-                if  self.step_complete:
-                    self.step_complete = False
-                    self.execute_script_step(self.step_index)
-            else:
-                #Do these things if a script is not being run
-                self.Motors.get_position()
-                self.thermocouple.get_reading()
-
-                if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 5:
-                    # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
-                    try:
-                        time, voltage = self.Oscilloscope.capture(channel=1)
-                        time_elapsed = t.time() - start_time
-                        if time_elapsed != 0:
-                            self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
-
-                        self.plot_signal.emit(time, voltage)
-                        start_time = t.time()
-                    except pyvisa.errors.InvalidSession:
-                        self.log("Could not plot, oscilloscope resource closed")
+                if self.scripting:
+                    self.advance_script()
+                else:
+                    self.capture_and_plot()
 
             self.cmd = ""
 
@@ -239,6 +215,25 @@ class Manager(QThread):
         self.mutex.unlock()
 
         return super().run()
+
+    def capture_and_plot(self):
+        # Do these things if a script is not being run
+        self.Motors.get_position()
+        self.thermocouple.get_reading()
+
+        if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 6:
+            # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+            try:
+                time, voltage = self.Oscilloscope.capture(channel=1)
+                time_elapsed = t.time() - self.starttime
+                if time_elapsed != 0:
+                    self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
+
+                self.plot_signal.emit(time, voltage)
+            except pyvisa.errors.InvalidSession:
+                self.log("Could not plot, oscilloscope resource closed")
+
+        self.starttime = t.time()
 
     def load_script(self, path):
         self.scripting = True
@@ -340,21 +335,50 @@ class Manager(QThread):
             self.taskArgs.append(tasks[self.taskExecOrder[i][0] + 1])
 
         self.script_info_signal.emit(tasks)
+        self.num_tasks_signal.emit(len(self.taskNames))
 
         self.scripting = False
 
-    def execute_script_step(self, step_index):
-
-        if self.taskArgs is None or self.taskArgs is None or self.taskExecOrder is None:
-            self.scripting = False
+    #Updates script step and executes the next step if applicable, and implements abort, continue, and retry
+    def advance_script(self):
+        if self.scripting is False:
             return
 
-        if self.abort_var is True:  # checks to see if the abort variable is true
-            self.scripting = False
-            # exits the tasks loop, the user has aborted the script
+        if self.retry_var is True:
+            self.step_index = self.step_index - 1
+            self.step_complete = True
+            self.retry_var = False  # sets the retry variable to false so the retry function can happen again
+
+        # advance to the next step if the previous has been completed
+        if self.scripting and self.step_complete:
+            self.step_index = self.step_index + 1
+
+        # if a script is being executed, and the step index is valid, and the previous step is complete,
+        # run the next script step
+
+        if self.scripting and 0 <= self.step_index < len(self.taskNames):
+            if self.step_complete:
+                self.step_complete = False
+                self.execute_script_step(self.step_index)
+                #todo: remove delay (its for demo purposes)
+                t.sleep(1)
+        elif self.step_index >= len(self.taskNames):
+            self.abort()
+
+    '''Executes script step with given step index in taskNames/taskArgs'''
+    def execute_script_step(self, step_index):
+        if self.taskArgs is None or self.taskArgs is None or self.taskExecOrder is None:
+            self.abort()
+            return
 
         name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
         args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
+
+        print(name)
+        self.step_number_signal.emit(step_index-1)
+        t.sleep(.1)
+
+        self.expand_step_signal.emit(self.taskExecOrder[step_index][0])
 
         if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
@@ -362,121 +386,111 @@ class Manager(QThread):
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb(args)
-            self.script_highlight_signal(name)
         elif name.upper() == "Pre-test initialisation".upper():
             self.pretest_initialization(args)
-            self.script_highlight_signal(name)
         elif "Find element n".upper() in name.upper():
             self.find_element(args)
-            self.script_highlight_signal(name)
         elif name.upper() == "Save results".upper():
-            self.save_results(args)
-            self.script_highlight_signal(name)
+            self.save_results(args, self.test_data)
         elif name.upper() == "Prompt user for action".upper():
             self.prompt_user_for_action(args)
-            self.script_highlight_signal(name)
         elif "Home system".upper() in name.upper():
             self.home_system(args)
-            self.script_highlight_signal(name)
 
-        self.step_number_signal.emit(self.taskExecOrder[step_index][0] + 1)
+        self.step_number_signal.emit(step_index)
 
         # below: this should allow for the retry function by setting the iteration variable backwards 1
         # so when it gets incremented it returns to the previous position
 
+    '''Aborts script'''
+    @pyqtSlot()
     def abort(self):
-        self.abort_var = True  # sets the abort variable to true if this method is called
-        return
+        self.log('Aborting script')
+        #Reset script control variables
+        self.scripting = False
+        self.step_index = -1
+        self.step_complete = True
+        self.continue_var = True
+        self.step_number_signal.emit(-1)
 
+        #Todo: add option to save before exiting
+
+        self.erase_metadata()
+
+    def erase_metadata(self):
+        self.ua_serial_number = None
+        self.test_comment = None
+        self.operator_name = None
+
+    '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
+    def wait_for_cont(self):
+        self.continue_var = False
+        while not self.continue_var:
+            if self.scripting == False:
+                #Always handle this exception
+                raise AbortException
+
+    '''Continues execution of script'''
+    @pyqtSlot()
+    def cont(self):
+        self.continue_var = True
+
+    '''Retries current step'''
+    @pyqtSlot()
     def retry(self):
         self.retry_var = True
-        return
-
-    def cont(self):
-        self.step_complete = True  # sets the continue variable to true so script know to continue
-        return
 
     def write_cal_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
-        self.step_complete = True  # this statement should run after writing calibration data to UA
         pass
 
-    def measure_element_efficiency_rfb(self, variable_list):
-        element = variable_list['Element']
-        frequency_range = variable_list['Frequency range']
-        on_off_cycles = variable_list['RFB.#on/off cycles']
-        return
 
+
+    '''Collects metadata from user and prompts user until water level is ok'''
     def pretest_initialization(self, variable_list):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
-        self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
+        #Show dialog until name and serial number are input
+        while self.operator_name == "" or self.ua_serial_number == "":
+            self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
+            try:
+                self.wait_for_cont()
+            except AbortException:
+                return self.abort()
 
-    @pyqtSlot(str,str,str)  # latches info from user in MainWindow to manager local vars
+        #Show dialogs until proceed until pump is on and the water sensor reads level
+        while True:
+            if not self.Pump.get_reading() == 1:  # if the pump is not running
+                # launch the dialog box signifying this issue
+                self.user_prompt_pump_not_running_signal.emit(pump_status)
+                try:
+                    self.wait_for_cont()
+                except AbortException:
+                    return self.abort()
+            else:
+                water_level = self.Water_Level_Sensor.get_reading()
+                if not water_level == 'level':  # if the water level is not level
+                    # launch the dialog box signifying this issue
+                    self.user_prompt_signal_water_too_low_signal.emit(water_level)
+                    try:
+                        self.wait_for_cont()
+                    except AbortException:
+                        return
+                else: break
+
+        self.step_complete = True
+
+    '''latches info from user in MainWindow to manager local vars'''
+    @pyqtSlot(str,str,str)
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
         self.operator_name = operator_name
         self.ua_serial_number = ua_serial_no
         self.test_comment = comment
 
-        if self.Pump.get_reading() and self.Water_Level_Sensor.get_reading() == 'level':  # if the ua pump is running and the water level is good
-            self.step_complete = True  # continue to the next step via setting bool var to true
-        else:
-            if not self.Pump.get_reading():  # if the pump is not running
-                self.user_prompt_pump_not_running()  # launch the dialog box signifying this issue
-            if not self.Water_Level_Sensor.get_reading() == 'level':  # if the water level is not good
-                self.user_prompt_water_too_low()  # launch the dialog box signifying this issue
+        self.cont()
 
-        return  # at this point this step is done, and we can return from the method
-
-    def user_prompt_pump_not_running(self):  # this dialog box has a "continue" and an "abort" button
-        self.user_prompt_pump_not_running_signal.emit(pump_status)
-
-        if self.step_complete:  # if user clicks continue
-            if not self.Pump.get_reading():  # but the issue has not been resolved
-                self.step_complete = False  # set the step complete variable to false
-                # below: relaunch this method, window will relaunch and will close recursively
-                self.user_prompt_pump_not_running()
-            else:  # however, if the issue has been solved
-                return  # leave the method
-
-        return  # will return from root and recursively called instance of this method
-
-    def user_prompt_water_too_low(self):  # this dialog box has a "continue" and an "abort" button
-        self.user_prompt_signal_water_too_low_signal.emit(self.Water_Level_Sensor.get_reading())
-
-        if self.step_complete:  # if user clicks continue
-            if self.water_level != "level":  # but the issue has not been resolved
-                self.step_complete = False  # set the step complete variable to false
-                # below: relaunch this method, window will relaunch and will close recursively
-                self.user_prompt_water_too_low()
-            else:  # however, if the issue has been solved
-                return  # leave the method
-
-        return  # will return from root and recursively called instance of this method
-
-    def user_prompt(self, message):  # message var is message user should see when dialog box opens
-        self.user_prompt_signal.emit(message)  # passes message var to be carried by signal
-
-        if self.step_complete:  # if the user selects the continue button
-            return  # leave this method
-
-        elif self.abort_var:  # if the user has selected the abort button
-            return  # leave this method, the "execute script" method will handle aborting the script
-        
-        elif self.retry_var:  # if the user selects the retry button
-            return  # leave this method, the "execute script" method will handle retrying the current step
-
-
-    def retract_ua_warning(self):
-        self.retracting_ua_warning_signal.emit()
-
-        if self.step_complete:  # the user has clicked the continue button
-            return  # leave the method, the step_complete var will remain true
-
-        elif self.abort_var:  # the user has clicked the abort button
-            return  # leave the method, the "execute script" method will handle abandoning the script
-
+    '''Find UA element with given number'''
     def find_element(self, variable_list):
         element = variable_list['Element']
         x_increment_MM = variable_list['X Incr. (mm)']
@@ -491,51 +505,62 @@ class Manager(QThread):
         data_directory = variable_list["Data directory"]
         maxPosErrMM = variable_list["Max. position error (+/- mm)"]
         elemPosTest = variable_list["ElementPositionTest"]
-        return
 
+        self.element_number_signal.emit(str(element))
+        self.step_complete = True
+
+    '''Measure the efficiency of an element'''
+    def measure_element_efficiency_rfb(self, variable_list):
+        element = variable_list['Element']
+        frequency_range = variable_list['Frequency range']
+        on_off_cycles = variable_list['RFB.#on/off cycles']
+
+        self.element_number_signal.emit(str(element))
+        self.step_complete = True
+
+    '''Save scan results to a file'''
     def save_results(self, variable_list, calibration_data):  # calibration_data is the data gathered by the UA test
         save_summary_file = bool(distutils.util.strtobool(variable_list["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(variable_list["Write UA Calibration"]))
-        prompt_for_calibration_write = bool(distutils.util.strtobool(variable_list["prompt_for_calibration_write"]))
+        prompt_for_calibration_write = bool(distutils.util.strtobool(variable_list["PromptForCalWrite"]))
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.write_cal_data_to_ua_dialog(calibration_data)
 
-        return
+        self.step_complete = True
 
+    '''Prompt user for action'''
     def prompt_user_for_action(self, variable_list):
         prompt_type = variable_list["Prompt type"]
-        return
+        self.step_complete = True
 
+    '''Return axis to zero coordinate'''
     def home_system(self, variable_list):
         axis_to_home = variable_list['Axis to home']
         if axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
+            try:
+                self.wait_for_cont()
+            except AbortException:
+                return self.abort()
 
-        if self.step_complete:  # if the user clicks the continue button in the warning box
-            self.step_complete = False  # set the variable back to false in order to signify when movement is done
-            pass  # TODO: have the pump home in the desired direction
-            self.step_complete = True  # movement is done, this step has been completed
+        # TODO: have the pump home in the desired direction
 
-        elif self.abort_var:  # if the user click the abort button in the dialog box
-            return  # leave this method, the "execute script" method will handle abandoning the currently running script
+        self.step_complete = True
 
-        return
+
+    '''Warn the user that the UA is being retracted in x'''
+    def retract_ua_warning(self):
+        self.retracting_ua_warning_signal.emit()
+
 
     # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):
         self.write_cal_data_to_ua_signal.emit(calibration_data)
 
-        if self.step_complete:  # if the user presses the "write to UA" button in the dialog box
-            return  # we already did the code logic to write the calibration data to the ua, so just continue
-
-        elif self.abort_var:  # if the user click the abort button in the dialog box
-            return  # leave this method, the "execute script" method will handle abandoning the currently running script
-    
     def printList(self, list2):
         for x in range(len(list2)):
             print(list2[x])
-
 
     def printList2(self, list2):
         print(str(list2)[1:-1])
@@ -545,6 +570,11 @@ class Manager(QThread):
         if 'CLOSE' in command.upper():
             self.log('Wrapping up')
             self.wrap_up()
+            self.cmd = ''
+            return
+        if 'ABORT' in command.upper():
+            self.abort()
+            self.cmd = ''
             return
         self.cmd = command
         self.condition.wakeAll()
@@ -556,3 +586,6 @@ class Manager(QThread):
 
     def log(self, message, level='info'):
         log_msg(self, root_logger=root_logger, message=message, level=level)
+
+class AbortException(Exception):
+    pass

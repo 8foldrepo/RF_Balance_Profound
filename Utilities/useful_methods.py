@@ -2,6 +2,7 @@ import os
 import time as t
 import numpy as np
 import yaml
+import collections.abc
 
 named_devices = {
     "USB0::0x1AB1::0x0643::DG8A223502685::INSTR": "Rigol 1",
@@ -37,9 +38,15 @@ def create_comma_string(axes:list,coords:list,ax_letters:list):
             answer = answer + str((coords[axes.index(ax_letters[i])]))
 
         answer = answer + ","
-
-    print(answer)
     return  answer
+
+def update(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 def printList(self, list2):
     for x in range(len(list2)):
@@ -105,38 +112,6 @@ def listToRay(xCoords, yCoords, zCoords, Intensity):
         map[x][y][z] = Intensity[i]
 
     return map, coordinates
-
-def load_config():
-    current_directory = os.path.dirname(__file__)
-    # Determine the parent directory using os.path.split:
-    parent_directory = os.path.split(current_directory)[0]  # Repeat as needed
-    grandparent_directory = os.path.split(parent_directory)[0]  # Repeat as needed
-    config = None
-
-    try:
-        file_path = search_for("default.yaml")
-
-        with open(file_path) as file:
-            print("Loading parameters from default.yaml")
-            # The FullLoader parameter handles the conversion from YAML
-            # scalar values to Python the dictionary format
-            config = yaml.load(file, Loader=yaml.FullLoader)
-    except FileNotFoundError:
-        print("Default.yaml not found")
-
-    try:
-        file_path = search_for("local.yaml")
-
-        with open(file_path) as file:
-            print("Overriding parameters from local.yaml")
-            try:
-                changes = yaml.load(file, Loader=yaml.FullLoader)
-                config.update(changes)
-            except:
-                print("No changes made")
-    except FileNotFoundError:
-        print("Local.yaml not found, no changes made")
-    return config
 
 #Searches from current directory to grandparent directory for the specified file
 def search_for(filename):

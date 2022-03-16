@@ -129,7 +129,6 @@ class Galil(AbstractMotorController):
 
         @property
         def jog_speed(self):
-            # print(f"Jog Speed: {self._jog_speed}")
             return self._jog_speed
 
         @property
@@ -138,7 +137,6 @@ class Galil(AbstractMotorController):
 
         @property
         def calibrate(self):
-            print("calibration getter called")
             return (
                 self._x_calibrate,
                 self._y_calibrate,
@@ -150,31 +148,23 @@ class Galil(AbstractMotorController):
         @jog_speed.setter
         def jog_speed(self, value):
             if type(value) is int:
-                print(f"jog speed set: {value}")
                 self._jog_speed = value
             else:
-                print("failed to set jog speed")
                 raise Exception
 
         @scan_speed.setter
         def scan_speed(self, value):
             if type(value) is int:
                 self._scan_speed = value
-                print(f"scan speed set: {value}")
             else:
-                print("failed to set scan speed")
                 raise Exception
 
         @calibrate.setter
         def calibrate(self, value):
-            print("calibration setter called")
 
             if type(value) is int:
-                print(f"scan speed set: {value}")
                 self._calibrate = value
-                self.logger_signal.emit(f"calibration factor set: {value}")
             else:
-                self.logger_signal.emit("failed to set calibration factor")
                 raise Exception
 
         # Hardware interfacing functions

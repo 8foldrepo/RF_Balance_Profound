@@ -21,4 +21,6 @@ class WaterLevelSensor(AbstractSensor):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
-         return random.choice(['below_level', 'above_level', 'level'])
+        reading = random.choice(['below_level', 'above_level', 'level'])
+        self.log(reading)
+        return reading

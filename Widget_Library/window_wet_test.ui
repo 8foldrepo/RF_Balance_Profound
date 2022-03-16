@@ -79,7 +79,7 @@
          <item>
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEdit_5">
+            <widget class="QLineEdit" name="live_element_field">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -1078,7 +1078,7 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLineEdit" name="lineEdit">
+            <widget class="QLineEdit" name="temp_field">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -2593,7 +2593,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QTreeView" name="script_step_view"/>
+       <widget class="QTreeWidget" name="script_step_view">
+        <column>
+         <property name="text">
+          <string notr="true">1</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </item>
@@ -3016,7 +3022,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -3114,6 +3120,17 @@
        <attribute name="title">
         <string>System Info</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_25">
+        <item row="0" column="0">
+         <widget class="QTextBrowser" name="textBrowser">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="script_tab">
        <property name="font">
@@ -3124,247 +3141,11 @@
        <attribute name="title">
         <string>Edit Scipt</string>
        </attribute>
-       <widget class="QLabel" name="label_132">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>20</y>
-          <width>71</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Script Action</string>
-        </property>
-       </widget>
-       <widget class="QComboBox" name="script_cmd_dropdown">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>40</y>
-          <width>221</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="currentText">
-         <string>Measure element efficiency (RFB)</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>Measure element efficiency (RFB)</string>
-         </property>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="ScriptEditor" name="script_editor" native="true"/>
         </item>
-        <item>
-         <property name="text">
-          <string>Pre-test initialisation</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Find element &quot;n&quot;</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Loop over elements</string>
-         </property>
-        </item>
-       </widget>
-       <widget class="QPushButton" name="add_cmd_to_script_button">
-        <property name="geometry">
-         <rect>
-          <x>250</x>
-          <y>40</y>
-          <width>141</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Add to Script</string>
-        </property>
-       </widget>
-       <widget class="QGroupBox" name="script_command_buttons">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>170</y>
-          <width>91</width>
-          <height>351</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string/>
-        </property>
-        <widget class="QPushButton" name="delete_all_button">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>290</y>
-           <width>75</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Delete All</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="move_cmd_up_button">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>75</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>⬆️</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="delete_step_button">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>220</y>
-           <width>75</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Delete Step</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="collapse_btn">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>80</y>
-           <width>75</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Collapse</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="move_cmd_down_button">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>150</y>
-           <width>75</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>⬇️</string>
-         </property>
-        </widget>
-       </widget>
-       <widget class="QTabWidget" name="tabWidget_5">
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>90</y>
-          <width>851</width>
-          <height>481</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <widget class="QWidget" name="tab_13">
-         <attribute name="title">
-          <string>Tab 1</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="0" column="0">
-           <widget class="QWidget" name="widget_5" native="true"/>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-       <widget class="QPushButton" name="update_tree_button">
-        <property name="geometry">
-         <rect>
-          <x>710</x>
-          <y>580</y>
-          <width>111</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>UPDATE TREE</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="save_tree_button">
-        <property name="geometry">
-         <rect>
-          <x>870</x>
-          <y>580</y>
-          <width>101</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>SAVE SCRIPT</string>
-        </property>
-       </widget>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -3373,335 +3154,6 @@
        <layout class="QGridLayout" name="gridLayout_24">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_23">
-          <item row="0" column="0">
-           <widget class="QWidget" name="verticalWidget_4" native="true">
-            <property name="maximumSize">
-             <size>
-              <width>80</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <widget class="QLabel" name="label_103">
-               <property name="text">
-                <string>Time (s)</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="time_spin_box">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_104">
-               <property name="text">
-                <string>Mass (mg)</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="mass_spin_box">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_105">
-               <property name="text">
-                <string>Power (W)</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="power_spin_box">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>80</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Minimum</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="Plot" name="widget_4" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>400</width>
-              <height>200</height>
-             </size>
-            </property>
-            <widget class="Plot" name="rfb_graph" native="true">
-             <property name="geometry">
-              <rect>
-               <x>80</x>
-               <y>60</y>
-               <width>881</width>
-               <height>311</height>
-              </rect>
-             </property>
-            </widget>
-            <widget class="QLabel" name="label_121">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>61</width>
-               <height>16</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Data Display</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="label_123">
-             <property name="geometry">
-              <rect>
-               <x>30</x>
-               <y>30</y>
-               <width>61</width>
-               <height>16</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Raw Power</string>
-             </property>
-            </widget>
-            <widget class="QGroupBox" name="legendsGroup">
-             <property name="geometry">
-              <rect>
-               <x>110</x>
-               <y>10</y>
-               <width>591</width>
-               <height>41</height>
-              </rect>
-             </property>
-             <property name="title">
-              <string/>
-             </property>
-             <widget class="QLabel" name="label_127">
-              <property name="geometry">
-               <rect>
-                <x>420</x>
-                <y>10</y>
-                <width>62</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Extrapolated</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="reverse_pwr_img">
-              <property name="geometry">
-               <rect>
-                <x>134</x>
-                <y>10</y>
-                <width>30</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../ui_elements/images/rfb data display legend/reverse power.png</pixmap>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_125">
-              <property name="geometry">
-               <rect>
-                <x>170</x>
-                <y>10</y>
-                <width>73</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Reverse Power</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="xsition_pwr_img">
-              <property name="geometry">
-               <rect>
-                <x>260</x>
-                <y>10</y>
-                <width>30</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../ui_elements/images/rfb data display legend/xsition pts.png</pixmap>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_124">
-              <property name="geometry">
-               <rect>
-                <x>43</x>
-                <y>10</y>
-                <width>73</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Forward Power</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="extrapolated_img">
-              <property name="geometry">
-               <rect>
-                <x>384</x>
-                <y>10</y>
-                <width>30</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../ui_elements/images/rfb data display legend/extrapolated.png</pixmap>
-              </property>
-             </widget>
-             <widget class="QLabel" name="forward_pwr_img">
-              <property name="geometry">
-               <rect>
-                <x>7</x>
-                <y>10</y>
-                <width>30</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../ui_elements/images/rfb data display legend/forward power.png</pixmap>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_126">
-              <property name="geometry">
-               <rect>
-                <x>296</x>
-                <y>10</y>
-                <width>65</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Transition Pts</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_128">
-              <property name="geometry">
-               <rect>
-                <x>500</x>
-                <y>10</y>
-                <width>31</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../ui_elements/images/rfb data display legend/combined.png</pixmap>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_129">
-              <property name="geometry">
-               <rect>
-                <x>540</x>
-                <y>10</y>
-                <width>47</width>
-                <height>21</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Combined</string>
-              </property>
-             </widget>
-            </widget>
-           </widget>
-          </item>
           <item row="0" column="1">
            <layout class="QVBoxLayout" name="results_layout">
             <item>
@@ -4286,6 +3738,341 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="0" column="0">
+           <widget class="QWidget" name="verticalWidget_4" native="true">
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QLabel" name="label_103">
+               <property name="text">
+                <string>Time (s)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="time_spin_box">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_104">
+               <property name="text">
+                <string>Mass (mg)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="mass_spin_box">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_105">
+               <property name="text">
+                <string>Power (W)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="power_spin_box">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>80</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QWidget" name="widget_4" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>400</width>
+              <height>200</height>
+             </size>
+            </property>
+            <widget class="Plot" name="rfb_graph" native="true">
+             <property name="geometry">
+              <rect>
+               <x>80</x>
+               <y>60</y>
+               <width>881</width>
+               <height>311</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_121">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>10</y>
+               <width>61</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Data Display</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_123">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>30</y>
+               <width>61</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Raw Power</string>
+             </property>
+            </widget>
+            <widget class="QGroupBox" name="legendsGroup">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>10</y>
+               <width>591</width>
+               <height>41</height>
+              </rect>
+             </property>
+             <property name="title">
+              <string/>
+             </property>
+             <widget class="QLabel" name="label_127">
+              <property name="geometry">
+               <rect>
+                <x>420</x>
+                <y>10</y>
+                <width>62</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Extrapolated</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="reverse_pwr_img">
+              <property name="geometry">
+               <rect>
+                <x>134</x>
+                <y>10</y>
+                <width>30</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../ui_elements/images/reverse power.png</pixmap>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_125">
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>10</y>
+                <width>73</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Reverse Power</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="xsition_pwr_img">
+              <property name="geometry">
+               <rect>
+                <x>260</x>
+                <y>10</y>
+                <width>30</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../ui_elements/images/xsition pts.png</pixmap>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_124">
+              <property name="geometry">
+               <rect>
+                <x>43</x>
+                <y>10</y>
+                <width>73</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Forward Power</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="extrapolated_img">
+              <property name="geometry">
+               <rect>
+                <x>384</x>
+                <y>10</y>
+                <width>30</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../ui_elements/images/extrapolated.png</pixmap>
+              </property>
+             </widget>
+             <widget class="QLabel" name="forward_pwr_img">
+              <property name="geometry">
+               <rect>
+                <x>7</x>
+                <y>10</y>
+                <width>31</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../ui_elements/images/forward power.png</pixmap>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_126">
+              <property name="geometry">
+               <rect>
+                <x>296</x>
+                <y>10</y>
+                <width>65</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Transition Pts</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_128">
+              <property name="geometry">
+               <rect>
+                <x>500</x>
+                <y>10</y>
+                <width>31</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../ui_elements/images/combined.png</pixmap>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_129">
+              <property name="geometry">
+               <rect>
+                <x>540</x>
+                <y>10</y>
+                <width>47</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Combined</string>
+              </property>
+             </widget>
+            </widget>
+           </widget>
           </item>
          </layout>
         </item>
@@ -5567,6 +5354,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Operator</string>
            </property>
@@ -5603,6 +5395,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>PMI_Admin</string>
            </property>
@@ -5615,6 +5412,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Account</string>
@@ -5629,6 +5431,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -5642,6 +5449,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Administrator</string>
            </property>
@@ -5654,6 +5466,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Password</string>
@@ -5671,6 +5488,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Engineer</string>
            </property>
@@ -5686,6 +5508,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Operator</string>
@@ -5719,6 +5546,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Theta_HomeCoord</string>
            </property>
@@ -5732,6 +5564,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>X-Element1</string>
            </property>
@@ -5744,6 +5581,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>X-TankInsertionPoint</string>
@@ -5771,6 +5613,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>X-Element pitch (mm)</string>
            </property>
@@ -5789,6 +5636,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -5815,6 +5667,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5840,6 +5697,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5856,6 +5718,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>ThetaPreHomeMove</string>
            </property>
@@ -5868,6 +5735,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>XHomeCoord</string>
@@ -5887,6 +5759,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -5913,6 +5790,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5938,6 +5820,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -5956,6 +5843,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string/>
@@ -5990,6 +5882,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>ThetaLoadEnc?</string>
            </property>
@@ -6003,6 +5900,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>CentreHomeTheta?</string>
            </property>
@@ -6015,6 +5917,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string/>
@@ -6044,6 +5951,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <item>
             <property name="text">
              <string>Automatic</string>
@@ -6058,6 +5970,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Fill/drain mode</string>
@@ -6078,6 +5995,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -6100,6 +6022,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>WTF3</string>
@@ -6134,6 +6061,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Water level timeout (s)</string>
            </property>
@@ -6146,6 +6078,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>DAQ Device Name</string>
@@ -6172,6 +6109,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.LowFreqLimit(MHz)</string>
            </property>
@@ -6191,6 +6133,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6206,6 +6153,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>LF.LowFreqLimit(MHz)</string>
@@ -6240,6 +6192,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.Amplitude(mVpp)</string>
            </property>
@@ -6253,6 +6210,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.HighFreqLimit(MHz)</string>
            </property>
@@ -6265,6 +6227,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Search.FineIncr(MHz)</string>
@@ -6285,6 +6252,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6304,6 +6276,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>HF.BurstCount</string>
            </property>
@@ -6316,6 +6293,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>LF.HighFreqLimit(MHz)</string>
@@ -6343,6 +6325,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>LF.Amplitude(mVpp)</string>
            </property>
@@ -6356,6 +6343,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>LF.BurstCount</string>
            </property>
@@ -6368,6 +6360,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Search.CoarseIncr</string>
@@ -6388,6 +6385,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
            </property>
@@ -6407,6 +6409,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
            </property>
@@ -6425,6 +6432,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6448,6 +6460,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6469,6 +6486,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6492,6 +6514,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6514,6 +6541,11 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
            </property>
@@ -6535,6 +6567,11 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-9999999999.000000000000000</double>
@@ -6566,7 +6603,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>8</pointsize>
+             <pointsize>7</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -6586,7 +6623,7 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>8</pointsize>
+             <pointsize>7</pointsize>
              <weight>50</weight>
              <bold>false</bold>
             </font>
@@ -6604,6 +6641,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA results</string>
            </property>
@@ -6616,6 +6658,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt</string>
@@ -6648,6 +6695,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Min time of flight (s)</string>
@@ -6682,6 +6734,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Max time of flight (s)</string>
            </property>
@@ -6700,6 +6757,11 @@
              <width>50</width>
              <height>40</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-99999999999999.000000000000000</double>
@@ -6722,6 +6784,11 @@
              <width>50</width>
              <height>40</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <double>-99999999999999.000000000000000</double>
@@ -6787,6 +6854,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <item>
             <property name="text">
              <string>No dialog (abort)</string>
@@ -6801,6 +6873,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Retries</string>
@@ -6835,6 +6912,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Pass fail action</string>
            </property>
@@ -6847,6 +6929,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="minimum">
             <number>-999999999</number>
@@ -6867,6 +6954,11 @@
              <height>15</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Interrupt action</string>
            </property>
@@ -6879,6 +6971,11 @@
              <width>0</width>
              <height>20</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <item>
             <property name="text">
@@ -6895,6 +6992,11 @@
              <height>20</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
            <property name="minimum">
             <number>-999999999</number>
            </property>
@@ -6910,6 +7012,11 @@
              <width>0</width>
              <height>15</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Dialog Timeout (s)</string>
@@ -6947,9 +7054,13 @@
    <header location="global">ui_elements.ui_oscilloscope_plot</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>ScriptEditor</class>
+   <extends>QWidget</extends>
+   <header>ui_elements.ui_script_editor</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
- <resources>
-  <include location="../ui_elements/images/rfb data display legend/resource to add images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

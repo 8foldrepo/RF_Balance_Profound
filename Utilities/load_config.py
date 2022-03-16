@@ -1,6 +1,6 @@
 import yaml
 import os
-
+from Utilities import useful_methods
 ROOT_LOGGER_NAME = 'wtf_log'
 
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
@@ -17,17 +17,10 @@ def load_configuration() -> dict:
 
     if os.path.isfile(LOCAL_CONFIG_PATH) is False:  # -> file does not exist
         print(f"[-] File: {LOCAL_CONFIG_PATH} does not exist")
-
-        with open(LOCAL_CONFIG_PATH, 'r') as fh:
-            update_dict_recursive(
-                configuration, yaml.load(fh, Loader=yaml.SafeLoader)
-            )
-
     else:
         with open(LOCAL_CONFIG_PATH, 'r') as fh:
-            update_dict_recursive(
-                configuration, yaml.load(fh, Loader=yaml.SafeLoader)
-            )
+            local_config = yaml.load(fh, Loader=yaml.SafeLoader)
+            useful_methods.update(configuration, local_config)
 
     return configuration
 
@@ -45,6 +38,3 @@ def search_for(filename):
         file_path = os.path.join(grandparent_directory, filename)
 
     return file_path
-
-def update_dict_recursive(d, u) -> dict:
-    pass

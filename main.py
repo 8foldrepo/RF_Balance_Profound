@@ -36,6 +36,7 @@ def main(args):
     QThread.currentThread().setObjectName("ui_thread")
     
     window.show()
+    window.load_system_info()
     window.populate_config_ui()
     #window.prompt_for_password()
 
@@ -44,8 +45,6 @@ def main(args):
     root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")
     sys.exit(code)
 # ==> end of main
-
-
 
 if __name__ == "__main__":
     main(sys.argv)

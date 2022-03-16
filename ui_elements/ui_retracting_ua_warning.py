@@ -10,6 +10,7 @@ class UARetractDialog(QDialog, retracting_ua_warning.Ui_retracting_ua_warn):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.configure_signals()
 
     def configure_signals(self):
         self.continue_button.clicked.connect(self.continue_clicked)

@@ -66,6 +66,7 @@ class Relay_Board(AbstractSensor):
                 self.log(f"{self.device_key} is OFF")
                 self.reading_signal.emit(0)
                 return False
+        return False
 
 
     def relay_write(self, on: bool):

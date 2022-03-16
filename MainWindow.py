@@ -1,10 +1,13 @@
+import copy
+from configparser import ConfigParser
+
 import os
 import smtplib
 import sys
 import webbrowser
 import yaml
 import csv
-
+import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
@@ -17,7 +20,7 @@ from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunn
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSlot, QThread
+from PyQt5.QtCore import pyqtSlot, QThread, QItemSelectionModel, QModelIndex
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
@@ -80,13 +83,26 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager = Manager(parent=self, config=self.config)
         self.plot_ready = True
         self.thread_list.append(self.manager)
-
+        self.tree_items = None
+        self.arg_dicts = None
         self.configure_signals()
         self.manager.connect_hardware()
         self.manager.start(priority=4)
 
         self.style_ui()
         self.activateWindow()
+
+    def load_system_info(self):
+        output = ''
+        parser = ConfigParser()
+        parser.read("systeminfo.ini")
+        for item in parser:
+            output = output + (f'[{item}]\n')
+            for entry in parser[item]:
+                output = output + (f'{entry}\n')
+            output = output + '\n'
+
+        self.textBrowser.setText(output)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -95,10 +111,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
         self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
 
+        #Format treewidget
+        self.script_step_view.setColumnCount(2)
+        self.script_step_view.setHeaderLabels(["Task", "Arguments"])
+        self.script_step_view.header().resizeSection(0, 220)
+
+        #add default data to plots
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
-        self.widget_4.refresh(x, y)
+        self.rfb_graph.refresh(x, y)
 
     # Populate fields in config tab with settings from the config file
     def populate_config_ui(self):
@@ -140,6 +162,28 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
         self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
+
+    def disable_buttons(self):
+        self.x_pos_button.setEnabled(False)
+        self.x_neg_button.setEnabled(False)
+        self.run_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.load_button.setEnabled(False)
+        self.go_element_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
+        self.retract_ua_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.show_config_button.setEnabled(False)
+        self.save_config_button.setEnabled(False)
+        self.abort_button.setEnabled(False)
+        self.manual_home_button.setEnabled(False)
+        self.pushButton.setEnabled(False)
+        self.theta_pos_button.setEnabled(False)
+        self.theta_neg_button.setEnabled(False)
+        self.retract_button.setEnabled(False)
+        self.reset_zero_button.setEnabled(False)
+        self.go_theta_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
 
     # Save the settings input into the UI field to the local.yaml config file
     def save_config(self):
@@ -189,40 +233,90 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         webbrowser.open("local.yaml")
 
     # Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script(self, arg_dicts: list):
-        treeModel = QStandardItemModel()
-        rootNode = treeModel.invisibleRootItem()
+    def visualize_script_editor(self, arg_dicts: list):
+        print(arg_dicts)
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        self.script_editor.treeWidget.clear()
+        self.arg_dicts = arg_dicts
 
-        for i in range(len(arg_dicts)):
-
-            if not '# of Tasks' in arg_dicts[i].keys():
-                task = QStandardItem(arg_dicts[i]["Task type"])
-
-                for key in arg_dicts[i]:
+        task_dict = {}
+        for i in range(len(self.arg_dicts)):
+            if not '# of Tasks' in self.arg_dicts[i].keys():
+                arg_list = list()
+                for key in self.arg_dicts[i]:
                     if not key == "Task type":
-                        arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
-                        task.appendRow(arg)
+                        arg_list.append([key,self.arg_dicts[i][key]])
 
-                rootNode.appendRow(task)
+                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
 
-        self.script_step_view.setModel(treeModel)
-        self.script_step_view.expandAll()
+        tree_items = []
+        for key, values in task_dict.items():
+            item = QTreeWidgetItem([key])
+            for value in values:
+                child = QTreeWidgetItem(value)
+                item.addChild(child)
+
+            tree_items.append(item)
+
+        self.script_editor.treeWidget.setHeaderHidden(True)
+        self.script_editor.treeWidget.insertTopLevelItems(0, tree_items)
+
+    # Display the task names and arguments from the script parser with a QTreeView
+    def visualize_script(self, arg_dicts: list):
+        print(arg_dicts)
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        self.script_step_view.clear()
+        self.arg_dicts = arg_dicts
+
+        task_dict = {}
+        for i in range(len(self.arg_dicts)):
+            if not '# of Tasks' in self.arg_dicts[i].keys():
+                arg_list = list()
+                for key in self.arg_dicts[i]:
+                    if not key == "Task type":
+                        arg_list.append([key,self.arg_dicts[i][key]])
+
+                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
+
+        self.tree_items = []
+        for key, values in task_dict.items():
+            item = QTreeWidgetItem([key])
+            for value in values:
+                child = QTreeWidgetItem(value)
+                item.addChild(child)
+
+            self.tree_items.append(item)
+
         self.script_step_view.setHeaderHidden(True)
+        self.script_step_view.insertTopLevelItems(0, self.tree_items)
+
+    def update_script_visual_element_number(self, element_number):
+        if 'Element' in element_number:
+            return
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        rootItem = self.script_step_view.invisibleRootItem()
+        for i in range(rootItem.childCount()):
+            task = rootItem.child(i)
+            for j in range(task.childCount()):
+                var = task.child(j)
+                var_name = var.text(0)
+                var_value = var.text(1)
+                #If the variable is an element number that is looped
+                if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
+                    var.setText(1,f'Current: {self.live_element_field.text()}')
 
     @pyqtSlot(int, int)  # loop number and item number
     def highlight_item(self, current_item):
         # TODO: have function highlight which item it's on
         pass
 
-    @pyqtSlot(str)
-    def highlight_step(self, current_step):  # current_step should match "Task type" from above
-        for i in range(0, len(self.script_step_view)):
-            self.script_step_view[i].setBackground(QBrush().setColor("white"))
-
-        item_to_highlight = self.script_step_view.findItems(current_step)  # should set var to QStandardItem
-        item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
-
-        self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
+    @pyqtSlot(int)
+    def expand_step(self, step_index):  # current_step should match "Task type" from above
+        if self.tree_items is not None:
+            for item in self.tree_items:
+                item.setExpanded(False)
+            if 0<= step_index < len(self.tree_items):
+                self.tree_items[step_index].setExpanded(True)
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
@@ -247,6 +341,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
+        self.abort_button.clicked.connect(self.manager.abort)
 
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
@@ -258,8 +353,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.description_signal.connect(self.script_description_field.setText)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
+        self.manager.expand_step_signal.connect(self.expand_step)
         self.manager.script_info_signal.connect(self.visualize_script)
-        self.manager.script_highlight_signal.connect(self.highlight_step)
+        self.manager.script_info_signal.connect(self.visualize_script_editor)
+        self.manager.element_number_signal.connect(self.live_element_field.setText)
+        self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
@@ -507,7 +605,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_pretest_dialog(self, formatted_date):
-        print("show_pretest_dialog method called")
         dlg = PretestDialog()
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
@@ -596,12 +693,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         elif water_level == 'level':
             dlg.label.setText("Water level is good")
 
-
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
