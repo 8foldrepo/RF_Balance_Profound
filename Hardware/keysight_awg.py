@@ -1,9 +1,12 @@
 import pyvisa
 from Utilities.load_config import *
+from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 class KeysightAWG(AbstractDevice):
+    output_signal = pyqtSignal(bool)
+
     def __init__(self, resource_manager = None, config = None, device_key = 'Keysight_AWG', parent = None):
         super().__init__(config = config, device_key= device_key, parent = parent)
         if resource_manager is not None:
@@ -101,13 +104,15 @@ class KeysightAWG(AbstractDevice):
     def SetOutput(self, on: bool):
         if on:
             self.inst.write('OUTP ON')
+            self.output_signal.emit(True)
         else:
-            self.inst.write('OUTP OFF')
+            self.output_signal.emit(False)
 
     def Get_Output(self):
         self.inst.write('OUTP?')
         reply = self.inst.read()
         self.state["output"] = "1" in reply
+        self.output_signal.emit(self.state["output"])
         return self.state["output"]
 
     """Sets the frequency of the signal"""

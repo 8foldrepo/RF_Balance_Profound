@@ -129,6 +129,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_step_view.setHeaderLabels(["Task", "Arguments"])
         self.script_step_view.header().resizeSection(0, 220)
 
+        #Set defaults for indicators
+        self.script_status_indicator.setStyleSheet("background-color: grey")
+        self.script_status_indicator.setText("NO SCRIPT")
+
+        self.system_indicator.setText("IDLE")
+        self.system_indicator.setStyleSheet("background-color: grey")
+
+        self.motion_indicator.setStyleSheet("background-color:grey")
+        self.motion_indicator.setText("STATIONARY")
+
         #add default data to plots
         y = range(0, 100)
         x = range(0, 100)
@@ -199,11 +209,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
                     var.setText(1,f'Current: {self.live_element_field.text()}')
 
-    @pyqtSlot(int, int)  # loop number and item number
-    def highlight_item(self, current_item):
-        # TODO: have function highlight which item it's on
-        pass
-
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
         if self.tree_items is not None:
@@ -255,6 +260,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         #When manager loads a script, visualize it in the left pane as well as loading it into the script editor
         self.manager.script_info_signal.connect(self.visualize_script)
         self.manager.script_info_signal.connect(self.script_editor.visualize_script)
+        self.manager.script_info_signal.connect(self.update_script_indicator)
 
         self.manager.element_number_signal.connect(self.live_element_field.setText)
         self.manager.element_number_signal.connect(self.update_script_visual_element_number)
@@ -283,6 +289,38 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
         self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
         self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
+        self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
+        self.manager.AWG.output_signal.connect(self.update_ua_indicator)
+
+    @pyqtSlot(bool)
+    def update_ua_indicator(self, on):
+        if on:
+            self.ua_on_indicator.setStyleSheet("background-color:green")
+            self.ua_on_indicator.setText("UA ON")
+        else:
+            self.ua_on_indicator.setStyleSheet("background-color:grey")
+            self.ua_on_indicator.setText("UA OFF")
+
+    @pyqtSlot(str)
+    def update_system_status(self, status):
+        self.system_indicator.setText(status)
+        if status != 'IDLE':
+            self.system_indicator.setStyleSheet("background-color: yellow")
+
+    @pyqtSlot(list)
+    def update_script_indicator(self, script_info):
+        self.script_status_indicator.setStyleSheet("background-color:green")
+        self.script_status_indicator.setText("SCRIPT LOADED")
+
+    @pyqtSlot(bool)
+    def update_motors_moving_indicator(self, moving):
+        if moving:
+            self.moving_indicator.setStyleSheet("background-color:green")
+            self.moving_indicator.setText("MOVING")
+        else:
+            self.moving_indicator.setStyleSheet("background-color:grey")
+            self.moving_indicator.setText("STATIONARY")
+
 
     @pyqtSlot(str)
     def update_water_level_indicator(self, water_level):

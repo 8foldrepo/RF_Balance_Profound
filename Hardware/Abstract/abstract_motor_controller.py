@@ -80,6 +80,8 @@ class AbstractMotorController(AbstractDevice):
         r_pos_signal = pyqtSignal(float)
         z_pos_signal = pyqtSignal(float)
 
+        moving_signal = pyqtSignal(bool)
+
         connected_signal = pyqtSignal(bool)
 
         num_axes = 2
@@ -179,7 +181,7 @@ class AbstractMotorController(AbstractDevice):
         def jog(self, axis=None, direction=None, feedback=True):
             # Dummy code, replace when developing a hardware interface
             self.jogging = True
-
+            self.moving_signal.emit(True)
             if axis == 'R' and direction > 0:
                 self.dummy_command_signal.emit('Begin Motion R+')
             elif axis == 'R' and direction < 0:
@@ -193,6 +195,7 @@ class AbstractMotorController(AbstractDevice):
 
         @abstractmethod
         def stop_motion(self):
+            self.moving_signal.emit(False)
             self.jogging = False
             self.dummy_command_signal.emit("Stop Motion")
 
