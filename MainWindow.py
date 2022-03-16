@@ -317,8 +317,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if self.tree_items is not None:
             for item in self.tree_items:
                 item.setExpanded(False)
+                white_background = QColor(255, 255, 255)
+                brush_for_background = QBrush(white_background)
+                item.setBackground(0, brush_for_background)
             if 0<= step_index < len(self.tree_items):
                 self.tree_items[step_index].setExpanded(True)
+                blue_background = QColor(95,180,230)
+                brush_for_background = QBrush(blue_background)
+                self.tree_items[step_index].setBackground(0,brush_for_background)
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
