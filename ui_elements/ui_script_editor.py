@@ -106,26 +106,13 @@ class ScriptEditor(QWidget, Ui_Form):
         return  item
 
     def updateTree(self):
-        task_dict = {}
-        for i in range(len(self.arg_dicts)):
-            if not '# of Tasks' in self.arg_dicts[i].keys():
-                arg_list = list()
-                for key in self.arg_dicts[i]:
-                    if not key == "Task type":
-                        arg_list.append([key, self.arg_dicts[i][key]])
+        counter = 0
+        for task in self.arg_dicts:
+            if "Measure element efficiency (RFB)" in task["Task type"]:
+                if counter == 0:
+                    task["Task type"] = "Measure element efficiency (RFB)"
 
-                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
-
-        self.tree_items = []
-        for key, values in task_dict.items():
-            item = QTreeWidgetItem([key])
-            for value in values:
-                child = QTreeWidgetItem(value)
-                item.addChild(child)
-
-            self.tree_items.append(item)
-
-        self.script_step_view.insertTopLevelItems(0, self.tree_items)
+                counter = counter + 1
 
     def configure_signals(self):
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
