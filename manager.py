@@ -131,8 +131,7 @@ class Manager(QThread):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
 
-        self.rm = pyvisa.ResourceManager()
-
+        self.rm = pyvisa.ResourceManager('@py')
         self.Balance = MT_balance(config=self.config)
         self.Pump = Relay_Board(config=self.config, device_key='Pump')
         self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)

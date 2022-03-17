@@ -136,8 +136,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.system_indicator.setText("IDLE")
         self.system_indicator.setStyleSheet("background-color: grey")
 
-        self.motion_indicator.setStyleSheet("background-color:grey")
-        self.motion_indicator.setText("STATIONARY")
+        self.moving_indicator.setStyleSheet("background-color:grey")
+        self.moving_indicator.setText("STATIONARY")
+
+        self.ua_pump_indicator.setStyleSheet("background-color: grey")
+        self.ua_pump_indicator.setText("UA PUMP OFF")
+
+        self.ua_on_indicator.setStyleSheet("background-color: grey")
+        self.ua_on_indicator.setText("UA OFF")
 
         #add default data to plots
         y = range(0, 100)
@@ -269,28 +275,33 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)  # deplicate of line 262
         self.insert_button.clicked.connect(self.insert_button_clicked)
 
-        # Hardware info signals
-        self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
-        self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
-        self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
-        self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
-        self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
-        self.manager.plot_signal.connect(self.plot)
-        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+        try:
+            # Hardware info signals
+            self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
+            self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
+            self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+            self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
+            self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
+            self.manager.plot_signal.connect(self.plot)
+            self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
 
-        # Manager communication signals
-        self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
-        self.manager.user_prompt_signal.connect(self.show_user_prompt)
-        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
-        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
-        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
-        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
-        self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
-        self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
-        self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
-        self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
-        self.manager.AWG.output_signal.connect(self.update_ua_indicator)
+            # Manager communication signals
+            self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
+            self.manager.user_prompt_signal.connect(self.show_user_prompt)
+            self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
+            self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+            self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+            self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
+
+            self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
+            self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
+            self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
+            self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
+            self.manager.AWG.output_signal.connect(self.update_ua_indicator)
+        except Exception as e:
+            print(e)
+
 
     @pyqtSlot(bool)
     def update_ua_indicator(self, on):
