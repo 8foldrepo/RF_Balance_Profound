@@ -1,9 +1,4 @@
 from PyQt5.QtWidgets import QDialog
-from Widget_Library.test_data_capture import Ui_test_data_capture
-from PyQt5.QtCore import pyqtSignal
-
-class PretestDialog (QDialog, Ui_test_data_capture):
-    pretest_signal = pyqtSignal(str,str)
 from Widget_Library import test_data_capture
 from PyQt5.QtCore import pyqtSignal
 

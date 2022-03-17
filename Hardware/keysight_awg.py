@@ -21,12 +21,23 @@ class KeysightAWG(AbstractDevice):
         if self.config is None:
             self.config = load_configuration()
 
+    def set_to_defaults(self):
+        self.setup(frequency_Hz=self.config[self.device_key]['frequency_Hz'],
+                   amplitude_V=self.config[self.device_key]['amplitude_V'],
+                   burst=self.config[self.device_key]['burst'],
+                   burst_cycles=self.config[self.device_key]['burst_cycles'],
+                   ext_trig=self.config[self.device_key]['ext_trig'],
+                   burst_period_s=self.config[self.device_key]['burst_period_s'],
+                   offset_V=self.config[self.device_key]['offset_V'],
+                   output=self.config[self.device_key]['output'],
+                   output_Impedance=self.config[self.device_key]['output_Impedance'])
+
     def connect_hardware(self):
         self.rm = pyvisa.ResourceManager()
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
-            if "0x2507" in resource:
+            if self.config[self.device_key]["identifier"] in resource:
                 self.address = resource
                 try:
                     self.inst = self.rm.open_resource(resource)
@@ -34,7 +45,12 @@ class KeysightAWG(AbstractDevice):
                     self.log("Keysight 33509B Series function generator not found", level='error')
                     self.connected_signal.emit(False)
                     return
-                self.get_state()
+
+                if self.config[self.device_key]['set_on_startup']:
+                    self.set_to_defaults()
+                else:
+                    self.get_state()
+
                 self.connected_signal.emit(True)
                 return
 
@@ -71,7 +87,6 @@ class KeysightAWG(AbstractDevice):
         self.GetTrigger()
         self.GetOffset_V()
         self.GetOutputImpedence()
-
         return self.state
 
     def Reset(self):
@@ -79,7 +94,8 @@ class KeysightAWG(AbstractDevice):
         self.wait_til_complete()
 
     def wait_til_complete(self):
-        self.inst.write(f"*OPC?")
+        self.inst.write("*IDN?")
+        self.inst.read()
 
     """Turns the output on or off"""
     def SetOutput(self, on: bool):

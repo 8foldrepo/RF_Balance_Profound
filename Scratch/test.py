@@ -9,7 +9,7 @@ class abstract_device(QObject):
         super().__init__(parent)
 
     def connect(self):
-        print("Connecting")
+        log("Connecting")
 
     def disconnect(self):
         print("disconnecting")

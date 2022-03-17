@@ -25,6 +25,7 @@ class WTFUserPromptPumpNotRunning(QDialog, wtf_user_prompt_pump_not_running.Ui_w
         print(self.ua_pump_status.isChecked())
         self.set_pump_signal.emit(self.ua_pump_status.isChecked())
 
+
     def continue_clicked(self):
         self.continue_signal.emit()
         self.close()

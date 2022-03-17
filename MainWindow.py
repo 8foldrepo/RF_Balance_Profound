@@ -1,10 +1,13 @@
+import copy
+from configparser import ConfigParser
+
 import os
 import smtplib
 import sys
 import webbrowser
 import yaml
 import csv
-
+import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME
@@ -17,7 +20,7 @@ from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunn
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSlot, QThread
+from PyQt5.QtCore import pyqtSlot, QThread, QItemSelectionModel, QModelIndex
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
@@ -26,7 +29,6 @@ from Utilities.useful_methods import *
 from Widget_Library import window_wet_test
 from manager import Manager
 from Utilities.load_config import load_configuration
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 
@@ -73,20 +75,48 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.threading = False
 
         self.setupUi(self)
+        self.app = QApplication.instance()
 
         self.thread_list = list()
         self.config = load_configuration()
+        self.system_config.set_config(self.config)
+        self.position_tab.set_config(self.config)
 
         self.manager = Manager(parent=self, config=self.config)
         self.plot_ready = True
         self.thread_list.append(self.manager)
-
+        self.tree_items = None
+        self.arg_dicts = None
         self.configure_signals()
         self.manager.connect_hardware()
         self.manager.start(priority=4)
 
         self.style_ui()
         self.activateWindow()
+
+        self.position_tab.set_manager(self.manager)
+        self.position_tab.set_motors(self.manager.Motors)
+        self.position_tab.configure_signals()
+
+        self.rfb_tab.set_manager(self.manager)
+        self.rfb_tab.set_config(self.config)
+        self.rfb_tab.set_balance(self.manager.Balance)
+
+        self.results_tab.set_config(self.config)
+        self.results_tab.set_manager(self.manager)
+
+
+    def load_system_info(self):
+        output = ''
+        parser = ConfigParser()
+        parser.read("systeminfo.ini")
+        for item in parser:
+            output = output + (f'[{item}]\n')
+            for entry in parser[item]:
+                output = output + (f'{entry}\n')
+            output = output + '\n'
+
+        self.textBrowser.setText(output)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -95,134 +125,100 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
         self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
 
+        #Format treewidget
+        self.script_step_view.setColumnCount(2)
+        self.script_step_view.setHeaderLabels(["Task", "Arguments"])
+        self.script_step_view.header().resizeSection(0, 220)
+
+        #add default data to plots
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
-        self.widget_4.refresh(x, y)
 
-    # Populate fields in config tab with settings from the config file
-    def populate_config_ui(self):
-        self.operator_pass_field.setText(self.config["User Accounts"]["Operator"])
-        self.engineer_pass_field.setText(self.config["User Accounts"]["Engineer"])
-        self.admin_pass_field.setText(self.config["User Accounts"]["Administrator"])
-
-        self.x_homecoord.setValue(self.config["WTF_PositionParameters"]["XHomeCoord"])
-        self.theta_homecoord.setValue(self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
-        self.x_insertionpoint.setValue(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])
-        self.x_element1.setValue(self.config["WTF_PositionParameters"]["X-Element1"])
-        self.x_elementpitch.setValue(self.config["WTF_PositionParameters"]["X-Element pitch (mm)"])
-        self.theta_prehomemove.setValue(self.config["WTF_PositionParameters"]["ThetaPreHomeMove"])
-        self.thetaloadenc.setChecked(self.config["WTF_PositionParameters"]["ThetaLoadEnc?"])
-        self.centerhometheta.setChecked(self.config["WTF_PositionParameters"]["CentreHomeTheta?"])
-
-        self.lf_lowlimit.setValue(self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"])
-        self.lf_highlimit.setValue(self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"])
-        self.lf_amplitude.setValue(self.config["FrequencyParameters"]["LF"]["Amplitude(mVpp)"])
-        self.lf_burstcount.setValue(self.config["FrequencyParameters"]["LF"]["BurstCount"])
-        self.hf_lowlimit.setValue(self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"])
-        self.hf_highlimit.setValue(self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"])
-        self.hf_amplitude.setValue(self.config["FrequencyParameters"]["HF"]["HF.Amplitude(mVpp)"])
-        self.hf_burstcount.setValue(self.config["FrequencyParameters"]["HF"]["HF.BurstCount"])
-        self.search_coarseincr.setValue(self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"])
-        self.search_fineincr.setValue(self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"])
-
-        self.retries.setValue(self.config["Sequence pass/fail"]["Retries"])
-        self.pass_fail_action.setCurrentText(self.config["Sequence pass/fail"]["Pass fail action"])
-        self.interrupt_action.setCurrentText(self.config["Sequence pass/fail"]["Interrupt action"])
-        self.dialog_timeout.setValue(self.config["Sequence pass/fail"]["Dialog timeout (s)"])
-
-        self.daq_devicename.setText(self.config["WTF_DIO"]["DAQ Device name"])
-        self.water_timeout.setValue(self.config["WTF_DIO"]["Water level timeout (s)"])
-        self.fill_mode.setCurrentText(self.config["WTF_DIO"]["Fill/Drain mode"])
-
-        self.min_time_of_flight.setValue(self.config["Autoset timebase"]["Min time of flight (us)"])
-        self.max_time_of_flight.setValue(self.config["Autoset timebase"]["Max time of flight (us)"])
-
-        self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
-        self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
-
-    # Save the settings input into the UI field to the local.yaml config file
-    def save_config(self):
-        self.config["User Accounts"]["Operator"] = self.operator_pass_field.text()
-        self.config["User Accounts"]["Engineer"] = self.engineer_pass_field.text()
-        self.config["User Accounts"]["Administrator"] = self.admin_pass_field.text()
-
-        self.config["WTF_PositionParameters"]["XHomeCoord"] = self.x_homecoord.value()
-        self.config["WTF_PositionParameters"]["ThetaHomeCoord"] = self.theta_homecoord.value()
-        self.config["WTF_PositionParameters"]["X-TankInsertionPoint"] = self.x_insertionpoint.value()
-        self.config["WTF_PositionParameters"]["X-Element1"] = self.x_element1.value()
-        self.config["WTF_PositionParameters"]["X-Element pitch (mm)"] = self.x_elementpitch.value()
-        self.config["WTF_PositionParameters"]["ThetaPreHomeMove"] = self.theta_prehomemove.value()
-        self.config["WTF_PositionParameters"]["ThetaLoadEnc?"] = self.thetaloadenc.isChecked()
-        self.config["WTF_PositionParameters"]["CentreHomeTheta?"] = self.centerhometheta.isChecked()
-
-        self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"] = self.lf_lowlimit.value()
-        self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"] = self.lf_highlimit.value()
-        self.config["FrequencyParameters"]["LF"]["Amplitude(mVpp)"] = self.lf_amplitude.value()
-        self.config["FrequencyParameters"]["LF"]["BurstCount"] = self.lf_burstcount.value()
-        self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"] = self.hf_lowlimit.value()
-        self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"] = self.hf_highlimit.value()
-        self.config["FrequencyParameters"]["HF"]["HF.Amplitude(mVpp)"] = self.hf_amplitude.value()
-        self.config["FrequencyParameters"]["HF"]["HF.BurstCount"] = self.hf_burstcount.value()
-        self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"] = self.search_coarseincr.value()
-        self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"] = self.search_fineincr.value()
-
-        self.config["Sequence pass/fail"]["Retries"] = self.retries.value()
-        self.config["Sequence pass/fail"]["Pass fail action"] = self.pass_fail_action.currentText()
-        self.config["Sequence pass/fail"]["Interrupt action"] = self.interrupt_action.currentText()
-        self.config["Sequence pass/fail"]["Dialog timeout (s)"] = self.dialog_timeout.value()
-
-        self.config["WTF_DIO"]["DAQ Device name"] = self.daq_devicename.text()
-        self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
-        self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
-
-        self.config["Autoset timebase"]["Min time of flight (us)"] = self.min_time_of_flight.value()
-        self.config["Autoset timebase"]["Max time of flight (us)"] = self.max_time_of_flight.value()
-
-        self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
-        self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
-
-        with open('local.yaml', 'w') as f:
-            yaml.dump(self.config, f)
-
-    def show_config(self):
-        webbrowser.open("local.yaml")
+    def disable_buttons(self):
+        self.x_pos_button.setEnabled(False)
+        self.x_neg_button.setEnabled(False)
+        self.run_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.load_button.setEnabled(False)
+        self.go_element_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
+        self.retract_ua_button.setEnabled(False)
+        self.go_x_button.setEnabled(False)
+        self.show_config_button.setEnabled(False)
+        self.save_config_button.setEnabled(False)
+        self.abort_button.setEnabled(False)
+        self.manual_home_button.setEnabled(False)
+        self.pushButton.setEnabled(False)
+        self.theta_pos_button.setEnabled(False)
+        self.theta_neg_button.setEnabled(False)
+        self.retract_button.setEnabled(False)
+        self.reset_zero_button.setEnabled(False)
+        self.go_theta_button.setEnabled(False)
+        self.insert_button.setEnabled(False)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
-        treeModel = QStandardItemModel()
-        rootNode = treeModel.invisibleRootItem()
+        print(arg_dicts)
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        self.script_step_view.clear()
+        self.arg_dicts = arg_dicts
 
-        for i in range(len(arg_dicts)):
-
-            if not '# of Tasks' in arg_dicts[i].keys():
-                task = QStandardItem(arg_dicts[i]["Task type"])
-
-                for key in arg_dicts[i]:
+        task_dict = {}
+        for i in range(len(self.arg_dicts)):
+            if not '# of Tasks' in self.arg_dicts[i].keys():
+                arg_list = list()
+                for key in self.arg_dicts[i]:
                     if not key == "Task type":
-                        arg = QStandardItem(key + ": " + str(arg_dicts[i][key]))
-                        task.appendRow(arg)
+                        arg_list.append([key,self.arg_dicts[i][key]])
 
-                rootNode.appendRow(task)
+                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
 
-        self.script_step_view.setModel(treeModel)
-        self.script_step_view.expandAll()
+        self.tree_items = []
+        for key, values in task_dict.items():
+            item = QTreeWidgetItem([key])
+            for value in values:
+                child = QTreeWidgetItem(value)
+                item.addChild(child)
+
+            self.tree_items.append(item)
+
         self.script_step_view.setHeaderHidden(True)
+        self.script_step_view.insertTopLevelItems(0, self.tree_items)
+
+    def update_script_visual_element_number(self, element_number):
+        if 'Element' in element_number:
+            return
+        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        rootItem = self.script_step_view.invisibleRootItem()
+        for i in range(rootItem.childCount()):
+            task = rootItem.child(i)
+            for j in range(task.childCount()):
+                var = task.child(j)
+                var_name = var.text(0)
+                var_value = var.text(1)
+                #If the variable is an element number that is looped
+                if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
+                    var.setText(1,f'Current: {self.live_element_field.text()}')
 
     @pyqtSlot(int, int)  # loop number and item number
     def highlight_item(self, current_item):
         # TODO: have function highlight which item it's on
         pass
 
-    @pyqtSlot(str)
-    def highlight_step(self, current_step):  # current_step should match "Task type" from above
-        for i in range(0, len(self.script_step_view)):
-            self.script_step_view[i].setBackground(QBrush().setColor("white"))
-
-        item_to_highlight = self.script_step_view.findItems(current_step)  # should set var to QStandardItem
-        item_index = self.script_step_view.indexFromItem(item_to_highlight)  # gets index of the var
-
-        self.script_step_view[item_index].setBackground(QBrush().setColor("blue"))
+    @pyqtSlot(int)
+    def expand_step(self, step_index):  # current_step should match "Task type" from above
+        if self.tree_items is not None:
+            for item in self.tree_items:
+                item.setExpanded(False)
+                white_background = QColor(255, 255, 255)
+                brush_for_background = QBrush(white_background)
+                item.setBackground(0, brush_for_background)
+            if 0<= step_index < len(self.tree_items):
+                self.tree_items[step_index].setExpanded(True)
+                blue_background = QColor(95,180,230)
+                brush_for_background = QBrush(blue_background)
+                self.tree_items[step_index].setBackground(0,brush_for_background)
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
@@ -247,9 +243,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
-
-        self.save_config_button.clicked.connect(self.save_config)
-        self.show_config_button.clicked.connect(self.show_config)
+        self.abort_button.clicked.connect(self.manager.abort)
 
         # Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
@@ -258,38 +252,28 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.description_signal.connect(self.script_description_field.setText)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
         self.manager.step_number_signal.connect(self.calc_progress)
+        self.manager.expand_step_signal.connect(self.expand_step)
+
+        #When manager loads a script, visualize it in the left pane as well as loading it into the script editor
         self.manager.script_info_signal.connect(self.visualize_script)
-        self.manager.script_highlight_signal.connect(self.highlight_step)
+        self.manager.script_info_signal.connect(self.script_editor.visualize_script)
+
+        self.manager.element_number_signal.connect(self.live_element_field.setText)
+        self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware control signals
-        self.command_signal.connect(self.manager.exec_command)
-        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
-        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X-"))
-        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R+"))
-        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
-        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
-        self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
-        self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
-        self.manual_home_button.clicked.connect(self.manual_home_clicked)
+        self.command_signal.connect(self.manager.exec_command)  # deplicate of line 262
         self.insert_button.clicked.connect(self.insert_button_clicked)
-        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
-        self.insert_ua_button.clicked.connect(self.insert_button_clicked)
-        self.retract_ua_button.clicked.connect(self.retract_button_clicked)
-        self.go_element_button.clicked.connect(self.go_element_button_clicked)
+
         # Hardware info signals
-        self.manager.Motors.x_pos_signal.connect(self.update_x_postion)
-        self.manager.Motors.r_pos_signal.connect(self.update_r_postion)
-        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
         self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.plot_signal.connect(self.plot)
+        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+
         # Manager communication signals
         self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
@@ -299,6 +283,35 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
         self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
+        self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
+        self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
+
+    @pyqtSlot(str)
+    def update_water_level_indicator(self, water_level):
+        print(f"inside update water lvl indicator method; water_level = {water_level}")
+        if water_level == "below_level":
+            self.tank_level_indicator.setStyleSheet("background-color:red")
+            self.tank_level_indicator.setText("TANK LOW")
+        elif water_level == "above_level":
+            self.tank_level_indicator.setStyleSheet("background-color:red")
+            self.tank_level_indicator.setText("TANK HIGH")
+        elif water_level == "level":
+            self.tank_level_indicator.setStyleSheet("background-color:green")
+            self.tank_level_indicator.setText("TANK LEVEL")
+
+    @pyqtSlot(bool)
+    def update_pump_indicator(self, is_on):
+        if is_on:
+            self.ua_pump_indicator.setStyleSheet("background-color: green")
+            self.ua_pump_indicator.setText("UA PUMP ON")
+        else:
+            self.ua_pump_indicator.setStyleSheet("background-color: grey")
+            self.ua_pump_indicator.setText("UA PUMP OFF")
+
+    """Command the motors to go to the insertion point"""
+    @pyqtSlot()
+    def insert_button_clicked(self):
+        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     @pyqtSlot()
     def update_x_speed(self):
@@ -327,57 +340,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         axY = self.waveform_plot.getAxis('left')
         y_pos = 0 #axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
         self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
-
-    """Command the motors to go to the insertion point"""
-
-    @pyqtSlot()
-    def insert_button_clicked(self):
-        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
-
-    """Command the motors to retract until a sensor is reached"""
-
-    @pyqtSlot()
-    def retract_button_clicked(self):
-        # TODO: fill in later with the code that uses the retraction sensor
-        self.command_signal.emit(f"Motor Go {-50}")
-
-    """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
-
-    @pyqtSlot()
-    def go_element_button_clicked(self):
-        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
-        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
-
-        if is_number(self.go_element_combo.currentText()):
-            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
-            target_position = element_1_pos + offset
-            self.command_signal.emit(f"Motor Go {target_position}")
-        else:
-            # TODO: fill in later to handle "current" element condition
-            return
-
-    @pyqtSlot()
-    def manual_home_clicked(self):
-        if self.x_home_radio.isChecked():
-            self.command_signal.emit("Motor go 0")
-        elif self.theta_home_radio.isChecked():
-            self.command_signal.emit("Motor go ,0")
-        elif self.all_axes_radio.isChecked():
-            self.command_signal.emit("Motor go 0,0")
-
-    @pyqtSlot(float)
-    def update_x_postion(self, mm):
-        try:
-            self.x_pos_lineedit.setText(str(mm))
-        except KeyboardInterrupt:
-            pass
-
-    @pyqtSlot(float)
-    def update_r_postion(self, mm):
-        try:
-            self.theta_pos_lineedit.setText(str(mm))
-        except KeyboardInterrupt:
-            pass
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -507,7 +469,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_pretest_dialog(self, formatted_date):
-        print("show_pretest_dialog method called")
         dlg = PretestDialog()
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
@@ -596,12 +557,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         elif water_level == 'level':
             dlg.label.setText("Water level is good")
 
-
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
