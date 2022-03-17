@@ -374,6 +374,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(object, object)
     def plot(self, x, y):
+        if x is None or y is None:
+            return
+        if len(x) == 0 or len(x) != len(y):
+            return
+
         self.plot_ready = False
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True

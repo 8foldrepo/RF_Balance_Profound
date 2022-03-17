@@ -132,7 +132,7 @@ def get_rigol_addresses(rm = None):
     import pyvisa
 
     if rm is None:
-        rm = pyvisa.ResourceManager('@py')
+        rm = pyvisa.ResourceManager()
 
     devices = rm.list_resources()
 

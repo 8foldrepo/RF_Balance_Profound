@@ -1,4 +1,4 @@
 import pyvisa
 
-rm = pyvisa.ResourceManager('@py')
+rm = pyvisa.ResourceManager()
 print(pyvisa.log_to_screen())

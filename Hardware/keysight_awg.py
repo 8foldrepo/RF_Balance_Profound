@@ -12,7 +12,7 @@ class KeysightAWG(AbstractDevice):
         if resource_manager is not None:
             self.rm = resource_manager
         else:
-            self.rm = pyvisa.ResourceManager('@py')
+            self.rm = pyvisa.ResourceManager()
 
         self.address = None
         self.inst = None
@@ -36,7 +36,7 @@ class KeysightAWG(AbstractDevice):
                    output_Impedance=self.config[self.device_key]['output_Impedance'])
 
     def connect_hardware(self):
-        self.rm = pyvisa.ResourceManager('@py')
+        self.rm = pyvisa.ResourceManager()
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
