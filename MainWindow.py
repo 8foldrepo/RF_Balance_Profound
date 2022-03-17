@@ -149,6 +149,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         y = range(0, 100)
         x = range(0, 100)
         self.profile_plot.refresh(x, y)
+        self.rfb.rfb_graph.refresh(x,y)
+        self.waveform_plot.refresh(x,y)
 
     def disable_buttons(self):
         self.x_pos_button.setEnabled(False)

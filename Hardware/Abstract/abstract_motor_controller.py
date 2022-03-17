@@ -74,9 +74,9 @@ class AbstractMotorController(AbstractDevice):
         """
 
         #Signals
-        x_pos_signal = pyqtSignal(float)
+        x_pos_mm_signal = pyqtSignal(float)
         y_pos_signal = pyqtSignal(float)
-        r_pos_signal = pyqtSignal(float)
+        r_pos_mm_signal = pyqtSignal(float)
         z_pos_signal = pyqtSignal(float)
 
         moving_signal = pyqtSignal(bool)
@@ -273,8 +273,8 @@ class AbstractMotorController(AbstractDevice):
         def get_position(self):
             self.coords = self.Motors.coords
 
-            self.x_pos_signal.emit(self.coords[self.ax_letters.index('X')])
-            self.r_pos_signal.emit(self.coords[self.ax_letters.index('R')])
+            self.x_pos_mm_signal.emit(self.coords[self.ax_letters.index('X')])
+            self.r_pos_mm_signal.emit(self.coords[self.ax_letters.index('R')])
 
         def exec_command(self, command):
             command = command.upper()

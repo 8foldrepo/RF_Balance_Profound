@@ -5,6 +5,7 @@ from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 class KeysightOscilloscope(AbstractOscilloscope):
     def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
         super().__init__(device_key = device_key, config = config, parent = parent)
+        self.connected = False
         if resource_manager is not None:
             self.rm = resource_manager
         else:
@@ -20,17 +21,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     self.inst = self.rm.open_resource(resource)
                     self.inst.write("*OPC?")
                     self.inst.read()
-
-                    try:
-                        self.inst.read()
-                    except:
-                        pass
-                    pass
+                    self.connected = True
+                    self.connected_signal.emit(True)
                 except pyvisa.errors.VisaIOError as e:
+                    self.connected = False
+                    self.connected_signal.emit(False)
                     self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
-        self.connected_signal.emit(True)
 
     def disconnect_hardware(self):
         try:
@@ -38,6 +36,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.rm.close()
         except:
             pass
+        self.connected = False
         self.connected_signal.emit(False)
         pass
 

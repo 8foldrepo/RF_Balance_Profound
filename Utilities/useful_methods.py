@@ -35,7 +35,9 @@ def create_comma_string(axes:list,coords:list,ax_letters:list):
     answer = ""
     for i in range(len(ax_letters)):
         if ax_letters[i] in axes:
-            answer = answer + str((coords[axes.index(ax_letters[i])]))
+            index = axes.index(ax_letters[i])
+            if len(coords) == len(axes):
+                answer = answer + str((coords[index]))
 
         answer = answer + ","
     return  answer

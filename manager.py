@@ -212,7 +212,8 @@ class Manager(QThread):
                 if self.scripting:
                     self.advance_script()
                 else:
-                    self.capture_and_plot()
+                    if self.Oscilloscope.connected:
+                        self.capture_and_plot()
 
             self.cmd = ""
 
@@ -223,10 +224,15 @@ class Manager(QThread):
 
     def capture_and_plot(self):
         # Do these things if a script is not being run
-        self.Motors.get_position()
+        tabIndex = self.parent.tabWidget.currentIndex()
+        tabText = self.parent.tabWidget.tabText(tabIndex)
+
+        if  tabText == 'Position':
+            self.Motors.get_position()
+
         self.thermocouple.get_reading()
 
-        if self.parent.plot_ready and self.parent.tabWidget.currentIndex() == 6:
+        if self.parent.plot_ready and tabText == 'Scan':
             # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
             try:
                 time, voltage = self.Oscilloscope.capture(channel=1)
@@ -360,12 +366,12 @@ class Manager(QThread):
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
+        if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
+            if self.scripting and 0 <= self.step_index < len(self.taskNames):
 
-        if self.scripting and 0 <= self.step_index < len(self.taskNames):
-            if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
-                if self.step_complete:
-                    self.step_complete = False
-                    self.execute_script_step(self.step_index)
+                    if self.step_complete:
+                        self.step_complete = False
+                        self.execute_script_step(self.step_index)
         elif self.step_index >= len(self.taskNames):
             self.abort()
 
@@ -465,7 +471,7 @@ class Manager(QThread):
             except AbortException:
                 return self.abort()
 
-        # Show dialogs until proceed until pump is on and the water sensor reads level
+        # Show dialogs until pump is on and the water sensor reads level
         while True:
             if not self.Pump.get_reading() == 1:  # if the pump is not running
                 # launch the dialog box signifying this issue

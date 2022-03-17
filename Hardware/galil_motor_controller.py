@@ -490,10 +490,10 @@ class Galil(AbstractMotorController):
                 else:
                     self.r = self.handle.GCommand("RP D")
 
-                self.x_pos_signal.emit(f"X: {self.x} mm")
+                self.x_pos_mm_signal.emit(f"X: {self.x} mm")
                 self.y_pos_signal.emit(f"Y: {self.y} mm")
                 self.z_pos_signal.emit(f"Z: {self.z} mm")
-                self.r_pos_signal.emit(f"R: {self.r} mm")
+                self.r_pos_mm_signal.emit(f"R: {self.r} mm")
             except gclib.GclibError as e:
                 stop_code = self.tell_error()
                 if stop_code is not None:

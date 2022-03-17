@@ -73,9 +73,9 @@ class GalilMotors(AbstractMotorController):
         """
 
         #Signals
-        x_pos_signal = pyqtSignal(float)
+        x_pos_mm_signal = pyqtSignal(float)
         y_pos_signal = pyqtSignal(float)
-        r_pos_signal = pyqtSignal(float)
+        r_pos_mm_signal = pyqtSignal(float)
         z_pos_signal = pyqtSignal(float)
 
         moving_signal = pyqtSignal(bool)
@@ -103,6 +103,7 @@ class GalilMotors(AbstractMotorController):
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
+            self.jogging = False
             self.handle = gclib.py()  # initialize the library object
             self.fields_setup()
 
@@ -161,11 +162,6 @@ class GalilMotors(AbstractMotorController):
 
             port_list = self.handle.GAddresses()
             self.log(port_list)
-            try:
-                self.log("pre-connection handle status: {0}".format(self.handle))
-            except gclib.GclibError as e:
-                self.log("Something went wrong: {0}".format(e))
-
 
             try:
                 print(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
@@ -174,17 +170,20 @@ class GalilMotors(AbstractMotorController):
                 self.connected = True
             except gclib.GclibError as e:
                 self.log(e)
+                self.connected = False
+
+
             self.log("post connection handle status: {0}".format(self.handle))
             self.handle.GCommand("GR 0,0,0,0")
             self.handle.GCommand("GM 0,0,0,0")
 
             # self.handle.GCommand('PF 7')
             self.handle.GCommand("ST")
-            self.handle.GCommand(
-                f"SP {self.calibrate_ray[0]}, {self.calibrate_ray[1]}, "
-                f"{self.calibrate_ray[2]}, {self.calibrate_ray[3]}")  # yaml file value
 
-            self.handle.GCommand("AC 1000000,1000000,1000000,1000000")
+            #Set speeds according to config
+            speeds_string = str(self.calibrate_ray).strip("[]")
+            self.handle.GCommand(f"SP {speeds_string}")
+
             self.handle.GCommand("DC 1000000,1000000,1000000,1000000")
             # self.set_origin()
             self.get_position()
@@ -206,24 +205,41 @@ class GalilMotors(AbstractMotorController):
             return self.Motors.connected
 
         def jog(self, axis=None, direction=None, feedback=True):
-            # Dummy code, replace when developing a hardware interface
             self.jogging = True
-            self.moving_signal.emit(True)
-            if axis == 'R' and direction > 0:
-                self.dummy_command_signal.emit('Begin Motion R+')
-            elif axis == 'R' and direction < 0:
-                self.dummy_command_signal.emit('Begin Motion R-')
-            elif axis == 'X' and direction > 0:
-                self.dummy_command_signal.emit('Begin Motion X+')
-            elif axis == 'X' and direction < 0:
-                self.dummy_command_signal.emit('Begin Motion X-')
-            else:
-                self.jogging = False
+
+            ax_index = self.ax_letters.index(axis)
+            galil_axis_letter = chr(ax_index + 65)
+
+            self.handle.GCommand(f"ST {galil_axis_letter}")
+
+            if self.reverse_ray[ax_index]:
+                direction = direction * -1
+
+            command = f"JG {create_comma_string([axis],[self.calibrate_ray[ax_index] * self.jog_speed * direction],self.ax_letters)}"
+
+            try:
+                self.handle.GCommand(command)
+                self.handle.GCommand(f"BG {galil_axis_letter}")
+            except gclib.GclibError as e:
+                stop_code = self.tell_error()
+                if stop_code is not None:
+                    self.log(f"error in go_to_position: {stop_code}")
+                else:
+                    self.log(f"error in go_to_position: {e}")
 
         def stop_motion(self):
-            self.moving_signal.emit(False)
             self.jogging = False
-            self.dummy_command_signal.emit("Stop Motion")
+            self.scanning = False
+            try:
+                self.handle.GCommand("ST")
+            except gclib.GclibError as e:
+                stop_code = self.tell_error()
+                if stop_code is not None:
+                    self.log(f"error in stop_motion: {stop_code}")
+                else:
+                    self.log(f"error in stop_motion: {e}")
+            finally:
+                self.get_position()
 
         def set_origin(self, origin_mm: list):
             origin_steps = list()
@@ -251,9 +267,7 @@ class GalilMotors(AbstractMotorController):
 
             self.go_to_position(self.ax_letters, zeroes)
 
-        # Tells one axis what coordinate to travel to
-        # Axis must be 'x' , 'y' , 'z' , or 'r'
-
+        '''Tells one axis what coordinate to travel to. Axis must be 'x' , 'y' , 'z' , or 'r'''''
         def go_to_position(self, axes:list, coords:list):
             if not len(axes) == len(coords):
                 self.log(level='error',message="Axes length does not match coordinates length")
@@ -286,16 +300,47 @@ class GalilMotors(AbstractMotorController):
 
             comma_string = create_comma_string(axes=axes,coords=coords,ax_letters=self.ax_letters)
 
-            self.dummy_command_signal.emit(f'GO {comma_string}')
+            #Set target destination and begin motion
+            try:
+                self.handle.GCommand(f'PA {comma_string}')
+                self.handle.GCommand(f'BG')
+            except gclib.GclibError as e:
+                stop_code = self.tell_error()
+                if stop_code is not None:
+                    self.log(f"error in go_to_position: {stop_code}")
+                else:
+                    self.log(f"error in go_to_position: {e}")
 
         def is_moving(self):
             return not (self.Motors.dR == 0 and self.Motors.dX == 0)
 
         def get_position(self):
-            self.coords = self.Motors.coords
+            try:
+                for axis in self.ax_letters:
+                    ax_index = self.ax_letters.index(axis)
+                    axis_lowercase = axis.lower()
+                    galil_axis_letter = chr(ax_index + 65)
 
-            self.x_pos_signal.emit(self.coords[self.ax_letters.index('X')])
-            self.r_pos_signal.emit(self.coords[self.ax_letters.index('R')])
+                    if self.reverse_ray[ax_index]:
+                        self.coords[ax_index] = -1 * float(self.handle.GCommand(f"RP {galil_axis_letter}"))
+                    else:
+                        self.coords[ax_index] = float(self.handle.GCommand(f"RP {galil_axis_letter}"))
+
+                self.x_pos_mm_signal.emit(self.coords[self.ax_letters.index('X')])
+                self.r_pos_mm_signal.emit(self.coords[self.ax_letters.index('R')])
+
+            except gclib.GclibError as e:
+                stop_code = self.tell_error()
+                if stop_code is not None:
+                    print(f"error in get_position: {stop_code}")
+                else:
+                    print(f"error in get_position: {e}")
+
+        def tell_error(self):
+            try:
+                return (self.handle.GCommand("TC 1"))
+            except:
+                return None
 
         def exec_command(self, command):
             command = command.upper()

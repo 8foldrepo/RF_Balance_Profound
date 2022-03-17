@@ -48,8 +48,8 @@ class Position(QWidget, Ui_Form):
         self.go_element_button.clicked.connect(self.go_element_button_clicked) 
 
         # Hardware info signals
-        self.manager.Motors.x_pos_signal.connect(self.update_x_postion) 
-        self.manager.Motors.r_pos_signal.connect(self.update_r_postion) 
+        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
+        self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
