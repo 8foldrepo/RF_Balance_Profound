@@ -30,6 +30,7 @@ from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.MT_balance import MT_balance
 from Hardware.keysight_oscilloscope import KeysightOscilloscope
 from Hardware.relay_board import Relay_Board
+from Hardware.galil_motor_controller_v2 import GalilMotors
 from Hardware.keysight_awg import KeysightAWG
 from Hardware.water_level_sensor import WaterLevelSensor
 
@@ -142,15 +143,18 @@ class Manager(QThread):
         self.devices.append(self.AWG)
         self.devices.append(self.Water_Level_Sensor)
 
+        self.thermocouple = AbstractSensor(config=self.config)
+
         if self.SIMULATE_HARDWARE:
             self.Motors = AbstractMotorController(config=self.config)
-            self.thermocouple = AbstractSensor(config=self.config)
+
             self.Oscilloscope = AbstractOscilloscope()
-            self.devices.append(self.Motors)
-            self.devices.append(self.thermocouple)
         else:
+            self.Motors = GalilMotors(config=self.config)
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
+        self.devices.append(self.Motors)
+        self.devices.append(self.thermocouple)
         self.devices.append(self.Oscilloscope)
 
     def connect_hardware(self):

@@ -4,8 +4,9 @@ from Utilities.useful_methods import bound
 from Hardware.Simulators.dummy_motors import  DummyMotors
 from Utilities.useful_methods import create_coord_rays, create_comma_string
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+import gclib
 
-class AbstractMotorController(AbstractMotorController):
+class GalilMotors(AbstractMotorController):
         """
         An abstract class that serves as a base for classes that interface with motor controllers.
         Used on its own, this class will create a DummyMotors object, which runs in a separate thread and simulates a
@@ -93,7 +94,7 @@ class AbstractMotorController(AbstractMotorController):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
+        def __init__(self, config: dict, device_key = 'Galil_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
             self.coords = list()
@@ -102,7 +103,7 @@ class AbstractMotorController(AbstractMotorController):
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
-
+            self.handle = gclib.py()  # initialize the library object
             self.fields_setup()
 
 
@@ -114,12 +115,6 @@ class AbstractMotorController(AbstractMotorController):
 
             self._jog_speed = self.config[self.device_key]['jog_speed']
             self._scan_speed = self.config[self.device_key]['scan_speed']
-
-            # Dummy code, replace when developing a hardware interface
-            self.Motors = DummyMotors(parent=None)
-            self.Motors.set_config(self.config)
-            self.dummy_command_signal.connect(self.Motors.command_received)
-            self.Motors.start(priority=4)
 
         @property
         def jog_speed(self):
@@ -161,35 +156,33 @@ class AbstractMotorController(AbstractMotorController):
             else:
                 return self.disconnect_hardware()
 
-        @abstractmethod
         def connect_hardware(self):
-            self.Motors.connected = True
-            self.connected_signal.emit(self.connected())
+            self.connected = False
 
             port_list = self.handle.GAddresses()
-            print("pre-connection handle status: {0}".format(self.handle))
-            _bConnected = False
+            self.log(port_list)
+            try:
+                self.log("pre-connection handle status: {0}".format(self.handle))
+            except gclib.GclibError as e:
+                self.log("Something went wrong: {0}".format(e))
 
-            for port in port_list.keys():
-                print("port: {0} , handle status: {1}".format(port, self.handle))
-                try:
-                    self.handle.GOpen("192.168.42.100 --direct -s ALL")
-                    print(self.handle.GInfo())
-                    _bConnected = True
-                except gclib.GclibError as e:
-                    print("Something went wrong: {0}".format(e))
 
-                if _bConnected:
-                    break
-            print("post connection handle status: {0}".format(self.handle))
+            try:
+                print(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
+                self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
+                self.log(self.handle.GInfo())
+                self.connected = True
+            except gclib.GclibError as e:
+                self.log(e)
+            self.log("post connection handle status: {0}".format(self.handle))
             self.handle.GCommand("GR 0,0,0,0")
             self.handle.GCommand("GM 0,0,0,0")
 
             # self.handle.GCommand('PF 7')
             self.handle.GCommand("ST")
             self.handle.GCommand(
-                f"SP {self._x_calibrate}, {self._y_calibrate}, {self._z_calibrate}, {self._r_calibrate}"
-            )  # yaml file value
+                f"SP {self.calibrate_ray[0]}, {self.calibrate_ray[1]}, "
+                f"{self.calibrate_ray[2]}, {self.calibrate_ray[3]}")  # yaml file value
 
             self.handle.GCommand("AC 1000000,1000000,1000000,1000000")
             self.handle.GCommand("DC 1000000,1000000,1000000,1000000")
@@ -198,7 +191,6 @@ class AbstractMotorController(AbstractMotorController):
 
             self.connected_signal.emit(True)
 
-        @abstractmethod
         def disconnect_hardware(self):
             self.handle.GCommand("ST")
             self.handle.GCommand("MO")
@@ -210,11 +202,9 @@ class AbstractMotorController(AbstractMotorController):
             self.connected_signal.emit(self.connected())
             self.dummy_command_signal.emit("CLOSE")
 
-        @abstractmethod
         def connected(self):
             return self.Motors.connected
 
-        @abstractmethod
         def jog(self, axis=None, direction=None, feedback=True):
             # Dummy code, replace when developing a hardware interface
             self.jogging = True
@@ -230,13 +220,11 @@ class AbstractMotorController(AbstractMotorController):
             else:
                 self.jogging = False
 
-        @abstractmethod
         def stop_motion(self):
             self.moving_signal.emit(False)
             self.jogging = False
             self.dummy_command_signal.emit("Stop Motion")
 
-        @abstractmethod
         def set_origin(self, origin_mm: list):
             origin_steps = list()
 
@@ -249,16 +237,13 @@ class AbstractMotorController(AbstractMotorController):
 
             self.get_position()
 
-        @abstractmethod
         def set_origin_here(self):
             for i in range(len(self.ax_letters)):
                 self.dummy_command_signal.emit(f"Set {self.ax_letters[i]} 0")
 
-        @abstractmethod
         def set_origin_here_1d(self, axis):
             self.dummy_command_signal.emit(f"Set {axis} {0}")
 
-        @abstractmethod
         def go_home(self):
             zeroes = list()
             for i in range(len(self.ax_letters)):
@@ -303,11 +288,9 @@ class AbstractMotorController(AbstractMotorController):
 
             self.dummy_command_signal.emit(f'GO {comma_string}')
 
-        @abstractmethod
         def is_moving(self):
             return not (self.Motors.dR == 0 and self.Motors.dX == 0)
 
-        @abstractmethod
         def get_position(self):
             self.coords = self.Motors.coords
 

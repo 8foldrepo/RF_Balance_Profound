@@ -58,9 +58,9 @@ Note: the setup scripts assume this location. Make sure the setup.py file is in 
 launch cmd.exe from anaconda navigator.
 
 run the following commands:
->cd %USERPROFILE%\documents\github\Scantry_Ultra \
+>cd %USERPROFILE%\documents\github\RF_Balance_Profound \
 >conda env create -f environment.yml \
->conda activate Scantry_Ultra \
+>conda activate RF_Balance_Profound \
 >setup.bat \
 >conda list
 
