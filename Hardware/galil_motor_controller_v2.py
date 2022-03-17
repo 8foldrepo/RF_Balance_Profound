@@ -1,13 +1,11 @@
 from abc import abstractmethod
-
 from PyQt5.QtCore import *
 from Utilities.useful_methods import bound
 from Hardware.Simulators.dummy_motors import  DummyMotors
 from Utilities.useful_methods import create_coord_rays, create_comma_string
+from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
-from Hardware.Abstract.abstract_device import AbstractDevice
-
-class AbstractMotorController(AbstractDevice):
+class AbstractMotorController(AbstractMotorController):
         """
         An abstract class that serves as a base for classes that interface with motor controllers.
         Used on its own, this class will create a DummyMotors object, which runs in a separate thread and simulates a
@@ -107,6 +105,8 @@ class AbstractMotorController(AbstractDevice):
 
             self.fields_setup()
 
+
+
         def fields_setup(self):
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.ax_letters = self.config[self.device_key]['axes']
@@ -166,8 +166,46 @@ class AbstractMotorController(AbstractDevice):
             self.Motors.connected = True
             self.connected_signal.emit(self.connected())
 
+            port_list = self.handle.GAddresses()
+            print("pre-connection handle status: {0}".format(self.handle))
+            _bConnected = False
+
+            for port in port_list.keys():
+                print("port: {0} , handle status: {1}".format(port, self.handle))
+                try:
+                    self.handle.GOpen("192.168.42.100 --direct -s ALL")
+                    print(self.handle.GInfo())
+                    _bConnected = True
+                except gclib.GclibError as e:
+                    print("Something went wrong: {0}".format(e))
+
+                if _bConnected:
+                    break
+            print("post connection handle status: {0}".format(self.handle))
+            self.handle.GCommand("GR 0,0,0,0")
+            self.handle.GCommand("GM 0,0,0,0")
+
+            # self.handle.GCommand('PF 7')
+            self.handle.GCommand("ST")
+            self.handle.GCommand(
+                f"SP {self._x_calibrate}, {self._y_calibrate}, {self._z_calibrate}, {self._r_calibrate}"
+            )  # yaml file value
+
+            self.handle.GCommand("AC 1000000,1000000,1000000,1000000")
+            self.handle.GCommand("DC 1000000,1000000,1000000,1000000")
+            # self.set_origin()
+            self.get_position()
+
+            self.connected_signal.emit(True)
+
         @abstractmethod
         def disconnect_hardware(self):
+            self.handle.GCommand("ST")
+            self.handle.GCommand("MO")
+            self.handle.GClose()
+            print("Connection terminated")
+            self.connected_signal.emit(False)
+
             self.Motors.connected = False
             self.connected_signal.emit(self.connected())
             self.dummy_command_signal.emit("CLOSE")

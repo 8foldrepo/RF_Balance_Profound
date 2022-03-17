@@ -356,10 +356,12 @@ class Manager(QThread):
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
+
         if self.scripting and 0 <= self.step_index < len(self.taskNames):
-            if self.step_complete:
-                self.step_complete = False
-                self.execute_script_step(self.step_index)
+            if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
+                if self.step_complete:
+                    self.step_complete = False
+                    self.execute_script_step(self.step_index)
         elif self.step_index >= len(self.taskNames):
             self.abort()
 

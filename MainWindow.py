@@ -98,9 +98,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.position_tab.set_motors(self.manager.Motors)
         self.position_tab.configure_signals()
 
-        self.rfb_tab.set_manager(self.manager)
-        self.rfb_tab.set_config(self.config)
-        self.rfb_tab.set_balance(self.manager.Balance)
+        self.rfb.set_manager(self.manager)
+        self.rfb.set_config(self.config)
+        self.rfb.set_balance(self.manager.Balance)
 
         self.results_tab.set_config(self.config)
         self.results_tab.set_manager(self.manager)

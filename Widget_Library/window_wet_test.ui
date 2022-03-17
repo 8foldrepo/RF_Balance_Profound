@@ -3153,7 +3153,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_24">
         <item row="0" column="0">
-         <widget class="RFB" name="rfb_tab" native="true"/>
+         <widget class="RFB" name="rfb" native="true"/>
         </item>
        </layout>
       </widget>
@@ -3258,16 +3258,11 @@
        <attribute name="title">
         <string>System Config</string>
        </attribute>
-       <widget class="SystemConfig" name="system_config" native="true">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>841</width>
-          <height>621</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_16">
+        <item row="0" column="0">
+         <widget class="SystemConfig" name="system_config" native="true"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -3300,31 +3295,31 @@
   <customwidget>
    <class>ScriptEditor</class>
    <extends>QWidget</extends>
-   <header>ui_elements.ui_script_editor</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SystemConfig</class>
-   <extends>QWidget</extends>
-   <header>ui_elements.ui_system_config</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Position</class>
-   <extends>QWidget</extends>
-   <header>ui_elements.ui_position</header>
+   <header location="global">ui_elements.ui_script_editor</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RFB</class>
    <extends>QWidget</extends>
-   <header>ui_elements.ui_rfb</header>
+   <header location="global">ui_elements.ui_rfb</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SystemConfig</class>
+   <extends>QWidget</extends>
+   <header location="global">ui_elements.ui_system_config</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Position</class>
+   <extends>QWidget</extends>
+   <header location="global">ui_elements.ui_position</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Results</class>
    <extends>QWidget</extends>
-   <header>ui_elements.ui_results</header>
+   <header location="global">ui_elements.ui_results</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -19,6 +19,12 @@ class SystemConfig(QWidget, Ui_Form):
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
 
+    def set_config(self, config):
+        self.config = config
+
+    def set_manager(self, manager):
+        self.manager = manager
+
     def show_config(self):
         try:
             osCommandString = "notepad.exe local.yaml"
