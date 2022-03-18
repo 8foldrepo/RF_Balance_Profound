@@ -2,9 +2,9 @@ import pyvisa
 from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Abstract.abstract_awg import AbstractAWG
 
-class KeysightAWG(AbstractDevice):
+class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
 
     def __init__(self, resource_manager = None, config = None, device_key = 'Keysight_AWG', parent = None):
@@ -36,7 +36,6 @@ class KeysightAWG(AbstractDevice):
                    output_Impedance=self.config[self.device_key]['output_Impedance'])
 
     def connect_hardware(self):
-        self.rm = pyvisa.ResourceManager()
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
@@ -106,6 +105,7 @@ class KeysightAWG(AbstractDevice):
             self.inst.write('OUTP ON')
             self.output_signal.emit(True)
         else:
+            self.inst.write('OUTP OFF')
             self.output_signal.emit(False)
 
     def Get_Output(self):

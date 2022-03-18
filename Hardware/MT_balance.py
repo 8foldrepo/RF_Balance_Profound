@@ -1,4 +1,4 @@
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Abstract.abstract_balance import AbstractBalance
 import serial
 from PyQt5.QtCore import pyqtSignal
 import  time as t
@@ -6,7 +6,7 @@ import  time as t
 from Utilities.useful_methods import is_number
 from Utilities.load_config import load_configuration
 
-class MT_balance(AbstractSensor):
+class MT_balance(AbstractBalance):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 

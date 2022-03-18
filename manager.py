@@ -24,14 +24,14 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
-from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.MT_balance import MT_balance
-from Hardware.keysight_oscilloscope import KeysightOscilloscope
+
+
 from Hardware.relay_board import Relay_Board
-from Hardware.galil_motor_controller_v2 import GalilMotors
-from Hardware.keysight_awg import KeysightAWG
+
 from Hardware.water_level_sensor import WaterLevelSensor
 
 pump_status = ""
@@ -131,31 +131,40 @@ class Manager(QThread):
     def add_devices(self):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
+        print(self.SIMULATE_HARDWARE)
 
-        self.rm = pyvisa.ResourceManager()
-        self.Balance = MT_balance(config=self.config)
-        self.Pump = Relay_Board(config=self.config, device_key='Pump')
-        self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
+
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
-
-        self.devices.append(self.Pump)
-        self.devices.append(self.Balance)
-        self.devices.append(self.AWG)
-        self.devices.append(self.Water_Level_Sensor)
-
         self.thermocouple = AbstractSensor(config=self.config)
 
         if self.SIMULATE_HARDWARE:
+            from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+            from Hardware.Abstract.abstract_awg import AbstractAWG
+            from Hardware.Abstract.abstract_relay import AbstractRelay
+            from Hardware.Abstract.abstract_balance import AbstractBalance
             self.Motors = AbstractMotorController(config=self.config)
-
+            self.Pump = AbstractRelay(config=self.config, device_key='Pump')
+            self.AWG = AbstractAWG(config=self.config)
             self.Oscilloscope = AbstractOscilloscope()
+            self.Balance = AbstractBalance(config=self.config)
         else:
+            self.rm = pyvisa.ResourceManager()
+            from Hardware.galil_motor_controller_v2 import GalilMotors
+            from Hardware.keysight_oscilloscope import KeysightOscilloscope
+            from Hardware.keysight_awg import KeysightAWG
             self.Motors = GalilMotors(config=self.config)
+            self.Pump = Relay_Board(config=self.config, device_key='Pump')
+            self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
+            self.Balance = MT_balance(config=self.config)
 
         self.devices.append(self.Motors)
         self.devices.append(self.thermocouple)
         self.devices.append(self.Oscilloscope)
+        self.devices.append(self.Pump)
+        self.devices.append(self.Balance)
+        self.devices.append(self.AWG)
+        self.devices.append(self.Water_Level_Sensor)
 
     def connect_hardware(self):
         for device in self.devices:

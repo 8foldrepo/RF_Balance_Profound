@@ -2,12 +2,12 @@ import serial
 from PyQt5.QtCore import pyqtSignal
 
 from Utilities.load_config import load_configuration
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Abstract.abstract_relay import AbstractRelay
 import time as t
 from PyQt5.QtCore import pyqtSignal
 
 
-class Relay_Board(AbstractSensor):
+class Relay_Board(AbstractRelay):
     reading_signal = pyqtSignal(bool)
 
     def __init__(self, config = None, device_key = 'Pump', parent = None):

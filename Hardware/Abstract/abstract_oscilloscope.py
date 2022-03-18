@@ -16,6 +16,7 @@ class AbstractOscilloscope(AbstractDevice):
             self.connected = False
             self.fields_setup()
 
+        @abstractmethod
         def fields_setup(self):
             self.range_mv = self.config[self.device_key]['range_mv']
             self.channel = self.config[self.device_key]['channel']
@@ -49,7 +50,7 @@ class AbstractOscilloscope(AbstractDevice):
                 if key == 'delay_cycles':
                     self.delay_cycles = parameters[key]
 
-        # Hardware interfacing functions
+        @abstractmethod
         def toggle_connection(self):
             if self.connected():
                 return self.connect()
@@ -59,11 +60,12 @@ class AbstractOscilloscope(AbstractDevice):
         @abstractmethod
         def connect_hardware(self):
             self.connected = True
-            #return self.connected()
+            self.connected_signal.emit(self.connected)
 
         @abstractmethod
         def disconnect_hardware(self):
             self.connected = False
+            self.connected_signal.emit(self.connected)
 
         @abstractmethod
         def capture(self, channel = 1):
@@ -79,6 +81,7 @@ class AbstractOscilloscope(AbstractDevice):
 
             return time, voltage
 
+        @abstractmethod
         def exec_command(self, command):
             command = command.upper()
             cmd_ray = command.split(' ')

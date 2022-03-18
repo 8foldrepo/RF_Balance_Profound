@@ -8,7 +8,6 @@ class WaterLevelSensor(AbstractSensor):
     reading_signal = pyqtSignal(str)
     connected_signal = pyqtSignal(bool)
 
-    @abstractmethod
     def __init__(self, config, parent=None, device_key="Water_Level_Sensor"):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.connected = True
