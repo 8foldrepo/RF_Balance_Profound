@@ -190,6 +190,7 @@ if __name__ == "__main__":
     # osc.getHorzOffset_sec()
     # osc.getFreq_Hz()
     # osc.getAmp_V()
+    osc.autoScale()
     osc.capture(1)
     osc.getHorzScale_V()
     osc.disconnect_hardware()
