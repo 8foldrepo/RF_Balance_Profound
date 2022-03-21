@@ -149,10 +149,10 @@ class Manager(QThread):
             self.Balance = AbstractBalance(config=self.config)
         else:
             self.rm = pyvisa.ResourceManager()
-            from Hardware.galil_motor_controller_v2 import GalilMotors
+            from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
             from Hardware.keysight_awg import KeysightAWG
-            self.Motors = GalilMotors(config=self.config)
+            self.Motors = VIX_Motor_Controller(config=self.config)
             self.Pump = Relay_Board(config=self.config, device_key='Pump')
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)

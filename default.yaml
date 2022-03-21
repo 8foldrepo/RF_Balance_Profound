@@ -8,6 +8,19 @@ Dummy_Motors:
   jog_speed: 1
   scan_speed: 1
 
+VIX_Motors:
+  axes: ['X', 'R']
+  #steps/mm, float
+  calibrate_ray: [1,1]
+  #boolean
+  reverse_ray: [False, False]
+  #mm/s, float
+  jog_speed: 1
+  scan_speed: 1
+  timeout_s: .2
+  on_by_default: True
+  port: "COM7"
+
 Dummy_Oscilloscope:
   range_mv: 10
   channel: 1
