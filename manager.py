@@ -136,23 +136,22 @@ class Manager(QThread):
 
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
+        self.Motors = AbstractMotorController(config=self.config)
 
         if self.SIMULATE_HARDWARE:
             from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
             from Hardware.Abstract.abstract_awg import AbstractAWG
             from Hardware.Abstract.abstract_relay import AbstractRelay
             from Hardware.Abstract.abstract_balance import AbstractBalance
-            self.Motors = AbstractMotorController(config=self.config)
+
             self.Pump = AbstractRelay(config=self.config, device_key='Pump')
             self.AWG = AbstractAWG(config=self.config)
             self.Oscilloscope = AbstractOscilloscope()
             self.Balance = AbstractBalance(config=self.config)
         else:
             self.rm = pyvisa.ResourceManager()
-            from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
             from Hardware.keysight_awg import KeysightAWG
-            self.Motors = VIX_Motor_Controller(config=self.config)
             self.Pump = Relay_Board(config=self.config, device_key='Pump')
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)

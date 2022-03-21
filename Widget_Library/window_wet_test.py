@@ -1093,6 +1093,9 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
+        self.ua_calibration_tab = UACalibration(self.tab_4)
+        self.ua_calibration_tab.setGeometry(QtCore.QRect(200, 80, 761, 541))
+        self.ua_calibration_tab.setObjectName("ua_calibration_tab")
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QtWidgets.QWidget()
         self.tab_5.setObjectName("tab_5")
@@ -1161,7 +1164,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(4)
         self.tabWidget_4.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -1245,6 +1248,7 @@ from ui_elements.ui_results import Results
 from ui_elements.ui_rfb import RFB
 from ui_elements.ui_script_editor import ScriptEditor
 from ui_elements.ui_system_config import SystemConfig
+from ui_elements.ui_ua_calibration import UACalibration
 
 
 if __name__ == "__main__":

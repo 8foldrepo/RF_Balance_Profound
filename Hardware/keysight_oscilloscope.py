@@ -1,5 +1,7 @@
 import pyvisa
 import time as t
+import cProfile
+import pstats
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 class KeysightOscilloscope(AbstractOscilloscope):
@@ -43,6 +45,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def setup(self, channel, frequency, amplitude, period, cycles, output):
         self.SetOutput(channel, output)
 
+    """Turns the output on or off"""
+    def SetOutput(self, on: bool):
+        if on:
+            self.inst.write('OUTP ON')
+        else:
+            self.inst.write('OUTP OFF')
+        t.sleep(0.03)
+
     """Shows text_item on the oscilloscope screen"""
     def DisplayText(self, text):
         self.inst.write(f"DISP:TEXT {text}")
@@ -53,7 +63,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return (float(self.inst.read()))
         t.sleep(0.03)
 
-    def setVertScale_V(self, channel, volts_per_div):
+    def setVertScale_V(self, volts_per_div, channel):
         self.inst.write(f"CHAN{channel}:SCAL {volts_per_div}")
         t.sleep(0.03)
 
@@ -102,6 +112,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return (float(self.inst.read()))
         t.sleep(0.03)
 
+    def autoScale(self):
+        self.inst.write(":AUT")
+        t.sleep(0.03)
+
     def capture(self, channel):
         self.inst.write("WAV:POIN:MODE RAW")
         self.inst.write(f"WAV:SOUR:CHAN{channel}")
@@ -144,8 +158,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             voltages_v[i] = float(voltages_v[i])
 
         #Create time array
-        times_s = [0]*(num_points)
-        for i in range(num_points):
+        times_s = [0] * num_points
+        for i in range(0, num_points):
             times_s[i] = (i-x_reference)*sample_interval_s + x_origin
 
         return times_s, voltages_v
@@ -174,9 +188,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.inst.write(Cycl)
         t.sleep(0.03)
 
-    def SetBaud(self, rate = 8000000):
-        self.inst.write(":SBUS:UART:BAUD?")
-        print(self.inst.read())
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
@@ -189,8 +200,7 @@ if __name__ == "__main__":
     # osc.getHorzOffset_sec()
     # osc.getFreq_Hz()
     # osc.getAmp_V()
-    print(osc.capture(1))
-    osc.setVertRange_V(1, 1)
-    osc.setHorzOffset_sec(-1)
-    osc.SetBaud()
+    osc.autoScale()
+    osc.capture(1)
+    osc.getHorzScale_V()
     osc.disconnect_hardware()
