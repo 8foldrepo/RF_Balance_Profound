@@ -1,5 +1,7 @@
 import pyvisa
 import time as t
+import cProfile
+import pstats
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 class KeysightOscilloscope(AbstractOscilloscope):
@@ -101,6 +103,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return (float(self.inst.read()))
         t.sleep(0.03)
 
+    def autoScale(self):
+        self.inst.write(":AUT")
+        t.sleep(0.03)
+
     def capture(self, channel):
         self.inst.write("WAV:POIN:MODE RAW")
         self.inst.write(f"WAV:SOUR:CHAN{channel}")
@@ -143,8 +149,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             voltages_v[i] = float(voltages_v[i])
 
         #Create time array
-        times_s = [0]*(num_points)
-        for i in range(num_points):
+        times_s = [0] * num_points
+        for i in range(0, num_points):
             times_s[i] = (i-x_reference)*sample_interval_s + x_origin
 
         return times_s, voltages_v
