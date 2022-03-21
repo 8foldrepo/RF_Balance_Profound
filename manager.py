@@ -131,30 +131,44 @@ class Manager(QThread):
     def add_devices(self):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
+        self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
+        self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         print(self.SIMULATE_HARDWARE)
 
 
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
-        self.Motors = AbstractMotorController(config=self.config)
+
+
+        if self.SIMULATE_MOTORS:
+            self.Motors = AbstractMotorController(config=self.config)
+        else:
+            from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
+            self.Motors = VIX_Motor_Controller(config=self.config)
+
+        self.rm = None
+
+        if self.SIMULATE_OSCILLOSCOPE:
+            from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+            self.Oscilloscope = AbstractOscilloscope()
+        else:
+            from Hardware.keysight_oscilloscope import KeysightOscilloscope
+            self.rm = pyvisa.ResourceManager()
+            self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.SIMULATE_HARDWARE:
-            from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
             from Hardware.Abstract.abstract_awg import AbstractAWG
             from Hardware.Abstract.abstract_relay import AbstractRelay
             from Hardware.Abstract.abstract_balance import AbstractBalance
-
             self.Pump = AbstractRelay(config=self.config, device_key='Pump')
             self.AWG = AbstractAWG(config=self.config)
-            self.Oscilloscope = AbstractOscilloscope()
             self.Balance = AbstractBalance(config=self.config)
         else:
-            self.rm = pyvisa.ResourceManager()
-            from Hardware.keysight_oscilloscope import KeysightOscilloscope
+            if self.rm is None:
+                self.rm = pyvisa.ResourceManager()
             from Hardware.keysight_awg import KeysightAWG
             self.Pump = Relay_Board(config=self.config, device_key='Pump')
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
-            self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
             self.Balance = MT_balance(config=self.config)
 
         self.devices.append(self.Motors)
