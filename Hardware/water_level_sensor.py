@@ -15,7 +15,6 @@ class WaterLevelSensor(AbstractSensor):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        print("at connect_hardware")
         self.get_reading()
 
     def disconnect_hardware(self):

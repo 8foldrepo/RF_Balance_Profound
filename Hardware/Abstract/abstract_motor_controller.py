@@ -85,6 +85,8 @@ class AbstractMotorController(AbstractDevice):
 
         num_axes = 2
         ax_letters = ['X', 'R']
+        increment_ray = [1,1]
+        speeds_ray = [1,1]
 
         coords = list()
         home_coords = list()
@@ -120,6 +122,39 @@ class AbstractMotorController(AbstractDevice):
             self.Motors.set_config(self.config)
             self.dummy_command_signal.connect(self.Motors.command_received)
             self.Motors.start(priority=4)
+
+        '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+        @pyqtSlot(dict)
+        def setup(self, settings):
+            self.increment_ray[0] = settings['steps_per_mm']
+            self.increment_ray[0] = settings['lin_incr']
+            self.speeds_ray[0] = settings['lin_speed']
+            self.speeds_ray[1] = settings['rot_speed']
+            self.calibrate_ray[0] = settings['steps_per_deg']
+            self.calibrate_ray[1] = settings['ang_incr']
+
+            for i in range(len(self.ax_letters)):
+                self.setup_1d(axis=self.ax_letters[i], settings=settings)
+
+        '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
+        def setup_1d(self,axis, settings):
+            axis_index = self.ax_letters.index(axis)
+            axis_number = axis_index + 1
+            self.movement_mode = settings['movement_mode']
+
+            if settings['movement_mode'] == 'Incremental':
+                self.command(f'{axis_number}MI')
+            elif settings['movement_mode'] == 'Continuous':
+                self.command(f'{axis_number}MC')
+            elif settings['movement_mode'] == 'Distance':
+                self.command(f'{axis_number}MA')
+
+            steps_per_s = self.calibrate_ray[axis_index] * self.speeds_ray[axis_index]
+            self.command(f'{axis_number}V{steps_per_s}')
+            self.command(f'{axis_number}D{self.increment_ray[axis_index]}')
+
+        def command(self, command):
+            pass
 
         @property
         def jog_speed(self):

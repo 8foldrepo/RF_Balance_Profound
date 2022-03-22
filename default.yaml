@@ -1,124 +1,142 @@
+Autoset timebase:
+  Max time of flight (us): 50
+  Min time of flight (us): 42
+Debugging:
+  simulate_hw: true
+  simulate_motors: false
+  simulate_oscilloscope: false
+  simulate_other_devices: false
 Dummy_Motors:
-  axes: ['X','R']
-  #steps/mm, float
-  calibrate_ray: [1,1]
-  #boolean
-  reverse_ray: [False,False]
-  #mm/s, float
+  axes:
+  - X
+  - R
+  calibrate_ray:
+  - 1
+  - 1
   jog_speed: 1
+  reverse_ray:
+  - false
+  - false
+  speeds_ray:
+  - 100
+  - 100
   scan_speed: 1
-
-VIX_Motors:
-  axes: ['X', 'R']
-  #steps/mm, float
-  calibrate_ray: [1,1]
-  #boolean
-  reverse_ray: [False, False]
-  #mm/s, float
-  jog_speed: 1
-  scan_speed: 1
-  timeout_s: .2
-  on_by_default: True
-  port: "COM7"
-
+  movement_mode: Continuous
+  increment_ray:
+    - 100
+    - 100
 Dummy_Oscilloscope:
-  range_mv: 10
-  channel: 1
   averages: 16
   capture_period_ns: 5
-  cycles: 10
-  delay_cycles: 0
-
-Keysight_AWG:
-  identifier: "0x2507"
-  #Substring that the code checks for in pyvisa resource name to identify the AWG
-  frequency_Hz: 4290000
-  amplitude_V: .2
-  burst: False
-  burst_cycles: 50
-  ext_trig: False
-  burst_period_s: .10
-  offset_V: 0
-  output: True
-  output_Impedance: 50
-  set_on_startup: True
-
-Water_Level_Sensor:
-
-Keysight_Oscilloscope:
-  identifier: "0x179B"
-  #Substring that the code checks for in pyvisa resource name to identify the scope
-  range_mv: 10
   channel: 1
-  averages: 16
-  capture_period_ns: 100
   cycles: 10
   delay_cycles: 0
-
-Pump:
-  timeout_s: 1
-  on_by_default: False
-  port: "COM7"
-
-WTF_Interface_Board:
-  timeout_s: 1
-  on_by_default: False
-  port: "COM6"
-
-MT_Balance:
-  timeout_s: 30
-  port: "COM7"
-
-Debugging:
-  simulate_hw: True
-
-User Accounts:
-  Operator: "Operator"
-  Engineer: "Engineer"
-  Administrator: "PMI_Admin"
-
-WTF_PositionParameters:
-  XHomeCoord: 263
-  ThetaHomeCoord: -90
-  X-TankInsertionPoint: 108
-  X-Element1: 0
-  X-Element pitch (mm): 5
-  ThetaPreHomeMove: 2
-  ThetaLoadEnc?: False
-  CentreHomeTheta?: True
-
+  range_mv: 10
 FrequencyParameters:
-  LF:
-    LowFreqLimit(MHz): 4
-    HighFreqLimit(MHz): 4.8
-    Amplitude(mVpp): 50
-    BurstCount: 50
   HF:
-    LowFreqLimit(MHz): 12.8
-    HighFreqLimit(MHz): 13.8
     HF.Amplitude(mVpp): 50
     HF.BurstCount: 65
+    HighFreqLimit(MHz): 13.8
+    LowFreqLimit(MHz): 12.8
+  LF:
+    Amplitude(mVpp): 50
+    BurstCount: 50
+    HighFreqLimit(MHz): 4.8
+    LowFreqLimit(MHz): 4
   Search:
-    CoarseIncr(MHz):
-      0.1
-    FineIncr(MHz):
-      0.01
-
-Sequence pass/fail:
-  Retries: 0
-  Pass fail action: "No dialog (abort)"
-  Interrupt action: "No dialog (abort)"
-  Dialog timeout (s): 0
-
-WTF_DIO:
-  DAQ Device name: "WTF3"
-  Water level timeout (s): 230
-  Fill/Drain mode: "Automatic"
-
-Autoset timebase:
-  Min time of flight (us): 42
-  Max time of flight (us): 50
-
+    CoarseIncr(MHz): 0.1
+    FineIncr(MHz): 0.01
+Galil_Motors:
+  axes:
+  - X
+  - R
+  calibrate_ray:
+  - 10000
+  - 10000
+  ip_address: 192.168.42.100
+  jog_speed: 1
+  reverse_ray:
+  - false
+  - false
+  scan_speed: 1
+Keysight_AWG:
+  amplitude_V: 0.2
+  burst: false
+  burst_cycles: 50
+  burst_period_s: 0.1
+  ext_trig: false
+  frequency_Hz: 4290000
+  identifier: '0x2507'
+  offset_V: 0
+  output: true
+  output_Impedance: 50
+  set_on_startup: true
+Keysight_Oscilloscope:
+  averages: 16
+  capture_period_ns: 100
+  channel: 1
+  cycles: 10
+  delay_cycles: 0
+  identifier: '0x179B'
+  range_mv: 10
+MT_Balance:
+  port: COM4
+  timeout_s: 30
 Paths:
-  UA results root directory: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA results"
-  UA Serial numbers file: "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"
+  UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
+    numbers.txt
+  UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
+Pump:
+  on_by_default: false
+  port: COM5
+  timeout_s: 1
+Sequence pass/fail:
+  Dialog timeout (s): 0
+  Interrupt action: No dialog (abort)
+  Pass fail action: No dialog (abort)
+  Retries: 0
+User Accounts:
+  Administrator: PMI_Admin
+  Engineer: Engineer
+  Operator: Operator
+VIX_Motors:
+  axes:
+  - X
+  - R
+  calibrate_ray:
+  - 1
+  - 1
+  increment_ray:
+  - 100
+  - 100
+  movement_mode: Continuous
+  on_by_default: true
+  port: COM7
+  reverse_ray:
+  - false
+  - false
+  rotational_ray:
+  - false
+  - true
+  speeds_ray:
+  - 1
+  - 1
+  timeout_s: 10
+WTF_DIO:
+  DAQ Device name: WTF3
+  Fill/Drain mode: Automatic
+  Water level timeout (s): 230
+WTF_Interface_Board:
+  on_by_default: false
+  port: COM2
+  timeout_s: 1
+WTF_PositionParameters:
+  CentreHomeTheta?: true
+  ThetaHomeCoord: -90
+  ThetaLoadEnc?: false
+  ThetaPreHomeMove: 2
+  X-Element pitch (mm): 5
+  X-Element1: 0
+  X-TankInsertionPoint: 108
+  XHomeCoord: 263
+Water_Level_Sensor: null

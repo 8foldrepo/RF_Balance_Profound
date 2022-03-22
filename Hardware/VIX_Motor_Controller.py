@@ -105,17 +105,14 @@ class VIX_Motor_Controller(AbstractMotorController):
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
-
             self.fields_setup()
 
         def fields_setup(self):
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.ax_letters = self.config[self.device_key]['axes']
             self.calibrate_ray = self.config[self.device_key]['calibrate_ray']
-
-            self._jog_speed = self.config[self.device_key]['jog_speed']
-            self._scan_speed = self.config[self.device_key]['scan_speed']
-
+            self.speeds_ray = self.config[self.device_key]['speeds_ray']
+            self.increment_ray = self.config[self.device_key]['increment_ray']
             self.timeout_s = self.config[self.device_key]['timeout_s']
             self.on_by_default = self.config[self.device_key]['on_by_default']
             self.port = self.config[self.device_key]['port']
@@ -165,7 +162,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.ser = serial.Serial(
                     port=self.port,  # May vary depending on computer
                     baudrate=19200,
-                    timeout=self.timeout_s,
+                    timeout=.1,
+                    parity=serial.PARITY_NONE,
                     stopbits=serial.STOPBITS_ONE,
                     bytesize=serial.EIGHTBITS,
                 )
@@ -176,8 +174,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
                 "to determine which COM port to use. It is currently hard coded")
 
-            #TODO: remove this when limits are added self.disable_limits()
-            self.setup_for_jogging()
+            #TODO: remove this when limits are added
             self.connected_signal.emit(self.connected)
 
         @abstractmethod
@@ -193,6 +190,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         def connected(self):
             return self.Motors.connected
 
+        '''Query and return the baud rate'''
         @abstractmethod
         def getBaud(self):
             if self.ser is None:
@@ -217,11 +215,11 @@ class VIX_Motor_Controller(AbstractMotorController):
                 output = bites+b'\r\n'
                 self.log(f'Output:{output}')
                 self.ser.write(output)
-                echo = self.ser.readline().strip(b'\r\n')
-                self.log(f'Echo:{echo}')
-                if echo == bites:
-                    t.sleep(.2)
-                    return True
+                for i in range(2):
+                    echo = self.ser.readline().strip(b'\r\n')
+                    self.log(f'Echo:{echo}')
+                    if echo == bites:
+                        return True
             self.log(level='error', message=f'command not sent successfully')
             return False
 
@@ -244,38 +242,75 @@ class VIX_Motor_Controller(AbstractMotorController):
                     return y
             self.log(level='error', message=f'{self.device_key} timed out')
 
-        def motors_on(self):
+        '''Set all motors on/off depending on boolean on'''
+        def set_motors_on(self, on):
             for i in range(len(self.ax_letters)):
-                self.setup_for_jogging_1d(axis=self.ax_letters[i])
+                self.set_motor_on(axis=self.ax_letters[i], on = on)
 
-        def motor_on(self):
+        '''Set motor with given axis letter on/off depending on boolean on'''
+        def set_motor_on(self, axis, on):
             axis_number = self.ax_letters.index(axis) + 1
-            self.command(f'{axis_number}ON')
-
-        def setup_for_jogging(self):
-            for i in range(len(self.ax_letters)):
-                self.setup_for_jogging_1d(axis=self.ax_letters[i])
-
-        def setup_for_jogging_1d(self, axis):
-            axis_number = self.ax_letters.index(axis) + 1
-
-            self.command(f'{axis_number}V5')
-            self.command(f'{axis_number}MC')
-
-        def jog(self, axis=None, direction=None, feedback=True):
-            axis_number = self.ax_letters.index(axis) + 1
-            if direction < 0:
-                self.command('1D-1')
+            if on:
+                self.command(f'{axis_number}ON')
             else:
-                self.command('1D1')
+                self.command(f'{axis_number}ON')
+
+        '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+        @pyqtSlot(dict)
+        def setup(self, settings):
+            self.increment_ray[0] = settings['steps_per_mm']
+            self.increment_ray[0] = settings['lin_incr']
+            self.speeds_ray[0] = settings['lin_speed']
+            self.speeds_ray[1] = settings['rot_speed']
+            self.calibrate_ray[0] = settings['steps_per_deg']
+            self.calibrate_ray[1] = settings['ang_incr']
+
+            self.disable_limits()
+            self.set_motors_on(True)
+
+            for i in range(len(self.ax_letters)):
+                self.setup_1d(axis=self.ax_letters[i], settings=settings)
+
+        '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
+        def setup_1d(self,axis, settings):
+            axis_index = self.ax_letters.index(axis)
+            axis_number = axis_index + 1
+            self.movement_mode = settings['movement_mode']
+
+            if settings['movement_mode'] == 'Incremental':
+                self.command(f'{axis_number}MI')
+            elif settings['movement_mode'] == 'Continuous':
+                self.command(f'{axis_number}MC')
+            elif settings['movement_mode'] == 'Distance':
+                self.command(f'{axis_number}MA')
+
+            steps_per_s = self.calibrate_ray[axis_index] * self.speeds_ray[axis_index]
+            self.command(f'{axis_number}V{steps_per_s}')
+            self.command(f'{axis_number}D{self.increment_ray[axis_index]}')
+
+        @pyqtSlot(float)
+        def set_speeds(self, speed):
+            for i in range(len(self.ax_letters)):
+                self.set_speeds_1d(axis=self.ax_letters[i], speed = speed)
+
+        def set_speeds_1d(self, axis, speed):
+            axis_number = self.ax_letters.index(axis) + 1
+            self.command(f'{axis_number}V{speed}')
+
+        def begin_motion(self, axis=None, direction=None, feedback=True):
+            axis_index = self.ax_letters.index(axis)
+            axis_number = axis_index + 1
+            if direction < 0:
+                self.command(f'{axis_number}D{abs(self.increment_ray[axis_index])*-1}')
+            else:
+                self.command(f'{axis_number}D{abs(self.increment_ray[axis_index])}')
             self.command(f'{axis_number}G')
             self.moving_signal.emit(True)
             self.jogging = True
 
         def position_relative(self, axis=None, direction=None):
-
+            axis_number = self.ax_letters.index(axis) + 1
             self.command(f'{axis_number}MA')
-
             axis_number = self.ax_letters.index(axis) + 1
             if direction < 0:
                 self.command('1D-1')
@@ -295,11 +330,11 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command(f'{axis_number}D{increment}')
 
         def stop_motion(self):
-            for i in range(len(self.ax_letters)):
-                self.stop_motion_1d(axis = self.ax_letters[i])
-
-            self.moving_signal.emit(False)
-            self.jogging = False
+            for i in range(5):
+                self.ser.write(b"1S\r\n")
+                t.sleep(.05)
+                self.ser.write(b"2S\r\n")
+                t.sleep(.05)
 
 
         def stop_motion_1d(self, axis):
@@ -400,13 +435,13 @@ class VIX_Motor_Controller(AbstractMotorController):
             elif cmd_ray[0] == 'SCAN' and cmd_ray[1] == 'SPEED':
                 self.set_scan_speed(axis=cmd_ray[2],value=float(cmd_ray[3]))
             elif command == 'Begin Motion X+'.upper():
-                self.jog('X', 1)
+                self.begin_motion('X', 1)
             elif command == 'Begin Motion X-'.upper():
-                self.jog('X', -1)
+                self.begin_motion('X', -1)
             elif command == 'Begin Motion R+'.upper():
-                self.jog('R', 1)
+                self.begin_motion('R', 1)
             elif command == 'Begin Motion R-'.upper():
-                self.jog('R', -1)
+                self.begin_motion('R', -1)
             elif command == 'Stop Motion'.upper():
                 self.stop_motion()
             elif command == 'Get Position'.upper():
@@ -427,7 +462,7 @@ if __name__ == '__main__':
     motors.connect_hardware()
     motors.disable_limits()
     motors.set_increment(4000)
-    motors.jog(axis='X', direction=1)
-    motors.jog(axis='R', direction=-1)
+    motors.begin_motion(axis='X', direction=1)
+    motors.begin_motion(axis='R', direction=-1)
     t.sleep(1)
     motors.stop_motion()

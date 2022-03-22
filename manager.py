@@ -133,9 +133,6 @@ class Manager(QThread):
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
         self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
-        print(self.SIMULATE_HARDWARE)
-
-
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
 

@@ -80,7 +80,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.thread_list = list()
         self.config = load_configuration()
         self.system_config.set_config(self.config)
-        self.position_tab.set_config(self.config)
 
         self.manager = Manager(parent=self, config=self.config)
         self.plot_ready = True
@@ -96,6 +95,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.position_tab.set_manager(self.manager)
         self.position_tab.set_motors(self.manager.Motors)
+        self.position_tab.set_config(self.config)
         self.position_tab.configure_signals()
 
         self.rfb.set_manager(self.manager)
