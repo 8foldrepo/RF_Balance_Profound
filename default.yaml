@@ -2,10 +2,9 @@ Autoset timebase:
   Max time of flight (us): 50
   Min time of flight (us): 42
 Debugging:
-  simulate_hw: true
+  simulate_hw: false
   simulate_motors: false
   simulate_oscilloscope: false
-  simulate_other_devices: false
 Dummy_Motors:
   axes:
   - X

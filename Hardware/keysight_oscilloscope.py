@@ -29,6 +29,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     self.connected = False
                     self.connected_signal.emit(False)
                     self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
+                    self.autoScale()
+                    self.SetTrigger(True)
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
 
@@ -164,16 +166,15 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
         return times_s, voltages_v
 
-    """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-    def SetTrigger(self, external:bool, period_s = .010, delay_s = 0, level_v = 3.3):
-        self.inst.write(f"TRIG:DELAY {delay_s}")
-        self.inst.write(f"TRIG:LEVEL {level_v}")
-        if external:
-            self.inst.write(f"TRIG:SOUR EXT")
+    """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+    def SetTrigger(self, trigger_on):
+        if trigger_on:
+            self.inst.write(f"TRIG:EDGE:SOUR EXT")
+            self.inst.write(f"TRIG:MODE EDGE")
+            self.inst.write(f"TRIG:EDGE:LEV 1")
+            self.inst.write(f"TRIG:EDGE:SLOP POS")
         else:
-            self.inst.write(f"TRIG SOUR TIM")
-            self.inst.write(f"TRIG TIM {period_s}")
-        t.sleep(0.03)
+            self.inst.write(f"TRIG:EDGE:SOUR LINE")
 
     """Sets the burst period of the waveform in seconds"""
     def SetPeriod_s(self, channel, period):
@@ -182,12 +183,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.inst.write(Peri)
         t.sleep(0.03)
 
+
     def SetCycles(self, channel, cycle):
         self.Cycle = cycle
         Cycl = "C" + channel + ":BTWV TIME," + self.Cycle
         self.inst.write(Cycl)
         t.sleep(0.03)
-
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()

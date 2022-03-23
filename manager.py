@@ -136,7 +136,6 @@ class Manager(QThread):
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
 
-
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)
         else:
@@ -153,6 +152,7 @@ class Manager(QThread):
             self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
+        print(self.SIMULATE_HARDWARE)
         if self.SIMULATE_HARDWARE:
             from Hardware.Abstract.abstract_awg import AbstractAWG
             from Hardware.Abstract.abstract_relay import AbstractRelay
