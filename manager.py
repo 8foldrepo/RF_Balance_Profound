@@ -29,6 +29,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
+from Hardware.ua_interface_box import UAInterfaceBox
 
 from Hardware.relay_board import Relay_Board
 
@@ -143,7 +144,7 @@ class Manager(QThread):
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
-        self.UAInterface = ua_interface_box
+        self.UAInterface = UAInterfaceBox(config=self.config)
 
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)
@@ -237,8 +238,6 @@ class Manager(QThread):
                 self.connect_hardware()
             elif cmd_ray[0] == 'MOTOR':
                 self.Motors.exec_command(self.cmd)
-            elif cmd_ray[0] == 'UA ':
-                self.UAInterface.exec_command(self.cmd)
             # What to do when there is no command
             else:
                 if self.scripting:

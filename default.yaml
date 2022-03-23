@@ -31,6 +31,7 @@ Dummy_Oscilloscope:
   cycles: 10
   delay_cycles: 0
   range_mv: 10
+UAInterface:
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50

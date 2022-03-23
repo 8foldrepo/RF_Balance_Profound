@@ -5,11 +5,10 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class UAInterfaceBox(AbstractDevice):
     connected_signal = pyqtSignal(bool)
-    dummy_command_signal = pyqtSignal(str)
 
     cal_data_signal = pyqtSignal(object)
 
-    def __init__(self, config, device_key, parent = None):
+    def __init__(self, config, device_key="UAInterface", parent = None):
         super().__init__(parent=parent)
         from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
         import logging
@@ -28,6 +27,46 @@ class UAInterfaceBox(AbstractDevice):
             self.config = load_configuration()
         self.device_key = device_key
         self.is_connected = False
+
+        ua_calibration_data = {
+            'cal_data_array': {
+                'schema': '',
+                'serial_no': '',
+                'production_date': '',
+                'hardware_code': '',
+                'common_lo_freq': '',
+                'common_hi_freq': '',
+                'beam_align': '',
+                'command': '',
+                'status': '',
+                'fwversion': ''
+            },
+            'low_freq': {
+                'schema': '',
+                'serial_no': '',
+                'production_date': '',
+                'hardware_code': '',
+                'common_lo_freq': '',
+                'common_hi_freq': '',
+                'beam_align': '',
+                'command': '',
+                'status': '',
+                'fwversion': ''
+            },
+            'high_freq': {
+                'schema': '',
+                'serial_no': '',
+                'production_date': '',
+                'hardware_code': '',
+                'common_lo_freq': '',
+                'common_hi_freq': '',
+                'beam_align': '',
+                'command': '',
+                'status': '',
+                'fwversion': ''
+            }
+        }
+
         pass
 
     def fields_setup(self):
@@ -51,15 +90,5 @@ class UAInterfaceBox(AbstractDevice):
         log_msg(self,self.root_logger, message= message,level=level)
 
     def read(self):
-        pass
-
-    def exec_command(self, command):
-        command = command.upper()
-        cmd_ray = command.split(' ')
-
-        if cmd_ray[0] == 'UA':
-            cmd_ray.pop(0)
-            command = command[6:]
-
-        if command == 'read'.upper():
-            self.read()
+        cal_data_signal.emit(self.cal_data_signal)
+        return ua_calibration_data

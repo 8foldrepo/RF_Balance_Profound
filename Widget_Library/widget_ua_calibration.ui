@@ -19,7 +19,7 @@
      <x>20</x>
      <y>60</y>
      <width>461</width>
-     <height>341</height>
+     <height>331</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -91,7 +91,7 @@
       <x>5</x>
       <y>30</y>
       <width>231</width>
-      <height>301</height>
+      <height>291</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="labels_values_horz_3">
@@ -304,7 +304,7 @@
       <x>265</x>
       <y>30</y>
       <width>86</width>
-      <height>301</height>
+      <height>291</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="low_freq_group_3">
@@ -386,7 +386,7 @@
       <x>365</x>
       <y>30</y>
       <width>86</width>
-      <height>301</height>
+      <height>291</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="high_freq_group_3">
@@ -463,7 +463,7 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="read_from_ua_button">
    <property name="geometry">
     <rect>
      <x>380</x>
