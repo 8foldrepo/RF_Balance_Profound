@@ -23,6 +23,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     self.inst = self.rm.open_resource(resource)
                     self.inst.write("*OPC?")
                     self.inst.read()
+                    self.AutosetTimebase()
                     self.connected = True
                     self.connected_signal.emit(True)
                 except pyvisa.errors.VisaIOError as e:
@@ -194,10 +195,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
         self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
 
-        self.time_of_flight = (self.max_time_of_flight - self.min_time_of_flight)/10000000
-        self.setHorzScale_sec(self.time_of_flight/1000000)
-        self.setHorzOffset_sec(self.min_time_of_flight/1000000)
-
+        self.horizontal_div_s = (self.max_time_of_flight - self.min_time_of_flight)/10000000
+        self.setHorzScale_sec(self.horizontal_div_s)
+        self.setHorzOffset_sec(self.min_time_of_flight/1000000+4*self.horizontal_div_s)
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()

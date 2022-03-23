@@ -291,6 +291,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.manager.profile_plot_signal.connect(self.update_profile_plot)
             self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
 
+            self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.fill_items)
+
             # Manager communication signals
             self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
             self.manager.user_prompt_signal.connect(self.show_user_prompt)
@@ -299,7 +301,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
             self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
-            self.manager.refresh_rate_signal.connect(self.update_refresh_rate)
             self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
             self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
             self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
@@ -377,8 +378,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def update_temp_reading(self, temp):
         self.temp_field.setText(str(temp))
 
-    @pyqtSlot(object, object)
-    def plot(self, x, y):
+    @pyqtSlot(object, object, float)
+    def plot(self, x, y, refresh_rate):
+        print(x)
+        print(y)
+
+        self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
@@ -402,16 +407,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         print(x)
         print(y)
         self.plot_ready = True
-
-    @pyqtSlot(float)
-    def update_refresh_rate(self, refresh_rate):
-        #x_position_ratio = .5
-        #y_position_ratio = .5
-        axX = self.waveform_plot.getAxis('bottom')
-        x_pos = 0 #axX.range[0]+(axX.range[1]-axX.range[0])*x_position_ratio  # <------- get range of x axis
-        axY = self.waveform_plot.getAxis('left')
-        y_pos = 0 #axY.range[0]+(axY.range[1]-axY.range[0])*y_position_ratio
-        self.waveform_plot.set_text(f"Refresh rate: {refresh_rate} hz", x_pos,y_pos)
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

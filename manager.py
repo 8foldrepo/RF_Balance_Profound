@@ -80,14 +80,13 @@ class Manager(QThread):
     script_info_signal = pyqtSignal(list)
 
     plot_signal = pyqtSignal(object, object)
-    refresh_rate_signal = pyqtSignal(float)
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list)
-    plot_signal = pyqtSignal(object, object)
+    plot_signal = pyqtSignal(object, object, float)
 
     Motors = None
 
@@ -144,6 +143,7 @@ class Manager(QThread):
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
+        self.UAInterface = ua_interface_box
 
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)
@@ -237,6 +237,8 @@ class Manager(QThread):
                 self.connect_hardware()
             elif cmd_ray[0] == 'MOTOR':
                 self.Motors.exec_command(self.cmd)
+            elif cmd_ray[0] == 'UA ':
+                self.UAInterface.exec_command(self.cmd)
             # What to do when there is no command
             else:
                 if self.scripting:
@@ -268,9 +270,9 @@ class Manager(QThread):
                 time, voltage = self.Oscilloscope.capture(channel=1)
                 time_elapsed = t.time() - self.starttime
                 if time_elapsed != 0:
-                    self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
+                    self.refresh_rate = (round(1 / (time_elapsed), 1))
 
-                self.plot_signal.emit(time, voltage)
+                self.plot_signal.emit(time, voltage, self.refresh_rate)
             except pyvisa.errors.InvalidSession:
                 self.log("Could not plot, oscilloscope resource closed")
 
