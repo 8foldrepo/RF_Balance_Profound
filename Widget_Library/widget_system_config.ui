@@ -515,7 +515,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Min time of flight (s)</string>
+       <string>Min time of flight (us)</string>
       </property>
      </widget>
     </item>
@@ -553,7 +553,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Max time of flight (s)</string>
+       <string>Max time of flight (us)</string>
       </property>
      </widget>
     </item>
