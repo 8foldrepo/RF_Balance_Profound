@@ -288,6 +288,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
             self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
             self.manager.plot_signal.connect(self.plot)
+            self.manager.profile_plot.signal.connect(self.profile_plot)
             self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
 
 
@@ -386,6 +387,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.plot_ready = False
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
+        self.plot_ready = True
+
+    @pyqtSlot(list, list)
+    def profile_plot(self, x, y):
+        if x is None or y is None:
+            return
+        if len(x) == 0 or len(x) != len(y):
+            return
+
+        self.plot_ready = False
+        self.profile_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
 
     @pyqtSlot(float)

@@ -12,6 +12,8 @@ import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import time as t
+import numpy as np
+from scipy import integrate
 
 from Utilities.useful_methods import log_msg
 import os
@@ -24,11 +26,9 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
-
 
 from Hardware.relay_board import Relay_Board
 
@@ -84,10 +84,17 @@ class Manager(QThread):
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
+
+    # Tab signal
+    profile_plot_signal = pyqtSignal(list, list)
+    plot_signal = pyqtSignal(object, object)
+
     Motors = None
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.freq_highlimit_hz = None
+        self.freq_lowlimit_hz = None
         self.parent = parent
         self.stay_alive = True
 
@@ -131,6 +138,8 @@ class Manager(QThread):
     def add_devices(self):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
+        print(self.SIMULATE_HARDWARE)
+
         self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
@@ -179,6 +188,8 @@ class Manager(QThread):
     def connect_hardware(self):
         for device in self.devices:
             device.connect_hardware()
+
+        self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
         for device in self.devices:
