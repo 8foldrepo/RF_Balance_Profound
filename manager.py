@@ -628,5 +628,30 @@ class Manager(QThread):
     def log(self, message, level='info'):
         log_msg(self, root_logger=root_logger, message=message, level=level)
 
+    def findRMS(self, search_mode, frequency_mode):
+        if search_mode == "fine":
+            self.step = self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"] * 1000000
+        elif search_mode == "coarse":
+            self.step = self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"] * 1000000
+
+        if frequency_mode == "HF":
+            self.freq_lowlimit_hz = self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"] * 1000000
+            self.freq_highlimit_hz = self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"] * 1000000
+        elif frequency_mode == "LF":
+            self.freq_lowlimit_hz = self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"] * 1000000
+            self.freq_highlimit_hz = self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"] * 1000000
+
+        self.list_of_rms_values = list()
+        self.list_of_frequencies = list()
+
+        for x in np.arange(self.freq_lowlimit_hz, self.freq_highlimit_hz, self.step):
+            self.AWG.SetFrequency_Hz(x)  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.list_of_frequencies.append(x)  # add the frequency to the list
+            self.times_s, self.voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
+            np.square(self.voltages_v)  # squares every value in the voltage graph
+            self.list_of_rms_values.append(integrate.simps(self.voltages_v, self.times_s, dx=None, axis=1))  # returns single value
+
+        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)  # frequencies will be on the x-axis
+
 class AbortException(Exception):
     pass
