@@ -188,7 +188,7 @@ class Manager(QThread):
     def connect_hardware(self):
         for device in self.devices:
             device.connect_hardware()
-
+        t.sleep(2)
         self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
@@ -648,8 +648,8 @@ class Manager(QThread):
             self.AWG.SetFrequency_Hz(x)  # set frequency accoding to step (coarse/fine) and x incremenet
             self.list_of_frequencies.append(x)  # add the frequency to the list
             self.times_s, self.voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
-            np.square(self.voltages_v)  # squares every value in the voltage graph
-            self.list_of_rms_values.append(integrate.simps(self.voltages_v, self.times_s, dx=None, axis=1))  # returns single value
+            self.voltages_v_squared = np.square(self.voltages_v)  # squares every value in the voltage graph
+            self.list_of_rms_values.append(integrate.simps(self.voltages_v_squared, self.times_s, dx=None, axis=0))  # returns single value
 
         self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)  # frequencies will be on the x-axis
 

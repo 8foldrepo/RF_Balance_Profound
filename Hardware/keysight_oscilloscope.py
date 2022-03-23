@@ -29,8 +29,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     self.connected = False
                     self.connected_signal.emit(False)
                     self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
-                    self.autoScale()
-                    self.SetTrigger(True)
+                    #self.autoScale()
+                    #self.SetTrigger(True)
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
 

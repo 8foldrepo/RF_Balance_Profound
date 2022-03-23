@@ -151,7 +151,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         #add default data to plots
         y = range(0, 100)
         x = range(0, 100)
-        self.profile_plot.refresh(x, y)
+        #self.profile_plot.refresh(x, y)
         self.rfb.rfb_graph.refresh(x,y)
         self.waveform_plot.refresh(x,y)
 
@@ -288,9 +288,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
             self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
             self.manager.plot_signal.connect(self.plot)
-            self.manager.profile_plot.signal.connect(self.profile_plot)
+            self.manager.profile_plot_signal.connect(self.update_profile_plot)
             self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
-
 
             # Manager communication signals
             self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
@@ -390,7 +389,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.plot_ready = True
 
     @pyqtSlot(list, list)
-    def profile_plot(self, x, y):
+    def update_profile_plot(self, x, y):
+        print("Signal recieved")
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
@@ -398,6 +398,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
+        print("In profile plot")
+        print(x)
+        print(y)
         self.plot_ready = True
 
     @pyqtSlot(float)
