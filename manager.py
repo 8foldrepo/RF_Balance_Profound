@@ -12,6 +12,8 @@ import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 import time as t
+import numpy as np
+from scipy import integrate
 
 from Utilities.useful_methods import log_msg
 import os
@@ -24,11 +26,9 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
-
 
 from Hardware.relay_board import Relay_Board
 
@@ -78,16 +78,21 @@ class Manager(QThread):
     element_number_signal = pyqtSignal(str)
 
     script_info_signal = pyqtSignal(list)
-
-    plot_signal = pyqtSignal(object, object)
     refresh_rate_signal = pyqtSignal(float)
 
     logger_signal = pyqtSignal(str)
     finished_signal = pyqtSignal()
+
+    # Tab signal
+    profile_plot_signal = pyqtSignal(list, list)
+    plot_signal = pyqtSignal(object, object)
+
     Motors = None
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.freq_highlimit_hz = None
+        self.freq_lowlimit_hz = None
         self.parent = parent
         self.stay_alive = True
 
@@ -133,7 +138,6 @@ class Manager(QThread):
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
         print(self.SIMULATE_HARDWARE)
 
-
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
         self.Motors = AbstractMotorController(config=self.config)
@@ -168,6 +172,8 @@ class Manager(QThread):
     def connect_hardware(self):
         for device in self.devices:
             device.connect_hardware()
+
+        self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
         for device in self.devices:
@@ -235,7 +241,7 @@ class Manager(QThread):
         tabIndex = self.parent.tabWidget.currentIndex()
         tabText = self.parent.tabWidget.tabText(tabIndex)
 
-        if  tabText == 'Position':
+        if tabText == 'Position':
             self.Motors.get_position()
 
         self.thermocouple.get_reading()
@@ -249,6 +255,7 @@ class Manager(QThread):
                     self.refresh_rate_signal.emit(round(1 / (time_elapsed), 1))
 
                 self.plot_signal.emit(time, voltage)
+
             except pyvisa.errors.InvalidSession:
                 self.log("Could not plot, oscilloscope resource closed")
 
@@ -377,13 +384,14 @@ class Manager(QThread):
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if self.scripting and 0 <= self.step_index < len(self.taskNames):
 
-                    if self.step_complete:
-                        self.step_complete = False
-                        self.execute_script_step(self.step_index)
+                if self.step_complete:
+                    self.step_complete = False
+                    self.execute_script_step(self.step_index)
         elif self.step_index >= len(self.taskNames):
             self.abort()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
+
     def execute_script_step(self, step_index):
         if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
@@ -467,13 +475,15 @@ class Manager(QThread):
         pass
 
     '''Collects metadata from user and prompts user until water level is ok'''
+
     def pretest_initialization(self, variable_list):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
         # Show dialog until name and serial number are input
         while self.operator_name == "" or self.ua_serial_number == "":
-            self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
+            self.pretest_dialog_signal.emit(
+                formatted_date)  # sends signal from manager to MainWindow to open dialog box
             try:
                 self.wait_for_cont()
             except AbortException:
@@ -503,6 +513,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''latches info from user in MainWindow to manager local vars'''
+
     @pyqtSlot(str, str, str)
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
         self.operator_name = operator_name
@@ -512,6 +523,7 @@ class Manager(QThread):
         self.cont()
 
     '''Find UA element with given number'''
+
     def find_element(self, variable_list):
         element = variable_list['Element']
         x_increment_MM = variable_list['X Incr. (mm)']
@@ -531,6 +543,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
+
     def measure_element_efficiency_rfb(self, variable_list):
         element = variable_list['Element']
         frequency_range = variable_list['Frequency range']
@@ -540,6 +553,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Save scan results to a file'''
+
     def save_results(self, variable_list, calibration_data):  # calibration_data is the data gathered by the UA test
         save_summary_file = bool(distutils.util.strtobool(variable_list["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(variable_list["Write UA Calibration"]))
@@ -551,11 +565,13 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Prompt user for action'''
+
     def prompt_user_for_action(self, variable_list):
         prompt_type = variable_list["Prompt type"]
         self.step_complete = True
 
     '''Return axis to zero coordinate'''
+
     def home_system(self, variable_list):
         axis_to_home = variable_list['Axis to home']
         if axis_to_home == 'X':
@@ -570,6 +586,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Warn the user that the UA is being retracted in x'''
+
     def retract_ua_warning(self):
         self.retracting_ua_warning_signal.emit()
 
@@ -605,6 +622,32 @@ class Manager(QThread):
 
     def log(self, message, level='info'):
         log_msg(self, root_logger=root_logger, message=message, level=level)
+
+    def findRMS(self, search_mode, frequency_mode):
+        if search_mode == "fine":
+            self.step = self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"] * 1000000
+        elif search_mode == "coarse":
+            self.step = self.config["FrequencyParameters"]["Search"]["CoarseIncr(MHz)"] * 1000000
+
+        if frequency_mode == "HF":
+            self.freq_lowlimit_hz = self.config["FrequencyParameters"]["HF"]["LowFreqLimit(MHz)"] * 1000000
+            self.freq_highlimit_hz = self.config["FrequencyParameters"]["HF"]["HighFreqLimit(MHz)"] * 1000000
+        elif frequency_mode == "LF":
+            self.freq_lowlimit_hz = self.config["FrequencyParameters"]["LF"]["LowFreqLimit(MHz)"] * 1000000
+            self.freq_highlimit_hz = self.config["FrequencyParameters"]["LF"]["HighFreqLimit(MHz)"] * 1000000
+
+        self.list_of_rms_values = list()
+        self.list_of_frequencies = list()
+
+        for x in np.arange(self.freq_lowlimit_hz, self.freq_highlimit_hz, self.step):
+            self.AWG.SetFrequency_Hz(x)  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.list_of_frequencies.append(x)  # add the frequency to the list
+            self.times_s, self.voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
+            np.square(self.voltages_v)  # squares every value in the voltage graph
+            self.list_of_rms_values.append(integrate.simps(self.voltages_v, self.times_s, dx=None, axis=1))  # returns single value
+
+        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)  # frequencies will be on the x-axis
+
 
 class AbortException(Exception):
     pass
