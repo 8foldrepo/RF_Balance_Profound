@@ -190,6 +190,15 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.inst.write(Cycl)
         t.sleep(0.03)
 
+    def AutosetTimebase(self):
+        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
+        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
+
+        self.time_of_flight = (self.max_time_of_flight - self.min_time_of_flight)/10000000
+        self.setHorzScale_sec(self.time_of_flight/1000000)
+        self.setHorzOffset_sec(self.min_time_of_flight/1000000)
+
+
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
