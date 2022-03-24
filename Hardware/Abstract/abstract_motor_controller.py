@@ -305,7 +305,7 @@ class AbstractMotorController(AbstractDevice):
             return not (self.Motors.dR == 0 and self.Motors.dX == 0)
 
         @abstractmethod
-        def get_position(self):
+        def get_position(self, mutex_locked = False):
             self.coords = self.Motors.coords
 
             self.x_pos_mm_signal.emit(self.coords[self.ax_letters.index('X')])

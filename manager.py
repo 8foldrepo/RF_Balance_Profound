@@ -92,6 +92,12 @@ class Manager(QThread):
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.get_position_cooldown_s = .2 #decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        self.last_get_position_time = 0
+
+        #Used to prevent other threads from accessing the motor class
+        self.motor_control_lock = QMutex()
+
         self.freq_highlimit_hz = None
         self.freq_lowlimit_hz = None
         self.parent = parent
@@ -137,19 +143,17 @@ class Manager(QThread):
     def add_devices(self):
         # -> check if we are simulating hardware
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
-        print(self.SIMULATE_HARDWARE)
-
         self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
-        self.UAInterface = ua_interface_box
+        #self.UAInterface = ua_interface_box
 
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)
         else:
             from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
-            self.Motors = VIX_Motor_Controller(config=self.config)
+            self.Motors = VIX_Motor_Controller(config=self.config, lock = self.motor_control_lock)
 
         self.rm = None
 
@@ -161,7 +165,6 @@ class Manager(QThread):
             self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
-        print(self.SIMULATE_HARDWARE)
         if self.SIMULATE_HARDWARE:
             from Hardware.Abstract.abstract_awg import AbstractAWG
             from Hardware.Abstract.abstract_relay import AbstractRelay
@@ -189,7 +192,8 @@ class Manager(QThread):
         for device in self.devices:
             device.connect_hardware()
         t.sleep(2)
-        self.findRMS(search_mode="coarse", frequency_mode="LF")
+        #For testing purposes
+        #self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
         for device in self.devices:
@@ -246,6 +250,9 @@ class Manager(QThread):
                 else:
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
+                    self.update_motor_position()
+                    if self.thermocouple.connected:
+                        self.thermocouple.get_reading()
 
             self.cmd = ""
 
@@ -254,17 +261,18 @@ class Manager(QThread):
 
         return super().run()
 
+    def update_motor_position(self):
+        if self.Motors.connected and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
+            if self.get_position_cooldown_s < t.time() - self.last_get_position_time:
+                lock_acquired = self.motor_control_lock.tryLock(0)
+                if lock_acquired:
+                    self.Motors.get_position(mutex_locked=True)
+                    self.last_get_position_time = t.time()
+                    self.motor_control_lock.unlock()
+
     def capture_and_plot(self):
         # Do these things if a script is not being run
-        tabIndex = self.parent.tabWidget.currentIndex()
-        tabText = self.parent.tabWidget.tabText(tabIndex)
-
-        if  tabText == 'Position':
-            self.Motors.get_position()
-
-        self.thermocouple.get_reading()
-
-        if self.parent.plot_ready and tabText == 'Scan':
+        if self.parent.plot_ready and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
             # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
             try:
                 time, voltage = self.Oscilloscope.capture(channel=1)
@@ -416,7 +424,6 @@ class Manager(QThread):
         name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
         args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
-        print(name)
         self.step_number_signal.emit(step_index - 1)
         t.sleep(.1)
 

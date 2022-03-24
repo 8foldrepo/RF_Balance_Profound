@@ -380,9 +380,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
-        print(x)
-        print(y)
-
         self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
@@ -403,9 +400,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
-        print("In profile plot")
-        print(x)
-        print(y)
         self.plot_ready = True
 
     def load_script(self):

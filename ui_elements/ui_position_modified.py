@@ -21,6 +21,9 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 class Position(QWidget, Ui_Form):
     command_signal = QtCore.pyqtSignal(str)
     setup_signal = QtCore.pyqtSignal(dict)
+    #Only the sign of the integer matters, and determines the direction of motion.
+    begin_motion_signal = QtCore.pyqtSignal(str,int)
+    stop_motion_signal = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -40,6 +43,8 @@ class Position(QWidget, Ui_Form):
     def set_motors(self, motors):
         self.motors = motors
         self.setup_signal.connect(self.motors.setup)
+        self.stop_motion_signal.connect(self.motors.stop_motion)
+        self.begin_motion_signal.connect(self.motors.begin_motion)
 
     def setup_pressed(self):
         self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
@@ -75,14 +80,14 @@ class Position(QWidget, Ui_Form):
         self.command_signal.connect(self.manager.exec_command)
 
         # Hardware control signals
-        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
-        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X-"))
-        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R+"))
-        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
-        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.x_pos_button.pressed.connect(lambda: self.begin_motion("X", 1))
+        self.x_pos_button.released.connect(self.attempt_to_stop_motion)
+        self.x_neg_button.pressed.connect(lambda: self.begin_motion("X", -1))
+        self.x_neg_button.released.connect(self.attempt_to_stop_motion)
+        self.theta_pos_button.pressed.connect(lambda: self.begin_motion("R", 1))
+        self.theta_pos_button.released.connect(self.attempt_to_stop_motion)
+        self.theta_neg_button.pressed.connect(lambda: self.begin_motion("R", -1))
+        self.theta_neg_button.released.connect(self.attempt_to_stop_motion)
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
@@ -97,6 +102,19 @@ class Position(QWidget, Ui_Form):
         # Hardware info signals
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
+
+    '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
+    def begin_motion(self, axis, direction):
+        #Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
+        #self.motors.moving = True
+        self.begin_motion_signal.emit(axis, direction)
+        self.log("Beginning motion")
+
+    def attempt_to_stop_motion(self):
+        while True:
+            if self.motors.moving == False:
+                return
+            self.stop_motion_signal.emit()
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
