@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1015, 626)
+        Form.resize(1015, 607)
         self.tabWidget_3 = QtWidgets.QTabWidget(Form)
         self.tabWidget_3.setGeometry(QtCore.QRect(0, 0, 1012, 624))
         self.tabWidget_3.setObjectName("tabWidget_3")
@@ -436,14 +436,23 @@ class Ui_Form(object):
         self.gridLayout.addWidget(self.steps_per_mm_sb, 1, 1, 1, 1)
         self.ang_inc_double_sb = QtWidgets.QSpinBox(self.formFrame)
         self.ang_inc_double_sb.setMinimum(-2147483647)
-        self.ang_inc_double_sb.setProperty("value", 100)
+        self.ang_inc_double_sb.setMaximum(1231231231)
+        self.ang_inc_double_sb.setProperty("value", 99)
         self.ang_inc_double_sb.setObjectName("ang_inc_double_sb")
         self.gridLayout.addWidget(self.ang_inc_double_sb, 2, 3, 1, 1)
         self.lin_incr_double_sb = QtWidgets.QSpinBox(self.formFrame)
         self.lin_incr_double_sb.setMinimum(-2147483647)
-        self.lin_incr_double_sb.setProperty("value", 100)
+        self.lin_incr_double_sb.setMaximum(1231231231)
+        self.lin_incr_double_sb.setProperty("value", 99)
         self.lin_incr_double_sb.setObjectName("lin_incr_double_sb")
         self.gridLayout.addWidget(self.lin_incr_double_sb, 2, 1, 1, 1)
+        self.stop_button = QtWidgets.QPushButton(self.tab_11)
+        self.stop_button.setGeometry(QtCore.QRect(600, 200, 101, 51))
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.stop_button.setFont(font)
+        self.stop_button.setStyleSheet("background-color: red")
+        self.stop_button.setObjectName("stop_button")
         self.tabWidget_3.addTab(self.tab_11, "")
 
         self.retranslateUi(Form)
@@ -525,6 +534,7 @@ class Ui_Form(object):
         self.movement_mode_comboBox.setItemText(2, _translate("Form", "Distance"))
         self.label_3.setText(_translate("Form", "Movement mode"))
         self.save_settings_button.setText(_translate("Form", "Save settings as default"))
+        self.stop_button.setText(_translate("Form", "STOP"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), _translate("Form", "Move"))
 from ui_elements.switch import Switch
 

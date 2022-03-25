@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1015</width>
-    <height>626</height>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1148,8 +1148,11 @@
         <property name="minimum">
          <number>-2147483647</number>
         </property>
+        <property name="maximum">
+         <number>1231231231</number>
+        </property>
         <property name="value">
-         <number>100</number>
+         <number>99</number>
         </property>
        </widget>
       </item>
@@ -1158,12 +1161,36 @@
         <property name="minimum">
          <number>-2147483647</number>
         </property>
+        <property name="maximum">
+         <number>1231231231</number>
+        </property>
         <property name="value">
-         <number>100</number>
+         <number>99</number>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QPushButton" name="stop_button">
+     <property name="geometry">
+      <rect>
+       <x>600</x>
+       <y>200</y>
+       <width>101</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: red</string>
+     </property>
+     <property name="text">
+      <string>STOP</string>
+     </property>
     </widget>
    </widget>
   </widget>

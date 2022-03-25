@@ -19,16 +19,20 @@ balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class Position(QWidget, Ui_Form):
+    '''Disables buttons of entire UI that may interfere with operations in progress'''
+    set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
     command_signal = QtCore.pyqtSignal(str)
     setup_signal = QtCore.pyqtSignal(dict)
+    begin_motion_signal = QtCore.pyqtSignal(str, int)
+    stop_motion_signal = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.app = QApplication.instance()
         self.setupUi(self)
         self.motors = None
         self.manager = None
         self.config = None
-
 
     def set_config(self, config):
         self.config = config
@@ -40,14 +44,17 @@ class Position(QWidget, Ui_Form):
     def set_motors(self, motors):
         self.motors = motors
         self.setup_signal.connect(self.motors.setup)
+        self.stop_motion_signal.connect(self.motors.stop_motion)
+        self.begin_motion_signal.connect(self.motors.begin_motion)
+        self.motors.ready_signal.connect(lambda:self.set_buttons_enabled_signal.emit(True))
 
     def setup_pressed(self):
         self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
-                                'steps_per_mm': self.steps_per_mm_sb.value(),
                                 'lin_incr': self.lin_incr_double_sb.value(),
                                 'lin_speed': self.linear_speed_mm_s_sb.value(),
                                 'rot_speed': self.rotational_speed_deg_s_sb.value(),
                                 'steps_per_deg': self.steps_per_degree_sb.value(),
+                                'steps_per_mm': self.steps_per_mm_sb.value(),
                                 'ang_incr':self.ang_inc_double_sb.value(),})
 
     def populate_default_ui(self):
@@ -71,21 +78,42 @@ class Position(QWidget, Ui_Form):
         with open('local.yaml', 'w') as f:
             yaml.dump(self.config, f)
 
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        self.theta_neg_button.setEnabled(enabled)
+        self.setup_button.setEnabled(enabled)
+        self.x_pos_button.setEnabled(enabled)
+        self.x_neg_button.setEnabled(enabled)
+        self.theta_pos_button.setEnabled(enabled)
+        self.save_settings_button.setEnabled(enabled)
+        self.insert_ua_button.setEnabled(enabled)
+        self.retract_ua_button.setEnabled(enabled)
+        self.go_x_button.setEnabled(enabled)
+        self.go_theta_button.setEnabled(enabled)
+        self.manual_home_button.setEnabled(enabled)
+        self.go_element_button.setEnabled(enabled)
+        self.reset_zero_button.setEnabled(enabled)
+
     def configure_signals(self):
         self.command_signal.connect(self.manager.exec_command)
 
+        self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
         # Hardware control signals
-        self.x_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X+"))
-        self.x_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.x_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion X-"))
-        self.x_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_pos_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R+"))
-        self.theta_pos_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.theta_neg_button.pressed.connect(lambda: self.command_signal.emit("Motor Begin Motion R-"))
-        self.theta_neg_button.released.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
+        self.insert_ua_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.go_x_button.pressed.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.go_theta_button.pressed.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.retract_ua_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.go_element_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.setup_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
+        self.x_pos_button.pressed.connect(lambda: self.begin_motion("X", 1))
+        self.x_neg_button.pressed.connect(lambda: self.begin_motion("X", -1))
+        self.theta_pos_button.pressed.connect(lambda: self.begin_motion("R", 1))
+        self.theta_neg_button.pressed.connect(lambda: self.begin_motion("R", -1))
+        self.stop_button.clicked.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
+
         self.manual_home_button.clicked.connect(self.manual_home_clicked) 
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
         self.insert_ua_button.clicked.connect(self.insert_button_clicked)
@@ -97,6 +125,19 @@ class Position(QWidget, Ui_Form):
         # Hardware info signals
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
+
+    '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
+    def begin_motion(self, axis, direction):
+        #Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
+        #self.motors.moving = True
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
+        self.begin_motion_signal.emit(axis, direction)
+        self.log("Beginning motion")
+
+    def attempt_to_stop_motion(self):
+        self.set_buttons_enabled_signal.emit(True)
+        self.stop_motion_signal.emit()
 
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
