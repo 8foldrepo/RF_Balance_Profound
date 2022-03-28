@@ -45,7 +45,6 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
     this class oversees the user interface of the application. It contains a layout of

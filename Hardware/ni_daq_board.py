@@ -5,7 +5,6 @@ from nidaqmx.constants import LineGrouping
 from Hardware.Abstract.abstract_device import AbstractDevice
 import time as t
 
-
 class NI_DAQ(AbstractDevice):
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -27,7 +26,7 @@ class NI_DAQ(AbstractDevice):
         # todo: activate or deactivate the pump and return whether the operation was successful
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
             task.do_channels.add_do_chan("Dev1/port1/line0:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4 and 1.6
-            task.write([False, False, False, False, True, False, True], auto_start=True)
+            task.write_data()
         pass
 
     def get_pump_reading(self) -> bool:
@@ -35,7 +34,7 @@ class NI_DAQ(AbstractDevice):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump reading
             task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)  # P0.0
             task.do_channels.add_do_chan("Dev1/port1/line0:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.write([True, False, False, False, False, False, True], auto_start=True)
+            task.write_data()
         pass
 
     '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
@@ -45,7 +44,7 @@ class NI_DAQ(AbstractDevice):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
             task.do_channels.add_do_chan("Dev1/port1/line0:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2 and 1.5
             task.do_channels.add_do_chan("Dev1/port2/line0:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
-            task.write([False, False, True, False, False, True, False, False, True], auto_start=True)
+            task.write_data()
 
 
 
@@ -61,40 +60,40 @@ class NI_DAQ(AbstractDevice):
             try:
                 if channel_number == 1:
                     task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([True, False], auto_start=True)
+                    task.write_data()
                 elif channel_number == 2:
                     task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 3:
                     task.do_channels.add_do_chan("Dev1/port0/line0:2", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 4:
                     task.do_channels.add_do_chan("Dev1/port0/line0:3", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 5:
                     task.do_channels.add_do_chan("Dev1/port0/line0:4", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 6:
                     task.do_channels.add_do_chan("Dev1/port0/line0:5", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 7:
                     task.do_channels.add_do_chan("Dev1/port0/line0:6", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 8:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == 9:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, False, False, False, True, False], auto_start=True)
+                    task.write_data()
                 elif channel_number == 10:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, False, False, False, False, True], auto_start=True)
+                    task.write_data()
                 elif channel_number == -1:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write([False, False, False, False, False, False, False, False, False, False], auto_start=True)
+                    task.write_data()
             except nidaqmx.errors.DaqError as e:
                 print(e)
                 if str(e) == 'Specified operation cannot be performed when there are no channels in the task':

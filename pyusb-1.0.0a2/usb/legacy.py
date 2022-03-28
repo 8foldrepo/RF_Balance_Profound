@@ -145,7 +145,7 @@ class DeviceHandle(object):
                 timeout: operation timeout in miliseconds. (default: 100)
                          Returns the number of bytes written.
         """
-        return self.dev.write(endpoint, buffer, self.__claimed_interface, timeout)
+        return self.dev.write_data()
 
     def bulkRead(self, endpoint, size, timeout = 100):
         r"""Performs a bulk read request to the endpoint specified.
@@ -168,7 +168,7 @@ class DeviceHandle(object):
                 timeout: operation timeout in miliseconds. (default: 100)
                          Returns the number of bytes written.
         """
-        return self.dev.write(endpoint, buffer, self.__claimed_interface, timeout)
+        return self.dev.write_data()
 
     def interruptRead(self, endpoint, size, timeout = 100):
         r"""Performs a interrupt read request to the endpoint specified.

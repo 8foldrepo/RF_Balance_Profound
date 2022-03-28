@@ -29,7 +29,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
-
+from Hardware.ua_interface_box import UAInterfaceBox
 from Hardware.relay_board import Relay_Board
 
 from Hardware.water_level_sensor import WaterLevelSensor
@@ -147,7 +147,7 @@ class Manager(QThread):
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
-        #self.UAInterface = ua_interface_box
+        self.UAInterface = UAInterfaceBox(config=self.config)
 
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)

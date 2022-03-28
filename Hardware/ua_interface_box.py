@@ -11,24 +11,7 @@ class UAInterfaceBox(AbstractDevice):
     cal_data_signal = pyqtSignal(object)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
-        super().__init__(parent=parent)
-        from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-        import logging
-        log_formatter = logging.Formatter(LOGGER_FORMAT)
-        import os
-        from definitions import ROOT_DIR
-        balance_logger = logging.getLogger('wtf_log')
-        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
-        file_handler.setFormatter(log_formatter)
-        balance_logger.addHandler(file_handler)
-        balance_logger.setLevel(logging.INFO)
-        self.root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-        if config is not None:
-            self.config = config
-        else:
-            self.config = load_configuration()
-        self.device_key = device_key
-        self.is_connected = False
+        super().__init__(parent=parent, config=config, device_key=device_key)
 
         self.ua_calibration_data = {
             'cal_data_array': {
@@ -71,8 +54,6 @@ class UAInterfaceBox(AbstractDevice):
             }
         }
 
-        pass
-
     def fields_setup(self):
         pass
 
@@ -90,10 +71,7 @@ class UAInterfaceBox(AbstractDevice):
     def wrap_up(self):
         self.disconnect_hardware()
 
-    def log(self, message, level='info'):
-        log_msg(self, self.root_logger, message=message, level=level)
-
-    def read(self) -> list:
+    def read_data(self) -> list:
         # cal_data_signal.emit(self.cal_data_signal)
         command_output = subprocess.check_output('/interface_box_executable/WTFiB_Calib', '192.168.3.1').decode()
         calibration_string_pre = command_output.splitlines()[3]
@@ -112,7 +90,7 @@ class UAInterfaceBox(AbstractDevice):
         self.ua_calibration_data['cal_data_array']['efficiency_low_list'] = calibration_data_list[7:16]
         self.ua_calibration_data['cal_data_array']['efficiency_high_list'] = calibration_data_list[17:26]
 
-    def write(self):
+    def write_data(self):
         process_call = "/interface_box_executable/WTFib_Calib 192.168.3.1 " + \
                        self.ua_calibration_data['cal_data_array']['schema'] + "," + \
                        self.ua_calibration_data['cal_data_array']['serial_no'] + "," + \

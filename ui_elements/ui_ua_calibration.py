@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 from Widget_Library.widget_ua_calibration import Ui_Form
 
@@ -24,6 +25,12 @@ class UACalibration(QWidget, Ui_Form):
 
     @pyqtSlot(list)
     def configure_signals(self):
-        self.read_from_ua_button.clicked.connect(ua_interface.read())
+        self.read_from_ua_button.clicked.connect(self.read_button_clicked)
+
+    def read_button_clicked(self):
+        data = self.ua_interface.read_data()
+        #todo: fill data into ui
 
     def fill_labels(self):
+        #Todo:
+        pass
