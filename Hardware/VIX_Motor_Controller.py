@@ -410,8 +410,8 @@ class VIX_Motor_Controller(AbstractMotorController):
             else:
                 coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
 
-            if self.reverse_ray[axis_index]:
-                coordinate_steps = -1 * coordinate_steps
+            #if self.reverse_ray[axis_index]:
+            #    coordinate_steps = -1 * coordinate_steps
 
             self.go_to_position([axis], [coordinate_steps])
 
@@ -426,6 +426,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 axis_number = 0
             self.command(f'{axis_number}D{increment}')
 
+        @pyqtSlot()
         def stop_motion(self):
             self.log("Stopping motion")
             self.moving = not self.stop_motion_1d(axis='All')
@@ -448,17 +449,10 @@ class VIX_Motor_Controller(AbstractMotorController):
             return stopped
 
         def set_origin(self, origin_mm: list):
-            origin_steps = list()
+            #Todo
+            pass
 
-            for i in range(len(self.ax_letters)):
-                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords_steps[i])
-                if self.reverse_ray[i]:
-                    origin_steps[i] = origin_steps * -1
-
-                self.dummy_command_signal.emit(f'Set {self.ax_letters[i]} {origin_steps}')
-
-            self.get_position()
-
+        @pyqtSlot()
         def set_origin_here(self):
             self.command("0W(PA,0)")
             self.get_position()
@@ -474,11 +468,13 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         @abstractmethod
         def go_home(self):
-            self.command("1GH")
+            self.go_to_position(['X','R'], [0,0])
 
         # Tells one axis what coordinate to travel to
         # Axis must be 'x' , 'y' , 'z' , or 'r'
+        @pyqtSlot(list,list)
         def go_to_position(self, axes:list, coords_mm:list):
+            print("Going to position")
             if not len(axes) == len(coords_mm):
                 self.log(level='error',message="Axes length does not match coordinates length")
                 return
@@ -493,23 +489,19 @@ class VIX_Motor_Controller(AbstractMotorController):
                     num = 0
 
                 axis_numbers.append(num)
-                coords.append(coords_mm[i] * self.calibrate_ray_steps_per[num-1])
+                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num-1]))
 
             if not self.movement_mode == "Distance":
                 self.set_movement_mode("Distance")
 
             for i in range(len(axis_numbers)):
-                self.command(f'{axis_numbers[i]}D{abs(int(coords[i]))}')
-                if coords[i] < 0:
-                    self.command(f'{axis_numbers[i]}H-')
-                else:
-                    self.command(f'{axis_numbers[i]}H+')
+                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
 
                 self.command(f'{axis_numbers[i]}G')
                 if '*E' in self.get_response(retries=1):
                     if not self.jogging and not self.scanning:
                         self.log("Movement failed")
-                        self.check_user_fault()
+                        self.check_user_fault(axis_number=axis_numbers[i])
                         self.ready_signal.emit()
                         return
                 else:
@@ -563,8 +555,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                     self.coords_steps[1] = position_deg_or_mm
             pass
 
-        def check_user_fault(self):
-            response = self.ask('1R(UF)', retries = 5)
+        def check_user_fault(self, axis_number):
+            response = self.ask(f'{axis_number}R(UF)', retries = 5)
             response = response.replace('_', '')
             if not '1' in response:
                 return

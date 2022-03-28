@@ -21,8 +21,9 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 class Position(QWidget, Ui_Form):
     '''Disables buttons of entire UI that may interfere with operations in progress'''
     set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
-    command_signal = QtCore.pyqtSignal(str)
     setup_signal = QtCore.pyqtSignal(dict)
+    reset_zero_signal = QtCore.pyqtSignal()
+    go_to_signal = QtCore.pyqtSignal(list,list)
     begin_motion_signal = QtCore.pyqtSignal(str, int)
     stop_motion_signal = QtCore.pyqtSignal()
 
@@ -47,8 +48,12 @@ class Position(QWidget, Ui_Form):
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)
         self.motors.ready_signal.connect(lambda:self.set_buttons_enabled_signal.emit(True))
+        self.reset_zero_signal.connect(self.motors.set_origin_here)
+        self.go_to_signal.connect(self.motors.go_to_position)
 
     def setup_pressed(self):
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
         self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
                                 'lin_incr': self.lin_incr_double_sb.value(),
                                 'lin_speed': self.linear_speed_mm_s_sb.value(),
@@ -95,25 +100,16 @@ class Position(QWidget, Ui_Form):
         self.reset_zero_button.setEnabled(enabled)
 
     def configure_signals(self):
-        self.command_signal.connect(self.manager.exec_command)
-
         self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
         # Hardware control signals
-        self.insert_ua_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.go_x_button.pressed.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.go_theta_button.pressed.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.retract_ua_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.go_element_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.setup_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(False))
-        self.x_pos_button.pressed.connect(lambda: self.begin_motion("X", 1))
-        self.x_neg_button.pressed.connect(lambda: self.begin_motion("X", -1))
-        self.theta_pos_button.pressed.connect(lambda: self.begin_motion("R", 1))
-        self.theta_neg_button.pressed.connect(lambda: self.begin_motion("R", -1))
-        self.stop_button.clicked.connect(lambda: self.command_signal.emit("Motor Stop Motion"))
-        self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
-        self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
-        self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
-
+        self.x_pos_button.clicked.connect(lambda: self.begin_motion("X", 1))
+        self.x_neg_button.clicked.connect(lambda: self.begin_motion("X", -1))
+        self.theta_pos_button.clicked.connect(lambda: self.begin_motion("R", 1))
+        self.theta_neg_button.clicked.connect(lambda: self.begin_motion("R", -1))
+        self.stop_button.clicked.connect(self.attempt_to_stop_motion)
+        self.go_x_button.clicked.connect(self.go_to_x_clicked)
+        self.go_theta_button.clicked.connect(self.go_to_theta_clicked)
+        self.reset_zero_button.clicked.connect(self.reset_zero_clicked)
         self.manual_home_button.clicked.connect(self.manual_home_clicked) 
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
         self.insert_ua_button.clicked.connect(self.insert_button_clicked)
@@ -127,14 +123,31 @@ class Position(QWidget, Ui_Form):
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
     '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
+    @pyqtSlot(str, int)
     def begin_motion(self, axis, direction):
         #Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
         #self.motors.moving = True
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.begin_motion_signal.emit(axis, direction)
-        self.log("Beginning motion")
 
+    @pyqtSlot()
+    def go_to_x_clicked(self):
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
+        self.go_to_signal.emit(['X'], [self.go_x_sb.value()])
+
+    @pyqtSlot()
+    def go_to_theta_clicked(self):
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
+        self.go_to_signal.emit(['R'], [self.go_theta_sb.value()])
+
+    @pyqtSlot()
+    def reset_zero_clicked(self):
+        self.reset_zero_signal.emit()
+
+    @pyqtSlot()
     def attempt_to_stop_motion(self):
         self.set_buttons_enabled_signal.emit(True)
         self.stop_motion_signal.emit()
@@ -142,7 +155,9 @@ class Position(QWidget, Ui_Form):
     """Command the motors to go to the insertion point"""
     @pyqtSlot()
     def insert_button_clicked(self):
-        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
+        self.go_to_signal.emit(['X'], [int(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])])
 
     @pyqtSlot(float)
     def update_x_postion(self, mm):
@@ -166,7 +181,7 @@ class Position(QWidget, Ui_Form):
         if is_number(self.go_element_combo.currentText()):
             offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
             target_position = element_1_pos + offset
-            self.command_signal.emit(f"Motor Go {target_position}")
+            self.go_to_signal.emit(['X'], [target_position])
         else:
             # TODO: fill in later to handle "current" element condition
             return
@@ -174,19 +189,21 @@ class Position(QWidget, Ui_Form):
     """Command the motors to retract until a sensor is reached"""
     @pyqtSlot()
     def retract_button_clicked(self):
+        self.set_buttons_enabled_signal.emit(False)
+        self.app.processEvents()
         # TODO: fill in later with the code that uses the retraction sensor
-        self.command_signal.emit(f"Motor Go {-50}")
+        self.go_to_signal.emit(["X"], [-50])
 
 
     """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
     @pyqtSlot()
     def manual_home_clicked(self):
         if self.x_home_radio.isChecked():
-            self.command_signal.emit("Motor go 0")
+            self.go_to_signal.emit(['X'], [0])
         elif self.theta_home_radio.isChecked():
-            self.command_signal.emit("Motor go ,0")
+            self.go_to_signal.emit(['R'], [0])
         elif self.all_axes_radio.isChecked():
-            self.command_signal.emit("Motor go 0,0")
+            self.go_to_signal.emit(['X','R'], [0,0])
 
     def log(self, message, level='info'):
         log_msg(self, root_logger, message=message, level=level)
