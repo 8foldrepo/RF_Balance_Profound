@@ -85,14 +85,14 @@ class AbstractMotorController(AbstractDevice):
 
         num_axes = 2
         ax_letters = ['X', 'R']
-        increment_ray: object = [1,1]
+        increment_ray = [1,1]
         speeds_ray = [1,1]
 
-        coords_steps = list()
+        coords = list()
         home_coords = list()
 
         for i in range(num_axes):
-            coords_steps.append(0)
+            coords.append(0)
 
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
@@ -100,9 +100,9 @@ class AbstractMotorController(AbstractDevice):
         def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
-            self.coords_steps = list()
+            self.coords = list()
             for i in range(self.num_axes):
-                self.coords_steps.append(0)
+                self.coords.append(0)
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
@@ -112,7 +112,7 @@ class AbstractMotorController(AbstractDevice):
         def fields_setup(self):
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.ax_letters = self.config[self.device_key]['axes']
-            self.cal_ray_steps_per = self.config[self.device_key]['calibrate_ray']
+            self.calibrate_ray = self.config[self.device_key]['calibrate_ray']
 
             self._jog_speed = self.config[self.device_key]['jog_speed']
             self._scan_speed = self.config[self.device_key]['scan_speed']
@@ -130,12 +130,11 @@ class AbstractMotorController(AbstractDevice):
             self.increment_ray[0] = settings['lin_incr']
             self.speeds_ray[0] = settings['lin_speed']
             self.speeds_ray[1] = settings['rot_speed']
-            self.cal_ray_steps_per[0] = settings['steps_per_deg']
-            self.cal_ray_steps_per[1] = settings['ang_incr']
+            self.calibrate_ray[0] = settings['steps_per_deg']
+            self.calibrate_ray[1] = settings['ang_incr']
 
             for i in range(len(self.ax_letters)):
                 self.setup_1d(axis=self.ax_letters[i], settings=settings)
-            self.get_position()
 
         '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
         def setup_1d(self,axis, settings):
@@ -150,7 +149,7 @@ class AbstractMotorController(AbstractDevice):
             elif settings['movement_mode'] == 'Distance':
                 self.command(f'{axis_number}MA')
 
-            steps_per_s = self.cal_ray_steps_per[axis_index] * self.speeds_ray[axis_index]
+            steps_per_s = self.calibrate_ray[axis_index] * self.speeds_ray[axis_index]
             self.command(f'{axis_number}V{steps_per_s}')
             self.command(f'{axis_number}D{self.increment_ray[axis_index]}')
 
@@ -239,7 +238,7 @@ class AbstractMotorController(AbstractDevice):
             origin_steps = list()
 
             for i in range(len(self.ax_letters)):
-                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords_steps[i])
+                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords[i])
                 if self.reverse_ray[i]:
                     origin_steps[i] = origin_steps * -1
 
@@ -292,7 +291,7 @@ class AbstractMotorController(AbstractDevice):
                 if self.reverse_ray[ax_index]:
                     coords[i] = -1 * coords[i]
 
-                coord_strings.append(str(coords[i] * self.cal_ray_steps_per[ax_index]))
+                coord_strings.append(str(coords[i] * self.calibrate_ray[ax_index]))
                 ax_strings.append(axes[i].upper())
 
             self.scanning = True
@@ -307,9 +306,9 @@ class AbstractMotorController(AbstractDevice):
 
         @abstractmethod
         def get_position(self, mutex_locked = False):
-            self.coords_steps = self.Motors.coords
-            self.x_pos_mm_signal.emit(self.coords_steps[self.ax_letters.index('X')])
-            self.r_pos_mm_signal.emit(self.coords_steps[self.ax_letters.index('R')])
+            self.coords = self.Motors.coords
+            self.x_pos_mm_signal.emit(self.coords[self.ax_letters.index('X')])
+            self.r_pos_mm_signal.emit(self.coords[self.ax_letters.index('R')])
 
         def exec_command(self, command):
             command = command.upper()

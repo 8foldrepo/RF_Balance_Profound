@@ -281,6 +281,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.command_signal.connect(self.manager.exec_command)  # deplicate of line 262
         self.insert_button.clicked.connect(self.insert_button_clicked)
 
+        #enable/disable buttons signals
+        self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
+
         try:
             # Hardware info signals
             self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
@@ -381,9 +384,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
-        print(x)
-        print(y)
-
         self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
@@ -404,9 +404,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
-        print("In profile plot")
-        print(x)
-        print(y)
         self.plot_ready = True
 
     def load_script(self):
@@ -630,6 +627,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
+
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        #Todo: make this ebable/disable all buttons of all tabs that could interfere with operations in progress
+        self.position_tab.set_buttons_enabled(enabled)
+        self.insert_button.setEnabled(enabled)
+        self.retract_button.setEnabled(enabled)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

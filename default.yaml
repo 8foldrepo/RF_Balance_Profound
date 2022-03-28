@@ -109,7 +109,7 @@ VIX_Motors:
   increment_ray:
   - 100
   - 100
-  movement_mode: Continuous
+  movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
@@ -121,7 +121,8 @@ VIX_Motors:
   speeds_ray:
   - 1
   - 1
-  timeout_s: 10
+  timeout_s: .1
+  time_limit_s: 10
 WTF_DIO:
   DAQ Device name: WTF3
   Fill/Drain mode: Automatic

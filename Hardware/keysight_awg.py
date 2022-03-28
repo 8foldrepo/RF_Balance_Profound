@@ -92,129 +92,143 @@ class KeysightAWG(AbstractAWG):
         return self.state
 
     def Reset(self):
-        self.inst.write(f"*RST")
+        self.command(f"*RST")
         self.wait_til_complete()
 
     def wait_til_complete(self):
-        self.inst.write("*IDN?")
-        self.inst.read()
+        self.command("*IDN?")
+        self.read()
 
     """Turns the output on or off"""
     def SetOutput(self, on: bool):
         if on:
-            self.inst.write('OUTP ON')
+            self.command('OUTP ON')
             self.output_signal.emit(True)
         else:
-            self.inst.write('OUTP OFF')
+            self.command('OUTP OFF')
             self.output_signal.emit(False)
 
     def Get_Output(self):
-        self.inst.write('OUTP?')
-        reply = self.inst.read()
+        self.command('OUTP?')
+        reply = self.read()
         self.state["output"] = "1" in reply
         self.output_signal.emit(self.state["output"])
         return self.state["output"]
 
     """Sets the frequency of the signal"""
     def SetFrequency_Hz(self, frequency):
-        self.inst.write(f"FREQ {frequency}")
+        self.command(f"FREQ {frequency}")
 
     def GetFrequency_Hz(self):
-        self.inst.write(f"FREQ?")
-        self.state["frequency_Hz"] = float(self.inst.read())
+        self.command(f"FREQ?")
+        self.state["frequency_Hz"] = float(self.read())
         return self.state["frequency_Hz"]
 
     """Sets the peak to peak amplitude of the waveform in volts"""
     def SetAmplitude_V(self, amplitude):
-        self.inst.write(f"VOLT {amplitude}")
+        self.command(f"VOLT {amplitude}")
 
     def GetAmplitude_V(self):
-        self.inst.write(f"VOLT?")
-        self.state["amplitude_V"] = float(self.inst.read())
+        self.command(f"VOLT?")
+        self.state["amplitude_V"] = float(self.read())
         return self.state["amplitude_V"]
 
     """Sets the dc offset of the waveform in volts"""
     def SetOffset_V(self, offset):
-        self.inst.write(f"VOLT:OFFS {offset}")
+        self.command(f"VOLT:OFFS {offset}")
 
     def GetOffset_V(self):
-        self.inst.write(f"VOLT:OFFS?")
-        return float(self.inst.read())
+        self.command(f"VOLT:OFFS?")
+        return float(self.read())
 
     """Shows text_item on the AWG screen"""
     def DisplayText(self, text):
-        self.inst.write(f"DISP:TEXT {text}")
+        self.command(f"DISP:TEXT {text}")
 
     def SetFunction(self, func = "SIN"):
-        self.inst.write(f"FUNC {func}:")
+        self.command(f"FUNC {func}:")
 
     def GetFunction(self):
-        self.inst.write(f"FUNC?")
-        return self.inst.read()
+        self.command(f"FUNC?")
+        return self.read()
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
     def SetTrigger(self, external:bool, period_s = .000010, delay_s = 0):
-        self.inst.write(f"TRIG1:DEL {delay_s}")
+        self.command(f"TRIG1:DEL {delay_s}")
         if external:
-            self.inst.write(f"TRIG1:SOUR EXT")
+            self.command(f"TRIG1:SOUR EXT")
         else:
-            self.inst.write(f"TRIG1:SOUR TIM")
-            self.inst.write(f"TRIG1:TIM {period_s}")
+            self.command(f"TRIG1:SOUR TIM")
+            self.command(f"TRIG1:TIM {period_s}")
 
     """Returns info about the trigger: source, delay_s, period_s"""
     def GetTrigger(self):
-        self.inst.write(f"TRIG:SOUR?")
-        self.state['trig_source'] = self.inst.read().strip('\n')
-        self.inst.write(f"TRIG:DEL?")
-        self.state['trig_delay_s'] = float(self.inst.read())
-        self.inst.write(f"TRIG:TIM?")
-        self.state['trig_period_s'] = float(self.inst.read())
+        self.command(f"TRIG:SOUR?")
+        self.state['trig_source'] = self.read().strip('\n')
+        self.command(f"TRIG:DEL?")
+        self.state['trig_delay_s'] = float(self.read())
+        self.command(f"TRIG:TIM?")
+        self.state['trig_period_s'] = float(self.read())
         return self.state['trig_source'],self.state['trig_delay_s'],self.state['trig_period_s']
 
     def SetBurst(self, on = True):
         if "Phase_degrees" in self.state.keys():
-            self.inst.write(f"BURS:PHAS {self.state['Phase_degrees']}")
+            self.command(f"BURS:PHAS {self.state['Phase_degrees']}")
         if on:
-            self.inst.write("BURS ON")
+            self.command("BURS ON")
         else:
-            self.inst.write("BURS OFF")
+            self.command("BURS OFF")
 
     """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
     def GetBurst(self):
-        self.inst.write(f"BURS?")
-        self.state['burst_on'] = "1" in self.inst.read()
-        self.inst.write(f"BURS:NCYC?")
-        self.state['burst_ncyc'] = int(float(self.inst.read()))
+        self.command(f"BURS?")
+        self.state['burst_on'] = "1" in self.read()
+        self.command(f"BURS:NCYC?")
+        self.state['burst_ncyc'] = int(float(self.read()))
         return self.state['burst_on'], self.state['burst_ncyc']
 
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):
         if HiZ:
-            self.inst.write("OUTP:LOAD INF")
+            self.command("OUTP:LOAD INF")
         else:
-            self.inst.write(f"OUTP:LOAD {impedence_ohms}")
+            self.command(f"OUTP:LOAD {impedence_ohms}")
 
     def GetOutputImpedence(self):
-        self.inst.write(f"OUTP:LOAD?")
-        return float(self.inst.read())
+        self.command(f"OUTP:LOAD?")
+        return float(self.read())
 
     def SetPhaseDegrees(self, phase_degrees=0):
         self.phase_degrees = phase_degrees
-        self.inst.write(f"UNIT:ANGL DEG")
-        self.inst.write(f"SOUR:PHASE{self.phase_degrees}")
+        self.command(f"UNIT:ANGL DEG")
+        self.command(f"SOUR:PHASE{self.phase_degrees}")
 
     def GetPhaseDegrees(self):
-        self.inst.write(f"UNIT:ANGL DEG")
-        self.inst.write(f"SOUR:PHASE?")
-        self.state["phase degrees"] = self.inst.read()
+        self.command(f"UNIT:ANGL DEG")
+        self.command(f"SOUR:PHASE?")
+        self.state["phase degrees"] = self.read()
         return self.state["phase degrees"]
 
     def SetCycles(self, cycles):
-        self.inst.write(f"BURS:NCYC {cycles}")
+        self.command(f"BURS:NCYC {cycles}")
 
     def GetCycles(self):
-        self.inst.write(f"BURS:NCYC?")
-        self.state["burst_cycles"] = self.inst.read()
+        self.command(f"BURS:NCYC?")
+        self.state["burst_cycles"] = self.read()
         return self.state["burst_cycles"]
+
+    def command(self, command):
+        try:
+            self.self.inst.write(command)
+        except AttributeError as e:
+            if str(e) == "\'NoneType\' object has no attribute \'write\'":
+                self.log(f"{self.device_key} Not connected")
+
+    def read(self):
+        try:
+            return self.inst.read()
+        except AttributeError as e:
+            if str(e) == "\'NoneType\' object has no attribute \'read\'":
+                self.log(f"Could not read reply, {self.device_key} Not connected")
 
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
     def __str__(self):
