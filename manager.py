@@ -250,7 +250,7 @@ class Manager(QThread):
                 else:
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
-                    self.update_motor_position()
+                    #self.update_motor_position()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
 
