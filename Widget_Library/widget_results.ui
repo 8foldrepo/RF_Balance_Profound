@@ -65,9 +65,9 @@
     <widget class="QTableWidget" name="results_table">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>0</x>
        <y>60</y>
-       <width>971</width>
+       <width>1000</width>
        <height>341</height>
       </rect>
      </property>
@@ -85,11 +85,11 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
       </font>
      </property>
      <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>59</number>
+      <number>61</number>
      </attribute>
      <attribute name="verticalHeaderCascadingSectionResizes">
       <bool>false</bool>
@@ -250,16 +250,6 @@
        <string>Element</string>
       </property>
      </column>
-     <column>
-      <property name="text">
-       <string>New Column</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>New Column</string>
-      </property>
-     </column>
      <item row="0" column="0">
       <property name="text">
        <string/>
@@ -335,9 +325,9 @@
        <string>result</string>
       </property>
      </item>
-     <item row="0" column="16">
+     <item row="2" column="1">
       <property name="text">
-       <string>ertwetr</string>
+       <string/>
       </property>
      </item>
     </widget>
