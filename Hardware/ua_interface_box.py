@@ -76,7 +76,8 @@ class UAInterfaceBox(AbstractDevice):
         command_output = subprocess.check_output('/interface_box_executable/WTFiB_Calib', '192.168.3.1').decode()
         calibration_string_pre = command_output.splitlines()[3]
         calibration_string_pre_list = calibration_string_pre.split(' ')
-        calibration_string_pre_list2 = calibration_string_pre_list[6]
+        status = int(calibration_string_pre_list[3].split('=')[1])
+        calibration_string_pre_list2 = calibration_string_pre_list[5]
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
         calibration_data_list = calibration_data_quotes_removed.split(',')
 
@@ -89,6 +90,8 @@ class UAInterfaceBox(AbstractDevice):
         self.ua_calibration_data['cal_data_array']['beam_align'] = calibration_data_list[6]
         self.ua_calibration_data['cal_data_array']['efficiency_low_list'] = calibration_data_list[7:16]
         self.ua_calibration_data['cal_data_array']['efficiency_high_list'] = calibration_data_list[17:26]
+
+        return calibration_data_list, status
 
     def write_data(self):
         process_call = "/interface_box_executable/WTFib_Calib 192.168.3.1 " + \
