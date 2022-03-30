@@ -121,38 +121,154 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.on_by_default = self.config[self.device_key]['on_by_default']
             self.port = self.config[self.device_key]['port']
 
-        @property
-        def jog_speed(self):
-            return self._jog_speed
+        # Tells one axis what coordinate to travel to
+        # Axis must be 'x' , 'y' , 'z' , or 'r'
+        @pyqtSlot(list, list)
+        def go_to_position(self, axes: list, coords_mm: list):
+            if not len(axes) == len(coords_mm):
+                self.log(level='error', message="Axes length does not match coordinates length")
+                return
 
-        @property
-        def scan_speed(self):
-            return self._scan_speed
+            axis_numbers = list()
+            coords = list()
 
-        @property
-        def calibrate(self):
-            return (
-                self._x_calibrate,
-                self._y_calibrate,
-                self._z_calibrate,
-                self._r_calibrate,
-            )
+            for i in range(len(axes)):
+                if axes[i].upper() in self.ax_letters:
+                    num = self.ax_letters.index(axes[i].upper()) + 1
+                else:
+                    num = 0
 
-        def set_jog_speed(self, axis, value):
-            if type(value) is float:
-                self._jog_speed = value
-                self.dummy_command_signal.emit(f'Jog Speed {axis} {self.scan_speed}')
-                self.log(f"scan speed set: {value}")
+                axis_numbers.append(num)
+                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num - 1]))
+
+            if not self.movement_mode == "Distance":
+                self.set_movement_mode("Distance")
+
+            for i in range(len(axis_numbers)):
+                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
+
+                self.command(f'{axis_numbers[i]}G')
+                if '*E' in self.get_response(retries=1):
+                    if not self.jogging and not self.scanning:
+                        self.log("Movement failed")
+                        self.check_user_fault(axis_number=axis_numbers[i])
+                        self.ready_signal.emit()
+                        return
+                else:
+                    self.moving_signal.emit(True)
+            # Wait for motion to be over
+            # t.sleep(2)
+            # Check position
+            # self.get_position()
+            # Send ready signal to enable UI
+            self.ready_signal.emit()
+
+        @pyqtSlot()
+        def set_origin_here(self):
+            self.set_origin_here_1d(axis='All')
+
+        @pyqtSlot()
+        def set_origin_here_1d(self, axis):
+            self.set_origin_1d(axis=axis, coord_steps=0)
+
+        @pyqtSlot()
+        def set_origin(self, origin_mm: list):
+            if not len(origin_mm) == len(self.ax_letters):
+                self.log(level='error', message='Error in set_origin, not enough coordinates provided')
+                return
+
+            for i in range(len(origin_mm)):
+                self.set_origin_1d(axis=self.ax_letters[i], coord_mm=origin_mm[i], get_position=False)
+
+            self.get_position()
+
+        '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+        @pyqtSlot(dict)
+        def setup_slot(self, settings=None):
+            self.setup(settings=settings)
+
+        @pyqtSlot(int)
+        def set_increment(self, increment):
+            self.set_increment_1d(axis = 'All', increment=increment)
+
+        @pyqtSlot()
+        def stop_motion(self):
+            self.log("Stopping motion")
+            self.moving = not self.stop_motion_1d(axis='All')
+            if self.moving == False:
+                self.jogging = False
+                self.scanning = False
+
+        @pyqtSlot(float)
+        def set_speeds(self, speed):
+            self.set_speeds_1d(axis='All', speed = speed)
+
+        @pyqtSlot(str, int)
+        def begin_motion(self, axis=None, direction=None, feedback=True):
+            self.log(f"Beginning motion, jogging = {self.jogging}")
+            axis_index = self.ax_letters.index(axis)
+            axis_number = axis_index + 1
+
+            if direction < 0:
+                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
             else:
-                self.log(level='error',message="failed to set jog speed")
+                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
 
-        def set_scan_speed(self, axis, value):
-            if type(value) is float:
-                self._scan_speed = value
-                self.dummy_command_signal.emit(f'Scan Speed {axis} {self.scan_speed}')
-                self.log(f"scan speed set: {value}")
-            else:
-                self.log(level='error',message="failed to set scan speed")
+            #if self.reverse_ray[axis_index]:
+            #    coordinate_steps = -1 * coordinate_steps
+
+            self.go_to_position([axis], [coordinate_steps])
+
+        @pyqtSlot()
+        def go_home(self):
+            self.go_home_1d(self, axis='All')
+
+        @pyqtSlot(str)
+        def go_home_1d(self, axis):
+            axis_number = self.get_ax_number(axis)
+            self.command(f'{axis_number}GH')
+
+        # Tells one axis what coordinate to travel to
+        # Axis must be 'x' , 'y' , 'z' , or 'r'
+        @pyqtSlot(list, list)
+        def go_to_position(self, axes: list, coords_mm: list):
+            if not len(axes) == len(coords_mm):
+                self.log(level='error', message="Axes length does not match coordinates length")
+                return
+
+            axis_numbers = list()
+            coords = list()
+
+            for i in range(len(axes)):
+                if axes[i].upper() in self.ax_letters:
+                    num = self.ax_letters.index(axes[i].upper()) + 1
+                else:
+                    num = 0
+
+                axis_numbers.append(num)
+                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num - 1]))
+
+            if not self.movement_mode == "Distance":
+                self.set_movement_mode("Distance")
+
+            for i in range(len(axis_numbers)):
+                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
+
+                self.command(f'{axis_numbers[i]}G')
+                if '*E' in self.get_response(retries=1):
+                    if not self.jogging and not self.scanning:
+                        self.log("Movement failed")
+                        self.check_user_fault(axis_number=axis_numbers[i])
+                        self.ready_signal.emit()
+                        return
+                else:
+                    self.moving_signal.emit(True)
+            # Wait for motion to be over
+            t.sleep(2)
+            # Check position
+            self.get_position()
+            # Send ready signal to enable UI
+            self.ready_signal.emit()
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -181,7 +297,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             #TODO: remove this when limits are added
             self.connected_signal.emit(self.connected)
 
-        @abstractmethod
+        
         def disconnect_hardware(self):
             try:
                 self.set_motors_on(False)
@@ -191,11 +307,11 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.connected = False
             self.connected_signal.emit(self.connected)
 
-        @abstractmethod
+        
         def connected(self):
             return self.Motors.connected
 
-        '''Attempt to send command until it is faithfully echoed by the controller'''
+        '''Attempt to send command until it is faithfully echoed by the controller, or else return false'''
         def command(self, command, retry=True, time_limit = None, mutex_locked = False, log = False):
             # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
             if self.lock is not None and not mutex_locked:
@@ -269,11 +385,13 @@ class VIX_Motor_Controller(AbstractMotorController):
                         if self.lock is not None:
                             self.lock.unlock()
                             return ''
-                if y != b'' and y is not None:
+                if y != b'' and y is not None and not y == b'' and not y == '':
                     if self.lock is not None and not mutex_locked:
                          self.lock.unlock()
-
-                    return y.decode('utf-8')
+                    try:
+                        return y.decode('utf-8')
+                    except UnicodeDecodeError:
+                        return ''
             if need_reply:
                 self.log(level='error', message=f'{self.device_key} gave no reply')
 
@@ -295,25 +413,21 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         '''Set motor with given axis letter on/off depending on boolean on'''
         def set_motor_on(self, axis, on):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
 
             if on:
                 self.command(f'{axis_number}ON')
             else:
                 self.command(f'{axis_number}OFF')
 
-        '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
-        @pyqtSlot(dict)
-        def setup_slot(self, settings = None):
-            self.setup(settings=settings)
-
         def setup(self, settings = None):
             #This accounts for the lower idle current of the rotational motor.
             #TODO: check currents of motors in final application
-            self.command("2W(MS,10)")
+            sent_successfully = self.command("2W(MS,10)")
+
+            if not sent_successfully:
+                self.log(level = 'error', message='failed to setup, check that drivers are powered on and try again')
+
             if settings is not None:
                 self.increment_ray[0] = settings['lin_incr']
                 self.increment_ray[1] = settings['ang_incr']
@@ -326,7 +440,6 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.set_limits_enabled(False)
             self.set_position_maintanance(on=False)
             self.set_movement_mode(self.movement_mode)
-            self.set_origin_here()
             self.set_motors_on(True)
 
             for i in range(len(self.ax_letters)):
@@ -340,10 +453,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.set_mode_1d(axis = 'All', movement_mode=self.movement_mode)
 
         def set_mode_1d(self, axis, movement_mode = None):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
 
             if movement_mode is None:
                 movement_mode = self.movement_mode
@@ -375,57 +485,16 @@ class VIX_Motor_Controller(AbstractMotorController):
             else:
                 self.command(f'0POSMAIN0(10)')
 
-        @pyqtSlot(float)
-        def set_speeds(self, speed):
-            self.set_speeds_1d(axis='All', speed = speed)
-
         def set_speeds_1d(self, axis, speed):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
             self.command(f'{axis_number}V{speed}')
 
-        @pyqtSlot(str, int)
-        def begin_motion(self, axis=None, direction=None, feedback=True):
-            self.log(f"Beginning motion, jogging = {self.jogging}")
-            axis_index = self.ax_letters.index(axis)
-            axis_number = axis_index + 1
-
-            if direction < 0:
-                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
-            else:
-                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
-
-            #if self.reverse_ray[axis_index]:
-            #    coordinate_steps = -1 * coordinate_steps
-
-            self.go_to_position([axis], [coordinate_steps])
-
-        @pyqtSlot(int)
-        def set_increment(self, increment):
-            self.set_increment_1d(axis = 'All', increment=increment)
-
         def set_increment_1d(self, axis, increment):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
             self.command(f'{axis_number}D{increment}')
 
-        @pyqtSlot()
-        def stop_motion(self):
-            self.log("Stopping motion")
-            self.moving = not self.stop_motion_1d(axis='All')
-            if self.moving == False:
-                self.jogging = False
-                self.scanning = False
-
         def stop_motion_1d(self, axis):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
 
             stopped = False
             for i in range(20):
@@ -435,72 +504,15 @@ class VIX_Motor_Controller(AbstractMotorController):
                     stopped = self.command(f"{axis_number}S", retry = False)
             return stopped
 
-        def set_origin(self, origin_mm: list):
-            #Todo
-            pass
+        def set_origin_1d(self,axis, coord_mm, get_position = True):
+            axis_number = self.get_axis_number(axis)
+            axis_index = axis_number-1
+            coord_steps = coord_mm * self.calibrate_ray_steps_per[axis_index]
+            self.command(f'{axis_number}W(PA,{-1 * int(coord_steps)})')
 
-        @pyqtSlot()
-        def set_origin_here(self):
-            self.command("0W(PA,0)")
-            self.get_position()
-
-        @abstractmethod
-        def set_origin_here_1d(self, axis):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
-
-            self.command(f'{axis_number}W(PA,0)')
-
-        @abstractmethod
-        def go_home(self):
-            self.go_to_position(['X','R'], [0,0])
-
-        # Tells one axis what coordinate to travel to
-        # Axis must be 'x' , 'y' , 'z' , or 'r'
-        @pyqtSlot(list,list)
-        def go_to_position(self, axes:list, coords_mm:list):
-            print("Going to position")
-            if not len(axes) == len(coords_mm):
-                self.log(level='error',message="Axes length does not match coordinates length")
-                return
-
-            axis_numbers = list()
-            coords = list()
-
-            for i in range(len(axes)):
-                if axes[i].upper() in self.ax_letters:
-                    num = self.ax_letters.index(axes[i].upper()) + 1
-                else:
-                    num = 0
-
-                axis_numbers.append(num)
-                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num-1]))
-
-            if not self.movement_mode == "Distance":
-                self.set_movement_mode("Distance")
-
-            for i in range(len(axis_numbers)):
-                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
-
-                self.command(f'{axis_numbers[i]}G')
-                if '*E' in self.get_response(retries=1):
-                    if not self.jogging and not self.scanning:
-                        self.log("Movement failed")
-                        self.check_user_fault(axis_number=axis_numbers[i])
-                        self.ready_signal.emit()
-                        return
-                else:
-                    self.moving_signal.emit(True)
-            #Wait for motion to be over
-            t.sleep(2)
-            #Check position
-            self.get_position()
-            #Send ready signal to enable UI
-            self.ready_signal.emit()
-
-        @abstractmethod
+            if get_position:
+                self.get_position()
+        
         def is_moving(self):
             for i in range(len(self.ax_letters)):
                 self.command(f"{i+1}R(MV)", log=True)
@@ -522,7 +534,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self._r_calibrate,
             )
 
-        @abstractmethod
+        
         def disconnect_hardware(self):
             try:
                 self.set_motors_on(False)
@@ -532,12 +544,12 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.connected = False
             self.connected_signal.emit(self.connected)
 
-        @abstractmethod
+        
         def connected(self):
             return self.Motors.connected
 
         '''Query and return the baud rate'''
-        @abstractmethod
+        
         def getBaud(self):
             if self.ser is None:
                 self.log(level='error', message=f'{self.device_key} not connected')
@@ -583,66 +595,22 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command("0W(PA,0)")
             self.get_position()
 
-        @abstractmethod
+        
         def set_origin_here_1d(self, axis):
-            if axis.upper() in self.ax_letters:
-                axis_number = self.ax_letters.index(axis.upper()) + 1
-            else:
-                axis_number = 0
+            axis_number = self.get_ax_number(axis)
 
             self.command(f'{axis_number}W(PA,0)')
 
-        @abstractmethod
+        
         def go_home(self):
             self.go_to_position(['X','R'], [0,0])
 
-        # Tells one axis what coordinate to travel to
-        # Axis must be 'x' , 'y' , 'z' , or 'r'
-        @pyqtSlot(list,list)
-        def go_to_position(self, axes:list, coords_mm:list):
-            print("Going to position")
-            if not len(axes) == len(coords_mm):
-                self.log(level='error',message="Axes length does not match coordinates length")
-                return
 
-            axis_numbers = list()
-            coords = list()
 
-            for i in range(len(axes)):
-                if axes[i].upper() in self.ax_letters:
-                    num = self.ax_letters.index(axes[i].upper()) + 1
-                else:
-                    num = 0
-
-                axis_numbers.append(num)
-                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num-1]))
-
-            if not self.movement_mode == "Distance":
-                self.set_movement_mode("Distance")
-
-            for i in range(len(axis_numbers)):
-                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
-
-                self.command(f'{axis_numbers[i]}G')
-                if '*E' in self.get_response(retries=1):
-                    if not self.jogging and not self.scanning:
-                        self.log("Movement failed")
-                        self.check_user_fault(axis_number=axis_numbers[i])
-                        self.ready_signal.emit()
-                        return
-                else:
-                    self.moving_signal.emit(True)
-            #Wait for motion to be over
-            t.sleep(2)
-            #Check position
-            self.get_position()
-            #Send ready signal to enable UI
-            self.ready_signal.emit()
-
-        @abstractmethod
+        
         def get_position(self, mutex_locked = False):
             for i in range(len(self.ax_letters)):
-                position_string = self.ask(f"{i+1}R(PE)", mutex_locked = mutex_locked)
+                position_string = self.ask(f"{i+1}R(PT)", mutex_locked = mutex_locked)
                 position_string = position_string.replace('*','')
                 try:
                     position_steps = float(position_string)
@@ -751,6 +719,13 @@ class VIX_Motor_Controller(AbstractMotorController):
         def wrap_up(self):
             self.disconnect_hardware()
             self.dummy_command_signal.emit("CLOSE")
+
+        def get_ax_number(self,axis):
+            if axis.upper() in self.ax_letters:
+                axis_number = self.ax_letters.index(axis.upper()) + 1
+            else:
+                axis_number = 0
+            return axis_number
 
         def set_scale(self):
             self.command("0Z")

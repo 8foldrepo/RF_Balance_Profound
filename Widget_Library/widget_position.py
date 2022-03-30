@@ -332,7 +332,7 @@ class Ui_Form(object):
         self.reset_zero_button.setGeometry(QtCore.QRect(20, 550, 101, 41))
         self.reset_zero_button.setObjectName("reset_zero_button")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.tab_11)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(440, 270, 81, 129))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(490, 290, 81, 129))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
