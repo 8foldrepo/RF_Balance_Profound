@@ -196,7 +196,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             return self.Motors.connected
 
         '''Attempt to send command until it is faithfully echoed by the controller'''
-        def command(self, command, retry=True, time_limit = None, mutex_locked = False, log = True):
+        def command(self, command, retry=True, time_limit = None, mutex_locked = False, log = False):
             # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
             if self.lock is not None and not mutex_locked:
                 self.lock.lock()
@@ -269,9 +269,10 @@ class VIX_Motor_Controller(AbstractMotorController):
                         if self.lock is not None:
                             self.lock.unlock()
                             return ''
-                if y != b'':
+                if y != b'' and y is not None:
                     if self.lock is not None and not mutex_locked:
                          self.lock.unlock()
+
                     return y.decode('utf-8')
             if need_reply:
                 self.log(level='error', message=f'{self.device_key} gave no reply')
@@ -286,7 +287,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 response = self.get_response(mutex_locked = mutex_locked)
                 if not '*E' in response:
                     return response
-            self.log("Stop")
+            return ''
 
         '''Set all motors on/off depending on boolean on'''
         def set_motors_on(self, on):
@@ -752,9 +753,35 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.dummy_command_signal.emit("CLOSE")
 
         def set_scale(self):
-            target_position_string = self.ask(f"1R(PT)", mutex_locked = mutex_locked)
-            actual_position_string = self.ask(f"1R(PA)", mutex_locked = mutex_locked)
-            position_error_string = self.ask(f"1R(PE)", mutex_locked = mutex_locked)
+            self.command("0Z")
+            self.set_position_maintanance(False)
+            motor_type = 716 #Read from the profound driver
+            stall_current_amps = 2.1
+            encoder_resolution = 2000 #steps_rev
+            max_rpm = 1000
+            thermal_time_constant = 1000
+            #todo:set a real value, this one is a guess
+            # Thermal time constant – is the time in seconds for the motor to reach
+            #two-thirds of its rated temperature while operating at its continuous current
+            #rating.
+            r_ohms = 2
+            l_mhenry = 2
+            #command = f"1MOTOR({motor_type},{stall_current_amps},{10000},{max_rpm},{thermal_time_constant},{r_ohms},{l_mhenry},{50})"
+            #command = "1MOTOR(716, 2.1, 52000, 1000, 1000, 5, 5, 5)"
+            #print(command)
+            #self.command(command)
+            #print(self.get_response())
+            #t.sleep(15)
+            self.command("1W(PA,0)")
+            self.command("1D10000")
+            self.command("1ON")
+            self.command("1G")
+
+            t.sleep(1)
+
+            target_position_string = self.ask(f"1R(PT)")
+            actual_position_string = self.ask(f"1R(PA)")
+            position_error_string = self.ask(f"1R(PE)")
 
             print(f'Tar: {target_position_string}')
             print(f'Act: {actual_position_string}')
@@ -763,5 +790,4 @@ class VIX_Motor_Controller(AbstractMotorController):
 if __name__ == '__main__':
     motors = VIX_Motor_Controller(config=None)
     motors.connect_hardware()
-    motors.set_motor_on('R',False)
-    motors.stop_motion()
+    motors.set_scale()
