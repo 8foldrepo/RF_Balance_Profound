@@ -10,7 +10,17 @@ import csv
 import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
-from Utilities.load_config import ROOT_LOGGER_NAME
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+import logging
+log_formatter = logging.Formatter(LOGGER_FORMAT)
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+file_handler.setFormatter(log_formatter)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
+root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from ui_elements.ui_pretest_dialog import PretestDialog
 from ui_elements.ui_user_prompt import WTFUserPrompt
@@ -44,6 +54,7 @@ file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+
 
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
@@ -106,7 +117,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_calibration_tab.set_config(self.config)
         self.ua_calibration_tab.set_manager(self.manager)
-        self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
 
     def load_system_info(self):
         output = ''
@@ -512,7 +522,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         # Updating the Feedback window
         Progress = "Notes Printed"
-        self.logger_signal.emit(str(Progress))
+        self.log(str(Progress))
 
     def closeEvent(self, event):
         bQuit = False
@@ -635,6 +645,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
 
+    def log(self, message, level = 'info'):
+        log_msg(self,self.root_logger, message= message,level=level)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

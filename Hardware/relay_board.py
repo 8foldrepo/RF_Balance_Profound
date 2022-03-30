@@ -57,7 +57,7 @@ class Relay_Board(AbstractRelay):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write_data()  #Check state command
+        self.ser.write(b"\xFF\x01\x03\n") #Check state command
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
@@ -80,10 +80,10 @@ class Relay_Board(AbstractRelay):
             return
 
         if on:
-            self.ser.write_data()  #On command
+            self.ser.write(b"\xFF\x01\x01\n") #On command
             self.get_reading()
         else:
-            self.ser.write_data()  #Off command
+            self.ser.write(b"\xFF\x01\x00\n") #Off command
             self.get_reading()
 
         #self.on = on
@@ -91,7 +91,6 @@ class Relay_Board(AbstractRelay):
 
 if __name__ == '__main__':
     switch = Relay_Board()
-    switch.connect()
+    switch.connect_hardware()
     switch.relay_write(True)
-    switch.relay_write(False)
 
