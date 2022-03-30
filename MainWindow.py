@@ -45,6 +45,7 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
     this class oversees the user interface of the application. It contains a layout of
@@ -106,7 +107,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_calibration_tab.set_config(self.config)
         self.ua_calibration_tab.set_manager(self.manager)
-        self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
 
     def load_system_info(self):
         output = ''

@@ -205,7 +205,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def command(self, command):
         try:
-            self.self.inst.write_data()
+            self.self.inst.write(command)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")

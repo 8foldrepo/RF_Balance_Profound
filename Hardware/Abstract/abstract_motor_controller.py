@@ -80,10 +80,6 @@ class AbstractMotorController(AbstractDevice):
         z_pos_signal = pyqtSignal(float)
 
         moving_signal = pyqtSignal(bool)
-        ready_signal = pyqtSignal()
-        connected_signal = pyqtSignal(bool)
-
-        moving_signal = pyqtSignal(bool)
 
         connected_signal = pyqtSignal(bool)
 
@@ -217,7 +213,7 @@ class AbstractMotorController(AbstractDevice):
             return self.Motors.connected
 
         @abstractmethod
-        def begin_motion(self, axis=None, direction=None, feedback=True):
+        def jog(self, axis=None, direction=None, feedback=True):
             # Dummy code, replace when developing a hardware interface
             self.jogging = True
             self.moving_signal.emit(True)

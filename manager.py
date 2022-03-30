@@ -29,7 +29,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.MT_balance import MT_balance
-from Hardware.ua_interface_box import UAInterfaceBox
+
 from Hardware.relay_board import Relay_Board
 
 from Hardware.water_level_sensor import WaterLevelSensor
@@ -92,6 +92,9 @@ class Manager(QThread):
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.get_position_cooldown_s = .2 #decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        self.last_get_position_time = 0
+
         #Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
@@ -108,9 +111,6 @@ class Manager(QThread):
         # Event loop control vars
         self.mutex = QMutex()
         self.condition = QWaitCondition()
-
-        self.get_position_cooldown = .1
-        self.last_get_position_time = 0
 
         # Test Data
         self.test_data = None
@@ -147,7 +147,7 @@ class Manager(QThread):
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
         self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
         self.thermocouple = AbstractSensor(config=self.config)
-        self.UAInterface = UAInterfaceBox(config=self.config)
+        #self.UAInterface = ua_interface_box
 
         if self.SIMULATE_MOTORS:
             self.Motors = AbstractMotorController(config=self.config)
@@ -250,7 +250,7 @@ class Manager(QThread):
                 else:
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
-                    self.update_motor_position()
+                    #self.update_motor_position()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
 
@@ -263,10 +263,9 @@ class Manager(QThread):
 
     def update_motor_position(self):
         if self.Motors.connected and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
-            if t.time()-self.last_get_position_time > self.get_position_cooldown:
-                lock_aquired = self.motor_control_lock.tryLock()
-
-                if lock_aquired:
+            if self.get_position_cooldown_s < t.time() - self.last_get_position_time:
+                lock_acquired = self.motor_control_lock.tryLock(0)
+                if lock_acquired:
                     self.Motors.get_position(mutex_locked=True)
                     self.last_get_position_time = t.time()
                     self.motor_control_lock.unlock()
