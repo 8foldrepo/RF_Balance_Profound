@@ -20,40 +20,40 @@ https://www.anaconda.com/products/individual
 Pycharm (python ide)
 https://www.jetbrains.com/pycharm/download/
 
-Picoscope 6 (oscilloscope standalone app)
-https://www.picotech.com/downloads 
-
-PicoSDK 64 bit (oscilloscope programming dependancy)
-https://www.picotech.com/downloads
-
-GDK (motor setup app)
-https://www.galil.com/downloads/software/gdk
-
-GcLib (motor programming dependancy)
-https://www.galil.com/sw/pub/win/gclib/galil_gclib_480.exe
-
 NI Visa (signal generator programming dependancy)
 https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html#346210
 
 VNC Server (remote support)
 https://www.realvnc.com/en/connect/download/vnc/
 
-Download the picoscope python wrappers from github to a .zip file
-https://github.com/picotech/picosdk-python-wrappers
+3. Install the power meter dll file
 
-Right click the .zip file, extract it with explorer, and make sure to choose the path "C:\Users\<username>\Downloads\picosdk-python-wrappers-master"
-Note: the setup scripts assume this location. Make sure the setup.py file is in this location before continuing.
+the dll file is located in /Hardware/power_meter_dlls
 
-###MOTOR CONTROLLER SETUP
-
-1. Ensure that the motor controller box is plugged in, turned on, and each dsub output is connected to the corresponding motor of the gantry with a straight-through DB9 cable.
-2. Manually rotate the motor shafts so that the linear stages are roughly in the center of the tank.
-3. Adust the limit switch placement so that they will prevent the gantry from colliding with any obstacles.
-4. Launch the GDK application and click DMC 4103.
-5. Follow the step-by-step galil instructions to configure the motor controller. The motors should move smoothly during setup and without excessive noise.
-6. During setup, make sure to set the polarity of the axes so that right, forward, and up are the positive directions for the X, Y, and Z axes respectively.
+copy and paste it to C:/Windows/SysWOW64 (assuming a 64 bit windows install)
 
 ###CONDA ENVIRONMENT SETUP
+
+Method 1: creating environment manually
+
+create a new conda envirionment with python 3.8
+
+In the anaconda command prompt make sure the environment is activated
+
+ex: conda activate RF_Balance_Profound
+
+run the following commands
+
+>pip install pythonnet\
+>pip install pyqtgraph\
+>pip install pyqt5\
+>pip install pvisa\
+>pip install pyvisa\
+>pip install pyyaml\
+>pip install scipy\
+>pip install serial
+
+Method 2: Create automatically from environment.yml
 
 launch cmd.exe from anaconda navigator.
 

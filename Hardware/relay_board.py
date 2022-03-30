@@ -91,7 +91,6 @@ class Relay_Board(AbstractRelay):
 
 if __name__ == '__main__':
     switch = Relay_Board()
-    switch.connect()
+    switch.connect_hardware()
     switch.relay_write(True)
-    switch.relay_write(False)
 
