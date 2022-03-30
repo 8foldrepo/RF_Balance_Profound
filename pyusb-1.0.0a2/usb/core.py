@@ -285,7 +285,7 @@ class Endpoint(object):
 
         For details, see the Device.write() method.
         """
-        return self.device.write_data()
+        return self.device.write(self.bEndpointAddress, data, self.interface, timeout)
 
     def read(self, size, timeout = None):
         r"""Read data from the endpoint.
@@ -483,7 +483,7 @@ class Device(object):
     >>> import usb.core
     >>> dev = usb.core.find(idVendor=myVendorId, idProduct=myProductId)
     >>> dev.set_configuration()
-    >>> dev.write_data()
+    >>> dev.write(1, 'test')
 
     This sample finds the device of interest (myVendorId and myProductId should be
     replaced by the corresponding values of your device), then configures the device

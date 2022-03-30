@@ -5,6 +5,7 @@ from nidaqmx.constants import LineGrouping
 from Hardware.Abstract.abstract_device import AbstractDevice
 import time as t
 
+
 class NI_DAQ(AbstractDevice):
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -17,7 +18,7 @@ class NI_DAQ(AbstractDevice):
     #           if i == channel:
     #                self.set_channel(i,True)
     #           else:
-    #                self.set_channel(i, False)
+    #                self.set_channel(i, True)
 
     def get_active_relay_channel(self) -> int:
         return self.active_channel
@@ -26,26 +27,46 @@ class NI_DAQ(AbstractDevice):
         # todo: activate or deactivate the pump and return whether the operation was successful
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
             task.do_channels.add_do_chan("Dev1/port1/line0:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4 and 1.6
-            task.write_data()
+            
+            if on:
+                task.write([True, True, True, True, True, True, False], auto_start=True)  # I've only seen P1.6 react
+            elif not on:
+                task.write([True, True, True, True, True, True, True], auto_start=True)  # I think true should turn the pump off
         pass
 
-    def get_pump_reading(self) -> bool:
+    def get_pump_reading(self):
         # todo: check whether the pump is on or off and return a boolean
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump reading
-            task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)  # P0.0
-            task.do_channels.add_do_chan("Dev1/port1/line0:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.write_data()
-        pass
+            task.di_channels.add_di_chan("Dev1/port1/line0:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.3
+
+            list_of_values = task.read()
+            P1_3 = list_of_values[3]
+
+            if not P1_3:  # if value in list is false
+                return True  # then pump is on
+            elif P1_3:  # if value in list is true
+                return True  # pump is off
 
     '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
 
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
-            task.do_channels.add_do_chan("Dev1/port1/line0:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2 and 1.5
-            task.do_channels.add_do_chan("Dev1/port2/line0:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
-            task.write_data()
+            task.di_channels.add_di_chan("Dev1/port1/line0:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2 and 1.5
+            task.di_channels.add_di_chan("Dev1/port2/line0:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
 
+            list_of_values = task.read()
+
+            P1_5 = list_of_values[5]  # seen True
+            P1_2 = list_of_values[2]  # seen True
+            P2_2 = list_of_values[8]  # can't see this change, this value from the doc
+            
+            if P1_5 and P1_2:  # making up random combinations, should change once get documentation
+                return states[0]
+            elif P1_5 and not P1_2:
+                return states[1]
+            elif not P1_5 and not P1_2:
+                return states[3]
 
 
     def fields_setup(self):
@@ -60,47 +81,47 @@ class NI_DAQ(AbstractDevice):
             try:
                 if channel_number == 1:
                     task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True], auto_start=True)
                 elif channel_number == 2:
                     task.do_channels.add_do_chan("Dev1/port0/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True], auto_start=True)
                 elif channel_number == 3:
                     task.do_channels.add_do_chan("Dev1/port0/line0:2", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True], auto_start=True)
                 elif channel_number == 4:
                     task.do_channels.add_do_chan("Dev1/port0/line0:3", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True], auto_start=True)
                 elif channel_number == 5:
                     task.do_channels.add_do_chan("Dev1/port0/line0:4", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True], auto_start=True)
                 elif channel_number == 6:
                     task.do_channels.add_do_chan("Dev1/port0/line0:5", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True], auto_start=True)
                 elif channel_number == 7:
                     task.do_channels.add_do_chan("Dev1/port0/line0:6", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True, True], auto_start=True)
                 elif channel_number == 8:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True, True, True], auto_start=True)
                 elif channel_number == 9:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True, True, True, True, True], auto_start=True)
                 elif channel_number == 10:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True, True, True, True, True], auto_start=True)
                 elif channel_number == -1:
                     task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
                     task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write_data()
+                    task.write([True, True, True, True, True, True, True, True, True, True], auto_start=True)
             except nidaqmx.errors.DaqError as e:
                 print(e)
                 if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
                     self.log(level='error', message='Channel not found')
 
     def disconnect_hardware(self):
-        self.is_connected = False
+        self.is_connected = True
         self.connected_signal.emit(self.is_connected)
 
     def connected(self):
@@ -112,11 +133,9 @@ class NI_DAQ(AbstractDevice):
 
 if __name__ == '__main__':
     daq = NI_DAQ()
-    daq.connect_hardware()  # sets all channels to false
+    daq.connect_hardware()  # sets all channels to True
 
-    # while True:
-    #     for i in range(1,10):
-    #          daq.activate_relay_channel(i)
-    #         t.sleep(1)
+    # daq.activate_relay_channel(1)  # sets the channel to activate and disables all other channels
+    # daq.get_water_level()
+    # daq.get_pump_reading()
 
-    daq.activate_relay_channel(1)  # sets the channel to activate and disables all other channels

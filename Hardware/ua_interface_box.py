@@ -1,3 +1,4 @@
+from PyQt5.QtCore import pyqtSignal, QObject
 import subprocess
 from Hardware.Abstract.abstract_device import AbstractDevice
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
@@ -7,15 +8,37 @@ import os
 from subprocess import Popen, PIPE
 import time as t
 
+from Utilities.useful_methods import log_msg
+from Hardware.Abstract.abstract_device import AbstractDevice
 
 class UAInterfaceBox(AbstractDevice):
     connected_signal = pyqtSignal(bool)
+    dummy_command_signal = pyqtSignal(str)
 
     cal_data_signal = pyqtSignal(list,int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
 
+        from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+        import logging
+        log_formatter = logging.Formatter(LOGGER_FORMAT)
+        import os
+        from definitions import ROOT_DIR
+        balance_logger = logging.getLogger('wtf_log')
+        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+        file_handler.setFormatter(log_formatter)
+        balance_logger.addHandler(file_handler)
+        balance_logger.setLevel(logging.INFO)
+        self.root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+        if config is not None:
+            self.config = config
+        else:
+            self.config = load_configuration()
+        self.device_key = device_key
+        self.is_connected = False
+        pass
+        
         self.ua_calibration_data = {
             'cal_data_array': {
                 'schema': '',
@@ -62,7 +85,6 @@ class UAInterfaceBox(AbstractDevice):
 
     def connect_hardware(self):
         self.is_connected = True
-        #TODO: ping device if successful emit self.isconnected = true emit and vice versa 
         self.connected_signal.emit(self.is_connected)
 
     def disconnect_hardware(self):
@@ -122,6 +144,23 @@ class UAInterfaceBox(AbstractDevice):
     
             self.cal_data_signal.emit(calibration_data_list, status)
             return calibration_data_list, status
+    
+    def log(self, message, level = 'info'):
+        log_msg(self,self.root_logger, message= message,level=level)
+
+    def read(self):
+        pass
+
+    def exec_command(self, command):
+        command = command.upper()
+        cmd_ray = command.split(' ')
+        
+        if cmd_ray[0] == 'UA':
+            cmd_ray.pop(0)
+            command = command[6:]
+
+        if command == 'read'.upper():
+            self.read()
 
     def write_data(self):
         process_call = "/interface_box_executable/WTFib_Calib 192.168.3.1 " + \
