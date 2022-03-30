@@ -24,8 +24,6 @@ Dummy_Motors:
   increment_ray:
     - 100
     - 100
-Forward_Power_Meter:
-  serial_number: '11506210019'
 Dummy_Oscilloscope:
   averages: 16
   capture_period_ns: 5
@@ -33,6 +31,7 @@ Dummy_Oscilloscope:
   cycles: 10
   delay_cycles: 0
   range_mv: 10
+UAInterface:
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50

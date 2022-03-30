@@ -218,7 +218,7 @@ class KeysightAWG(AbstractAWG):
 
     def command(self, command):
         try:
-            self.self.inst.write(command)
+            self.self.inst.write_data()
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"{self.device_key} Not connected")
