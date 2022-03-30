@@ -169,7 +169,7 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         @pyqtSlot()
         def set_origin_here_1d(self, axis):
-            self.set_origin_1d(axis=axis, coord_steps=0)
+            self.set_origin_1d(axis=axis, coord_mm=0)
 
         @pyqtSlot()
         def set_origin(self, origin_mm: list):
@@ -221,54 +221,12 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         @pyqtSlot()
         def go_home(self):
-            self.go_home_1d(self, axis='All')
+            self.command(f'0GH')
 
         @pyqtSlot(str)
         def go_home_1d(self, axis):
             axis_number = self.get_ax_number(axis)
             self.command(f'{axis_number}GH')
-
-        # Tells one axis what coordinate to travel to
-        # Axis must be 'x' , 'y' , 'z' , or 'r'
-        @pyqtSlot(list, list)
-        def go_to_position(self, axes: list, coords_mm: list):
-            if not len(axes) == len(coords_mm):
-                self.log(level='error', message="Axes length does not match coordinates length")
-                return
-
-            axis_numbers = list()
-            coords = list()
-
-            for i in range(len(axes)):
-                if axes[i].upper() in self.ax_letters:
-                    num = self.ax_letters.index(axes[i].upper()) + 1
-                else:
-                    num = 0
-
-                axis_numbers.append(num)
-                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num - 1]))
-
-            if not self.movement_mode == "Distance":
-                self.set_movement_mode("Distance")
-
-            for i in range(len(axis_numbers)):
-                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
-
-                self.command(f'{axis_numbers[i]}G')
-                if '*E' in self.get_response(retries=1):
-                    if not self.jogging and not self.scanning:
-                        self.log("Movement failed")
-                        self.check_user_fault(axis_number=axis_numbers[i])
-                        self.ready_signal.emit()
-                        return
-                else:
-                    self.moving_signal.emit(True)
-            # Wait for motion to be over
-            t.sleep(2)
-            # Check position
-            self.get_position()
-            # Send ready signal to enable UI
-            self.ready_signal.emit()
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -297,7 +255,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             #TODO: remove this when limits are added
             self.connected_signal.emit(self.connected)
 
-        
+
         def disconnect_hardware(self):
             try:
                 self.set_motors_on(False)
@@ -307,7 +265,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.connected = False
             self.connected_signal.emit(self.connected)
 
-        
+
         def connected(self):
             return self.Motors.connected
 
@@ -512,7 +470,7 @@ class VIX_Motor_Controller(AbstractMotorController):
 
             if get_position:
                 self.get_position()
-        
+
         def is_moving(self):
             for i in range(len(self.ax_letters)):
                 self.command(f"{i+1}R(MV)", log=True)
@@ -534,22 +492,9 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self._r_calibrate,
             )
 
-        
-        def disconnect_hardware(self):
-            try:
-                self.set_motors_on(False)
-                self.ser.close()
-            except:
-                pass
-            self.connected = False
-            self.connected_signal.emit(self.connected)
-
-        
-        def connected(self):
-            return self.Motors.connected
 
         '''Query and return the baud rate'''
-        
+
         def getBaud(self):
             if self.ser is None:
                 self.log(level='error', message=f'{self.device_key} not connected')
@@ -595,19 +540,6 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command("0W(PA,0)")
             self.get_position()
 
-        
-        def set_origin_here_1d(self, axis):
-            axis_number = self.get_ax_number(axis)
-
-            self.command(f'{axis_number}W(PA,0)')
-
-        
-        def go_home(self):
-            self.go_to_position(['X','R'], [0,0])
-
-
-
-        
         def get_position(self, mutex_locked = False):
             for i in range(len(self.ax_letters)):
                 position_string = self.ask(f"{i+1}R(PT)", mutex_locked = mutex_locked)
