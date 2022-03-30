@@ -163,7 +163,7 @@ class NiUsb6501:
 
         buf = ''.join(buf) + request
 
-        assert self.device.write(self.EP_OUT, buf, self.INTERFACE) == len(buf)
+        assert self.device.write_data() == len(buf)
 
         ret = self.device.read(self.EP_IN, len(buf), self.INTERFACE)
 
