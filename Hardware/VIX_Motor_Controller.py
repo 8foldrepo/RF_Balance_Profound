@@ -84,14 +84,8 @@ class VIX_Motor_Controller(AbstractMotorController):
         ready_signal = pyqtSignal()
         connected_signal = pyqtSignal(bool)
 
-        num_axes = 2
-        ax_letters = ['X', 'R']
-
-        coords_steps = list()
+        coords_mm = list()
         home_coords = list()
-
-        for i in range(num_axes):
-            coords_steps.append(0)
 
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
@@ -100,20 +94,28 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.lock = lock
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
-            self.coords_steps = list()
+            self.coords_mm = list()
+            self.targets_mm = list()
             for i in range(self.num_axes):
-                self.coords_steps.append(0)
+                self.coords_mm.append(0)
+                self.targets_mm.append(0)
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
             self.jogging = False
-            self.moving = None
+            self.moving = False
             self.fields_setup()
 
         def fields_setup(self):
+            self.ax_letters = self.config[self.device_key]['axes']
+            num_axes = len(self.ax_letters)
+            for i in range(num_axes):
+                self.coords_mm.append(0)
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.movement_mode = self.config[self.device_key]['movement_mode']
             self.ax_letters = self.config[self.device_key]['axes']
             self.calibrate_ray_steps_per = self.config[self.device_key]['calibrate_ray']
+            self.encoder_installed_ray = self.config[self.device_key]['encoder_installed_ray']
+            self.encoder_resolution_ray = self.config[self.device_key]['encoder_resolution_ray']
             self.speeds_ray = self.config[self.device_key]['speeds_ray']
             self.increment_ray = self.config[self.device_key]['increment_ray']
             self.timeout_s = self.config[self.device_key]['timeout_s']
@@ -124,17 +126,23 @@ class VIX_Motor_Controller(AbstractMotorController):
         # Tells one axis what coordinate to travel to
         # Axis must be 'x' , 'y' , 'z' , or 'r'
         @pyqtSlot(list, list)
-        def go_to_position(self, axes: list, coords_mm: list):
+        def go_to_position(self, axes: list, coords_mm: list, mutex_locked = False, update_target = True):
             if not len(axes) == len(coords_mm):
                 self.log(level='error', message="Axes length does not match coordinates length")
                 return
 
+            print(f"{axes} going to position: {coords_mm}")
             axis_numbers = list()
             coords = list()
 
+            #Get the axis numbers and convert coordinates to steps
             for i in range(len(axes)):
                 if axes[i].upper() in self.ax_letters:
-                    num = self.ax_letters.index(axes[i].upper()) + 1
+                    index = self.ax_letters.index(axes[i].upper())
+                    num =  index + 1
+
+                    if update_target:
+                        self.targets_mm[index] = coords_mm[i]
                 else:
                     num = 0
 
@@ -142,19 +150,19 @@ class VIX_Motor_Controller(AbstractMotorController):
                 coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num - 1]))
 
             if not self.movement_mode == "Distance":
-                self.set_movement_mode("Distance")
+                self.set_movement_mode("Distance", mutex_locked = mutex_locked)
 
             for i in range(len(axis_numbers)):
-                self.command(f'{axis_numbers[i]}D{int(coords[i])}')
-
-                self.command(f'{axis_numbers[i]}G')
-                if '*E' in self.get_response(retries=1):
+                self.command(f'{axis_numbers[i]}D{int(coords[i])}', log=True, mutex_locked = mutex_locked)
+                self.command(f'{axis_numbers[i]}G', log=True, mutex_locked = mutex_locked)
+                if '*E' in self.get_response(retries=1, mutex_locked = mutex_locked):
                     if not self.jogging and not self.scanning:
                         self.log("Movement failed")
-                        self.check_user_fault(axis_number=axis_numbers[i])
+                        self.check_user_fault(axis_number=axis_numbers[i], mutex_locked = mutex_locked)
                         self.ready_signal.emit()
                         return
                 else:
+                    self.moving = True
                     self.moving_signal.emit(True)
             # Wait for motion to be over
             # t.sleep(2)
@@ -210,9 +218,9 @@ class VIX_Motor_Controller(AbstractMotorController):
             axis_number = axis_index + 1
 
             if direction < 0:
-                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((self.coords_mm[axis_index] - abs(self.increment_ray[axis_index])))
             else:
-                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((self.coords_mm[axis_index] + abs(self.increment_ray[axis_index])))
 
             #if self.reverse_ray[axis_index]:
             #    coordinate_steps = -1 * coordinate_steps
@@ -273,7 +281,9 @@ class VIX_Motor_Controller(AbstractMotorController):
         def command(self, command, retry=True, time_limit = None, mutex_locked = False, log = False):
             # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
             if self.lock is not None and not mutex_locked:
-                self.lock.lock()
+                lock_aquired = self.lock.tryLock()
+                if not lock_aquired:
+                    return
 
             if log:
                 self.log(command)
@@ -406,22 +416,22 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.log("Done setting up")
             self.ready_signal.emit()
 
-        def set_movement_mode(self,movement_mode):
+        def set_movement_mode(self,movement_mode, mutex_locked = False):
             self.movement_mode = movement_mode
-            self.set_mode_1d(axis = 'All', movement_mode=self.movement_mode)
+            self.set_mode_1d(axis = 'All', movement_mode=self.movement_mode, mutex_locked = mutex_locked)
 
-        def set_mode_1d(self, axis, movement_mode = None):
+        def set_mode_1d(self, axis, movement_mode = None, mutex_locked = False):
             axis_number = self.get_ax_number(axis)
 
             if movement_mode is None:
                 movement_mode = self.movement_mode
 
             if movement_mode == 'Incremental':
-                self.command(f'{axis_number}MI',log=True)
+                self.command(f'{axis_number}MI',log=True, mutex_locked = mutex_locked)
             elif movement_mode == 'Continuous':
-                self.command(f'{axis_number}MC',log=True)
+                self.command(f'{axis_number}MC',log=True, mutex_locked = mutex_locked)
             elif movement_mode == 'Distance':
-                self.command(f'{axis_number}MA',log=True)
+                self.command(f'{axis_number}MA',log=True, mutex_locked = mutex_locked)
 
         '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
         def update_distance_and_velocity(self,axis):
@@ -518,9 +528,9 @@ class VIX_Motor_Controller(AbstractMotorController):
             axis_number = axis_index + 1
 
             if direction < 0:
-                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((self.coords_mm[axis_index] - abs(self.increment_ray[axis_index])))
             else:
-                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((self.coords_mm[axis_index] + abs(self.increment_ray[axis_index])))
 
             #if self.reverse_ray[axis_index]:
             #    coordinate_steps = -1 * coordinate_steps
@@ -540,29 +550,100 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command("0W(PA,0)")
             self.get_position()
 
-        def get_position(self, mutex_locked = False):
-            for i in range(len(self.ax_letters)):
-                position_string = self.ask(f"{i+1}R(PT)", mutex_locked = mutex_locked)
-                position_string = position_string.replace('*','')
-                try:
-                    position_steps = float(position_string)
-                except:
-                    return
-                position_deg_or_mm = position_steps/self.calibrate_ray_steps_per[i]
+        def get_position(self, mutex_locked = False, correct_position = True):
+            #assume moving until demonstrated otherwise
+            moving_ray = [True, True]
+            moving_margin = 2 #number of degrees that position can fluctuate
+            position_error_ray = [0,0]
 
-                if self.reverse_ray[i]:
-                    position_deg_or_mm = position_deg_or_mm * -1
+            for i in range(len(self.ax_letters)):
+                #If an encoder is installed
+
+                if self.encoder_installed_ray[i]:
+                    position_deg_or_mm = self.get_actual_position_mm(i, mutex_locked=mutex_locked)
+                else:
+                    position_deg_or_mm = self.get_expected_position_mm(i, mutex_locked=mutex_locked)
+
+                if position_deg_or_mm is None:
+                    return
+
 
                 if self.ax_letters[i].upper() == 'X':
-                    self.x_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_steps[0] = position_deg_or_mm
+                    self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
                 elif self.ax_letters[i].upper() == 'R':
-                    self.r_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_steps[1] = position_deg_or_mm
-            pass
+                    self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
-        def check_user_fault(self, axis_number):
-            response = self.ask(f'{axis_number}R(UF)', retries = 5)
+                #Check if each axis has been stable since the last update
+                if abs(position_deg_or_mm-self.coords_mm[i]) < moving_margin:
+                    moving_ray[i] = False
+
+                self.coords_mm[i] = position_deg_or_mm
+
+                if self.encoder_installed_ray[i] and correct_position:
+                    expected_position_deg_or_mm = self.get_expected_position_mm(i, mutex_locked=mutex_locked)
+                    if expected_position_deg_or_mm is not None:
+                        position_error_ray[i] = expected_position_deg_or_mm - position_deg_or_mm
+                        self.log(f'{self.ax_letters[i]} positioning error: {position_error_ray[i]}')
+
+            if True in moving_ray:
+                self.moving = True
+            else:
+                self.moving = False
+
+            print(self.moving)
+
+            # if encoder is installed and corrective positioning is enabled, also get the expected position,
+            # compare, and correct if the difference is greater than 1 degree
+
+            if correct_position and not self.moving:
+                self.correct_position(position_error_ray, mutex_locked = mutex_locked)
+
+
+        def get_actual_position_mm(self, axis_index, mutex_locked = False):
+            # Query actual encoder position
+            actual_position_string = self.ask(f"{axis_index + 1}R(PA)", mutex_locked=mutex_locked)
+            actual_position_string = actual_position_string.replace('*', '')
+            try:
+                position_encoder_steps = float(actual_position_string)
+            except:
+                return
+            actual_position_deg_or_mm = position_encoder_steps / self.encoder_resolution_ray[axis_index] * -360
+
+            if self.reverse_ray[axis_index]:
+                actual_position_deg_or_mm = actual_position_deg_or_mm * -1
+
+            return  actual_position_deg_or_mm
+
+        def get_expected_position_mm(self, axis_index, mutex_locked = False):
+            # Query expected motor position
+            expected_position_string = self.ask(f"{axis_index + 1}R(PT)", mutex_locked=mutex_locked)
+            expected_position_string = expected_position_string.replace('*', '')
+            try:
+                position_motor_steps = float(expected_position_string)
+            except:
+                return
+            expected_position_deg_or_mm = position_motor_steps / self.calibrate_ray_steps_per[axis_index]
+
+            if self.reverse_ray[axis_index]:
+                expected_position_deg_or_mm = actual_position_deg_or_mm * -1
+
+            return expected_position_deg_or_mm
+
+        def correct_position(self, position_error_ray, mutex_locked = False):
+            correct_position_margin = 5  # minimum number of degrees that the motor will try to correct
+
+            if not len(position_error_ray) == len(self.ax_letters):
+                self.log(level='error',message='error in correct position, length mismatch')
+                return
+
+            for i in range(len(self.ax_letters)):
+                #if the position error is above the threshold
+                if abs(position_error_ray[i]) > correct_position_margin:
+                    #command motion to make up the difference
+                    self.go_to_position([self.ax_letters[i]], [-1 * position_error_ray[i]], mutex_locked = mutex_locked)
+
+        def check_user_fault(self, axis_number, mutex_locked = False):
+            response = self.ask(f'{axis_number}R(UF)', retries = 5, mutex_locked=mutex_locked)
             response = response.replace('_', '')
             if not '1' in response:
                 return
