@@ -84,14 +84,11 @@ class VIX_Motor_Controller(AbstractMotorController):
         ready_signal = pyqtSignal()
         connected_signal = pyqtSignal(bool)
 
-        num_axes = 2
-        ax_letters = ['X', 'R']
-
-        coords_steps = list()
+        coords_mm = list()
         home_coords = list()
 
         for i in range(num_axes):
-            coords_steps.append(0)
+            coords_mm.append(0)
 
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
@@ -100,9 +97,9 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.lock = lock
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
-            self.coords_steps = list()
+            self.coords_mm = list()
             for i in range(self.num_axes):
-                self.coords_steps.append(0)
+                self.coords_mm.append(0)
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
             self.jogging = False
@@ -110,6 +107,10 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.fields_setup()
 
         def fields_setup(self):
+            self.ax_letters = self.config[self.device_key]['axes']
+            num_axes = len(self.ax_letters)
+            for i in range(num_axes):
+                self.coords_mm.append(0)
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.movement_mode = self.config[self.device_key]['movement_mode']
             self.ax_letters = self.config[self.device_key]['axes']
@@ -139,7 +140,19 @@ class VIX_Motor_Controller(AbstractMotorController):
                     num = 0
 
                 axis_numbers.append(num)
-                coords.append(float(coords_mm[i]) * float(self.calibrate_ray_steps_per[num - 1]))
+
+                target_coordinate_mm = float(coords_mm[i])
+
+
+                if axes[i] == 'X':
+                    # Remove the coordinate of the home position (the motor doesn't recognize it)
+                    target_coordinate_mm = target_coordinate_mm - self.config['WTF_PositionParameters']['XHomeCoord']
+                if axes[i] == 'R':
+                    # Remove the coordinate of the home position (the motor doesn't recognize it)
+                    target_coordinate_mm = target_coordinate_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']
+
+                target_coordinate_steps = target_coordinate_mm * float(self.calibrate_ray_steps_per[num - 1])
+                coords.append(target_coordinate_steps)
 
             if not self.movement_mode == "Distance":
                 self.set_movement_mode("Distance")
@@ -203,22 +216,6 @@ class VIX_Motor_Controller(AbstractMotorController):
         def set_speeds(self, speed):
             self.set_speeds_1d(axis='All', speed = speed)
 
-        @pyqtSlot(str, int)
-        def begin_motion(self, axis=None, direction=None, feedback=True):
-            self.log(f"Beginning motion, jogging = {self.jogging}")
-            axis_index = self.ax_letters.index(axis)
-            axis_number = axis_index + 1
-
-            if direction < 0:
-                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
-            else:
-                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
-
-            #if self.reverse_ray[axis_index]:
-            #    coordinate_steps = -1 * coordinate_steps
-
-            self.go_to_position([axis], [coordinate_steps])
-
         @pyqtSlot()
         def go_home(self):
             self.command(f'0GH')
@@ -227,6 +224,29 @@ class VIX_Motor_Controller(AbstractMotorController):
         def go_home_1d(self, axis):
             axis_number = self.get_ax_number(axis)
             self.command(f'{axis_number}GH')
+
+        def setup_home(self):
+            #todo: test these values and edit accordingly
+            self.setup_home_1d('X', True, reference_edge='-', normally_closed=False, speed=50, mode=1)
+            self.setup_home_1d('R', False, reference_edge='-', normally_closed=False, speed=5, mode=1)
+
+        def setup_home_1d(self, axis, enabled = True, reference_edge = '+', normally_closed = False, speed = -5, mode = 1):
+            axis_number = self.get_ax_number(axis)
+
+            if enabled:
+                onString = '1'
+            else:
+                onString = '0'
+
+            if normally_closed:
+                closedString = '1'
+            else:
+                closedString = '0'
+
+            command_string = f"{axis_number}HOME{onString}({reference_edge},{closedString},{speed},100,{mode})"
+            print(command_string)
+
+            self.command(command_string)
 
         # Hardware interfacing functions
         def toggle_connection(self):
@@ -399,6 +419,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.set_position_maintanance(on=False)
             self.set_movement_mode(self.movement_mode)
             self.set_motors_on(True)
+            self.setup_home()
 
             for i in range(len(self.ax_letters)):
                 self.update_distance_and_velocity(axis=self.ax_letters[i])
@@ -517,10 +538,12 @@ class VIX_Motor_Controller(AbstractMotorController):
             axis_index = self.ax_letters.index(axis)
             axis_number = axis_index + 1
 
+            current_coordinate_mm = self.coords_mm[axis_index]
+
             if direction < 0:
-                coordinate_steps = int((self.coords_steps[axis_index] - abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
             else:
-                coordinate_steps = int((self.coords_steps[axis_index] + abs(self.increment_ray[axis_index])))
+                coordinate_steps = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
             #if self.reverse_ray[axis_index]:
             #    coordinate_steps = -1 * coordinate_steps
@@ -554,11 +577,15 @@ class VIX_Motor_Controller(AbstractMotorController):
                     position_deg_or_mm = position_deg_or_mm * -1
 
                 if self.ax_letters[i].upper() == 'X':
+                    #Add on the coordinate of the home position (from the motor's perspective it is zero)
+                    position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
                     self.x_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_steps[0] = position_deg_or_mm
+                    self.coords_mm[0] = position_deg_or_mm
                 elif self.ax_letters[i].upper() == 'R':
+                    #Add on the coordinate of the home position (from the motor's perspective it is zero)
+                    position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
                     self.r_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_steps[1] = position_deg_or_mm
+                    self.coords_mm[1] = position_deg_or_mm
             pass
 
         def check_user_fault(self, axis_number):
@@ -650,8 +677,8 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         def wrap_up(self):
             self.disconnect_hardware()
-            self.dummy_command_signal.emit("CLOSE")
 
+        #return the motor controller driver number of the axis with the specified letter
         def get_ax_number(self,axis):
             if axis.upper() in self.ax_letters:
                 axis_number = self.ax_letters.index(axis.upper()) + 1
@@ -659,7 +686,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 axis_number = 0
             return axis_number
 
-        def set_scale(self):
+        def setup_motor(self):
             self.command("0Z")
             self.set_position_maintanance(False)
             motor_type = 716 #Read from the profound driver
