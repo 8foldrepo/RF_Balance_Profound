@@ -87,9 +87,6 @@ class VIX_Motor_Controller(AbstractMotorController):
         coords_mm = list()
         home_coords = list()
 
-        for i in range(num_axes):
-            coords_mm.append(0)
-
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
@@ -146,10 +143,10 @@ class VIX_Motor_Controller(AbstractMotorController):
 
                 if axes[i] == 'X':
                     # Remove the coordinate of the home position (the motor doesn't recognize it)
-                    target_coordinate_mm = target_coordinate_mm - self.config['WTF_PositionParameters']['XHomeCoord']
+                    target_coordinate_mm = target_coordinate_mm + self.config['WTF_PositionParameters']['XHomeCoord']
                 if axes[i] == 'R':
                     # Remove the coordinate of the home position (the motor doesn't recognize it)
-                    target_coordinate_mm = target_coordinate_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']
+                    target_coordinate_mm = target_coordinate_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
 
                 target_coordinate_steps = target_coordinate_mm * float(self.calibrate_ray_steps_per[num - 1])
                 coords.append(target_coordinate_steps)
@@ -178,7 +175,8 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         @pyqtSlot()
         def set_origin_here(self):
-            self.set_origin_here_1d(axis='All')
+            for axis in self.ax_letters:
+                self.set_origin_here_1d(axis=axis)
 
         @pyqtSlot()
         def set_origin_here_1d(self, axis):
@@ -194,6 +192,26 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.set_origin_1d(axis=self.ax_letters[i], coord_mm=origin_mm[i], get_position=False)
 
             self.get_position()
+
+        def set_origin_1d(self,axis, coord_mm, get_position = True):
+            axis_number = self.get_ax_number(axis)
+            axis_index = axis_number-1
+
+            if axis == 'R':
+                 coord_mm = coord_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            elif axis == 'X':
+                 coord_mm = coord_mm + self.config['WTF_PositionParameters']['XHomeCoord']
+
+            coord_steps = coord_mm * self.calibrate_ray_steps_per[axis_index]
+
+            home_coordinate = -1 * int(coord_steps)
+
+            #add on the offset of the origin from the motor's zero
+
+            self.command(f'{axis_number}W(PT,{home_coordinate})')
+
+            if get_position:
+                self.get_position()
 
         '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
         @pyqtSlot(dict)
@@ -483,14 +501,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                     stopped = self.command(f"{axis_number}S", retry = False)
             return stopped
 
-        def set_origin_1d(self,axis, coord_mm, get_position = True):
-            axis_number = self.get_axis_number(axis)
-            axis_index = axis_number-1
-            coord_steps = coord_mm * self.calibrate_ray_steps_per[axis_index]
-            self.command(f'{axis_number}W(PA,{-1 * int(coord_steps)})')
 
-            if get_position:
-                self.get_position()
 
         def is_moving(self):
             for i in range(len(self.ax_letters)):
@@ -557,11 +568,6 @@ class VIX_Motor_Controller(AbstractMotorController):
             if self.moving == False:
                 self.jogging = False
                 self.scanning = False
-
-        @pyqtSlot()
-        def set_origin_here(self):
-            self.command("0W(PA,0)")
-            self.get_position()
 
         def get_position(self, mutex_locked = False):
             for i in range(len(self.ax_letters)):
