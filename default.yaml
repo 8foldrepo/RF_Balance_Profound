@@ -25,6 +25,8 @@ Dummy_Motors:
     - 100
     - 100
 Forward_Power_Meter:
+  serial_number: '11408040323'
+Reflected_Power_Meter:
   serial_number: '11506210019'
 Dummy_Oscilloscope:
   averages: 16
