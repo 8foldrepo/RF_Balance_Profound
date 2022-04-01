@@ -34,7 +34,7 @@ class MT_balance(AbstractBalance):
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
-        self.ser.write_data()
+        self.ser.write(b"\nZ\n")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
@@ -89,7 +89,7 @@ class MT_balance(AbstractBalance):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write_data()
+        self.ser.write(b"SI\n")
         self.log("Getting weight, please wait")
 
         starttime = t.time()
@@ -122,7 +122,7 @@ class MT_balance(AbstractBalance):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write_data()
+        self.ser.write(b"\n@\n")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
@@ -139,7 +139,7 @@ class MT_balance(AbstractBalance):
             return
         #Command: I2 Inquiry of balance data.
         #Response: I2 A Balance data as "text_item".
-        self.ser.write_data()
+        self.ser.write(b"\nS\n")
         self.log("Getting stable weight, please wait")
 
         starttime = t.time()

@@ -27,14 +27,6 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Hardware.Abstract.abstract_sensor import AbstractSensor
-from Hardware.MT_balance import MT_balance
-from Hardware.ua_interface_box import UAInterfaceBox
-from Hardware.relay_board import Relay_Board
-
-from Hardware.water_level_sensor import WaterLevelSensor
-
 pump_status = ""
 tank_status = ""
 
@@ -93,6 +85,9 @@ class Manager(QThread):
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        self.get_position_cooldown_s = .2 #decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        self.last_get_position_time = 0
+
         #Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
@@ -109,9 +104,6 @@ class Manager(QThread):
         # Event loop control vars
         self.mutex = QMutex()
         self.condition = QWaitCondition()
-
-        self.get_position_cooldown = .1
-        self.last_get_position_time = 0
 
         # Test Data
         self.test_data = None
@@ -146,11 +138,12 @@ class Manager(QThread):
         self.SIMULATE_HARDWARE = self.config['Debugging']['simulate_hw']
         self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
-        self.Water_Level_Sensor = WaterLevelSensor(config=self.config)
+
+        from Hardware.Abstract.abstract_sensor import AbstractSensor
         self.thermocouple = AbstractSensor(config=self.config)
-        self.UAInterface = UAInterfaceBox(config=self.config)
 
         if self.SIMULATE_MOTORS:
+            from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
             self.Motors = AbstractMotorController(config=self.config)
         else:
             from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
@@ -168,31 +161,34 @@ class Manager(QThread):
 
         if self.SIMULATE_HARDWARE:
             from Hardware.Abstract.abstract_awg import AbstractAWG
-            from Hardware.Abstract.abstract_relay import AbstractRelay
             from Hardware.Abstract.abstract_balance import AbstractBalance
-            self.Pump = AbstractRelay(config=self.config, device_key='Pump')
+            from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+
             self.AWG = AbstractAWG(config=self.config)
             self.Balance = AbstractBalance(config=self.config)
         else:
+            from Hardware.MT_balance import MT_balance
+            from Hardware.ua_interface_box import UAInterfaceBox
+            from Hardware.ni_daq_board import NI_DAQ
+            from Hardware.mini_circuits_power_meter import PowerMeter
+
             if self.rm is None:
                 self.rm = pyvisa.ResourceManager()
             from Hardware.keysight_awg import KeysightAWG
-            self.Pump = Relay_Board(config=self.config, device_key='Pump')
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Balance = MT_balance(config=self.config)
+            self.UAInterface = UAInterfaceBox(config=self.config)
+            self.IO_Board = NI_DAQ(config=self.config)
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key= 'Forward_Power_Meter')
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
 
-        self.reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
-        self.forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
-
-        self.devices.append(self.forward_meter)
-        self.devices.append(self.reflected_meter)
+        self.devices.append(self.IO_Board)
+        self.devices.append(self.UAInterface)
         self.devices.append(self.Motors)
         self.devices.append(self.thermocouple)
         self.devices.append(self.Oscilloscope)
-        self.devices.append(self.Pump)
         self.devices.append(self.Balance)
         self.devices.append(self.AWG)
-        self.devices.append(self.Water_Level_Sensor)
 
     def connect_hardware(self):
         for device in self.devices:
@@ -269,7 +265,7 @@ class Manager(QThread):
 
     def update_motor_position(self):
         if self.Motors.connected and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
-            if t.time()-self.last_get_position_time > self.get_position_cooldown:
+            if t.time()-self.last_get_position_time > self.get_position_cooldown_s:
                 lock_aquired = self.motor_control_lock.tryLock()
 
                 if lock_aquired:

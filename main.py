@@ -1,9 +1,6 @@
-import sys
-
 from PyQt5.QtCore import QThread, qRegisterResourceData
 from PyQt5.QtWidgets import *
 from MainWindow import MainWindow
-from manager import Manager
 
 # from resources import resources  # load our qrc bundled resources
 from resources.resources import qt_resource_data, qt_resource_struct, qt_resource_name
@@ -13,8 +10,6 @@ import sys
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-
-from Utilities.useful_methods import log_msg
 import os
 from definitions import ROOT_DIR
 balance_logger = logging.getLogger('wtf_log')

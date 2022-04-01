@@ -1,5 +1,5 @@
 import copy
-
+from configparser import ConfigParser
 
 import os
 import smtplib
@@ -10,7 +10,17 @@ import csv
 import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
-from Utilities.load_config import ROOT_LOGGER_NAME
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+import logging
+log_formatter = logging.Formatter(LOGGER_FORMAT)
+import os
+from definitions import ROOT_DIR
+balance_logger = logging.getLogger('wtf_log')
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+file_handler.setFormatter(log_formatter)
+balance_logger.addHandler(file_handler)
+balance_logger.setLevel(logging.INFO)
+root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 from ui_elements.ui_pretest_dialog import PretestDialog
 from ui_elements.ui_user_prompt import WTFUserPrompt
@@ -271,35 +281,31 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         #enable/disable buttons signals
         self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
 
-        try:
-            # Hardware info signals
-            self.manager.forward_meter.connected_signal.connect(self.power_meter_indicator.setChecked)
-            self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
-            self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
-            self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
-            self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
-            self.manager.UAInterface.connected_signal.connect(self.wtfib_indicator.setChecked)
-            self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
-            self.manager.plot_signal.connect(self.plot)
-            self.manager.profile_plot_signal.connect(self.update_profile_plot)
-            self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+        # Hardware info signals
+        self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
+        self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
+        self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
+        self.manager.UAInterface.connected_signal.connect(self.wtfib_indicator.setChecked)
+        self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
+        self.manager.plot_signal.connect(self.plot)
+        self.manager.profile_plot_signal.connect(self.update_profile_plot)
+        self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
 
-            self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.fill_items)
+        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
 
-            # Manager communication signals
-            self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
-            self.manager.user_prompt_signal.connect(self.show_user_prompt)
-            self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
-            self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
-            self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
-            self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
+        # Manager communication signals
+        self.manager.pretest_dialog_signal.connect(self.show_pretest_dialog)
+        self.manager.user_prompt_signal.connect(self.show_user_prompt)
+        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
+        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
 
-            self.manager.Pump.reading_signal.connect(self.update_pump_indicator)
-            self.manager.Water_Level_Sensor.reading_signal.connect(self.update_water_level_indicator)
-            self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
-            self.manager.AWG.output_signal.connect(self.update_ua_indicator)
-        except Exception as e:
-            print(e)
+        self.manager.IO_Board.pump_reading_signal.connect(self.update_pump_indicator)
+        self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
+        self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
+        self.manager.AWG.output_signal.connect(self.update_ua_indicator)
 
 
     @pyqtSlot(bool)
@@ -501,7 +507,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         # Updating the Feedback window
         Progress = "Notes Printed"
-        self.logger_signal.emit(str(Progress))
+        self.log(str(Progress))
 
     def closeEvent(self, event):
         bQuit = False
@@ -624,6 +630,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
 
+    def log(self, message, level = 'info'):
+        log_msg(self,self.root_logger, message= message,level=level)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

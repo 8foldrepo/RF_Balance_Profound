@@ -90,7 +90,7 @@ Paths:
   UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
     numbers.txt
   UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
-Pump:
+Power_Relay:
   on_by_default: false
   port: COM5
   timeout_s: 1

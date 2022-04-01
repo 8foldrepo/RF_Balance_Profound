@@ -218,10 +218,12 @@ class KeysightAWG(AbstractAWG):
 
     def command(self, command):
         try:
-            self.self.inst.write_data()
+            self.inst.write(command)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"{self.device_key} Not connected")
+            else:
+                self.log(level='error', message = f'error in command: {e}')
 
     def read(self):
         try:
@@ -229,6 +231,8 @@ class KeysightAWG(AbstractAWG):
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'read\'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
+            else:
+                self.log(level='error', message=f'error in read: {e}')
 
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
     def __str__(self):
@@ -238,8 +242,3 @@ class KeysightAWG(AbstractAWG):
 if __name__ == "__main__":
     awg = KeysightAWG()
     awg.connect_hardware()
-    awg.Reset()
-    print(awg)
-    awg.setup(frequency_Hz=4290000,amplitude_V=.2, burst=False,burst_cycles=50,ext_trig=False,
-              burst_period_s=.10,offset_V=0,output=True,output_Impedance=50)
-    print(awg)

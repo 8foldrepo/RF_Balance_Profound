@@ -15,7 +15,6 @@ from definitions import POWER_METER_DLL_PATH
 import sys
 from definitions import POWER_METER_DLL_PATH
 sys.path.append(POWER_METER_DLL_PATH)
-print("power")
 clr.AddReference('mcl_pm_NET45')    # Reference the DLL
 from mcl_pm_NET45 import usb_pm
 
