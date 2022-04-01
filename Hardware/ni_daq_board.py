@@ -5,7 +5,6 @@ from Hardware.relay_board import Relay_Board
 from Hardware.Abstract.abstract_device import AbstractDevice
 import time as t
 
-
 class NI_DAQ(AbstractDevice):
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)

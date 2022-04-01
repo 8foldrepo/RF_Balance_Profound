@@ -3,6 +3,7 @@ import time as t
 import cProfile
 import pstats
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+import numpy
 
 class KeysightOscilloscope(AbstractOscilloscope):
     def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
@@ -21,17 +22,18 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if self.config[self.device_key]["identifier"] in resource:
                 try:
                     self.inst = self.rm.open_resource(resource)
-                    self.command("*OPC?")
-                    self.read()
+                    self.ask("*OPC?")
                     self.AutosetTimebase()
                     self.connected = True
                     self.connected_signal.emit(True)
+                    #self.inst.values_format.use_binary('d', False, numpy.array)
                 except pyvisa.errors.VisaIOError as e:
                     self.connected = False
                     self.connected_signal.emit(False)
                     self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
                     #self.autoScale()
                     #self.SetTrigger(True)
+                #inst.values_format.use_binary('d', False, numpy.array)
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
 
@@ -124,19 +126,19 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command("WAV:FORM ASCII")
-            self.command("WAV:PRE?")
-            preamble = self.read().split(",")
+            preamble = self.ask("WAV:PRE?").split(',')
 
             #check that data is in ascii format
             if not preamble[0] == '+4':
                 self.log(level='error', message='Oscilloscope data in unrecognized format, try restarting it.')
+                return
 
             #Interpret preamble
-            if preamble[1] == "+0":
+            if preamble[1] == '+0':
                 mode = "normal"
-            elif preamble[1] == "+1":
+            elif preamble[1] == '+1':
                 mode = "peak"
-            elif preamble[1] == "+2":
+            elif preamble[1] == '+2':
                 mode = "average"
             else:
                 mode = "HRESolution"
@@ -150,8 +152,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             y_reference = float(preamble[9])
 
             #Capture data
-            self.command("WAV:DATA?")
-            voltages_v = self.read().split(",")
+            voltages_v = self.ask("WAV:DATA?").split(',')
             #temp = voltages_v[0].split()[-1]
             #voltages_v[0] = temp
             # removes the metadata at the beginning
@@ -217,9 +218,17 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if str(e) == "\'NoneType\' object has no attribute \'read\'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
 
+    def ask(self, command):
+        try:
+            return self.inst.query(command)
+        except AttributeError as e:
+            if str(e) == "\'NoneType\' object has no attribute \'read\'":
+                self.log(f"Could not read reply, {self.device_key} Not connected")
+
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
+    osc.capture(1)
     # osc.setVertScale_V(0.05, 1)
     # osc.getVertScale_V(1)
     # osc.setHorzScale_Sec(.000000013)
@@ -229,5 +238,5 @@ if __name__ == "__main__":
     # osc.getFreq_Hz()
     # osc.getAmp_V()
     #osc.autoScale()
-    osc.SetTrigger(True)
+    osc.disconnect_hardware()
     #osc.setVertRange_V(1,

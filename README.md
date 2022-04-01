@@ -26,6 +26,9 @@ https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html#346210
 VNC Server (remote support)
 https://www.realvnc.com/en/connect/download/vnc/
 
+NI-DAQmx base (NI digital io board programming dependancy)
+https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx-base.html#326059
+
 3. Install the power meter dll file
 
 the dll file is located in /Hardware/power_meter_dlls
@@ -51,7 +54,8 @@ run the following commands
 >pip install pyvisa\
 >pip install pyyaml\
 >pip install scipy\
->pip install serial
+>pip install pyserial\
+>python -m pip install nidaqmx
 
 Method 2: Create automatically from environment.yml
 
