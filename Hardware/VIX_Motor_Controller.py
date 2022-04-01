@@ -140,16 +140,15 @@ class VIX_Motor_Controller(AbstractMotorController):
 
                 target_coordinate_mm = float(coords_mm[i])
 
-
                 if axes[i] == 'X':
                     # Remove the coordinate of the home position (the motor doesn't recognize it)
-                    target_coordinate_mm = target_coordinate_mm + self.config['WTF_PositionParameters']['XHomeCoord']
+                    origin_offset = self.config['WTF_PositionParameters']['XHomeCoord']
                 if axes[i] == 'R':
                     # Remove the coordinate of the home position (the motor doesn't recognize it)
-                    target_coordinate_mm = target_coordinate_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
+                    origin_offset = self.config['WTF_PositionParameters']['ThetaHomeCoord']
 
-                target_coordinate_steps = target_coordinate_mm * float(self.calibrate_ray_steps_per[num - 1])
-                coords.append(target_coordinate_steps)
+                motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1])
+                coords.append(motor_steps)
 
             if not self.movement_mode == "Distance":
                 self.set_movement_mode("Distance")
@@ -540,26 +539,18 @@ class VIX_Motor_Controller(AbstractMotorController):
             else:
                 return -1
 
-
-
-
         @pyqtSlot(str, int)
-        def begin_motion(self, axis=None, direction=None, feedback=True):
-            self.log(f"Beginning motion, jogging = {self.jogging}")
+        def begin_motion(self, axis=None, direction=None):
             axis_index = self.ax_letters.index(axis)
-            axis_number = axis_index + 1
 
             current_coordinate_mm = self.coords_mm[axis_index]
 
             if direction < 0:
-                coordinate_steps = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
+                go_to_coord_mm = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
             else:
-                coordinate_steps = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
+                go_to_coord_mm = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
-            #if self.reverse_ray[axis_index]:
-            #    coordinate_steps = -1 * coordinate_steps
-
-            self.go_to_position([axis], [coordinate_steps])
+            self.go_to_position([axis], [go_to_coord_mm])
 
         @pyqtSlot()
         def stop_motion(self):

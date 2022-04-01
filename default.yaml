@@ -12,10 +12,15 @@ Dummy_Motors:
   calibrate_ray:
   - 1
   - 1
+  increment_ray:
+  - 100
+  - 100
   jog_speed: 1
+  movement_mode: Distance
   reverse_ray:
   - false
   - false
+  scan_speed: 1
   speeds_ray:
   - 100
   - 100
@@ -65,10 +70,10 @@ Galil_Motors:
   scan_speed: 1
 Keysight_AWG:
   amplitude_V: 0.2
-  burst: false
-  burst_cycles: 50
+  burst: true
+  burst_cycles: 500
   burst_period_s: 0.1
-  ext_trig: false
+  ext_trig: true
   frequency_Hz: 4290000
   identifier: '0x2507'
   offset_V: 0
@@ -92,13 +97,14 @@ Paths:
   UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
 Power_Relay:
   on_by_default: false
-  port: COM5
+  port: COM3
   timeout_s: 1
 Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: No dialog (abort)
   Pass fail action: No dialog (abort)
   Retries: 0
+UAInterface: null
 User Accounts:
   Administrator: PMI_Admin
   Engineer: Engineer
@@ -108,11 +114,17 @@ VIX_Motors:
   - X
   - R
   calibrate_ray:
-  - 1
-  - 1
+  - 143.5
+  - 143.5
+  encoder_installed_ray:
+  - true
+  - false
+  encoder_resolution_ray:
+  - 4000
+  - 1000
   increment_ray:
-  - 100
-  - 100
+  - 360
+  - 360
   movement_mode: Distance
   on_by_default: true
   port: COM7
@@ -123,10 +135,10 @@ VIX_Motors:
   - false
   - true
   speeds_ray:
-  - 1
-  - 1
-  timeout_s: .1
-  time_limit_s: 10
+  - 5.0
+  - 5.0
+  time_limit_s: 2
+  timeout_s: 0.1
 WTF_DIO:
   DAQ Device name: WTF3
   Fill/Drain mode: Automatic

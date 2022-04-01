@@ -1,58 +1,10 @@
-2022-04-01 16:43:37,258 [ERROR] [NI_DAQ] [] : Error in connect hardware: Could not find module 'nicaiu' (or one of its dependencies). Try using the full path with constructor syntax.
-2022-04-01 16:43:37,474 [ERROR] [MT_balance] [] : MT_Balance not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded
-2022-04-01 16:43:39,536 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
-2022-04-01 16:43:46,146 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:46,174 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:43:46,206 [INFO] [VIX_Motor_Controller] [ui_thread] : Drive de-energised
-2022-04-01 16:43:48,205 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-01 16:43:48,206 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-01 16:43:48,332 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-01 16:43:48,493 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-01 16:43:49,188 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:50,807 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:51,784 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:53,394 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:56,556 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:43:58,059 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:00,792 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:02,387 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:03,965 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:05,097 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:08,614 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:12,243 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:14,035 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:15,861 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:20,189 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-01 16:44:20,190 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-01 16:44:20,333 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-01 16:44:21,649 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:22,867 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:27,910 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:30,313 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:33,533 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:35,155 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:39,190 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:44:41,084 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:12,237 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:12,269 [INFO] [VIX_Motor_Controller] [ui_thread] : Value is out of range
-2022-04-01 16:45:12,270 [INFO] [VIX_Motor_Controller] [ui_thread] : Drive not ready
-2022-04-01 16:45:26,548 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:29,781 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:34,362 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:36,413 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:36,445 [INFO] [VIX_Motor_Controller] [ui_thread] : Value is out of range
-2022-04-01 16:45:36,446 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
-2022-04-01 16:45:37,437 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:37,469 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
-2022-04-01 16:45:38,929 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:39,767 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:39,945 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:40,141 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:40,174 [INFO] [VIX_Motor_Controller] [ui_thread] : Value is out of range
-2022-04-01 16:45:40,676 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:42,077 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:42,110 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
-nge
-2022-04-01 16:45:40,676 [INFO] [VIX_Motor_Controller] [ui_thread] : Beginning motion, jogging = False
-2022-04-01 16:45:42,077 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 16:45:42,110 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
+2022-04-01 17:18:05,540 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
+2022-04-01 17:18:12,868 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-01 17:18:12,870 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-01 17:18:12,996 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-01 17:18:38,580 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
+2022-04-01 17:18:38,614 [INFO] [VIX_Motor_Controller] [ui_thread] : Value is out of range
+2022-04-01 17:18:38,616 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
+2022-04-01 17:19:03,239 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+2022-04-01 17:19:03,356 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+9:03,356 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
