@@ -80,6 +80,10 @@ class AbstractMotorController(AbstractDevice):
         z_pos_signal = pyqtSignal(float)
 
         moving_signal = pyqtSignal(bool)
+        ready_signal = pyqtSignal()
+        connected_signal = pyqtSignal(bool)
+
+        moving_signal = pyqtSignal(bool)
 
         connected_signal = pyqtSignal(bool)
         ready_signal = pyqtSignal(bool)
@@ -89,11 +93,11 @@ class AbstractMotorController(AbstractDevice):
         increment_ray: object = [1,1]
         speeds_ray = [1,1]
 
-        coords_steps = list()
+        coords_mm = list()
         home_coords = list()
 
         for i in range(num_axes):
-            coords_steps.append(0)
+            coords_mm.append(0)
 
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
@@ -101,9 +105,9 @@ class AbstractMotorController(AbstractDevice):
         def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
-            self.coords_steps = list()
+            self.coords_mm = list()
             for i in range(self.num_axes):
-                self.coords_steps.append(0)
+                self.coords_mm.append(0)
 
             #Tracks whther or not the gantry is going to a position
             self.scanning = False
@@ -217,7 +221,7 @@ class AbstractMotorController(AbstractDevice):
             return self.Motors.connected
 
         @abstractmethod
-        def jog(self, axis=None, direction=None, feedback=True):
+        def begin_motion(self, axis=None, direction=None, feedback=True):
             # Dummy code, replace when developing a hardware interface
             self.jogging = True
             self.moving_signal.emit(True)
@@ -243,7 +247,7 @@ class AbstractMotorController(AbstractDevice):
             origin_steps = list()
 
             for i in range(len(self.ax_letters)):
-                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords_steps[i])
+                origin_steps[i] = -1 * origin_mm[i] * self.calibrations[i] + float(self.coords_mm[i])
                 if self.reverse_ray[i]:
                     origin_steps[i] = origin_steps * -1
 
@@ -311,9 +315,9 @@ class AbstractMotorController(AbstractDevice):
 
         @abstractmethod
         def get_position(self, mutex_locked = False):
-            self.coords_steps = self.Motors.coords
-            self.x_pos_mm_signal.emit(self.coords_steps[self.ax_letters.index('X')])
-            self.r_pos_mm_signal.emit(self.coords_steps[self.ax_letters.index('R')])
+            self.coords_mm = self.Motors.coords
+            self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('X')])
+            self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('R')])
 
         def exec_command(self, command):
             command = command.upper()

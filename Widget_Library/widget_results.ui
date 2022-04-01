@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1039</width>
+    <width>1140</width>
     <height>608</height>
    </rect>
   </property>
@@ -18,18 +18,18 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>1001</width>
+     <width>1061</width>
      <height>581</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="scriptlog_tab">
     <attribute name="title">
      <string>ScriptLog</string>
     </attribute>
-    <widget class="QTableView" name="tableView">
+    <widget class="QTableWidget" name="script_log_table">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -62,13 +62,13 @@
     <attribute name="title">
      <string>UA Results</string>
     </attribute>
-    <widget class="QTableView" name="results_table">
+    <widget class="QTableWidget" name="results_table">
      <property name="geometry">
       <rect>
-       <x>9</x>
-       <y>40</y>
-       <width>991</width>
-       <height>511</height>
+       <x>0</x>
+       <y>60</y>
+       <width>1000</width>
+       <height>341</height>
       </rect>
      </property>
      <property name="sizePolicy">
@@ -83,6 +83,253 @@
        <height>1000</height>
       </size>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>61</number>
+     </attribute>
+     <attribute name="verticalHeaderCascadingSectionResizes">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderDefaultSectionSize">
+      <number>20</number>
+     </attribute>
+     <attribute name="verticalHeaderMinimumSectionSize">
+      <number>10</number>
+     </attribute>
+     <row>
+      <property name="text">
+       <string/>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_01</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_02</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_03</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_04</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_05</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_06</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_07</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_08</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_09</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Element_10</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string/>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>UA_Common</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Elements with...</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Elements with...</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>X</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Theta</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF.VSI</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF.VSI</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF.Eff</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF.Rfl</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF.Pf (max)</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>LF.WTemp</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF.Eff</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF.Rfl</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF.Pf (max)</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>HF.WTemp</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Element</string>
+      </property>
+     </column>
+     <item row="0" column="0">
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item row="0" column="1">
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item row="0" column="2">
+      <property name="text">
+       <string>(MHz)</string>
+      </property>
+     </item>
+     <item row="0" column="3">
+      <property name="text">
+       <string>(V^2s)</string>
+      </property>
+     </item>
+     <item row="0" column="4">
+      <property name="text">
+       <string>(MHz)</string>
+      </property>
+     </item>
+     <item row="0" column="5">
+      <property name="text">
+       <string>(V^2s)</string>
+      </property>
+     </item>
+     <item row="0" column="6">
+      <property name="text">
+       <string>(%)</string>
+      </property>
+     </item>
+     <item row="0" column="7">
+      <property name="text">
+       <string>(%)</string>
+      </property>
+     </item>
+     <item row="0" column="8">
+      <property name="text">
+       <string>(W)</string>
+      </property>
+     </item>
+     <item row="0" column="9">
+      <property name="text">
+       <string>(degC)</string>
+      </property>
+     </item>
+     <item row="0" column="10">
+      <property name="text">
+       <string>(%)</string>
+      </property>
+     </item>
+     <item row="0" column="11">
+      <property name="text">
+       <string>(%)</string>
+      </property>
+     </item>
+     <item row="0" column="12">
+      <property name="text">
+       <string>(W)</string>
+      </property>
+     </item>
+     <item row="0" column="13">
+      <property name="text">
+       <string>(degC)</string>
+      </property>
+     </item>
+     <item row="0" column="14">
+      <property name="text">
+       <string>result</string>
+      </property>
+     </item>
+     <item row="2" column="1">
+      <property name="text">
+       <string/>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="label_130">
      <property name="geometry">

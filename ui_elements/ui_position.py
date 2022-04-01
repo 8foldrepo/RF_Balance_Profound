@@ -21,6 +21,8 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 class Position(QWidget, Ui_Form):
     '''Disables buttons of entire UI that may interfere with operations in progress'''
     set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
+    home_1d_signal = QtCore.pyqtSignal(str)
+    home_all_signal = QtCore.pyqtSignal()
     setup_signal = QtCore.pyqtSignal(dict)
     reset_zero_signal = QtCore.pyqtSignal()
     go_to_signal = QtCore.pyqtSignal(list,list)
@@ -48,6 +50,8 @@ class Position(QWidget, Ui_Form):
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)
         self.motors.ready_signal.connect(lambda:self.set_buttons_enabled_signal.emit(True))
+        self.home_all_signal.connect(self.motors.go_home)
+        self.home_1d_signal.connect(self.motors.go_home_1d)
         self.reset_zero_signal.connect(self.motors.set_origin_here)
         self.go_to_signal.connect(self.motors.go_to_position)
 
@@ -199,11 +203,11 @@ class Position(QWidget, Ui_Form):
     @pyqtSlot()
     def manual_home_clicked(self):
         if self.x_home_radio.isChecked():
-            self.go_to_signal.emit(['X'], [0])
+            self.home_1d_signal.emit('X')
         elif self.theta_home_radio.isChecked():
-            self.go_to_signal.emit(['R'], [0])
+            self.home_1d_signal.emit('R')
         elif self.all_axes_radio.isChecked():
-            self.go_to_signal.emit(['X','R'], [0,0])
+            self.home_all_signal.emit()
 
     def log(self, message, level='info'):
         log_msg(self, root_logger, message=message, level=level)

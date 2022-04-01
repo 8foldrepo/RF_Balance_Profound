@@ -26,7 +26,7 @@ class AbstractDevice(QObject):
             self.config = load_configuration()
         self.device_key = device_key
         self.is_connected = False
-
+        pass
 
     @abstractmethod
     def fields_setup(self):

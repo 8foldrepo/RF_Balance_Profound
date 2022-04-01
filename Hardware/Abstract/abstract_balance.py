@@ -38,7 +38,7 @@ class AbstractBalance(AbstractSensor):
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
-        self.ser.write(b"\nZ\n")
+        self.ser.write_data()
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
