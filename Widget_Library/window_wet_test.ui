@@ -3017,12 +3017,12 @@
      <widget class="QTabWidget" name="tabWidget">
       <property name="minimumSize">
        <size>
-        <width>640</width>
-        <height>20</height>
+        <width>1050</width>
+        <height>750</height>
        </size>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -3122,13 +3122,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_25">
         <item row="0" column="0">
-         <widget class="QTextBrowser" name="textBrowser">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-         </widget>
+         <widget class="SystemInfo" name="system_info_tab" native="true"/>
         </item>
        </layout>
       </widget>
@@ -3336,6 +3330,12 @@
    <class>UACalibration</class>
    <extends>QWidget</extends>
    <header location="global">ui_elements.ui_ua_calibration</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SystemInfo</class>
+   <extends>QWidget</extends>
+   <header location="global">ui_elements.ui_system_info</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

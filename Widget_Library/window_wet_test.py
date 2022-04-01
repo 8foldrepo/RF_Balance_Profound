@@ -1024,7 +1024,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.created_by_field, 1, 2, 1, 1)
         self.gridLayout.addLayout(self.gridLayout_2, 0, 0, 1, 3)
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setMinimumSize(QtCore.QSize(640, 20))
+        self.tabWidget.setMinimumSize(QtCore.QSize(1050, 750))
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -1065,12 +1065,9 @@ class Ui_MainWindow(object):
         self.tab_2.setObjectName("tab_2")
         self.gridLayout_25 = QtWidgets.QGridLayout(self.tab_2)
         self.gridLayout_25.setObjectName("gridLayout_25")
-        self.textBrowser = QtWidgets.QTextBrowser(self.tab_2)
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.textBrowser.setFont(font)
-        self.textBrowser.setObjectName("textBrowser")
-        self.gridLayout_25.addWidget(self.textBrowser, 0, 0, 1, 1)
+        self.system_info_tab = SystemInfo(self.tab_2)
+        self.system_info_tab.setObjectName("system_info_tab")
+        self.gridLayout_25.addWidget(self.system_info_tab, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_2, "")
         self.script_tab = QtWidgets.QWidget()
         font = QtGui.QFont()
@@ -1164,7 +1161,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(6)
+        self.tabWidget.setCurrentIndex(1)
         self.tabWidget_4.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -1248,6 +1245,7 @@ from ui_elements.ui_results import Results
 from ui_elements.ui_rfb import RFB
 from ui_elements.ui_script_editor import ScriptEditor
 from ui_elements.ui_system_config import SystemConfig
+from ui_elements.ui_system_info import SystemInfo
 from ui_elements.ui_ua_calibration import UACalibration
 
 

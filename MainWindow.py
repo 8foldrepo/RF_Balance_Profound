@@ -1,5 +1,5 @@
 import copy
-from configparser import ConfigParser
+
 
 import os
 import smtplib
@@ -117,18 +117,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_calibration_tab.set_config(self.config)
         self.ua_calibration_tab.set_manager(self.manager)
-
-    def load_system_info(self):
-        output = ''
-        parser = ConfigParser()
-        parser.read("systeminfo.ini")
-        for item in parser:
-            output = output + (f'[{item}]\n')
-            for entry in parser[item]:
-                output = output + (f'{entry}\n')
-            output = output + '\n'
-
-        self.textBrowser.setText(output)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -295,6 +283,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         try:
             # Hardware info signals
+            self.manager.forward_meter.connected_signal.connect(self.power_meter_indicator.setChecked)
             self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
             self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
             self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)

@@ -65,7 +65,14 @@ class PowerMeter(AbstractSensor):
         return Power
 
 if __name__ == '__main__':
-    meter = PowerMeter(config=None)
-    meter.connect_hardware()
-    print(f'{meter.get_reading()} Watts')
+    reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
+    forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
+    forward_meter.connect_hardware()
+    reflected_meter.connect_hardware()
+
+    print(f'Forward power: {forward_meter.get_reading()} Watts')
+    print(f'Reflected power: {reflected_meter.get_reading()} Watts')
+
+    forward_meter.disconnect_hardware()
+    reflected_meter.disconnect_hardware()
 

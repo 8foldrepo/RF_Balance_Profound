@@ -5,6 +5,7 @@ from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, p
 from typing import Optional
 from collections import OrderedDict
 import distutils.util
+from Hardware.mini_circuits_power_meter import PowerMeter
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
@@ -180,6 +181,11 @@ class Manager(QThread):
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Balance = MT_balance(config=self.config)
 
+        self.reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
+        self.forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
+
+        self.devices.append(self.forward_meter)
+        self.devices.append(self.reflected_meter)
         self.devices.append(self.Motors)
         self.devices.append(self.thermocouple)
         self.devices.append(self.Oscilloscope)

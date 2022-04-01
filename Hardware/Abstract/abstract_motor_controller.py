@@ -82,6 +82,7 @@ class AbstractMotorController(AbstractDevice):
         moving_signal = pyqtSignal(bool)
 
         connected_signal = pyqtSignal(bool)
+        ready_signal = pyqtSignal(bool)
 
         num_axes = 2
         ax_letters = ['X', 'R']
@@ -108,6 +109,9 @@ class AbstractMotorController(AbstractDevice):
             self.scanning = False
 
             self.fields_setup()
+
+        def begin_motion(self):
+            pass
 
         def fields_setup(self):
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
