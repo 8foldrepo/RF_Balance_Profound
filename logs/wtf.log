@@ -1,10 +1,5 @@
-2022-04-01 17:18:05,540 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
-2022-04-01 17:18:12,868 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-01 17:18:12,870 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-01 17:18:12,996 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-01 17:18:38,580 [INFO] [VIX_Motor_Controller] [ui_thread] : Movement failed
-2022-04-01 17:18:38,614 [INFO] [VIX_Motor_Controller] [ui_thread] : Value is out of range
-2022-04-01 17:18:38,616 [INFO] [VIX_Motor_Controller] [ui_thread] : Still moving
-2022-04-01 17:19:03,239 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
-2022-04-01 17:19:03,356 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
-9:03,356 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+2022-04-01 18:01:10,224 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-01 18:01:10,847 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-01 18:01:10,946 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-01 18:01:32,186 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
+,186 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False

@@ -182,6 +182,8 @@ class Manager(QThread):
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key= 'Forward_Power_Meter')
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
 
+        self.devices.append(self.Forward_Power_Meter)
+        self.devices.append(self.Reflected_Power_Meter)
         self.devices.append(self.IO_Board)
         self.devices.append(self.UAInterface)
         self.devices.append(self.Motors)

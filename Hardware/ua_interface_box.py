@@ -7,7 +7,7 @@ from abc import abstractmethod
 import os
 from subprocess import Popen, PIPE
 import time as t
-
+from definitions import ROOT_DIR
 from Utilities.useful_methods import log_msg
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -19,25 +19,8 @@ class UAInterfaceBox(AbstractDevice):
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
-
-        from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-        import logging
-        log_formatter = logging.Formatter(LOGGER_FORMAT)
-        import os
-        from definitions import ROOT_DIR
-        balance_logger = logging.getLogger('wtf_log')
-        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
-        file_handler.setFormatter(log_formatter)
-        balance_logger.addHandler(file_handler)
-        balance_logger.setLevel(logging.INFO)
-        self.root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-        if config is not None:
-            self.config = config
-        else:
-            self.config = load_configuration()
-        self.device_key = device_key
-        self.is_connected = False
-        pass
+        self.ip_address = '192.168.3.3'
+        self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
 
         self.ua_calibration_data = {
             'cal_data_array': {
@@ -85,6 +68,18 @@ class UAInterfaceBox(AbstractDevice):
 
     def connect_hardware(self):
         self.is_connected = True
+
+        self.log('Attempting to connect to WTFIB... ')
+
+        p = Popen(["ping", self.ip_address], stdout=PIPE)
+        output = p.communicate()[0].decode()
+        if 'timed out' in output:
+            self.log('ping to WTFIB timed out')
+            self.is_connected = False
+            self.connected_signal.emit(self.is_connected)
+            return
+
+        self.is_connected = True
         self.connected_signal.emit(self.is_connected)
 
     def disconnect_hardware(self):
@@ -98,32 +93,32 @@ class UAInterfaceBox(AbstractDevice):
         self.disconnect_hardware()
 
     @pyqtSlot()
-    def read_data(self) -> list:
+    def read_data(self):
 
         # cal_data_signal.emit(self.cal_data_signal)
 
         global output
-        path_of_exe = os.path.abspath(os.curdir) + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe 192.168.3.3"
+
 
         startTime = t.time()
         timeout_s = 5
         while t.time() - startTime < timeout_s:
             try:
-                p = Popen(["cmd", "/C", path_of_exe], stdout=PIPE)
+                p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address], stdout=PIPE)
                 output = p.communicate()[0].decode()
                 break
             except UnicodeDecodeError as e:
-                print(e)
+                self.log(level='error', message=str(e))
                 if str(e) == "'utf-8' codec can't decode byte 0xb8 in position 150: invalid start byte":
                     print("Getting output failed, retrying...")
         if "no UA" in output:
             # Trigger dialog box
             self.cal_data_signal.emit([], -1)
-            print("No ua found...")
-            return
+            self.log("No ua found...")
+            return [], -1
         elif "Returned FW status=-2. FW version query failed and returned \"(null)\"" in output:
             self.cal_data_signal.emit([], -2)
-            print("wtfib is not connected (check power and ethernet connection)")
+            self.log("wtfib is not connected (check power and ethernet connection)")
         else:
             calibration_string_pre = output.splitlines()[3]
             calibration_string_pre_list = calibration_string_pre.split(' ')
@@ -148,19 +143,8 @@ class UAInterfaceBox(AbstractDevice):
     def log(self, message, level = 'info'):
         log_msg(self,self.root_logger, message= message,level=level)
 
-    def exec_command(self, command):
-        command = command.upper()
-        cmd_ray = command.split(' ')
-
-        if cmd_ray[0] == 'UA':
-            cmd_ray.pop(0)
-            command = command[6:]
-
-        if command == 'read'.upper():
-            self.read()
-
     def write_data(self):
-        process_call = "/interface_box_executable/WTFib_Calib 192.168.3.1 " + \
+        process_call = f"{self.path_of_exe} {self.ip_address} " + \
                        self.ua_calibration_data['cal_data_array']['schema'] + "," + \
                        self.ua_calibration_data['cal_data_array']['serial_no'] + "," + \
                        self.ua_calibration_data['cal_data_array']['production_date'] + "," + \
