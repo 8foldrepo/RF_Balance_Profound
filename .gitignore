@@ -15,3 +15,5 @@ local.yaml
 .vscode/settings.json
 *.log
 *.iml
+.idea/RF_Balance_Profound.iml
+logs/wtf.log
