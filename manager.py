@@ -78,7 +78,7 @@ class Manager(QThread):
     finished_signal = pyqtSignal()
 
     # Tab signal
-    profile_plot_signal = pyqtSignal(list, list)
+    profile_plot_signal = pyqtSignal(list, list, str)
     plot_signal = pyqtSignal(object, object, float)
 
     Motors = None
@@ -87,6 +87,8 @@ class Manager(QThread):
         super().__init__(parent=parent, objectName=u"manager_thread")
         self.get_position_cooldown_s = .2 #decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
+
+        self.scan_data = dict()
 
         #Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
@@ -132,6 +134,35 @@ class Manager(QThread):
 
         self.devices = list()
         self.add_devices()
+
+    def test_code(self):
+        # todo: test code, remove later
+        self.scripting = True
+        variable_list = dict()
+        variable_list["Task type"] = "Find element \"n\""
+        variable_list["Element"] = "Element 1"
+        variable_list["X Incr. (mm)"] = "0.250000"
+        variable_list["X #Pts."] = "21"
+        variable_list["Theta Incr. (deg)"] = "-0.400000"
+        variable_list["Theta #Pts."] = "41"
+        variable_list["Scope channel"] = "Channel 1"
+        variable_list["Acquisition type"] = "N Averaged Waveform"
+        variable_list["Averages"] = "16"
+        variable_list["Data storage"] = "Do not store"
+        variable_list["Storage location"] = "UA results directory"
+        variable_list["Data directory"] = ""
+        variable_list["Max. position error (+/- mm)"] = "0.200000"
+        variable_list["ElementPositionTest"] = "FALSE"
+        variable_list["Max angle variation (deg)"] = "2.000000"
+        variable_list["BeamAngleTest"] = "FALSE"
+        variable_list["Frequency settings"] = "Avg. Low frequency"
+        variable_list["Auto set timebase"] = "TRUE"
+        variable_list["#Cycles.Capture"] = "10"
+        variable_list["#Cycles.Delay"] = "0"
+        variable_list["Frequency (MHz)"] = "4.400000"
+        variable_list["Amplitude (mV)"] = "50.000000"
+        variable_list["Burst count"] = "50"
+        self.find_element(variable_list)
 
     def add_devices(self):
         # -> check if we are simulating hardware
@@ -204,8 +235,6 @@ class Manager(QThread):
         for device in self.devices:
             device.connect_hardware()
         t.sleep(2)
-        #For testing purposes
-        #self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
         for device in self.devices:
@@ -247,14 +276,14 @@ class Manager(QThread):
                 self.connect_hardware()
             elif cmd_ray[0] == 'MOTOR':
                 self.Motors.exec_command(self.cmd)
-            elif cmd_ray[0] == 'UA ':
-                self.UAInterface.exec_command(self.cmd)
+            # Todo: For testing purposes, remove later
+            elif cmd_ray[0] == 'TEST':
+                self.test_code()
             # What to do when there is no command
             else:
                 if self.scripting:
                     self.advance_script()
                 else:
-
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
                     else:
@@ -297,7 +326,6 @@ class Manager(QThread):
 
     def load_script(self, path):
         self.scripting = True
-
         self.script = open(path, "r")
 
         # Send name of script to UI
@@ -521,7 +549,7 @@ class Manager(QThread):
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
-            if not self.IO_Board.get_pump_reading() == 1:  # if the pump is not running
+            if not self.IO_Board.get_pump_reading() == True:  # if the pump is not running
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
                 try:
@@ -529,7 +557,7 @@ class Manager(QThread):
                 except AbortException:
                     return self.abort()
             else:
-                water_level = self.Water_Level_Sensor.get_reading()
+                water_level = self.IO_Board.get_water_level()
                 if not water_level == 'level':  # if the water level is not level
                     # launch the dialog box signifying this issue
                     self.user_prompt_signal_water_too_low_signal.emit(water_level)
@@ -553,22 +581,59 @@ class Manager(QThread):
 
     '''Find UA element with given number'''
     def find_element(self, variable_list):
-        element = variable_list['Element']
-        x_increment_MM = variable_list['X Incr. (mm)']
-        XPts = variable_list['X #Pts.']
-        thetaIncrDeg = variable_list['Theta Incr. (deg)']
-        thetaPts = variable_list['Theta #Pts.']
-        scope_channel = variable_list['Scope channel']
+        element = int(variable_list['Element'][8:])
+        x_increment_MM = float(variable_list['X Incr. (mm)'])
+        XPts = int(variable_list['X #Pts.'])
+        thetaIncrDeg = float(variable_list['Theta Incr. (deg)'])
+        thetaPts = int(variable_list['Theta #Pts.'])
+        scope_channel = int(variable_list['Scope channel'][8:])
         acquisition_type = variable_list['Acquisition type']
         #Todo: implement averaging
-        averages = variable_list['Averages']
+        averages = int(variable_list['Averages'])
         data_storage = variable_list['Data storage']
         storage_location = variable_list['Storage location']
         data_directory = variable_list["Data directory"]
-        maxPosErrMM = variable_list["Max. position error (+/- mm)"]
-        elemPosTest = variable_list["ElementPositionTest"]
+        maxPosErrMM = float(variable_list["Max. position error (+/- mm)"])
+        elemPosTest = bool(variable_list["ElementPositionTest"])
 
-        position = -1 * self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]
+        # Loop over x through a given range, move to the position where maximal RMS voltage was measured
+        x_sweep_waveforms = list()
+        position = -1 * self.config["WTF_PositionParameters"]["X-Element pitch (mm)"] / 2
+        x_max_rms = -1
+        x_max_position = 0
+        x_positions = list()
+        x_rms_values = list()
+
+        for i in range(XPts):
+            self.Motors.go_to_position(['X'], [position])
+            position = position + x_increment_MM
+
+            voltage, time = self.Oscilloscope.capture(scope_channel)
+            if not data_storage.upper() == 'Do not store'.upper():
+                x_sweep_waveforms.append([voltage,time])
+
+            rms = self.find_rms(time_s=time, voltage_v=voltage)
+
+            if rms > x_max_rms:
+                x_max_rms = rms
+                x_max_position = position
+
+            x_positions.append(position)
+            x_rms_values.append(rms)
+            self.profile_plot_signal.emit(x_positions, x_rms_values, 'Distance (mm)')
+
+        self.log(f"Maximum of {x_max_rms} @ x = {x_max_position} mm. Going there.")
+
+        self.Motors.go_to_position(['X'], [x_max_position])
+        self.scan_data["X sweep waveforms"] = x_sweep_waveforms
+
+        # Loop over r through a given range, move to the position where maximal RMS voltage was measured
+        r_sweep_waveforms = list()
+        position = self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]
+        r_max_rms = -1
+        r_max_position = 0
+        r_positions = list()
+        r_rms_values = list()
 
 
 
@@ -576,10 +641,24 @@ class Manager(QThread):
             self.Motors.go_to_position(['R'], [position])
             position = position + thetaIncrDeg
 
-            self.Oscilloscope.capture(scope_channel)
+            voltage, time = self.Oscilloscope.capture(scope_channel)
+            if not data_storage.upper() == 'Do not store'.upper():
+                r_sweep_waveforms.append([voltage, time])
 
-        #if not data_storage.upper() == 'Do not store'.upper():
-            #self.scanData =
+            rms = self.find_rms(time_s=time, voltage_v=voltage)
+
+            if rms > r_max_rms:
+                r_max_rms = rms
+                r_max_position = position
+
+            r_positions.append(position)
+            r_rms_values.append(rms)
+            self.profile_plot_signal.emit(r_positions, r_rms_values, 'Angle (deg)')
+
+        self.Motors.go_to_position(['R'], [r_max_position])
+        self.scan_data["Theta sweep waveforms"] = r_sweep_waveforms
+
+        self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
 
         self.element_number_signal.emit(str(element))
         self.step_complete = True
@@ -660,7 +739,7 @@ class Manager(QThread):
     def log(self, message, level='info'):
         log_msg(self, root_logger=root_logger, message=message, level=level)
 
-    def findRMS(self, search_mode, frequency_mode):
+    def frequency_sweep(self, search_mode, frequency_mode):
         if search_mode == "fine":
             self.step = self.config["FrequencyParameters"]["Search"]["FineIncr(MHz)"] * 1000000
         elif search_mode == "coarse":
@@ -679,11 +758,26 @@ class Manager(QThread):
         for x in np.arange(self.freq_lowlimit_hz, self.freq_highlimit_hz, self.step):
             self.AWG.SetFrequency_Hz(x)  # set frequency accoding to step (coarse/fine) and x incremenet
             self.list_of_frequencies.append(x)  # add the frequency to the list
-            self.times_s, self.voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
-            self.voltages_v_squared = np.square(self.voltages_v)  # squares every value in the voltage graph
-            self.list_of_rms_values.append(integrate.simps(self.voltages_v_squared, self.times_s, dx=None, axis=0))  # returns single value
+            times_s, voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
 
+            self.list_of_rms_values.append(self.find_rms(times_s, voltages_v))
         self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)  # frequencies will be on the x-axis
+
+    '''Returns the voltage squared integral of a oscilloscope waveform'''
+    def find_rms(self, time_s, voltage_v):
+        voltages_v_squared = np.square(voltage_v)
+
+        dx = 0
+        for i in range(1,len(time_s)):
+            dx = time_s[i] - time_s[i-1]
+            if not dx == 0:
+                break
+
+        if dx == 0:
+            self.log(level='Error', message='Error in find_rms. No delta x found, cannot integrate')
+            return
+
+        return integrate.simps(y=voltages_v_squared, dx = dx, axis=0)
 
 class AbortException(Exception):
     pass

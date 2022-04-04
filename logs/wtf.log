@@ -1,4 +1,6 @@
-2022-04-04 15:10:17,315 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-04 15:10:17,929 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-04 15:10:18,020 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
-,020 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-04 18:18:46,461 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-04 18:18:47,053 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-04 18:18:47,122 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-04 18:19:00,170 [INFO] [Manager] [ui_thread] : Maximum of 1.0497471354648321e-07 @ x = 0.0 mm. Going there.
+2022-04-04 18:19:20,935 [INFO] [Manager] [ui_thread] : Maximum of 1.0497471354648321e-07 @ theta = -3.9999999999999996 degrees. Going there.
+471354648321e-07 @ theta = -3.9999999999999996 degrees. Going there.

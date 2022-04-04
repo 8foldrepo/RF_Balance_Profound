@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QApplication
 from Utilities.useful_methods import bound
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Utilities.useful_methods import create_coord_rays, create_comma_string
@@ -94,6 +95,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.lock = lock
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
+            self.app = QApplication.instance()
             self.coords_mm = list()
             for i in range(self.num_axes):
                 self.coords_mm.append(0)
@@ -155,7 +157,6 @@ class VIX_Motor_Controller(AbstractMotorController):
 
             for i in range(len(axis_numbers)):
                 self.command(f'{axis_numbers[i]}D{int(coords[i])}')
-
                 self.command(f'{axis_numbers[i]}G')
                 if '*E' in self.get_response(retries=1):
                     if not self.jogging and not self.scanning:
@@ -164,7 +165,11 @@ class VIX_Motor_Controller(AbstractMotorController):
                         self.ready_signal.emit()
                         return
                 else:
+                    self.moving = True
                     self.moving_signal.emit(True)
+
+            while self.moving:
+                self.get_position()
             # Wait for motion to be over
             # t.sleep(2)
             # Check position
@@ -585,6 +590,10 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.scanning = False
 
         def get_position(self, mutex_locked = False):
+            moving_ray = [True, True]
+            moving_margin_ray = [0.001,.001]
+
+
             for i in range(len(self.ax_letters)):
                 position_string = self.ask(f"{i+1}R(PT)", mutex_locked = mutex_locked)
                 position_string = position_string.replace('*','')
@@ -601,13 +610,25 @@ class VIX_Motor_Controller(AbstractMotorController):
                     #Add on the coordinate of the home position (from the motor's perspective it is zero)
                     position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
                     self.x_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_mm[0] = position_deg_or_mm
                 elif self.ax_letters[i].upper() == 'R':
                     #Add on the coordinate of the home position (from the motor's perspective it is zero)
                     position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
                     self.r_pos_mm_signal.emit(round(position_deg_or_mm,2))
-                    self.coords_mm[1] = position_deg_or_mm
-            pass
+
+                #Check if position has not changed. If all axes have not changed moving will be false
+                if abs(position_deg_or_mm-self.coords_mm[i]) < moving_margin_ray[i]:
+                    moving_ray[i] = False
+
+                self.coords_mm[i] = position_deg_or_mm
+
+            #Update the moving variable and emit it as a signal
+            if True in moving_ray:
+                self.moving = True
+            else:
+                self.moving = False
+            self.moving_signal.emit(self.moving)
+            #May cause crashing, replace this with a signal if crashes occur
+            self.app.processEvents()
 
         def check_user_fault(self, axis_number):
             response = self.ask(f'{axis_number}R(UF)', retries = 5)
