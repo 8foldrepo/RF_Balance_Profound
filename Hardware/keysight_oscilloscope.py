@@ -125,7 +125,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         t.sleep(0.03)
 
     def capture(self, channel):
-        print("Trying to capture")
         if self.connected:
             self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:SOUR:CHAN{channel}")

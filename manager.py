@@ -560,12 +560,26 @@ class Manager(QThread):
         thetaPts = variable_list['Theta #Pts.']
         scope_channel = variable_list['Scope channel']
         acquisition_type = variable_list['Acquisition type']
+        #Todo: implement averaging
         averages = variable_list['Averages']
         data_storage = variable_list['Data storage']
         storage_location = variable_list['Storage location']
         data_directory = variable_list["Data directory"]
         maxPosErrMM = variable_list["Max. position error (+/- mm)"]
         elemPosTest = variable_list["ElementPositionTest"]
+
+        position = -1 * self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]
+
+
+
+        for i in range(thetaPts):
+            self.Motors.go_to_position(['R'], [position])
+            position = position + thetaIncrDeg
+
+            self.Oscilloscope.capture(scope_channel)
+
+        #if not data_storage.upper() == 'Do not store'.upper():
+            #self.scanData =
 
         self.element_number_signal.emit(str(element))
         self.step_complete = True

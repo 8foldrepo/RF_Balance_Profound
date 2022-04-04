@@ -24,11 +24,6 @@ Dummy_Motors:
   speeds_ray:
   - 100
   - 100
-  scan_speed: 1
-  movement_mode: Continuous
-  increment_ray:
-    - 100
-    - 100
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
@@ -103,8 +98,7 @@ Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: No dialog (abort)
   Pass fail action: No dialog (abort)
-  Retries: 0
-UAInterface: null
+  Retries: 0l
 User Accounts:
   Administrator: PMI_Admin
   Engineer: Engineer
