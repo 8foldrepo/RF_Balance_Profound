@@ -155,3 +155,7 @@ class UAInterfaceBox(AbstractDevice):
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_low_list'])) + "," + \
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_high_list']))
         subprocess.call(process_call)
+
+if __name__ == "__main__":
+    wtf = UAInterface()
+    print(wtf.read_data())

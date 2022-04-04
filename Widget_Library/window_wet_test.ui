@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1600</width>
-    <height>823</height>
+    <height>903</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -3022,7 +3022,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -3182,11 +3182,11 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_15">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidget_4">
+         <widget class="QTabWidget" name="scan_tabs">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
-          <widget class="QWidget" name="tab_12">
+          <widget class="QWidget" name="one_dimension_scan_tab">
            <attribute name="title">
             <string>1D Scan</string>
            </attribute>
@@ -3238,6 +3238,402 @@
              </widget>
             </item>
            </layout>
+          </widget>
+          <widget class="QWidget" name="acquire_waveform_tab">
+           <attribute name="title">
+            <string>Acquire Waveform</string>
+           </attribute>
+           <widget class="Plot" name="widget_3" native="true">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>30</y>
+              <width>911</width>
+              <height>341</height>
+             </rect>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_31">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>10</y>
+              <width>93</width>
+              <height>13</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Acquired waveform</string>
+            </property>
+           </widget>
+           <widget class="QFrame" name="acquisition_arg_frame">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>400</y>
+              <width>181</width>
+              <height>181</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background:lightblue</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <widget class="QSpinBox" name="averages_spin_box">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>150</y>
+               <width>91</width>
+               <height>18</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background:white</string>
+             </property>
+            </widget>
+            <widget class="QWidget" name="">
+             <property name="geometry">
+              <rect>
+               <x>11</x>
+               <y>11</y>
+               <width>161</width>
+               <height>141</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="acquisition_arg_vert">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>Acquisition Type</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="acquisition_type_combo_box">
+                <property name="styleSheet">
+                 <string notr="true">background:white</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_35">
+                <property name="text">
+                 <string>Source Channel</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="source_channel_combo_box">
+                <property name="styleSheet">
+                 <string notr="true">background:white</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_36">
+                <property name="text">
+                 <string>Window</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="window_combo_box">
+                <property name="styleSheet">
+                 <string notr="true">background:white</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_37">
+                <property name="text">
+                 <string>Averages</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QFrame" name="waveform_data_out_frame">
+            <property name="geometry">
+             <rect>
+              <x>260</x>
+              <y>400</y>
+              <width>441</width>
+              <height>181</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background:lightblue</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <widget class="QLabel" name="label_39">
+             <property name="geometry">
+              <rect>
+               <x>12</x>
+               <y>61</y>
+               <width>59</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>X Data Type</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_40">
+             <property name="geometry">
+              <rect>
+               <x>230</x>
+               <y>61</y>
+               <width>59</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Y Data Type</string>
+             </property>
+            </widget>
+            <widget class="QTextBrowser" name="x_data_type_view">
+             <property name="geometry">
+              <rect>
+               <x>12</x>
+               <y>80</y>
+               <width>199</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background:lightgrey</string>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="html">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Frequency (MHz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+            <widget class="QTextBrowser" name="y_data_type_view">
+             <property name="geometry">
+              <rect>
+               <x>230</x>
+               <y>80</y>
+               <width>200</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background:lightgrey</string>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOff</enum>
+             </property>
+             <property name="html">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hydrophone Sensitivity (mV/MPa)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+            <widget class="QWidget" name="">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>10</y>
+               <width>135</width>
+               <height>41</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="label_vert">
+              <item>
+               <widget class="QLabel" name="label_38">
+                <property name="text">
+                 <string>Label</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="label_line_edit">
+                <property name="styleSheet">
+                 <string notr="true">background:lightgrey</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>120</y>
+               <width>421</width>
+               <height>43</height>
+              </rect>
+             </property>
+             <layout class="QHBoxLayout" name="x_y_data_uncertainty_horz">
+              <property name="spacing">
+               <number>59</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="x_data_grid">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_41">
+                  <property name="text">
+                   <string>X Data</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QSpinBox" name="x_data_spin_box">
+                  <property name="styleSheet">
+                   <string notr="true">background:white</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="x_data_view">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background:lightgrey</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_11">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_42">
+                  <property name="text">
+                   <string>Y Data</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QSpinBox" name="y_data_spin_box">
+                  <property name="styleSheet">
+                   <string notr="true">background:white</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="y_data_view">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background:lightgrey</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_12">
+                <item row="0" column="0" colspan="2">
+                 <widget class="QLabel" name="label_43">
+                  <property name="text">
+                   <string>Y Uncertainty</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QSpinBox" name="y_uncertainty_spin_box">
+                  <property name="styleSheet">
+                   <string notr="true">background:white</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="y_uncertainty_view">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background:lightgrey</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QLabel" name="label_32">
+            <property name="geometry">
+             <rect>
+              <x>260</x>
+              <y>380</y>
+              <width>94</width>
+              <height>13</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Waveform data out</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_33">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>380</y>
+              <width>75</width>
+              <height>13</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Acquisition Arg.</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="acquire_scope_trace_button">
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>500</y>
+              <width>171</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background:lightgrey</string>
+            </property>
+            <property name="text">
+             <string>Aqcuire Scope Trace</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="scan_setup_tab">
+           <attribute name="title">
+            <string>Scan Setup</string>
+           </attribute>
           </widget>
          </widget>
         </item>
