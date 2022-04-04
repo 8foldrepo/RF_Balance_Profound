@@ -1,5 +1,6 @@
-2022-04-01 18:01:10,224 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-01 18:01:10,847 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-01 18:01:10,946 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
-2022-04-01 18:01:32,186 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
-,186 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
+2022-04-04 11:11:06,419 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-04 11:11:07,028 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-04 11:11:07,095 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-04 11:11:25,960 [INFO] [UAInterfaceBox] [] : ping to WTFIB timed out
+2022-04-04 11:11:28,650 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
+,650 [INFO] [Manager] [manager_thread] : SIMULATE HARDWARE is: False
