@@ -117,6 +117,9 @@ class AbstractMotorController(AbstractDevice):
         def begin_motion(self):
             pass
 
+        def go_home_1d(self):
+            pass
+
         def fields_setup(self):
             self.reverse_ray = self.config[self.device_key]['reverse_ray']
             self.ax_letters = self.config[self.device_key]['axes']

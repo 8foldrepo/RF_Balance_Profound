@@ -5,7 +5,7 @@ from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, p
 from typing import Optional
 from collections import OrderedDict
 import distutils.util
-from Hardware.mini_circuits_power_meter import PowerMeter
+
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
@@ -163,10 +163,18 @@ class Manager(QThread):
             from Hardware.Abstract.abstract_awg import AbstractAWG
             from Hardware.Abstract.abstract_balance import AbstractBalance
             from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+            from Hardware.Abstract.abstract_power_meter import PowerMeter
+            from Hardware.Abstract.abstract_io_board import IO_Board
+            from Hardware.Abstract.abstract_interface_box import UAInterfaceBox
 
             self.AWG = AbstractAWG(config=self.config)
             self.Balance = AbstractBalance(config=self.config)
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
+            self.IO_Board = IO_Board(config=self.config)
+            self.UAInterface = UAInterfaceBox(config=self.config)
         else:
+            from Hardware.mini_circuits_power_meter import PowerMeter
             from Hardware.MT_balance import MT_balance
             from Hardware.ua_interface_box import UAInterfaceBox
             from Hardware.ni_daq_board import NI_DAQ
