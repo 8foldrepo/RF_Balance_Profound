@@ -118,12 +118,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_calibration_tab.set_manager(self.manager)
         self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
 
+        self.scan_tab_widget.set_config(self.config)
+        self.scan_tab_widget.set_manager(self.manager)
+
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
-        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
-        self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
-        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
-        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
+
 
         #Format treewidget
         self.script_step_view.setColumnCount(2)
@@ -145,13 +145,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_on_indicator.setStyleSheet("background-color: grey")
         self.ua_on_indicator.setText("UA OFF")
-
-        #add default data to plots
-        y = range(0, 100)
-        x = range(0, 100)
-        #self.profile_plot.refresh(x, y)
-        self.rfb.rfb_graph.refresh(x,y)
-        self.waveform_plot.refresh(x,y)
 
     def disable_buttons(self):
         self.x_pos_button.setEnabled(False)
@@ -380,26 +373,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
-        self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
-        if x is None or y is None:
-            return
-        if len(x) == 0 or len(x) != len(y):
-            return
-
-        self.plot_ready = False
-        self.waveform_plot.refresh(x, y, pen='k', clear=True)
-        self.plot_ready = True
+        self.scan_tab_widget.plot(x, y, refresh_rate)
 
     @pyqtSlot(list, list)
     def update_profile_plot(self, x, y):
-        if x is None or y is None:
-            return
-        if len(x) == 0 or len(x) != len(y):
-            return
-
-        self.plot_ready = False
-        self.profile_plot.refresh(x, y, pen='k', clear=True)
-        self.plot_ready = True
+        self.scan_tab_widget.update_profile_plot(x, y)
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(
