@@ -11,11 +11,12 @@ from definitions import ROOT_DIR
 from Utilities.useful_methods import log_msg
 from Hardware.Abstract.abstract_device import AbstractDevice
 
+
 class UAInterfaceBox(AbstractDevice):
     connected_signal = pyqtSignal(bool)
     dummy_command_signal = pyqtSignal(str)
 
-    cal_data_signal = pyqtSignal(list,int)
+    cal_data_signal = pyqtSignal(list, int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
@@ -98,7 +99,6 @@ class UAInterfaceBox(AbstractDevice):
 
         global output
 
-
         startTime = t.time()
         timeout_s = 5
         while t.time() - startTime < timeout_s:
@@ -140,8 +140,8 @@ class UAInterfaceBox(AbstractDevice):
             self.cal_data_signal.emit(calibration_data_list, status)
             return calibration_data_list, status
 
-    def log(self, message, level = 'info'):
-        log_msg(self,self.root_logger, message= message,level=level)
+    def log(self, message, level='info'):
+        log_msg(self, self.root_logger, message=message, level=level)
 
     def write_data(self):
         process_call = f"{self.path_of_exe} {self.ip_address} " + \
@@ -159,3 +159,4 @@ class UAInterfaceBox(AbstractDevice):
 if __name__ == '__main__':
     wtf = UAInterfaceBox(config=None)
     print(wtf.read_data())
+

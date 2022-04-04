@@ -13,3 +13,5 @@ local.yaml
 local.yaml
 *.wtf
 .vscode/settings.json
+*.log
+*.iml
