@@ -301,7 +301,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
 
-
     @pyqtSlot(bool)
     def update_ua_indicator(self, on):
         if on:
