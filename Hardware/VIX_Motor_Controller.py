@@ -282,7 +282,15 @@ class VIX_Motor_Controller(AbstractMotorController):
                     stopbits=serial.STOPBITS_ONE,
                     bytesize=serial.EIGHTBITS,
                 )
-                self.connected = True
+                self.ser.write(b"1R(BD)")
+                reply = self.ser.read()
+                if reply == b'':
+                    self.connected = False
+                    self.log(level='error', message=
+                    f"{self.device_key} COM port found but motor controller is not responding. "
+                    f"Make sure it is powered up and click setup.")
+                else:
+                    self.connected = True
             except serial.serialutil.SerialException:
                 self.connected = False
                 self.log(level='error', message=
@@ -416,12 +424,28 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.command(f'{axis_number}OFF')
 
         def setup(self, settings = None):
+            self.ser.write(b"1R(BD)")
+            reply = self.ser.read()
+            if reply == b'':
+                self.connected = False
+            else:
+                self.connected = True
+            self.connected_signal.emit(self.connected)
+
+            if self.connected == False:
+                self.log(level='error', message=
+                f"{self.device_key} COM port found but motor controller is not responding. "
+                f"Make sure it is powered up and click setup.")
+                self.ready_signal.emit()
+                return
+
             #This accounts for the lower idle current of the rotational motor.
             #TODO: check currents of motors in final application
-            sent_successfully = self.command("2W(MS,10)")
+            sent_successfully = self.command("2W(MS,50)")
 
             if not sent_successfully:
                 self.log(level = 'error', message='failed to setup, check that drivers are powered on and try again')
+                return
 
             if settings is not None:
                 self.increment_ray[0] = settings['lin_incr']

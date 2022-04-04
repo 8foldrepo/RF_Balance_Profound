@@ -392,7 +392,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(list, list)
     def update_profile_plot(self, x, y):
-        print("Signal recieved")
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
@@ -602,7 +601,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # todo: have ua_pump_status switch react to pump_status var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
-        dlg.set_pump_signal.connect(self.manager.Pump.relay_write)
+        dlg.set_pump_signal.connect(self.manager.IO_Board.set_pump_on)
         dlg.exec()
 
     @pyqtSlot(str)
