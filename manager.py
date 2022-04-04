@@ -218,17 +218,11 @@ class Manager(QThread):
         """
         self.mutex.lock()
         self.starttime = t.time()
-        # -> try to connect to the motor
-        msg = f"SIMULATE HARDWARE is: {self.SIMULATE_HARDWARE}"
-        log_msg(self, root_logger, level='info', message=msg)
 
         self.stay_alive = True
 
         while self.stay_alive is True:
-            # root_logger.info('Waiting in motor thread.')
-            # wait_bool = self.condition.wait(self.mutex)
             wait_bool = self.condition.wait(self.mutex, 50)
-            # root_logger.info(f"Finished waiting in motor thread. {wait_bool}")
 
             if self.stay_alive is False:
                 break
@@ -260,14 +254,16 @@ class Manager(QThread):
                 if self.scripting:
                     self.advance_script()
                 else:
+
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
+                    else:
+                        self.log("Oscilloscope not connected, restart application")
                     self.update_motor_position()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
 
             self.cmd = ""
-
         self.wrap_up()
         self.mutex.unlock()
 
@@ -525,7 +521,7 @@ class Manager(QThread):
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
-            if not self.Pump.get_reading() == 1:  # if the pump is not running
+            if not self.IO_Board.get_pump_reading() == 1:  # if the pump is not running
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
                 try:

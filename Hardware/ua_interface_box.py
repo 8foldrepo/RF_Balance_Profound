@@ -72,7 +72,7 @@ class UAInterfaceBox(AbstractDevice):
 
         self.log('Attempting to connect to WTFIB... ')
 
-        p = Popen(["ping", self.ip_address], stdout=PIPE)
+        p = Popen(["ping", self.ip_address, "-n","1"], stdout=PIPE)
         output = p.communicate()[0].decode()
         if 'timed out' in output:
             self.log('ping to WTFIB timed out')
@@ -95,7 +95,6 @@ class UAInterfaceBox(AbstractDevice):
 
     @pyqtSlot()
     def read_data(self):
-
         # cal_data_signal.emit(self.cal_data_signal)
 
         global output
@@ -119,6 +118,7 @@ class UAInterfaceBox(AbstractDevice):
         elif "Returned FW status=-2. FW version query failed and returned \"(null)\"" in output:
             self.cal_data_signal.emit([], -2)
             self.log("wtfib is not connected (check power and ethernet connection)")
+            return [], -2
         else:
             calibration_string_pre = output.splitlines()[3]
             calibration_string_pre_list = calibration_string_pre.split(' ')
@@ -156,7 +156,7 @@ class UAInterfaceBox(AbstractDevice):
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_high_list']))
         subprocess.call(process_call)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     wtf = UAInterfaceBox(config=None)
     print(wtf.read_data())
+
