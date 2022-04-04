@@ -20,20 +20,23 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
-                try:
-                    self.inst = self.rm.open_resource(resource)
-                    self.ask("*OPC?")
-                    self.AutosetTimebase()
-                    self.connected = True
-                    self.connected_signal.emit(True)
-                    #self.inst.values_format.use_binary('d', False, numpy.array)
-                except pyvisa.errors.VisaIOError as e:
-                    self.connected = False
-                    self.connected_signal.emit(False)
-                    self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
-                    #self.autoScale()
-                    #self.SetTrigger(True)
-                #inst.values_format.use_binary('d', False, numpy.array)
+                retry = True
+                while retry:
+                    retry = False
+                    try:
+                        self.inst = self.rm.open_resource(resource)
+                        self.ask("*OPC?")
+                        self.AutosetTimebase()
+                        self.connected = True
+                        self.connected_signal.emit(True)
+                        #self.inst.values_format.use_binary('d', False, numpy.array)
+                    except pyvisa.errors.VisaIOError as e:
+                        self.connected = False
+                        self.connected_signal.emit(False)
+                        if 'Device reported an input protocol error during transfer.' in str(e):
+                            retry = True
+                        self.log(level='error', message=f"Could not connect to oscilloscope, try restarting it: {e}")
+
         if self.inst == None:
             self.log("Keysight oscilloscope not found", level='error')
 
@@ -122,16 +125,20 @@ class KeysightOscilloscope(AbstractOscilloscope):
         t.sleep(0.03)
 
     def capture(self, channel):
+        print("Trying to capture")
         if self.connected:
             self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command("WAV:FORM ASCII")
-            preamble = self.ask("WAV:PRE?").split(',')
+            preamble = self.ask("WAV:PRE?").split(",")
+
+            if preamble is None:
+                return
 
             #check that data is in ascii format
             if not preamble[0] == '+4':
+                self.command("WAV:FORM ASCII")
                 self.log(level='error', message='Oscilloscope data in unrecognized format, try restarting it.')
-                return
 
             #Interpret preamble
             if preamble[1] == '+0':
