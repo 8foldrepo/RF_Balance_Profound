@@ -282,8 +282,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.UAInterface.connected_signal.connect(self.wtfib_indicator.setChecked)
         self.manager.IO_Board.connected_signal.connect(self.dio_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
-        self.manager.plot_signal.connect(self.plot)
-        self.manager.profile_plot_signal.connect(self.update_profile_plot)
+        self.manager.plot_signal.connect(self.scan_tab_widget.plot)
+        self.manager.profile_plot_signal.connect(self.scan_tab_widget.update_profile_plot)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
         self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
@@ -373,25 +373,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
         self.scan_tab_widget.plot(x, y, refresh_rate)
-
-    @pyqtSlot(list, list)
-    def update_profile_plot(self, x, y):
-        self.scan_tab_widget.update_profile_plot(x, y)
-
-    #Third argument is the horizontal axis label
-    @pyqtSlot(list, list, str)
-    def update_profile_plot(self, x, y, label):
-        if x is None or y is None:
-            return
-        if len(x) == 0 or len(x) != len(y):
-            return
-
-        #Set axis label
-        self.profile_plot.setLabel("bottom", label, **self.profile_plot.styles)
-
-        self.plot_ready = False
-        self.profile_plot.refresh(x, y, pen='k', clear=True)
-        self.plot_ready = True
 
     def load_script(self):
         path, _ = QFileDialog.getOpenFileName(

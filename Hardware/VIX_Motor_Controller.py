@@ -387,6 +387,10 @@ class VIX_Motor_Controller(AbstractMotorController):
                 y = None
                 try:
                     y = self.ser.readline().strip(b'\r\n')
+                except KeyboardInterrupt:
+                    self.log("Program terminated unexpectedly, ensuring motors are stopped")
+                    self.stop_motion()
+                    self.wrap_up()
                 except AttributeError as e:
                     if str(e) == "\'VIX_Motor_Controller\' object has no attribute \'ser\'":
                         self.log(f"{self.device_key} is not connected, could not get reply")

@@ -60,7 +60,7 @@ Keysight_Oscilloscope:
   autorange_v_startup: False
   range_mV: 2000
   ext_trigger: False
-  timeout_s: 10
+  timeout_s: 20
 MT_Balance:
   port: COM4
   timeout_s: 30

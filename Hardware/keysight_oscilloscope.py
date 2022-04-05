@@ -35,11 +35,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         self.connected = False
                         self.connected_signal.emit(False)
                         if 'Device reported an input protocol error during transfer.' in str(e):
+                            self.log(level='error',
+                                     message=f"Input protocol error, retrying: {e}")
                             retry = True
                         else:
                             self.log(level='error', message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
                             self.clear()
-                            self.reset()
                             retry = True
 
         if self.inst == None:
@@ -62,6 +63,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         pass
 
     def set_to_defaults(self):
+        self.reset()
         channel = self.config[self.device_key]['channel']
         self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
         self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
@@ -164,9 +166,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(f"WAV:FORM ASC")
             #self.command(f"WAV:SOUR:CHAN{channel}")
 
+            preamble = None
             starttime = t.time()
             while t.time()-starttime < self.timeout_s:
-                preamble = self.ask("WAV:PRE?").split(",")
+                try:
+                    preamble = self.ask("WAV:PRE?").split(",")
+                except pyvisa.errors.VisaIOError as e:
+                    if "Timeout" in str(e):
+                        pass
+                    else:
+                        self.log(level="error", message="Unknown error when asking for waveform preamble")
                 if preamble is not None:
                     break
 
@@ -195,22 +204,36 @@ class KeysightOscilloscope(AbstractOscilloscope):
             y_reference = float(preamble[9])
 
             #Capture data
-            voltages_v = self.ask("WAV:DATA?").split(',')
+            voltages_v_strings = None
+            starttime = t.time()
+            while t.time() - starttime < self.timeout_s:
+                try:
+                    voltages_v_strings = self.ask("WAV:DATA?").split(',')
+                except pyvisa.errors.VisaIOError as e:
+                    if "Timeout" in str(e):
+                        pass
+                    else:
+                        self.log(level="error", message="Unknown error when asking for waveform preamble")
+                if voltages_v_strings is not None:
+                    break
+
             #temp = voltages_v[0].split()[-1]
             #voltages_v[0] = temp
             # removes the metadata at the beginning
-            if '#' in voltages_v[0]:
-                voltages_v[0] = voltages_v[0][10:]
+            if '#' in voltages_v_strings[0]:
+                voltages_v_strings[0] = voltages_v_strings[0][10:]
 
-            for i in range(len(voltages_v)):
-                voltages_v[i] = float(voltages_v[i])
+            voltages_v = list()
+            time_s = list()
 
-            #Create time array
-            times_s = [0] * num_points
-            for i in range(0, num_points):
-                times_s[i] = (i-x_reference)*sample_interval_s + x_origin
+            for i in range(len(voltages_v_strings)):
+                try:
+                    voltages_v.append(float(voltages_v_strings[i]))
+                    time_s.append((i-x_reference)*sample_interval_s + x_origin)
+                except ValueError:
+                    self.log(level="Error", info="An oscilloscope sample was not sent in a float format")
 
-            return times_s, voltages_v
+            return time_s, voltages_v
         else:
             self.log(f"Could not capture, {self.device_key} is not connected")
             return [0],[0]

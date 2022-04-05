@@ -286,7 +286,10 @@ class Manager(QThread):
             # What to do when there is no command
             else:
                 if self.scripting:
-                    self.advance_script()
+                    if self.taskNames is None:
+                        self.abort()
+                    else:
+                        self.advance_script()
                 else:
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
@@ -591,7 +594,7 @@ class Manager(QThread):
     def find_element(self, variable_list):
         try:
             element = int(variable_list['Element'])
-        except TypeError:
+        except ValueError:
             element = int(variable_list['Element'][8:])
 
         x_increment_MM = float(variable_list['X Incr. (mm)'])
