@@ -10,10 +10,7 @@ class RFB(QWidget, Ui_Form):
         self.balance = None
         self.manager = None
         self.config = None
-        # add default data to plots
-        y = range(0, 100)
-        x = range(0, 100)
-        self.rfb_graph.refresh(x, y)
+        self.style_ui()
 
     def set_config(self, config):
         self.config = config

@@ -6,7 +6,6 @@ from typing import Optional
 from collections import OrderedDict
 import distutils.util
 
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 
@@ -78,14 +77,17 @@ class Manager(QThread):
     finished_signal = pyqtSignal()
 
     # Tab signal
-    profile_plot_signal = pyqtSignal(list, list, str)
+    profile_plot_signal = pyqtSignal(list, list)
     plot_signal = pyqtSignal(object, object, float)
+    rfb_plot_signal_change_x_range = pyqtSignal(int)  # x-axis on plot should be from 0 to passed int
+    rfb_plot_signal_plot_reverse_power = pyqtSignal(float, float)  # int is watt
+    rfb_plot_signal_plot_forward_power = pyqtSignal(float, float)
 
     Motors = None
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
-        self.get_position_cooldown_s = .2 #decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
 
         self.scan_data = dict()
@@ -178,7 +180,7 @@ class Manager(QThread):
             self.Motors = AbstractMotorController(config=self.config)
         else:
             from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
-            self.Motors = VIX_Motor_Controller(config=self.config, lock = self.motor_control_lock)
+            self.Motors = VIX_Motor_Controller(config=self.config, lock=self.motor_control_lock)
 
         self.rm = None
 
@@ -218,7 +220,7 @@ class Manager(QThread):
             self.Balance = MT_balance(config=self.config)
             self.UAInterface = UAInterfaceBox(config=self.config)
             self.IO_Board = NI_DAQ(config=self.config)
-            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key= 'Forward_Power_Meter')
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
 
         self.devices.append(self.Forward_Power_Meter)
@@ -235,6 +237,8 @@ class Manager(QThread):
         for device in self.devices:
             device.connect_hardware()
         t.sleep(2)
+        # For testing purposes
+        # self.findRMS(search_mode="coarse", frequency_mode="LF")
 
     def disconnect_hardware(self):
         for device in self.devices:
@@ -300,7 +304,7 @@ class Manager(QThread):
 
     def update_motor_position(self):
         if self.Motors.connected and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
-            if t.time()-self.last_get_position_time > self.get_position_cooldown_s:
+            if t.time() - self.last_get_position_time > self.get_position_cooldown_s:
                 lock_aquired = self.motor_control_lock.tryLock()
 
                 if lock_aquired:
@@ -446,9 +450,9 @@ class Manager(QThread):
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if self.scripting and 0 <= self.step_index < len(self.taskNames):
 
-                    if self.step_complete:
-                        self.step_complete = False
-                        self.execute_script_step(self.step_index)
+                if self.step_complete:
+                    self.step_complete = False
+                    self.execute_script_step(self.step_index)
         elif self.step_index >= len(self.taskNames):
             self.abort()
 
@@ -535,13 +539,15 @@ class Manager(QThread):
         pass
 
     '''Collects metadata from user and prompts user until water level is ok'''
+
     def pretest_initialization(self, variable_list):
         today = date.today()
         formatted_date = today.strftime("%m/%d/%Y")
 
         # Show dialog until name and serial number are input
         while self.operator_name == "" or self.ua_serial_number == "":
-            self.pretest_dialog_signal.emit(formatted_date)  # sends signal from manager to MainWindow to open dialog box
+            self.pretest_dialog_signal.emit(
+                formatted_date)  # sends signal from manager to MainWindow to open dialog box
             try:
                 self.wait_for_cont()
             except AbortException:
@@ -571,6 +577,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''latches info from user in MainWindow to manager local vars'''
+
     @pyqtSlot(str, str, str)
     def pretest_info_slot(self, operator_name, ua_serial_no, comment):
         self.operator_name = operator_name
@@ -580,6 +587,7 @@ class Manager(QThread):
         self.cont()
 
     '''Find UA element with given number'''
+
     def find_element(self, variable_list):
         element = int(variable_list['Element'][8:])
         x_increment_MM = float(variable_list['X Incr. (mm)'])
@@ -664,15 +672,69 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
+
     def measure_element_efficiency_rfb(self, variable_list):
         element = variable_list['Element']
         frequency_range = variable_list['Frequency range']
         on_off_cycles = variable_list['RFB.#on/off cycles']
+        rfb_on_time = variable_list['RFB.On time (s)']
+        rfb_off_time = variable_list['RFB.Off time (s)']
+
+        five_sec_incr_counter = 0
+
+        current_cycle = 0
+
+        if frequency_range is "High frequency":
+            frequency = self.parent().ua_calibration_tab.High_Frequency
+        elif frequency_range is "Low frequency":
+            frequency = self.parent().ua_calibration_tab.Low_Frequency
+        else:
+            print("Improper frequency set, defaulting to high frequency")
+            frequency = self.parent().ua_calibration_tab.High_Frequency
+
+        self.AWG.SetFrequency_Hz(frequency)
+
+        self.AWG.disconnect_hardware()
+        self.Balance.zero_balance()
+
+
+        startTime = t.time()
+
+
+        while current_cycle <= on_off_cycles:
+
+            self.AWG.connect_hardware()
+
+            cycle_on_start_time = t.time()
+
+            if startTime - t.time() % 5000 == 0:  # every 5 seconds
+                five_sec_incr_counter = five_sec_incr_counter + 1
+                self.rfb_plot_signal_change_x_range.emit(5 * five_sec_incr_counter)  # use signal to set the x-axis on the rfb_graph to appropriate range
+
+            while cycle_on_start_time - t.time() < rfb_on_time:  # for the duration of rfb on time
+                reverse_power_watts = self.Reflected_Power_Meter.get_reading()
+                self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
+                forward_power_watts = self.Forward_Power_Meter.get_reading()
+                self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
+
+            #  turn off awg
+            self.AWG.disconnect_hardware()
+
+            cycle_off_start_time = t.time()
+
+            while cycle_off_start_time - t.time() < rfb_off_time:  # for the duration of rfb on time
+                reverse_power_watts = self.Reflected_Power_Meter.get_reading()
+                self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
+                forward_power_watts = self.Forward_Power_Meter.get_reading()
+                self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
+
+            current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
 
         self.element_number_signal.emit(str(element))
         self.step_complete = True
 
     '''Save scan results to a file'''
+
     def save_results(self, variable_list, calibration_data):  # calibration_data is the data gathered by the UA test
         save_summary_file = bool(distutils.util.strtobool(variable_list["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(variable_list["Write UA Calibration"]))
@@ -684,11 +746,13 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Prompt user for action'''
+
     def prompt_user_for_action(self, variable_list):
         prompt_type = variable_list["Prompt type"]
         self.step_complete = True
 
     '''Return axis to zero coordinate'''
+
     def home_system(self, variable_list):
         axis_to_home = variable_list['Axis to home']
         if axis_to_home == 'X':
@@ -703,6 +767,7 @@ class Manager(QThread):
         self.step_complete = True
 
     '''Warn the user that the UA is being retracted in x'''
+
     def retract_ua_warning(self):
         self.retracting_ua_warning_signal.emit()
 
@@ -758,10 +823,16 @@ class Manager(QThread):
         for x in np.arange(self.freq_lowlimit_hz, self.freq_highlimit_hz, self.step):
             self.AWG.SetFrequency_Hz(x)  # set frequency accoding to step (coarse/fine) and x incremenet
             self.list_of_frequencies.append(x)  # add the frequency to the list
+            self.times_s, self.voltages_v = self.Oscilloscope.capture(1)
+            # populates times_s and voltages_v with set frequency
+            self.voltages_v_squared = np.square(self.voltages_v)  # squares every value in the voltage graph
+            self.list_of_rms_values.append(
+                integrate.simps(self.voltages_v_squared, self.times_s, dx=None, axis=0))  # returns single value
             times_s, voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
 
             self.list_of_rms_values.append(self.find_rms(times_s, voltages_v))
-        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)  # frequencies will be on the x-axis
+        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)
+        # frequencies will be on the x-axis
 
     '''Returns the voltage squared integral of a oscilloscope waveform'''
     def find_rms(self, time_s, voltage_v):

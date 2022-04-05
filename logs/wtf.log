@@ -1,9 +1,8 @@
-2022-04-05 15:55:31,897 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-05 15:55:32,487 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-05 15:55:32,594 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
-2022-04-05 15:55:32,605 [INFO] [UAInterfaceBox] [] : WTFIB connected successfully
-2022-04-05 15:55:32,724 [ERROR] [VIX_Motor_Controller] [] : VIX_Motors COM port found but motor controller is not responding. Make sure it is powered up and click setup.
-2022-04-05 15:55:32,725 [INFO] [KeysightOscilloscope] [] : Attempting to connect to oscilloscope
-2022-04-05 15:55:34,928 [ERROR] [KeysightOscilloscope] [] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
-2022-04-05 15:55:35,268 [INFO] [KeysightOscilloscope] [] : Oscilloscope connected and set to default settings
-scilloscope] [] : Oscilloscope connected and set to default settings
+2022-04-05 16:29:20,306 [INFO] [PowerMeter] [] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-05 16:29:20,964 [INFO] [PowerMeter] [] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-05 16:29:21,048 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-05 16:29:21,058 [INFO] [UAInterfaceBox] [] : WTFIB connected successfully
+2022-04-05 16:29:21,183 [ERROR] [VIX_Motor_Controller] [] : VIX_Motors COM port found but motor controller is not responding. Make sure it is powered up and click setup.
+2022-04-05 16:29:21,184 [INFO] [KeysightOscilloscope] [] : Attempting to connect to oscilloscope...
+2022-04-05 16:29:23,373 [ERROR] [KeysightOscilloscope] [] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
+cilloscope] [] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
