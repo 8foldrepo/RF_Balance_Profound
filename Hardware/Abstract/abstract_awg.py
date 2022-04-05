@@ -47,7 +47,7 @@ class AbstractAWG(AbstractDevice):
         self.SetAmplitude_V(amplitude_V)
         self.SetCycles(burst_cycles)
         self.SetBurst(burst)
-        self.SetTrigger(external=ext_trig,period_s=burst_period_s)
+        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
         self.SetOffset_V(offset_V)
         self.SetOutputImpedence(output_Impedance)
 
@@ -61,7 +61,7 @@ class AbstractAWG(AbstractDevice):
         self.GetFrequency_Hz()
         self.GetAmplitude_V()
         self.GetBurst()
-        self.GetTrigger()
+        self.GetTriggerInput()
         self.GetOffset_V()
         self.GetOutputImpedence()
         return self.state
@@ -122,12 +122,12 @@ class AbstractAWG(AbstractDevice):
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
     @abstractmethod
-    def SetTrigger(self, external:bool, period_s = .000010, delay_s = 0):
+    def SetTriggerInput(self, external:bool, period_s = .000010, delay_s = 0):
         pass
 
     """Returns info about the trigger: source, delay_s, period_s"""
     @abstractmethod
-    def GetTrigger(self):
+    def GetTriggerInput(self):
         pass
 
     @abstractmethod

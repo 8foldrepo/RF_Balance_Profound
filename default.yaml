@@ -1,40 +1,15 @@
 Autoset timebase:
   Max time of flight (us): 50
   Min time of flight (us): 42
+  Horizontal scale (us): 5
 Debugging:
   simulate_hw: false
   simulate_motors: false
   simulate_oscilloscope: false
-Dummy_Motors:
-  axes:
-  - X
-  - R
-  calibrate_ray:
-  - 1
-  - 1
-  increment_ray:
-  - 100
-  - 100
-  jog_speed: 1
-  movement_mode: Distance
-  reverse_ray:
-  - false
-  - false
-  scan_speed: 1
-  speeds_ray:
-  - 100
-  - 100
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
   serial_number: '11506210019'
-Dummy_Oscilloscope:
-  averages: 16
-  capture_period_ns: 5
-  channel: 1
-  cycles: 10
-  delay_cycles: 0
-  range_mv: 10
 UAInterface:
 FrequencyParameters:
   HF:
@@ -66,9 +41,10 @@ Galil_Motors:
 Keysight_AWG:
   amplitude_V: 0.2
   burst: true
-  burst_cycles: 500
+  burst_cycles: 50
   burst_period_s: 0.1
-  ext_trig: true
+  trig_in: false
+  trig_out: true
   frequency_Hz: 4290000
   identifier: '0x2507'
   offset_V: 0
@@ -76,13 +52,12 @@ Keysight_AWG:
   output_Impedance: 50
   set_on_startup: true
 Keysight_Oscilloscope:
-  averages: 16
-  capture_period_ns: 100
   channel: 1
-  cycles: 10
-  delay_cycles: 0
+  averages: 16
   identifier: '0x179B'
-  range_mv: 10
+  autorange_v_startup: False
+  range_mV: 2000
+  ext_trigger: False
 MT_Balance:
   port: COM4
   timeout_s: 30

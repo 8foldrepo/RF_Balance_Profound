@@ -29,11 +29,12 @@ class KeysightAWG(AbstractAWG):
                    amplitude_V=self.config[self.device_key]['amplitude_V'],
                    burst=self.config[self.device_key]['burst'],
                    burst_cycles=self.config[self.device_key]['burst_cycles'],
-                   ext_trig=self.config[self.device_key]['ext_trig'],
+                   ext_trig=self.config[self.device_key]['trig_in'],
                    burst_period_s=self.config[self.device_key]['burst_period_s'],
                    offset_V=self.config[self.device_key]['offset_V'],
                    output=self.config[self.device_key]['output'],
-                   output_Impedance=self.config[self.device_key]['output_Impedance'])
+                   output_Impedance=self.config[self.device_key]['output_Impedance'],
+                   trigger_out = self.config[self.device_key]['trig_out'])
 
     def connect_hardware(self):
         resources = self.rm.list_resources()
@@ -68,13 +69,14 @@ class KeysightAWG(AbstractAWG):
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
     def setup(self, frequency_Hz, amplitude_V, burst = False, ext_trig = False, burst_period_s=.00001,burst_cycles = 50,
-              offset_V = 0, output=False, output_Impedance = 50):
+              offset_V = 0, output=False, output_Impedance = 50, trigger_out = True):
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
         self.SetCycles(burst_cycles)
         self.SetBurst(burst)
-        self.SetTrigger(external=ext_trig,period_s=burst_period_s)
+        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
+        self.SetTriggerOutput(trigger_out=trigger_out)
         self.SetOffset_V(offset_V)
         self.SetOutputImpedence(output_Impedance)
 
@@ -86,7 +88,7 @@ class KeysightAWG(AbstractAWG):
         self.GetFrequency_Hz()
         self.GetAmplitude_V()
         self.GetBurst()
-        self.GetTrigger()
+        self.GetTriggerInput()
         self.GetOffset_V()
         self.GetOutputImpedence()
         return self.state
@@ -153,7 +155,7 @@ class KeysightAWG(AbstractAWG):
         return self.read()
 
     """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-    def SetTrigger(self, external:bool, period_s = .000010, delay_s = 0):
+    def SetTriggerInput(self, external:bool, period_s = .000010, delay_s = 0):
         self.command(f"TRIG1:DEL {delay_s}")
         if external:
             self.command(f"TRIG1:SOUR EXT")
@@ -161,8 +163,15 @@ class KeysightAWG(AbstractAWG):
             self.command(f"TRIG1:SOUR TIM")
             self.command(f"TRIG1:TIM {period_s}")
 
+    def SetTriggerOutput(self, trigger_out = True):
+        if trigger_out:
+            self.command("OUTP:TRIG ON")
+            self.command("OUTP:TRIG:SLOP POS")
+        else:
+            self.command("OUTP:TRIG OFF")
+
     """Returns info about the trigger: source, delay_s, period_s"""
-    def GetTrigger(self):
+    def GetTriggerInput(self):
         self.command(f"TRIG:SOUR?")
         self.state['trig_source'] = self.read().strip('\n')
         self.command(f"TRIG:DEL?")

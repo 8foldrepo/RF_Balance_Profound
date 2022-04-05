@@ -287,7 +287,7 @@ class Manager(QThread):
                     if self.Oscilloscope.connected:
                         self.capture_and_plot()
                     else:
-                        self.log("Oscilloscope not connected, restart application")
+                        pass
                     self.update_motor_position()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
@@ -765,13 +765,13 @@ class Manager(QThread):
 
     '''Returns the voltage squared integral of a oscilloscope waveform'''
     def find_rms(self, time_s, voltage_v):
-        voltages_v_squared = np.square(voltage_v)
-
         dx = 0
         for i in range(1,len(time_s)):
             dx = time_s[i] - time_s[i-1]
             if not dx == 0:
                 break
+
+        voltages_v_squared = np.square(voltage_v)
 
         if dx == 0:
             self.log(level='Error', message='Error in find_rms. No delta x found, cannot integrate')

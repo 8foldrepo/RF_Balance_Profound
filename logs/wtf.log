@@ -1,6 +1,9 @@
-2022-04-04 18:18:46,461 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-04 18:18:47,053 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
-2022-04-04 18:18:47,122 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
-2022-04-04 18:19:00,170 [INFO] [Manager] [ui_thread] : Maximum of 1.0497471354648321e-07 @ x = 0.0 mm. Going there.
-2022-04-04 18:19:20,935 [INFO] [Manager] [ui_thread] : Maximum of 1.0497471354648321e-07 @ theta = -3.9999999999999996 degrees. Going there.
-471354648321e-07 @ theta = -3.9999999999999996 degrees. Going there.
+2022-04-05 15:55:31,897 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-05 15:55:32,487 [INFO] [PowerMeter] [] : PWR-SEN-6GHS
+2022-04-05 15:55:32,594 [INFO] [UAInterfaceBox] [] : Attempting to connect to WTFIB... 
+2022-04-05 15:55:32,605 [INFO] [UAInterfaceBox] [] : WTFIB connected successfully
+2022-04-05 15:55:32,724 [ERROR] [VIX_Motor_Controller] [] : VIX_Motors COM port found but motor controller is not responding. Make sure it is powered up and click setup.
+2022-04-05 15:55:32,725 [INFO] [KeysightOscilloscope] [] : Attempting to connect to oscilloscope
+2022-04-05 15:55:34,928 [ERROR] [KeysightOscilloscope] [] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
+2022-04-05 15:55:35,268 [INFO] [KeysightOscilloscope] [] : Oscilloscope connected and set to default settings
+scilloscope] [] : Oscilloscope connected and set to default settings
