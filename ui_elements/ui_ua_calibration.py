@@ -39,17 +39,17 @@ class UACalibration(QWidget, Ui_Form):
 
     @pyqtSlot(list, int)
     def populate_table(self, data = None, status = None):
-        # if status == -1:
-        #     self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
-        #     self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
-        #     return
-        # # data, status = self.ua_interface.read_data()
-        # if status == -2:
-        #     self.main_window.dialog_critical("wtfib is not connected (check power and ethernet connection)")
-        #     self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
-        #     return
-        # elif status == 0:
-        #     self.data = data
+        if status == -1:
+            self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
+            self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
+            return
+        # data, status = self.ua_interface.read_data()
+        if status == -2:
+            self.main_window.dialog_critical("wtfib is not connected (check power and ethernet connection)")
+            self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
+            return
+        elif status == 0:
+            self.data = data
 
         #Todo: Test values, remove later
         data = '1,CH2380,20170801,1,4.29,13.58,-88.1,64.5,72.7,68.0,67.1,72.8,70.0,63.2,69.4,61.4,65.6,' \
