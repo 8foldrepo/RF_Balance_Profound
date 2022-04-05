@@ -35,13 +35,13 @@ class Relay_Board(AbstractRelay):
             )
             self.ser.write(b"ON\r")
             self.connected = True
+            self.log(f"{self.device_key} connected successfully")
         except serial.serialutil.SerialException:
             self.connected = False
             self.log( level='error', message=
             f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
             "to determine which COM port to use. It is currently hard coded")
         self.connected_signal.emit(self.connected)
-
         self.relay_write(self.on_by_default)
 
     def disconnect_hardware(self):

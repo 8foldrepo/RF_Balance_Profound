@@ -20,7 +20,13 @@ def load_configuration() -> dict:
     else:
         with open(LOCAL_CONFIG_PATH, 'r') as fh:
             local_config = yaml.load(fh, Loader=yaml.SafeLoader)
-            useful_methods.update(configuration, local_config)
+            try:
+                useful_methods.update(configuration, local_config)
+            except AttributeError as e:
+                if str(e) == "'NoneType' object has no attribute 'items'":
+                    pass
+                else:
+                    print(f"AttributeError in load_config: {e}")
 
     return configuration
 

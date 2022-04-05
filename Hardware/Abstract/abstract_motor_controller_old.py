@@ -97,7 +97,7 @@ class AbstractMotorController(AbstractDevice):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
+        def __init__(self, config: dict, device_key = 'VIX_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
             self.coords = list()

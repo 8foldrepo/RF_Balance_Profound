@@ -102,7 +102,7 @@ class AbstractMotorController(AbstractDevice):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        def __init__(self, config: dict, device_key = 'Dummy_Motors', parent = None):
+        def __init__(self, config: dict, device_key = 'VIX_Motors', parent = None):
             super().__init__(parent = parent, config=config, device_key=device_key)
             #For tracking latest known coordinates in steps
             self.coords_mm = list()
@@ -125,9 +125,6 @@ class AbstractMotorController(AbstractDevice):
             self.ax_letters = self.config[self.device_key]['axes']
             self.cal_ray_steps_per = self.config[self.device_key]['calibrate_ray']
 
-            self._jog_speed = self.config[self.device_key]['jog_speed']
-            self._scan_speed = self.config[self.device_key]['scan_speed']
-
             # Dummy code, replace when developing a hardware interface
             self.Motors = DummyMotors(parent=None)
             self.Motors.set_config(self.config)
@@ -139,8 +136,7 @@ class AbstractMotorController(AbstractDevice):
         def setup(self, settings):
             self.increment_ray[0] = settings['steps_per_mm']
             self.increment_ray[0] = settings['lin_incr']
-            self.speeds_ray[0] = settings['lin_speed']
-            self.speeds_ray[1] = settings['rot_speed']
+            self.speeds_ray = settings["speed_ray"]
             self.cal_ray_steps_per[0] = settings['steps_per_deg']
             self.cal_ray_steps_per[1] = settings['ang_incr']
 

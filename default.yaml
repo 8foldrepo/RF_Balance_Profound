@@ -3,14 +3,13 @@ Autoset timebase:
   Min time of flight (us): 42
   Horizontal scale (us): 5
 Debugging:
-  simulate_hw: false
-  simulate_motors: false
-  simulate_oscilloscope: false
+  simulate_hw: true
+  simulate_motors: true
+  simulate_oscilloscope: true
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
   serial_number: '11506210019'
-UAInterface:
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50
@@ -41,7 +40,7 @@ Galil_Motors:
 Keysight_AWG:
   amplitude_V: 0.2
   burst: true
-  burst_cycles: 50
+  burst_cycles: 4000
   burst_period_s: 0.1
   trig_in: false
   trig_out: true
@@ -54,10 +53,14 @@ Keysight_AWG:
 Keysight_Oscilloscope:
   channel: 1
   averages: 16
+  capture_period_ns: 100
+  cycles: 10
+  delay_cycles: 0
   identifier: '0x179B'
   autorange_v_startup: False
   range_mV: 2000
   ext_trigger: False
+  timeout_s: 10
 MT_Balance:
   port: COM4
   timeout_s: 30
@@ -65,7 +68,7 @@ Paths:
   UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
     numbers.txt
   UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
-Power_Relay:
+Daq_Power_Relay:
   on_by_default: false
   port: COM3
   timeout_s: 1
@@ -73,7 +76,8 @@ Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: No dialog (abort)
   Pass fail action: No dialog (abort)
-  Retries: 0l
+  Retries: 0
+UAInterface: null
 User Accounts:
   Administrator: PMI_Admin
   Engineer: Engineer

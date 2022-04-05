@@ -377,6 +377,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(list, list)
     def update_profile_plot(self, x, y):
         self.scan_tab_widget.update_profile_plot(x, y)
+
     #Third argument is the horizontal axis label
     @pyqtSlot(list, list, str)
     def update_profile_plot(self, x, y, label):

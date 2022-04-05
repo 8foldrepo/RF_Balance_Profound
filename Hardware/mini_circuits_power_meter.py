@@ -16,7 +16,7 @@ import sys
 from definitions import POWER_METER_DLL_PATH
 sys.path.append(POWER_METER_DLL_PATH)
 clr.AddReference('mcl_pm_NET45')    # Reference the DLL
-from mcl_pm_NET45 import usb_pm
+from mcl_pm_NET45 import usb_pm #This can still run if this shows a red underline
 
 class PowerMeter(AbstractSensor):
     reading_signal = pyqtSignal(float)
@@ -44,7 +44,7 @@ class PowerMeter(AbstractSensor):
         self.pwr.Open_Sensor(self.serial_number)
         ModelName = self.pwr.GetSensorModelName()
         SerialNo = self.pwr.GetSensorSN()
-        self.log(ModelName, SerialNo)
+        self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial {SerialNo} connected successfully")
         self.pwr.Freq = 1000  # Set measurement frequency
         self.pwr.AvgCount = 1  # Set averaging count to 1
         self.pwr.AVG = 1  # Enable averaging

@@ -11,14 +11,14 @@ class AbstractOscilloscope(AbstractDevice):
         # Dummy code, replace when developing a hardware interface
         dummy_command_signal = pyqtSignal(str)
 
-        def __init__(self, device_key = 'Dummy_Oscilloscope', config: dict = None, parent = None):
+        def __init__(self, device_key = 'Keysight_Oscilloscope', config: dict = None, parent = None):
             super().__init__(device_key = device_key, config = config, parent = parent)
             self.connected = False
             self.fields_setup()
 
         @abstractmethod
         def fields_setup(self):
-            self.range_mv = self.config[self.device_key]['range_mv']
+            self.range_mv = self.config[self.device_key]['range_mV']
             self.channel = self.config[self.device_key]['channel']
             self.averages = self.config[self.device_key]['averages']
             self.capture_period_ns = self.config[self.device_key]['capture_period_ns']

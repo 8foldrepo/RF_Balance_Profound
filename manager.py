@@ -77,7 +77,7 @@ class Manager(QThread):
     finished_signal = pyqtSignal()
 
     # Tab signal
-    profile_plot_signal = pyqtSignal(list, list)
+    profile_plot_signal = pyqtSignal(list, list, str)
     plot_signal = pyqtSignal(object, object, float)
     rfb_plot_signal_change_x_range = pyqtSignal(int)  # x-axis on plot should be from 0 to passed int
     rfb_plot_signal_plot_reverse_power = pyqtSignal(float, float)  # int is watt
@@ -589,7 +589,11 @@ class Manager(QThread):
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        element = int(variable_list['Element'][8:])
+        try:
+            element = int(variable_list['Element'])
+        except TypeError:
+            element = int(variable_list['Element'][8:])
+
         x_increment_MM = float(variable_list['X Incr. (mm)'])
         XPts = int(variable_list['X #Pts.'])
         thetaIncrDeg = float(variable_list['Theta Incr. (deg)'])
@@ -684,9 +688,9 @@ class Manager(QThread):
 
         current_cycle = 0
 
-        if frequency_range is "High frequency":
+        if frequency_range == "High frequency":
             frequency = self.parent().ua_calibration_tab.High_Frequency
-        elif frequency_range is "Low frequency":
+        elif frequency_range == "Low frequency":
             frequency = self.parent().ua_calibration_tab.Low_Frequency
         else:
             print("Improper frequency set, defaulting to high frequency")
@@ -831,7 +835,7 @@ class Manager(QThread):
             times_s, voltages_v = self.Oscilloscope.capture(1)  # populates times_s and voltages_v with set frequency
 
             self.list_of_rms_values.append(self.find_rms(times_s, voltages_v))
-        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values)
+        self.profile_plot_signal.emit(self.list_of_frequencies, self.list_of_rms_values, "Frequency (Hz)")
         # frequencies will be on the x-axis
 
     '''Returns the voltage squared integral of a oscilloscope waveform'''

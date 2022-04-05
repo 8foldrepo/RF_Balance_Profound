@@ -11,7 +11,7 @@ class IO_Board(AbstractDevice):
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
-        self.power_relay = Relay_Board(device_key="Power_Relay")
+        self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.active_channel = 0  # 0 means all channels are off
