@@ -25,17 +25,15 @@ qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_da
 def main(args):
     app = QApplication(sys.argv)
     app.setStyle("fusion")
+    QThread.currentThread().setObjectName("ui_thread")
 
     window = MainWindow()
-
-    QThread.currentThread().setObjectName("ui_thread")
-    
     window.show()
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
     #window.prompt_for_password()
     # Todo: For testing purposes, remove later
-    #window.manager.test_code()
+    window.manager.test_code()
 
     code = app.exec_()
 
