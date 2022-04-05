@@ -79,7 +79,7 @@ class UAInterfaceBox(AbstractDevice):
             self.is_connected = False
             self.connected_signal.emit(self.is_connected)
             return
-
+        self.log('WTFIB connected successfully')
         self.is_connected = True
         self.connected_signal.emit(self.is_connected)
 

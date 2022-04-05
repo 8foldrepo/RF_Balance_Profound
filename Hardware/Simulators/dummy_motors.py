@@ -36,7 +36,7 @@ class DummyMotors(QThread):
 
     def __init__(self, parent: Optional[QObject]):
         super().__init__(parent=parent, objectName="manager_thread")
-        self.device_key = 'Dummy_Motors'
+        self.device_key = 'VIX_Motors'
         self.stay_alive = True
 
         self.cmd = 'NONE'

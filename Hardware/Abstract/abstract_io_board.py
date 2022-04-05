@@ -11,10 +11,11 @@ class IO_Board(AbstractDevice):
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
-        self.power_relay = Relay_Board(device_key="Power_Relay")
+        self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.active_channel = 0  # 0 means all channels are off
+        self.get_water_level()
 
     def get_active_relay_channel(self) -> int:
         return self.active_channel
@@ -29,7 +30,9 @@ class IO_Board(AbstractDevice):
 
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
-        return random.choice(states)
+        state = random.choice(states)
+        self.water_level_reading_signal.emit(state)
+        return state
 
     def fields_setup(self):
         pass
@@ -53,7 +56,7 @@ class IO_Board(AbstractDevice):
 
 
 if __name__ == '__main__':
-    daq = NI_DAQ()
+    daq = IO_Board()
     daq.connect_hardware()
     daq.active_channel(1)
     # for i in range(11):

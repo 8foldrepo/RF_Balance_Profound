@@ -74,6 +74,10 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
-    form = PasswordDialog()
+
+    form = PasswordDialog(config=None)
     form.show()
+
+    form.ok_button.clicked.connect(lambda:print("Done! Continue script"))
+
     app.exec_()

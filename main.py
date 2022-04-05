@@ -34,6 +34,8 @@ def main(args):
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
     #window.prompt_for_password()
+    # Todo: For testing purposes, remove later
+    #window.manager.test_code()
 
     code = app.exec_()
 
