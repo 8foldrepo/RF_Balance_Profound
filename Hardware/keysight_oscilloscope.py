@@ -175,7 +175,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     if "Timeout" in str(e):
                         pass
                     else:
-                        self.log(level="error", message="Unknown error when asking for waveform preamble")
+                        self.log(level="error", message=f"Unknown error when asking for waveform preamble, retrying: {e}")
                 if preamble is not None:
                     break
 
@@ -231,7 +231,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     voltages_v.append(float(voltages_v_strings[i]))
                     time_s.append((i-x_reference)*sample_interval_s + x_origin)
                 except ValueError:
-                    self.log(level="Error", info="An oscilloscope sample was not sent in a float format")
+                    self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
 
             return time_s, voltages_v
         else:
@@ -259,7 +259,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
-
 
     def read(self):
         try:

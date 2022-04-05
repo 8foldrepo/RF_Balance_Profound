@@ -163,7 +163,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                         self.log("Movement failed")
                         self.check_user_fault(axis_number=axis_numbers[i])
                         self.ready_signal.emit()
-                        return
+                        return False
                 else:
                     self.moving = True
                     self.moving_signal.emit(True)
@@ -176,6 +176,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             # self.get_position()
             # Send ready signal to enable UI
             self.ready_signal.emit()
+            return True
 
         @pyqtSlot()
         def set_origin_here(self):

@@ -639,7 +639,12 @@ class Manager(QThread):
 
         self.log(f"Maximum of {x_max_rms} @ x = {x_max_position} mm. Going there.")
 
-        self.Motors.go_to_position(['X'], [x_max_position])
+        status = self.Motors.go_to_position(['X'], [x_max_position])
+
+        if not status and self.config["debugging"]["end_script_on_errors"]:
+            self.abort()
+            return
+
         self.scan_data["X sweep waveforms"] = x_sweep_waveforms
 
         # Loop over r through a given range, move to the position where maximal RMS voltage was measured
