@@ -1,6 +1,7 @@
 from datetime import date
 
 import pyvisa
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from typing import Optional
 from collections import OrderedDict
@@ -78,10 +79,8 @@ class Manager(QThread):
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
-    plot_signal = pyqtSignal(object, object, float)
-    rfb_plot_signal_change_x_range = pyqtSignal(int)  # x-axis on plot should be from 0 to passed int
-    rfb_plot_signal_plot_reverse_power = pyqtSignal(float, float)  # int is watt
-    rfb_plot_signal_plot_forward_power = pyqtSignal(float, float)
+    plot_signal = pyqtSignal(list, list, float) #float is refresh rate
+    rfb_plot_signal = pyqtSignal(list,list,list,list,list)
 
     Motors = None
 
@@ -89,10 +88,10 @@ class Manager(QThread):
         super().__init__(parent=parent, objectName=u"manager_thread")
         self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
-
+        self.app = QApplication.instance()
         self.scan_data = dict()
 
-        #Used to prevent other threads from accessing the motor class
+        # Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
         self.freq_highlimit_hz = None
@@ -138,33 +137,58 @@ class Manager(QThread):
         self.add_devices()
 
     def test_code(self):
-        # todo: test code, remove later
-        self.scripting = True
+        # # todo: test code, remove later
+        # self.scripting = True
+        #
+        #
         variable_list = dict()
-        variable_list["Task type"] = "Find element \"n\""
-        variable_list["Element"] = "Element 1"
-        variable_list["X Incr. (mm)"] = "0.250000"
-        variable_list["X #Pts."] = "21"
-        variable_list["Theta Incr. (deg)"] = "-0.400000"
-        variable_list["Theta #Pts."] = "41"
-        variable_list["Scope channel"] = "Channel 1"
-        variable_list["Acquisition type"] = "N Averaged Waveform"
-        variable_list["Averages"] = "16"
-        variable_list["Data storage"] = "Do not store"
+        # variable_list["Task type"] = "Find element \"n\""
+        # variable_list["Element"] = "Element 1"
+        # variable_list["X Incr. (mm)"] = "0.250000"
+        # variable_list["X #Pts."] = "21"
+        # variable_list["Theta Incr. (deg)"] = "-0.400000"
+        # variable_list["Theta #Pts."] = "41"
+        # variable_list["Scope channel"] = "Channel 1"
+        # variable_list["Acquisition type"] = "N Averaged Waveform"
+        # variable_list["Averages"] = "16"
+        # variable_list["Data storage"] = "Do not store"
+        # variable_list["Storage location"] = "UA results directory"
+        # variable_list["Data directory"] = ""
+        # variable_list["Max. position error (+/- mm)"] = "0.200000"
+        # variable_list["ElementPositionTest"] = "FALSE"
+        # variable_list["Max angle variation (deg)"] = "2.000000"
+        # variable_list["BeamAngleTest"] = "FALSE"
+        # variable_list["Frequency settings"] = "Avg. Low frequency"
+        # variable_list["Auto set timebase"] = "TRUE"
+        # variable_list["#Cycles.Capture"] = "10"
+        # variable_list["#Cycles.Delay"] = "0"
+        # variable_list["Frequency (MHz)"] = "4.400000"
+        # variable_list["Amplitude (mV)"] = "50.000000"
+        # variable_list["Burst count"] = "50"
+        # return variable_list
+
+        # self.find_element(variable_list)
+
+        variable_list["Element"] = "Current"
+        variable_list["Frequency range"] = "Low frequency"
+        variable_list["RFB.#on/off cycles"] = "3"
+        variable_list["RFB.On time (s)"] = "10.000000"
+        variable_list["RFB.Off time (s)"] = "10.000000"
+        variable_list["RFB.Threshold"] = "0.050000"
+        variable_list["RFB.Offset"] = "0.500000"
+        variable_list["Set frequency options"] = "Common peak frequency"
+        variable_list["Frequency (MHz)"] = "4.200000"
+        variable_list["Amplitude (mVpp)"] = "100.000000"
         variable_list["Storage location"] = "UA results directory"
         variable_list["Data directory"] = ""
-        variable_list["Max. position error (+/- mm)"] = "0.200000"
-        variable_list["ElementPositionTest"] = "FALSE"
-        variable_list["Max angle variation (deg)"] = "2.000000"
-        variable_list["BeamAngleTest"] = "FALSE"
-        variable_list["Frequency settings"] = "Avg. Low frequency"
-        variable_list["Auto set timebase"] = "TRUE"
-        variable_list["#Cycles.Capture"] = "10"
-        variable_list["#Cycles.Delay"] = "0"
-        variable_list["Frequency (MHz)"] = "4.400000"
-        variable_list["Amplitude (mV)"] = "50.000000"
-        variable_list["Burst count"] = "50"
-        self.find_element(variable_list)
+        variable_list["RFB target position"] = "Average UA RFB position"
+        variable_list["RFB target angle"] = "-90.000000"
+        variable_list["EfficiencyTest"] = "TRUE"
+        variable_list["Pa max (target, W)"] = "4.000000"
+        variable_list["Pf max (limit, W)"] = "12.000000"
+        variable_list["Reflection limit (%)"] = "70.000000"
+
+        self.measure_element_efficiency_rfb(variable_list=variable_list)
 
     def add_devices(self):
         # -> check if we are simulating hardware
@@ -317,17 +341,26 @@ class Manager(QThread):
 
     def capture_and_plot(self):
         # Do these things if a script is not being run
-        if self.parent.plot_ready and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
-            # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
-            try:
-                time, voltage = self.Oscilloscope.capture(channel=1)
-                time_elapsed = t.time() - self.starttime
-                if time_elapsed != 0:
-                    self.refresh_rate = (round(1 / (time_elapsed), 1))
+        if not self.parent.plot_ready:
+            return
+        if not self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
+            return
 
-                self.plot_signal.emit(time, voltage, self.refresh_rate)
-            except pyvisa.errors.InvalidSession:
-                self.log("Could not plot, oscilloscope resource closed")
+        tabs = self.parent.scan_tab_widget.scan_tabs
+
+        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
+            return
+
+        # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
+        try:
+            time, voltage = self.Oscilloscope.capture(channel=1)
+            time_elapsed = t.time() - self.starttime
+            if time_elapsed != 0:
+                self.refresh_rate = (round(1 / (time_elapsed), 1))
+
+            self.plot_signal.emit(time, voltage, self.refresh_rate)
+        except pyvisa.errors.InvalidSession:
+            self.log("Could not plot, oscilloscope resource closed")
 
         self.starttime = t.time()
 
@@ -460,6 +493,7 @@ class Manager(QThread):
             self.abort()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
+
     def execute_script_step(self, step_index):
         if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
@@ -603,7 +637,7 @@ class Manager(QThread):
         thetaPts = int(variable_list['Theta #Pts.'])
         scope_channel = int(variable_list['Scope channel'][8:])
         acquisition_type = variable_list['Acquisition type']
-        #Todo: implement averaging
+        # Todo: implement averaging
         averages = int(variable_list['Averages'])
         data_storage = variable_list['Data storage']
         storage_location = variable_list['Storage location']
@@ -625,7 +659,7 @@ class Manager(QThread):
 
             voltage, time = self.Oscilloscope.capture(scope_channel)
             if not data_storage.upper() == 'Do not store'.upper():
-                x_sweep_waveforms.append([voltage,time])
+                x_sweep_waveforms.append([voltage, time])
 
             rms = self.find_rms(time_s=time, voltage_v=voltage)
 
@@ -654,8 +688,6 @@ class Manager(QThread):
         r_max_position = 0
         r_positions = list()
         r_rms_values = list()
-
-
 
         for i in range(thetaPts):
             self.Motors.go_to_position(['R'], [position])
@@ -688,62 +720,71 @@ class Manager(QThread):
     def measure_element_efficiency_rfb(self, variable_list):
         element = variable_list['Element']
         frequency_range = variable_list['Frequency range']
-        on_off_cycles = variable_list['RFB.#on/off cycles']
-        rfb_on_time = variable_list['RFB.On time (s)']
-        rfb_off_time = variable_list['RFB.Off time (s)']
+        on_off_cycles = int(variable_list['RFB.#on/off cycles'])
+        rfb_on_time = float(variable_list['RFB.On time (s)'])
+        rfb_off_time = float(variable_list['RFB.Off time (s)'])
 
         five_sec_incr_counter = 0
 
-        current_cycle = 0
+        current_cycle = 1
 
         if frequency_range == "High frequency":
-            frequency = self.parent().ua_calibration_tab.High_Frequency
+            frequency_Hz = self.parent.ua_calibration_tab.High_Frequency_MHz * 1000000
         elif frequency_range == "Low frequency":
-            frequency = self.parent().ua_calibration_tab.Low_Frequency
+            frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
+
         else:
-            print("Improper frequency set, defaulting to high frequency")
-            frequency = self.parent().ua_calibration_tab.High_Frequency
+            print("Improper frequency set, defaulting to low frequency")
+            frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
 
-        self.AWG.SetFrequency_Hz(frequency)
+        self.AWG.SetFrequency_Hz(frequency_Hz)
+        self.AWG.SetOutput(False)
 
-        self.AWG.disconnect_hardware()
-        self.Balance.zero_balance()
-
+        self.Balance.zero_balance_instantly()
 
         startTime = t.time()
+        five_sec_start_time = t.time()
 
+        times_s = list()
+        forward_powers_w = list()
+        reflected_powers_w = list()
+        balance_readings_g = list()
+        oscilloscope_amplitudes= list()
 
         while current_cycle <= on_off_cycles:
-
-            self.AWG.connect_hardware()
-
+            self.AWG.SetOutput(True)
             cycle_on_start_time = t.time()
 
-            if startTime - t.time() % 5000 == 0:  # every 5 seconds
+            if t.time() - five_sec_start_time >= 5000:
+                five_sec_start_time = t.time()
+                # every 5 seconds
                 five_sec_incr_counter = five_sec_incr_counter + 1
-                self.rfb_plot_signal_change_x_range.emit(5 * five_sec_incr_counter)  # use signal to set the x-axis on the rfb_graph to appropriate range
 
-            while cycle_on_start_time - t.time() < rfb_on_time:  # for the duration of rfb on time
-                reverse_power_watts = self.Reflected_Power_Meter.get_reading()
-                self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
-                forward_power_watts = self.Forward_Power_Meter.get_reading()
-                self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
-
-            #  turn off awg
-            self.AWG.disconnect_hardware()
-
-            cycle_off_start_time = t.time()
-
-            while cycle_off_start_time - t.time() < rfb_off_time:  # for the duration of rfb on time
-                reverse_power_watts = self.Reflected_Power_Meter.get_reading()
-                self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
-                forward_power_watts = self.Forward_Power_Meter.get_reading()
-                self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
-
-            current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
-
-        self.element_number_signal.emit(str(element))
-        self.step_complete = True
+            while t.time() - cycle_on_start_time < rfb_on_time:  # for the duration of rfb on time
+                reflected_powers_w.append(self.Reflected_Power_Meter.get_reading())
+                forward_powers_w.append(self.Forward_Power_Meter.get_reading())
+                balance_readings_g.append(self.Balance.get_reading())
+                times_s,volts_v = self.Oscilloscope.capture(1)
+                oscilloscope_amplitudes.append(max(volts_v))
+                times_s.append(t.time()-startTime)
+                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g, oscilloscope_amplitudes)
+                self.app.processEvents()
+                break
+        #     #  turn off awg
+        #     self.AWG.SetOutput(False)
+        #
+        #     cycle_off_start_time = t.time()
+        #
+        #     while cycle_off_start_time - t.time() < rfb_off_time:  # for the duration of rfb on time
+        #         reverse_power_watts = self.Reflected_Power_Meter.get_reading()
+        #         self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
+        #         forward_power_watts = self.Forward_Power_Meter.get_reading()
+        #         self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
+        #
+        #     current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
+        #
+        # self.element_number_signal.emit(str(element))
+        # self.step_complete = True
 
     '''Save scan results to a file'''
 
@@ -847,10 +888,11 @@ class Manager(QThread):
         # frequencies will be on the x-axis
 
     '''Returns the voltage squared integral of a oscilloscope waveform'''
+
     def find_rms(self, time_s, voltage_v):
         dx = 0
-        for i in range(1,len(time_s)):
-            dx = time_s[i] - time_s[i-1]
+        for i in range(1, len(time_s)):
+            dx = time_s[i] - time_s[i - 1]
             if not dx == 0:
                 break
 
@@ -860,7 +902,8 @@ class Manager(QThread):
             self.log(level='Error', message='Error in find_rms. No delta x found, cannot integrate')
             return
 
-        return integrate.simps(y=voltages_v_squared, dx = dx, axis=0)
+        return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
+
 
 class AbortException(Exception):
     pass

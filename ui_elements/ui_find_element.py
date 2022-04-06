@@ -143,7 +143,6 @@ class FindElement(QWidget, Ui_FIND_ELEMENT_WIDGET):
         frequency_selection = self.FREQANG_PRESET_FIELD.currentText()
         print('Frequency preset currently selected: ' + frequency_selection)
 
-
 if __name__ == "__main__":
     import sys
 

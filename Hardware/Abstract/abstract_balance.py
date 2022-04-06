@@ -31,7 +31,7 @@ class AbstractBalance(AbstractSensor):
 
     """Zeroes the scale with the next stale weight reading"""
     @abstractmethod
-    def zero_balance(self):
+    def zero_balance_stable(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected == False:
@@ -45,6 +45,37 @@ class AbstractBalance(AbstractSensor):
             item  = random.choice([b"ZA", b"I"])
 
             if item == b'Z A':
+                self.log(level='info', message='Balance Zeroed')
+                return
+            else:
+                if item == b'I':
+                    self.log(level='error', message='Weight unstable or balance busy')
+                    return
+                elif item == b'+':
+                    self.log(level='error', message='Balance overloaded')
+                    return
+                elif item == b'-':
+                    self.log(level='error', message='Balance underloaded')
+                    return
+        self.log(level='error', message=f'{self.device_key} timed out')
+
+    """Zeroes the scale with the next stale weight reading"""
+
+    @abstractmethod
+    def zero_balance_instantly(self):
+        # Command: I2 Inquiry of balance data.
+        # Response: I2 A Balance data as "text_item".
+        if self.ser is None or self.connected == False:
+            self.log("Device is not connected")
+            return
+        self.log("Zeroing Balance, Please wait")
+        self.ser.write(b"\nZ\n")
+
+        starttime = t.time()
+        while t.time() - starttime < self.timeout_s:
+            item = random.choice([b"Z S", b"Z D", b"Z I"])
+
+            if item == b'Z S' or b'Z D':
                 self.log(level='info', message='Balance Zeroed')
                 return
             else:

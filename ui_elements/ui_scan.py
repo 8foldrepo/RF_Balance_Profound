@@ -1,10 +1,8 @@
 from PyQt5.QtWidgets import *
-
+from PyQt5.QtCore import pyqtSlot
 from Widget_Library.widget_scan import Ui_scan_tab_widget
 
-
 class Scan(QWidget, Ui_scan_tab_widget):
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
@@ -26,6 +24,8 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     def set_manager(self, manager):
         self.manager = manager
+        self.manager.plot_signal.connect(self.plot)
+        self.manager.profile_plot_signal.connect(self.update_profile_plot)
 
     def style_ui(self):
         self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
@@ -53,6 +53,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
 
+    @pyqtSlot(list,list)
     def update_profile_plot(self, x, y):
         if x is None or y is None:
             return
@@ -62,7 +63,6 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
-
 
 if __name__ == '__main__':
     import sys

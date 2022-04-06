@@ -6,7 +6,6 @@ from Widget_Library.widget_ua_calibration import Ui_Form
 
 
 class UACalibration(QWidget, Ui_Form):
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.ua_interface = None
@@ -15,8 +14,8 @@ class UACalibration(QWidget, Ui_Form):
         self.config = None
 
         #Todo: default values, make sure these are not used without a warning
-        self.High_Frequency = 13.58
-        self.Low_Frequency = 4.29
+        self.High_Frequency_MHz = 13.58
+        self.Low_Frequency_MHz = 4.29
 
     def set_config(self, config):
         self.config = config
@@ -81,8 +80,8 @@ class UACalibration(QWidget, Ui_Form):
             item.setText(data[i + 17])
             self.tableWidget.setItem(i, 2, item)
 
-        self.High_Frequency = float(self.tableWidget.item(5, 0).text())
-        self.Low_Frequency = float(self.tableWidget.item(4,0).text())
+        self.High_FrequencyMHz = float(self.tableWidget.item(5, 0).text())
+        self.Low_FrequencyMHz = float(self.tableWidget.item(4,0).text())
 
 if __name__ == '__main__':
     import sys

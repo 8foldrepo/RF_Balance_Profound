@@ -1,7 +1,37 @@
-2022-04-05 17:29:29,198 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-05 17:29:29,778 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-05 17:29:29,868 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
-2022-04-05 17:29:29,879 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
-2022-04-05 17:29:29,900 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
-2022-04-05 17:29:32,077 [ERROR] [KeysightOscilloscope] [ui_thread] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
-eysightOscilloscope] [ui_thread] : Could not connect to oscilloscope, retrying, otherwise try restarting it: VI_ERROR_TMO (-1073807339): Timeout expired before operation completed.
+2022-04-05 19:34:31,365 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-05 19:34:31,989 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-05 19:34:32,055 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
+2022-04-05 19:34:32,067 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
+2022-04-05 19:34:32,103 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
+2022-04-05 19:34:32,620 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
+2022-04-05 19:34:34,845 [INFO] [MT_balance] [ui_thread] : Zeroing Balance, Please wait
+2022-04-05 19:34:34,848 [INFO] [MT_balance] [ui_thread] : Balance Zeroed
+2022-04-05 19:34:35,351 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:35,371 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.061 g
+2022-04-05 19:34:37,351 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:37,381 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:39,247 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:39,259 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:41,141 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:41,182 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:43,037 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:43,061 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:44,932 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:44,940 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:46,932 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:46,949 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:48,827 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:48,872 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:50,721 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:50,750 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:52,617 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:52,630 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.0609 g
+2022-04-05 19:34:54,616 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:54,639 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.061 g
+2022-04-05 19:34:56,511 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:56,518 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.061 g
+2022-04-05 19:34:58,511 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:58,526 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.061 g
+-0.061 g
+2022-04-05 19:34:58,511 [INFO] [MT_balance] [ui_thread] : Getting weight, please wait
+2022-04-05 19:34:58,526 [INFO] [MT_balance] [ui_thread] : Weight acquired: -0.061 g

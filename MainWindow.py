@@ -282,8 +282,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.UAInterface.connected_signal.connect(self.wtfib_indicator.setChecked)
         self.manager.IO_Board.connected_signal.connect(self.dio_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
-        self.manager.plot_signal.connect(self.scan_tab_widget.plot)
-        self.manager.profile_plot_signal.connect(self.scan_tab_widget.update_profile_plot)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
         self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
