@@ -45,7 +45,7 @@ class KeysightAWG(AbstractAWG):
                 try:
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
-                    self.log("Keysight 33509B Series function generator not found", level='error')
+                    self.log(f"Keysight 33509B Series function generator not found: {e}", level='error')
                     self.connected_signal.emit(False)
                     return
 
@@ -61,10 +61,8 @@ class KeysightAWG(AbstractAWG):
         self.connected_signal.emit(False)
 
     def disconnect_hardware(self):
-        try:
-            self.inst.close()
-        except:
-            pass
+        self.inst.close()
+
         self.connected_signal.emit(False)
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
@@ -244,6 +242,13 @@ class KeysightAWG(AbstractAWG):
                 self.log(level='error', message=f'error in read: {e}')
 
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+
+    def connected(self):
+        return self.inst is not None
+
+    def wrap_up(self):
+        self.inst.close()
+
     def __str__(self):
         self.get_state()
         return "Keysight 33500B Series Waveform Generator\nSettings:\n"+str(self.state)

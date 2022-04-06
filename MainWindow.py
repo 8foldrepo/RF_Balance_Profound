@@ -12,6 +12,9 @@ from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 import logging
+
+from ui_elements.ui_script_complete_dialog import ScriptCompleteDialog
+
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
@@ -592,6 +595,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
+        dlg.exec()
+
+    @pyqtSlot(list,list)
+    def show_script_complete_dialog(self, passed_ray, description_ray):
+        dlg = ScriptCompleteDialog(passed_ray, description_ray)
+        dlg.cancel_signal.connect(self.manager.cont)
+        dlg.continue_signal.connect(self.manager.cont)
         dlg.exec()
 
     @pyqtSlot(bool)

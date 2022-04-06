@@ -22,3 +22,4 @@ class WriteCalDataToUA(QDialog, write_cal_data_to_ua.Ui_write_cal_data_to_ua):
     def cancel_clicked(self):
         self.cancel_signal.emit()
         self.close()
+

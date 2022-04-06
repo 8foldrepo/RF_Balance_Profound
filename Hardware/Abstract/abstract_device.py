@@ -29,10 +29,6 @@ class AbstractDevice(QObject):
         pass
 
     @abstractmethod
-    def fields_setup(self):
-        pass
-
-    @abstractmethod
     def connect_hardware(self):
         self.is_connected = True
         self.connected_signal.emit(self.is_connected)
@@ -42,11 +38,6 @@ class AbstractDevice(QObject):
         self.is_connected = False
         self.connected_signal.emit(self.is_connected)
 
-    @abstractmethod
-    def connected(self):
-        return self.is_connected
-
-    @abstractmethod
     def wrap_up(self):
         self.disconnect_hardware()
 

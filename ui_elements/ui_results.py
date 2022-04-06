@@ -1,8 +1,10 @@
 from PyQt5.QtWidgets import *
 
 from Widget_Library.widget_results import Ui_Form
+from ui_elements.my_qwidget import MyQWidget
 
-class Results(QWidget, Ui_Form):
+
+class Results(MyQWidget, Ui_Form):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)

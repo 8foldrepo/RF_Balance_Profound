@@ -68,7 +68,7 @@ class AbstractOscilloscope(AbstractDevice):
             self.connected_signal.emit(self.connected)
 
         @abstractmethod
-        def capture(self, channel = 1):
+        def capture(self, channel):
             start_time = self.delay_cycles*self.signal_period_ns
             end_time = start_time + self.captures * self.capture_period_ns
             time = np.linspace(start_time, end_time, self.captures)
@@ -79,16 +79,4 @@ class AbstractOscilloscope(AbstractDevice):
 
             voltage = signal + noise
 
-            return time, voltage
-
-        @abstractmethod
-        def exec_command(self, command):
-            command = command.upper()
-            cmd_ray = command.split(' ')
-
-            if cmd_ray[0] == 'SCOPE':
-                cmd_ray.pop(0)
-                command = command[6:]
-
-            if command == 'Disconnect'.upper():
-                self.disconnect()
+            return list(time), list(voltage)

@@ -1,12 +1,11 @@
 import sys
-
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-
 from Widget_Library import dialog_password
+from ui_elements.my_qdialog import MyQDialog
 
 
-class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
+class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
     """
     A dialog that prompts the user for access level and password
 
@@ -17,7 +16,7 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
     access_level_signal = pyqtSignal(str)
 
     def __init__(self, config, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(config=config, parent=parent)
         self.config = config
         self.setupUi(self)
         self.style_ui()
@@ -70,14 +69,15 @@ class PasswordDialog(QDialog, dialog_password.Ui_Dialog):
             Progress = "Notes Saved"
             self.logger_signal.emit(str(Progress))
 
+def print_access(str):
+    print(f"access: {str}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
     form = PasswordDialog(config=None)
+    form.access_level_signal.connect(print_access)
     form.show()
-
-    form.ok_button.clicked.connect(lambda:print("Done! Continue script"))
 
     app.exec_()

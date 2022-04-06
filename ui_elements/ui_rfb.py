@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import *
-
 from Widget_Library.widget_rfb import Ui_Form
 from PyQt5.QtCore import pyqtSlot
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 import os
 from definitions import ROOT_DIR
+from ui_elements.my_qwidget import MyQWidget
+
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
@@ -14,7 +14,7 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class RFB(QWidget, Ui_Form):
+class RFB(MyQWidget, Ui_Form):
     def __init__(self, parent=None, manager=None, balance=None, config = None):
         super().__init__(parent=parent)
         self.setupUi(self)
@@ -56,8 +56,8 @@ class RFB(QWidget, Ui_Form):
 
         self.plot_ready = False
         self.rfb_graph.refresh(time_s, forward_power, pen='r', clear=True)
-        self.rfb_graph.refresh(time_s, reflected_power, pen='k', clear=True)
+        self.rfb_graph.refresh(time_s, reflected_power, pen='k', clear=False)
         #todo, change to combined power
-        self.rfb_graph.refresh(time_s, balance_readings_g, pen='b', clear=True)
-        self.rfb_graph.refresh(time_s, oscilloscope_amplitude, pen='g', clear=True)
+        self.rfb_graph.refresh(time_s, balance_readings_g, pen='b', clear=False)
+        self.rfb_graph.refresh(time_s, oscilloscope_amplitude, pen='g', clear=False)
         self.plot_ready = True

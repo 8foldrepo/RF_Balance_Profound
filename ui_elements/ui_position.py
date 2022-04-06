@@ -2,12 +2,12 @@ import yaml
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import *
-
 from Utilities.useful_methods import is_number
 from Widget_Library.widget_position import Ui_Form
 from Utilities.useful_methods import log_msg
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 import logging
+from ui_elements.my_qwidget import MyQWidget
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
@@ -18,7 +18,7 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class Position(QWidget, Ui_Form):
+class Position(MyQWidget, Ui_Form):
     '''Disables buttons of entire UI that may interfere with operations in progress'''
     set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
     home_1d_signal = QtCore.pyqtSignal(str)
@@ -29,7 +29,7 @@ class Position(QWidget, Ui_Form):
     begin_motion_signal = QtCore.pyqtSignal(str, int)
     stop_motion_signal = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
         self.app = QApplication.instance()
         self.setupUi(self)
