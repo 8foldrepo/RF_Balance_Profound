@@ -1,14 +1,13 @@
-from PyQt5.QtWidgets import QDialog
 from Widget_Library import retracting_ua_warning
 from PyQt5.QtCore import pyqtSignal
+from ui_elements.my_qdialog import MyQDialog
 
-
-class UARetractDialog(QDialog, retracting_ua_warning.Ui_retracting_ua_warn):
+class UARetractDialog(MyQDialog, retracting_ua_warning.Ui_retracting_ua_warn):
     continue_signal = pyqtSignal()
     cancel_signal = pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setupUi(self)
         self.configure_signals()
 

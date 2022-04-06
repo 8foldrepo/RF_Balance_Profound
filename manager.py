@@ -724,10 +724,6 @@ class Manager(QThread):
         rfb_on_time = float(variable_list['RFB.On time (s)'])
         rfb_off_time = float(variable_list['RFB.Off time (s)'])
 
-        five_sec_incr_counter = 0
-
-        current_cycle = 1
-
         if frequency_range == "High frequency":
             frequency_Hz = self.parent.ua_calibration_tab.High_Frequency_MHz * 1000000
         elif frequency_range == "Low frequency":
@@ -742,49 +738,66 @@ class Manager(QThread):
 
         self.Balance.zero_balance_instantly()
 
-        startTime = t.time()
-        five_sec_start_time = t.time()
-
         times_s = list()
         forward_powers_w = list()
         reflected_powers_w = list()
         balance_readings_g = list()
-        oscilloscope_amplitudes= list()
+        oscilloscope_amplitudes = list()
+
+        startTime = t.time()
+        current_cycle = 1
 
         while current_cycle <= on_off_cycles:
+            cycle_start_time = t.time()
+            print(f"Cycle startTime: {t.time()}")
             self.AWG.SetOutput(True)
-            cycle_on_start_time = t.time()
+            print("Turning on")
 
-            if t.time() - five_sec_start_time >= 5000:
-                five_sec_start_time = t.time()
-                # every 5 seconds
-                five_sec_incr_counter = five_sec_incr_counter + 1
+            print(f"off time: {rfb_off_time}")
+            print(f"on time: {rfb_on_time}")
+            print(f"on_off_cycles: {on_off_cycles}")
 
-            while t.time() - cycle_on_start_time < rfb_on_time:  # for the duration of rfb on time
-                reflected_powers_w.append(self.Reflected_Power_Meter.get_reading())
-                forward_powers_w.append(self.Forward_Power_Meter.get_reading())
-                balance_readings_g.append(self.Balance.get_reading())
-                times_s,volts_v = self.Oscilloscope.capture(1)
-                oscilloscope_amplitudes.append(max(volts_v))
-                times_s.append(t.time()-startTime)
-                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g, oscilloscope_amplitudes)
+            print(t.time() - cycle_start_time)
+            while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
+                reflected_powers_w.append(1)
+                forward_powers_w.append(1)
+                balance_readings_g.append(1)
+                oscilloscope_amplitudes.append(1)
+                times_s.append(t.time() - startTime)
+                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g,
+                                          oscilloscope_amplitudes)
                 self.app.processEvents()
-                break
-        #     #  turn off awg
-        #     self.AWG.SetOutput(False)
-        #
-        #     cycle_off_start_time = t.time()
-        #
-        #     while cycle_off_start_time - t.time() < rfb_off_time:  # for the duration of rfb on time
-        #         reverse_power_watts = self.Reflected_Power_Meter.get_reading()
-        #         self.rfb_plot_signal_plot_reverse_power.emit(reverse_power_watts, startTime - t.time())
-        #         forward_power_watts = self.Forward_Power_Meter.get_reading()
-        #         self.rfb_plot_signal_plot_forward_power.emit(forward_power_watts, startTime - t.time())
-        #
-        #     current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
-        #
-        # self.element_number_signal.emit(str(element))
-        # self.step_complete = True
+                # reflected_powers_w.append(self.Reflected_Power_Meter.get_reading())
+                # forward_powers_w.append(self.Forward_Power_Meter.get_reading())
+                # balance_readings_g.append(self.Balance.get_reading())
+                # oscilloscope_times,volts_v = self.Oscilloscope.capture(1)
+                # oscilloscope_amplitudes.append(max(volts_v))
+                # times_s.append(t.time()-startTime)
+                # self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w,
+                #                           balance_readings_g, oscilloscope_amplitudes)
+                # self.app.processEvents()
+
+            print("Turning off")
+
+             #  turn off awg
+            self.AWG.SetOutput(False)
+
+            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
+                reflected_powers_w.append(0)
+                forward_powers_w.append(0)
+                balance_readings_g.append(0)
+                oscilloscope_amplitudes.append(0)
+                times_s.append(t.time() - startTime)
+                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g,
+                                          oscilloscope_amplitudes)
+                self.app.processEvents()
+
+            current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
+
+        print(f"Final time: {t.time() - startTime}")
+
+        self.element_number_signal.emit(str(element))
+        self.step_complete = True
 
     '''Save scan results to a file'''
 

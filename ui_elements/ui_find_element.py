@@ -1,9 +1,10 @@
 from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
 from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
+from ui_elements.my_qwidget import MyQWidget
 
 
-class FindElement(QWidget, Ui_FIND_ELEMENT_WIDGET):
-    def __init__(self, parent=None):
+class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
+    def __init__(self, config = None, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.combo_check()

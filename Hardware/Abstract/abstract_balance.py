@@ -103,28 +103,7 @@ class AbstractBalance(AbstractSensor):
     @abstractmethod
     def get_reading(self):
         self.log("Getting weight, please wait")
-
-        item = random.choice([b'S D', b'I'])
-        if b'S D' in item:
-            chunks = item.split(b" ")
-            for chunk in chunks:
-                if is_number(chunk):
-                    val = float(chunk)
-                    self.log(f'Weight acquired: {val} g')
-                    self.latest_weight = val
-                    self.reading_signal.emit(val)
-                    return
-        else:
-            if item == b'I':
-                self.log(level = 'error', message='Weight unstable or balance busy')
-                return
-            elif item == b'+':
-                self.log(level = 'error', message='Balance overloaded')
-                return
-            elif item == b'-':
-                self.log(level = 'error', message='Balance underloaded')
-                return
-        self.log(level='error', message=f'{self.device_key} timed out')
+        return random.random()
 
     def reset(self):
         self.log("Reset")
@@ -132,27 +111,7 @@ class AbstractBalance(AbstractSensor):
     @abstractmethod
     def get_stable_reading(self):
         self.log("Getting stable weight, please wait")
-        item = random.choice([b"S S", b"I"])
-
-        if b'S S' in item:
-            chunks = item.split(b" ")
-            for chunk in chunks:
-                if is_number(chunk):
-                    val = float(chunk)
-                    self.log(f'Stable weight acquired: {val} g')
-                    self.latest_weight = val
-                    self.reading_signal.emit(val)
-                    return
-        else:
-            if item == b'I':
-                self.log(level = 'error', message='Weight unstable or balance busy')
-                return
-            elif item == b'+':
-                self.log(level = 'error', message='Balance overloaded')
-                return
-            elif item == b'-':
-                self.log(level = 'error', message='Balance underloaded')
-                return
+        return random.random()
 
 if __name__ == '__main__':
     balance = AbstractBalance(config=load_configuration())

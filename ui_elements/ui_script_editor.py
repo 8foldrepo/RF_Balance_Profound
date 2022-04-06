@@ -1,13 +1,6 @@
-import pyqtgraph as pg
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtGui import QIcon
-from PyQt5 import QtGui, QtCore
-import time
 from Widget_Library.widget_script_editor import  Ui_Form
-from collections import  OrderedDict
+from collections import OrderedDict
 
 #Todo: add the rest of the methods to the dropdown
 class ScriptEditor(QWidget, Ui_Form):
@@ -56,8 +49,6 @@ class ScriptEditor(QWidget, Ui_Form):
         is_task = item.parent() is self.treeWidget.invisibleRootItem() or item.parent() is None
         if is_task:
             return
-
-
 
         #Clicked cell contains a variable value
         #Prompt user to edit value

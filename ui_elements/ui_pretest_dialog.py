@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import QDialog
 from Widget_Library import test_data_capture
 from PyQt5.QtCore import pyqtSignal
+from ui_elements.my_qdialog import MyQDialog
 
-
-class PretestDialog(QDialog, test_data_capture.Ui_test_data_capture):
+class PretestDialog(MyQDialog, test_data_capture.Ui_test_data_capture):
     pretest_signal = pyqtSignal(str, str, str)  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None, config=None):
+        super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
 

@@ -1,11 +1,6 @@
 import pyqtgraph as pg
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtPrintSupport import *
-from PyQt5.QtGui import QIcon
-from PyQt5 import QtGui, QtCore
-import time
+from PyQt5.QtGui import QPalette, QFont
+from PyQt5.QtWidgets import QApplication
 
 class Plot(pg.PlotWidget):
     def __init__(self, parent=None):

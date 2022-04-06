@@ -1,9 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtCore import *
-
 from Widget_Library.widget_ua_calibration import Ui_Form
-
 
 class UACalibration(QWidget, Ui_Form):
     def __init__(self, parent=None):

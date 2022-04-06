@@ -1,9 +1,6 @@
 import pyvisa
 import time as t
-import cProfile
-import pstats
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
-import numpy
 
 class KeysightOscilloscope(AbstractOscilloscope):
     def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
@@ -238,7 +235,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.log(f"Could not capture, {self.device_key} is not connected")
             return [0],[0]
 
-    """Sets the burst period of the waveform in seconds"""
     def SetPeriod_s(self, channel, period):
         self.Period = period
         Peri = "C" + channel + ":BTWV PRD,{}".format(self.Period)
@@ -263,7 +259,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def read(self):
         try:
             return self.inst.read()
-            t.sleep(.03)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'read\'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
