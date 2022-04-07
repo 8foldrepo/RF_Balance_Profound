@@ -42,6 +42,24 @@ def create_comma_string(axes:list,coords:list,ax_letters:list):
         answer = answer + ","
     return  answer
 
+#returns the random uncertainty of a data set as a percentage
+#Todo: double check this formula
+def calculate_random_unceratainty_percent(data_set: list):
+    import numpy.std
+    return numpy.std(data_set)
+
+#returns the random uncertainty of a data set as a percentage
+#Todo: double check this formula
+def calculate_total_unceratainty_percent(data_set: list):
+    import numpy.std
+    return numpy.std(data_set)
+
+#placeholder formula
+#todo: fill in with  the correct formula
+def calculate_power_from_balance_reading(balance_reading_g:float):
+
+    return balance_reading_g * 14
+
 def update(d, u):
     for k, v in u.items():
         if isinstance(v, collections.abc.Mapping):

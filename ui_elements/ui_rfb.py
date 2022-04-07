@@ -40,24 +40,23 @@ class RFB(MyQWidget, Ui_Form):
         x = range(0, 100)
         self.rfb_graph.refresh(x, y)
 
-    @pyqtSlot(list,list,list,list,list)
-    def update_rfb_plot(self, time_s, forward_power, reflected_power,balance_readings_g,oscilloscope_amplitude):
+    """Updates one of the plots of the graph, first list is time, second list is the measurement,
+    the string is the color letter, the boolean is whether or not to clear the plot."""
+    @pyqtSlot(list, list, list, list,list, list)
+    def update_rfb_plot(self, forward_s, forward_w, reflected_s, reflected_w, acoustic_s, acoustic_w):
         if not self.plot_ready:
             return
 
-        if time_s is None or forward_power is None or reflected_power is None:
-            self.plot_ready = True
+        if forward_w is None:
             return
 
-        if len(forward_power) == 0 or len(forward_power) != len(time_s) or len(reflected_power) != len(time_s):
-            #self.log(level="Error", message="Length mismatch")
-            self.plot_ready = True
+        if len(forward_w) != len(forward_s) or len(reflected_w) != len(reflected_s) or len(acoustic_w) != len(acoustic_s):
             return
 
         self.plot_ready = False
-        self.rfb_graph.refresh(time_s, forward_power, pen='r', clear=True)
-        self.rfb_graph.refresh(time_s, reflected_power, pen='k', clear=False)
-        #todo, change to combined power
-        self.rfb_graph.refresh(time_s, balance_readings_g, pen='b', clear=False)
-        self.rfb_graph.refresh(time_s, oscilloscope_amplitude, pen='g', clear=False)
+        self.rfb_graph.refresh(forward_s, forward_w, pen='k', clear=True)
+        if reflected_w is not None:
+            self.rfb_graph.refresh(reflected_s, reflected_w, pen='g', clear=False)
+        if acoustic_w is not None:
+            self.rfb_graph.refresh(acoustic_s, acoustic_w, pen='r', clear=False)
         self.plot_ready = True
