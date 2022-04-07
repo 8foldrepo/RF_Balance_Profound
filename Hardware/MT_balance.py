@@ -131,10 +131,9 @@ class MT_balance(AbstractBalance):
                     for chunk in chunks:
                         if is_number(chunk):
                             val = float(chunk)
-                            self.log(f'Weight acquired: {val} g')
                             self.latest_weight = val
                             self.reading_signal.emit(val)
-                            return
+                            return val
                 else:
                     if item == b'I':
                         self.log(level = 'error', message='Weight unstable or balance busy')

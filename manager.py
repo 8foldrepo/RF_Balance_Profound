@@ -16,10 +16,10 @@ import time as t
 import numpy as np
 from scipy import integrate
 
-from Utilities.useful_methods import log_msg
-import os
+from Utilities.useful_methods import log_msg,calculate_random_unceratainty_percent,\
+    calculate_total_unceratainty_percent, calculate_power_from_balance_reading
 from definitions import ROOT_DIR
-
+import os
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
@@ -80,7 +80,7 @@ class Manager(QThread):
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
     plot_signal = pyqtSignal(list, list, float) #float is refresh rate
-    rfb_plot_signal = pyqtSignal(list,list,list,list,list)
+    rfb_plot_signal = pyqtSignal(list,list,list,list,list,list) #forward_w, forward_s, reflected_w, reflected_s, acoustic_w, acoustic_s
 
     Motors = None
 
@@ -715,6 +715,7 @@ class Manager(QThread):
         self.element_number_signal.emit(str(element))
         self.step_complete = True
 
+
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, variable_list):
@@ -728,9 +729,8 @@ class Manager(QThread):
             frequency_Hz = self.parent.ua_calibration_tab.High_Frequency_MHz * 1000000
         elif frequency_range == "Low frequency":
             frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
-
         else:
-            print("Improper frequency set, defaulting to low frequency")
+            self.log("Improper frequency set, defaulting to low frequency")
             frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
 
         self.AWG.SetFrequency_Hz(frequency_Hz)
@@ -740,8 +740,11 @@ class Manager(QThread):
 
         times_s = list()
         forward_powers_w = list()
+        forward_powers_time_s = list()
         reflected_powers_w = list()
-        balance_readings_g = list()
+        reflected_powers_time_s = list()
+        acoustic_powers_w = list()
+        acoustic_powers_time_s = list()
         oscilloscope_amplitudes = list()
 
         startTime = t.time()
@@ -749,47 +752,41 @@ class Manager(QThread):
 
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
-            print(f"Cycle startTime: {t.time()}")
             self.AWG.SetOutput(True)
-            print("Turning on")
-
-            print(f"off time: {rfb_off_time}")
-            print(f"on time: {rfb_on_time}")
-            print(f"on_off_cycles: {on_off_cycles}")
-
-            print(t.time() - cycle_start_time)
             while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
-                reflected_powers_w.append(1)
-                forward_powers_w.append(1)
-                balance_readings_g.append(1)
-                oscilloscope_amplitudes.append(1)
-                times_s.append(t.time() - startTime)
-                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g,
-                                          oscilloscope_amplitudes)
-                self.app.processEvents()
-                # reflected_powers_w.append(self.Reflected_Power_Meter.get_reading())
-                # forward_powers_w.append(self.Forward_Power_Meter.get_reading())
-                # balance_readings_g.append(self.Balance.get_reading())
-                # oscilloscope_times,volts_v = self.Oscilloscope.capture(1)
-                # oscilloscope_amplitudes.append(max(volts_v))
-                # times_s.append(t.time()-startTime)
-                # self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w,
-                #                           balance_readings_g, oscilloscope_amplitudes)
-                # self.app.processEvents()
+                forward_powers_w.append(self.Forward_Power_Meter.get_reading() * 30)  #todo: remove *30
+                forward_powers_time_s.append(t.time() - startTime)
 
-            print("Turning off")
+                reflected_powers_w.append(self.Reflected_Power_Meter.get_reading() * 30)  #todo: remove *30
+                reflected_powers_time_s.append(t.time() - startTime)
+
+                balance_reading = self.Balance.get_reading() * 30 #todo: remove *30
+                acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
+                acoustic_powers_w.append(acoustic_power_w)
+                acoustic_powers_time_s.append(t.time()-startTime)
+
+                self.rfb_plot_signal.emit(forward_powers_time_s, forward_powers_w, reflected_powers_time_s,
+                                          reflected_powers_w, acoustic_powers_time_s, acoustic_powers_w)
+                self.app.processEvents()
 
              #  turn off awg
             self.AWG.SetOutput(False)
 
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
-                reflected_powers_w.append(0)
-                forward_powers_w.append(0)
-                balance_readings_g.append(0)
-                oscilloscope_amplitudes.append(0)
-                times_s.append(t.time() - startTime)
-                self.rfb_plot_signal.emit(times_s, forward_powers_w, reflected_powers_w, balance_readings_g,
-                                          oscilloscope_amplitudes)
+                forward_powers_w.append(self.Forward_Power_Meter.get_reading())
+                forward_powers_time_s.append(t.time() - startTime)
+
+                reflected_powers_w.append(self.Reflected_Power_Meter.get_reading())
+                reflected_powers_time_s.append(t.time() - startTime)
+
+                balance_reading = self.Balance.get_reading()
+                if balance_reading is not None:
+                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
+                    acoustic_powers_w.append(acoustic_power_w)
+                    acoustic_powers_time_s.append(t.time()-startTime)
+
+                self.rfb_plot_signal.emit(forward_powers_time_s, forward_powers_w, reflected_powers_time_s,
+                                          reflected_powers_w, acoustic_powers_time_s, acoustic_powers_w)
                 self.app.processEvents()
 
             current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code

@@ -37,7 +37,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
                             retry = True
                         else:
                             self.log(level='error', message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
-                            self.clear()
                             retry = True
 
         if self.inst == None:
