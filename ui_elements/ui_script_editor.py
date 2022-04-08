@@ -27,12 +27,14 @@ class ScriptEditor(QWidget, Ui_Form):
         self.delete_step_button.clicked.connect(self.delete_step)
         self.delete_all_button.clicked.connect(self.delete_all)
 
+    """Delete the step at the given index"""
     def delete_step(self):
         index = self.treeWidget.currentIndex().row()
         self.treeWidget.takeTopLevelItem(index)
         self.arg_dicts.pop(index + 1) #account for header
         pass
 
+    """Clear the ui script visual and clear the internal arg_dicts variable"""
     def delete_all(self):
         self.treeWidget.clear()
         self.arg_dicts = list()
@@ -74,6 +76,7 @@ class ScriptEditor(QWidget, Ui_Form):
 
                 task_dict[self.arg_dicts[i]["Task type"]] = arg_list
 
+        #Add an item for each task and child items for all of its variables
         tree_items = []
         for key, values in task_dict.items():
             item = QTreeWidgetItem([key])

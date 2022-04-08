@@ -120,8 +120,6 @@ class MT_balance(AbstractBalance):
             return
 
         self.ser.write(b"\nSI\n")
-        self.log("Getting weight, please wait")
-
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
@@ -169,7 +167,7 @@ class MT_balance(AbstractBalance):
         #Command: I2 Inquiry of balance data.
         #Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
-        self.log("Getting balance reading")
+        self.log("Getting stable reading, please wait")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:

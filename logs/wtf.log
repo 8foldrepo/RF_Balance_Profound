@@ -1,17 +1,13 @@
-2022-04-07 19:51:56,867 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-07 19:51:57,495 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-07 19:51:57,554 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
-2022-04-07 19:51:57,565 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
-2022-04-07 19:51:57,565 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
-2022-04-07 19:51:57,667 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-07 19:51:57,668 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-07 19:51:57,794 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-07 19:51:57,794 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
-2022-04-07 19:51:57,795 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
-2022-04-07 19:51:58,211 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
-2022-04-07 19:52:02,343 [INFO] [Manager] [manager_thread] : Loading script
-2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Running script
-2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Aborting script
-er_thread] : Loading script
-2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Running script
-2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-08 11:59:02,475 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-08 11:59:03,085 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-08 11:59:03,153 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
+2022-04-08 11:59:03,164 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
+2022-04-08 11:59:03,165 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
+2022-04-08 11:59:03,762 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-08 11:59:03,764 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-08 11:59:03,986 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 11:59:03,988 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
+2022-04-08 11:59:03,990 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
+2022-04-08 11:59:04,435 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
+cope] [ui_thread] : Attempting to connect to oscilloscope...
+2022-04-08 11:59:04,435 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
