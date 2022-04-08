@@ -267,7 +267,6 @@ class VIX_Motor_Controller(AbstractMotorController):
                 closedString = '0'
 
             command_string = f"{axis_number}HOME{onString}({reference_edge},{closedString},{speed},100,{mode})"
-            print(command_string)
 
             self.command(command_string)
 
@@ -280,6 +279,7 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         def connect_hardware(self):
             try:
+                self.log("Connecting to motor controller...")
                 self.ser = serial.Serial(
                     port=self.port,  # May vary depending on computer
                     baudrate=19200,
@@ -296,7 +296,9 @@ class VIX_Motor_Controller(AbstractMotorController):
                     f"{self.device_key} COM port found but motor controller is not responding. "
                     f"Make sure it is powered up and click setup.")
                 else:
+                    self.setup()
                     self.connected = True
+                    self.log("Motor controller connected and set to default settings")
             except serial.serialutil.SerialException:
                 self.connected = False
                 self.log(level='error', message=
