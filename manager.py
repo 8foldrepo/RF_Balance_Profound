@@ -352,7 +352,9 @@ class Manager(QThread):
 
     def capture_and_plot(self):
         # Do these things if a script is not being run
-        if not self.parent.plot_ready:
+
+        # Only capture if the scan tab is selected
+        if not self.parent.scan_tab_widget.plot_ready:
             return
         if not self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
             return
@@ -362,7 +364,6 @@ class Manager(QThread):
         if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
             return
 
-        # The plot exists in the parent MainWindow Class, but has been moved to this Qthread
         try:
             time, voltage = self.Oscilloscope.capture(channel=1)
             time_elapsed = t.time() - self.starttime

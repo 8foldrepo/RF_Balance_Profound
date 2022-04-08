@@ -8,8 +8,13 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.setupUi(self)
         self.manager = None
         self.config = None
+
+        # True if the widget is not currently plotting
+        self.plot_ready = True
+
         self.configure_signals()
         self.style_ui()
+        self.mainwindow = self.parent().parent()
 
     def configure_signals(self):
         self.file_browser_button.clicked.connect(self.browse_clicked)
@@ -43,6 +48,19 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.voltage_time_plot.refresh(x,y)
 
     def plot(self, x, y, refresh_rate):
+        # Cancel if this widget is not plot ready
+        if not self.plot_ready:
+            return
+
+        # Cancel if the current tab is not visible
+        if not self.mainwindow.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
+            return
+
+        tabs = self.scan_tabs
+
+        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
+            return
+
         self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
@@ -55,6 +73,8 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     @pyqtSlot(list,list, str)
     def update_profile_plot(self, x, y, axis_label):
+
+
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
