@@ -109,8 +109,8 @@ VIX_Motors:
   - false
   - true
   speeds_ray:
-  - 5.0
-  - 5.0
+  - 100
+  - 100
   time_limit_s: 2
   timeout_s: 0.1
 WTF_DIO:

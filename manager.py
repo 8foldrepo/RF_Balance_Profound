@@ -1,6 +1,6 @@
 import sys
 from datetime import date
-
+import re
 import pyvisa
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, pyqtSlot
@@ -92,9 +92,16 @@ class Manager(QThread):
         self.app = QApplication.instance()
         self.scan_data = dict()
         self.config = config
-        self.element_distances = get_element_distances(
+        self.element_x_coordinates = get_element_distances(
             element_1_index=self.config['WTF_PositionParameters']['X-Element1'],
             element_pitch=self.config['WTF_PositionParameters']['X-Element pitch (mm)'])
+
+        #put a none at position zero because there is no element zero
+        self.element_r_coordinates = [None]
+        #fill in default theta home coordinates
+        for i in range(10):
+            self.element_r_coordinates.append(self.config['WTF_PositionParameters']['ThetaHomeCoord'])
+
         # Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
@@ -630,16 +637,16 @@ class Manager(QThread):
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        try:
-            element = int(variable_list['Element'])
-        except ValueError:
-            element = int(variable_list['Element'][8:])
+        element = int(re.search(r'\d+', str(variable_list['Element'])).group())
 
         #Update UI visual to reflect the element we are on
         self.element_number_signal.emit(str(element))
 
-        element_coordinate = self.element_distances[element]
-        print(f"Finding element {element}, near coordinate {element_coordinate}")
+        element_x_coordinate = self.element_x_coordinates[element]
+        element_r_coordinate = self.element_r_coordinates[element]
+        print(f"Finding element {element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+
+        t.sleep(.1)
         x_increment_MM = float(variable_list['X Incr. (mm)'])
         XPts = int(variable_list['X #Pts.'])
         thetaIncrDeg = float(variable_list['Theta Incr. (deg)'])
@@ -665,7 +672,7 @@ class Manager(QThread):
         x_rms_values = list()
 
         # sweep from the expected element position minus the max error to the expected element position plus max error
-        position = -1 * (XPts * x_increment_MM)/2 + element_coordinate
+        position = -1 * (XPts * x_increment_MM)/2 + element_x_coordinate
 
         # begin with arbitrarily low values
         x_max_rms = sys.float_info.min
@@ -689,6 +696,9 @@ class Manager(QThread):
             self.profile_plot_signal.emit(x_positions, x_rms_values, 'Distance (mm)')
 
         self.log(f"Maximum of {x_max_rms} @ x = {x_max_position} mm. Going there.")
+
+        #update element x position
+        self.element_x_coordinates[element] = x_max_position
 
         status = self.Motors.go_to_position(['X'], [x_max_position])
 
@@ -728,14 +738,20 @@ class Manager(QThread):
         self.scan_data["Theta sweep waveforms"] = r_sweep_waveforms
 
         self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
-
+        #update element r position
+        self.element_r_coordinates[element] = r_max_position
 
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, variable_list):
-        element = variable_list['Element']
+        element = int(re.search(r'\d+', str(variable_list['Element'])).group())
+        element_x_coordinate = self.element_x_coordinates[element]
+        element_r_coordinate = self.element_x_coordinates[element]
+        print(f"Measuring effeciency of {element}, at coordinate x={element_x_coordinate}, r={element_r_coordinate}")
+        self.element_number_signal.emit(str(element))
+        self.Motors.go_to_position(['X','R'], [element_x_coordinate,element_r_coordinate])
         frequency_range = variable_list['Frequency range']
         on_off_cycles = int(variable_list['RFB.#on/off cycles'])
         rfb_on_time = float(variable_list['RFB.On time (s)'])
@@ -774,7 +790,7 @@ class Manager(QThread):
                 forward_powers_w.append(forward_power_w)
                 forward_powers_time_s.append(t.time() - startTime)
 
-                reflected_power_w = self.Reflected_Power_Meter.get_reading() + 1  # todo: remove *30
+                reflected_power_w = self.Reflected_Power_Meter.get_reading()
                 reflected_powers_w.append(reflected_power_w)
                 reflected_powers_time_s.append(t.time() - startTime)
 

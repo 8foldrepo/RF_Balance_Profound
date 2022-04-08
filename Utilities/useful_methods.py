@@ -31,7 +31,7 @@ def create_coord_rays(coords:str,ax_letters:list):
 def get_element_distances(element_1_index, element_pitch):
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coords = [None,None,None,None,None,None,None,None,None,None,None]
-    for i in range(10):
+    for i in range(1,11):
         offset = i * element_pitch
         element_coords[i] = element_1_index + offset
 
