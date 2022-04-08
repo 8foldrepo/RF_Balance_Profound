@@ -64,7 +64,7 @@ Keysight_Oscilloscope:
   timeout_s: 20
 MT_Balance:
   port: COM4
-  timeout_s: 30
+  timeout_s: .5
 Paths:
   UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
     numbers.txt

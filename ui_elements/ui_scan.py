@@ -53,12 +53,14 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
 
-    @pyqtSlot(list,list)
-    def update_profile_plot(self, x, y):
+    @pyqtSlot(list,list, str)
+    def update_profile_plot(self, x, y, axis_label):
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
             return
+
+        self.profile_plot.setLabel("bottom", axis_label, **self.profile_plot.styles)
 
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
