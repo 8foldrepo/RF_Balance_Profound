@@ -70,6 +70,7 @@ class SystemInfo(MyQWidget, Ui_Form):
         self.PREAMP_SN_FIELD.setText(parser['Hydrophone system']['Preamplifier SN'])
         self.DC_SN_FIELD.setText(parser['Hydrophone system']['DC Coupler SN'])
 
+
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
