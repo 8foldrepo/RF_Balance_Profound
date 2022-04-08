@@ -1,58 +1,17 @@
-2022-04-07 18:51:16,362 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-07 18:51:17,022 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-07 18:51:17,116 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
-2022-04-07 18:51:17,127 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
-2022-04-07 18:51:17,128 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
-2022-04-07 18:51:17,627 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-07 18:51:17,629 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-07 18:51:18,075 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-07 18:51:18,078 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
-2022-04-07 18:51:18,080 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
-2022-04-07 18:51:18,533 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
-2022-04-07 18:51:34,444 [INFO] [Manager] [manager_thread] : Loading script
-2022-04-07 18:51:52,710 [INFO] [Manager] [manager_thread] : Running script
-2022-04-07 18:51:52,751 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-07 18:52:10,203 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:52:10,237 [INFO] [VIX_Motor_Controller] [manager_thread] : Value is out of range
-2022-04-07 18:52:27,558 [INFO] [Manager] [manager_thread] : Maximum of 1.8375933484200977e-07 @ x = 7.125 mm. Going there.
-2022-04-07 18:52:50,715 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:52:50,765 [INFO] [VIX_Motor_Controller] [manager_thread] : Value is out of range
-2022-04-07 18:53:37,228 [INFO] [Manager] [manager_thread] : Maximum of 1.8375933484200977e-07 @ theta = -91.00000000000013 degrees. Going there.
-2022-04-07 18:53:47,627 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:54:13,023 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 3.3000000000000003 mm. Going there.
-2022-04-07 18:54:38,508 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:54:38,667 [INFO] [VIX_Motor_Controller] [manager_thread] : Value is out of range
-2022-04-07 18:55:09,339 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:55:14,012 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:55:20,445 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -91.80000000000014 degrees. Going there.
-2022-04-07 18:55:22,508 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:55:27,324 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:55:54,308 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 9.899999999999993 mm. Going there.
-2022-04-07 18:56:54,892 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:57:02,866 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -92.20000000000014 degrees. Going there.
-2022-04-07 18:57:37,679 [INFO] [Manager] [manager_thread] : Maximum of 4.0817338978180815e-08 @ x = 13.699999999999998 mm. Going there.
-2022-04-07 18:57:40,076 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:58:26,764 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 18:58:44,925 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -91.40000000000013 degrees. Going there.
-2022-04-07 18:59:20,134 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 19.89999999999999 mm. Going there.
-2022-04-07 19:00:07,277 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:00:28,405 [INFO] [Manager] [manager_thread] : Maximum of 1.8375933484200977e-07 @ theta = -85.80000000000005 degrees. Going there.
-2022-04-07 19:01:03,096 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 25.09999999999999 mm. Going there.
-2022-04-07 19:02:05,939 [INFO] [Manager] [manager_thread] : Maximum of 1.8375933484200977e-07 @ theta = -88.20000000000009 degrees. Going there.
-2022-04-07 19:02:08,541 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:02:38,069 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 31.099999999999987 mm. Going there.
-2022-04-07 19:02:50,380 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:02:50,412 [INFO] [VIX_Motor_Controller] [manager_thread] : Value is out of range
-2022-04-07 19:03:44,036 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -89.0000000000001 degrees. Going there.
-2022-04-07 19:04:16,924 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:04:18,289 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 34.90000000000003 mm. Going there.
-2022-04-07 19:05:10,796 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:05:10,830 [INFO] [VIX_Motor_Controller] [manager_thread] : Value is out of range
-2022-04-07 19:05:20,461 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:05:25,491 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -92.60000000000015 degrees. Going there.
-2022-04-07 19:05:59,461 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ x = 38.70000000000001 mm. Going there.
-2022-04-07 19:06:06,461 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:06:09,948 [INFO] [VIX_Motor_Controller] [manager_thread] : Movement failed
-2022-04-07 19:07:07,316 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -97.40000000000022 degrees. Going there.
-[manager_thread] : Movement failed
-2022-04-07 19:07:07,316 [INFO] [Manager] [manager_thread] : Maximum of 1.7367696425775692e-07 @ theta = -97.40000000000022 degrees. Going there.
+2022-04-07 19:51:56,867 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-07 19:51:57,495 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-07 19:51:57,554 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
+2022-04-07 19:51:57,565 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
+2022-04-07 19:51:57,565 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
+2022-04-07 19:51:57,667 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-07 19:51:57,668 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-07 19:51:57,794 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-07 19:51:57,794 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
+2022-04-07 19:51:57,795 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
+2022-04-07 19:51:58,211 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
+2022-04-07 19:52:02,343 [INFO] [Manager] [manager_thread] : Loading script
+2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Running script
+2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Aborting script
+er_thread] : Loading script
+2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Running script
+2022-04-07 19:52:03,085 [INFO] [Manager] [manager_thread] : Aborting script

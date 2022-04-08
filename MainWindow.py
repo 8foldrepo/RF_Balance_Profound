@@ -523,7 +523,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot()
     def show_ua_retract_warn_prompt(self):
-        dlg = UARetractDialog()
+        dlg = UARetractDialog(config = self.config)
         dlg.continue_signal.connect(self.manager.cont)
         dlg.cancel_signal.connect(self.manager.abort)
         dlg.exec()
