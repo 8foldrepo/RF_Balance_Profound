@@ -796,7 +796,7 @@ class Manager(QThread):
 
                 balance_reading = self.Balance.get_reading()
                 if balance_reading is not None:
-                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
+                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading*-30)
                     acoustic_powers_w.append(acoustic_power_w)
                     acoustic_powers_time_s.append(t.time() - startTime)
                     awg_on.append(True)

@@ -597,7 +597,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.scanning = False
 
         def get_position(self, mutex_locked = False):
-            moving_ray = [True, True]
+            #Assume motors are not moving unless their position is changing
+            moving_ray = [False, False]
             moving_margin_ray = [0.001,.001]
 
 
@@ -623,8 +624,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                     self.r_pos_mm_signal.emit(round(position_deg_or_mm,2))
 
                 #Check if position has not changed. If all axes have not changed moving will be false
-                if abs(position_deg_or_mm-self.coords_mm[i]) < moving_margin_ray[i]:
-                    moving_ray[i] = False
+                if abs(position_deg_or_mm-self.coords_mm[i]) > moving_margin_ray[i]:
+                    moving_ray[i] = True
 
                 self.coords_mm[i] = position_deg_or_mm
 
