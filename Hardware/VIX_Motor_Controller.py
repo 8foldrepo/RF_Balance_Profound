@@ -251,7 +251,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         def setup_home(self):
             #todo: test these values and edit accordingly
             self.setup_home_1d('X', True, reference_edge='-', normally_closed=False, speed=50, mode=1)
-            self.setup_home_1d('R', False, reference_edge='-', normally_closed=False, speed=5, mode=1)
+            self.setup_home_1d('R', True, reference_edge='-', normally_closed=False, speed=50, mode=1)
 
         def setup_home_1d(self, axis, enabled = True, reference_edge = '+', normally_closed = False, speed = -5, mode = 1):
             axis_number = self.get_ax_number(axis)

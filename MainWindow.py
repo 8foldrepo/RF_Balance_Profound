@@ -71,7 +71,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     command_signal = QtCore.pyqtSignal(str)
 
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-    plot_ready = QtCore.pyqtSignal(str)
     num_tasks = 0
     # Tracks whether the thread is doing something
     ready = True
@@ -89,7 +88,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.system_config.set_config(self.config)
 
         self.manager = Manager(parent=self, config=self.config)
-        self.plot_ready = True
         self.thread_list.append(self.manager)
         self.tree_items = None
         self.arg_dicts = None
@@ -163,7 +161,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.retract_button.setEnabled(False)
         self.reset_zero_button.setEnabled(False)
         self.go_theta_button.setEnabled(False)
-        self.insert_button.setEnabled(False)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
@@ -266,7 +263,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
-        self.insert_button.clicked.connect(self.insert_button_clicked)
+        self.insert_button.clicked.connect(self.position_tab.insert_button_clicked)
+        self.retract_button.clicked.connect(self.position_tab.retract_button_clicked)
 
         # enable/disable buttons signals
         self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
@@ -348,10 +346,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.ua_pump_indicator.setText("UA PUMP OFF")
 
     """Command the motors to go to the insertion point"""
-
-    @pyqtSlot()
-    def insert_button_clicked(self):
-        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     @pyqtSlot()
     def update_x_speed(self):

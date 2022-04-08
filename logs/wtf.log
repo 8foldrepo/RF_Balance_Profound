@@ -1,13 +1,27 @@
-2022-04-08 11:59:02,475 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-08 11:59:03,085 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-08 11:59:03,153 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
-2022-04-08 11:59:03,164 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
-2022-04-08 11:59:03,165 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
-2022-04-08 11:59:03,762 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
-2022-04-08 11:59:03,764 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
-2022-04-08 11:59:03,986 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
-2022-04-08 11:59:03,988 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
-2022-04-08 11:59:03,990 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
-2022-04-08 11:59:04,435 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
-cope] [ui_thread] : Attempting to connect to oscilloscope...
-2022-04-08 11:59:04,435 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
+2022-04-08 12:17:51,975 [INFO] [PowerMeter] [ui_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-08 12:17:52,584 [INFO] [PowerMeter] [ui_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-08 12:17:52,661 [INFO] [UAInterfaceBox] [ui_thread] : Attempting to connect to WTFIB... 
+2022-04-08 12:17:52,672 [INFO] [UAInterfaceBox] [ui_thread] : WTFIB connected successfully
+2022-04-08 12:17:52,673 [INFO] [VIX_Motor_Controller] [ui_thread] : Connecting to motor controller...
+2022-04-08 12:17:52,758 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-08 12:17:52,758 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-08 12:17:52,933 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 12:17:52,934 [INFO] [VIX_Motor_Controller] [ui_thread] : Motor controller connected and set to default settings
+2022-04-08 12:17:52,935 [INFO] [KeysightOscilloscope] [ui_thread] : Attempting to connect to oscilloscope...
+2022-04-08 12:17:53,355 [INFO] [KeysightOscilloscope] [ui_thread] : Oscilloscope connected and set to default settings
+2022-04-08 12:18:04,257 [INFO] [Manager] [manager_thread] : Loading script
+2022-04-08 12:19:48,230 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-08 12:19:48,232 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-08 12:19:48,454 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 12:20:45,881 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+2022-04-08 12:20:46,035 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+2022-04-08 12:21:13,414 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-08 12:21:13,416 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-08 12:21:13,639 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 12:21:44,919 [INFO] [VIX_Motor_Controller] [ui_thread] : 0MA
+2022-04-08 12:21:44,922 [INFO] [VIX_Motor_Controller] [ui_thread] : output = b'0MA\r\n'
+2022-04-08 12:21:45,111 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 12:22:14,877 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
+b'0MA\r\n'
+2022-04-08 12:21:45,111 [INFO] [VIX_Motor_Controller] [ui_thread] : Done setting up
+2022-04-08 12:22:14,877 [INFO] [VIX_Motor_Controller] [ui_thread] : Stopping motion
