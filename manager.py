@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 import re
 import pyvisa
@@ -114,26 +115,6 @@ class Manager(QThread):
         self.test_data['high_frequency_MHz'] = float('nan')
         self.test_data['hardware_code'] = ""
         self.test_data['results_summary'] = list()
-
-        #Todo:dummy data
-        self.test_data['results_summary'].append(['Element_01','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_02','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_03','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_04','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_05','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_06','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_07','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_08','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_09','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['Element_10','1.30','-96.4','4.280','NaN','13.870','NaN','70.0','6.1','6.1','22.3','39.0','11.3','5.7','22.3','Pass'])
-        self.test_data['results_summary'].append(['UA Common','NaN','-96.4','4.280','NaN','13.870','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-
-        elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
-        elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
-
-        #Todo: add ability to set manual frequencies per element
-        self.test_data['results_summary'].append([elements_with_manual_lf])
-        self.test_data['results_summary'].append([elements_with_manual_hf])
 
         self.freq_highlimit_hz = None
         self.freq_lowlimit_hz = None
@@ -650,19 +631,41 @@ class Manager(QThread):
 
     @pyqtSlot(dict)
     def pretest_metadata_slot(self, pretest_metadata):
-        print(self.test_data)
         self.test_data.update(pretest_metadata)
-        print(self.test_data)
+
+        lf = str(self.test_data['low_frequency_MHz'])
+        hf = str(self.test_data['high_frequency_MHz'])
+
+        #Default values, will be updated during test
+        self.test_data['results_summary'].append(['Element_01','0','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_02','5','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_03','10','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_04','15','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_05','20','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_06','25','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_07','30','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+        self.test_data['results_summary'].append(['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+
+        elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
+        elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
+
+        #Todo: add ability to set manual frequencies per element
+        self.test_data['results_summary'].append([elements_with_manual_lf])
+        self.test_data['results_summary'].append([elements_with_manual_hf])
+
         self.cont()
 
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        element = int(re.search(r'\d+', str(variable_list['Element'])).group())
-
-        #Update UI visual to reflect the element we are on
-        self.element_number_signal.emit(str(element))
-
+        # element = int(re.search(r'\d+', str(variable_list['Element'])).group())
+        #
+        # #Update UI visual to reflect the element we are on
+        # self.element_number_signal.emit(str(element))
+        #
         # element_x_coordinate = self.element_x_coordinates[element]
         # element_r_coordinate = self.element_r_coordinates[element]
         # print(f"Finding element {element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
@@ -681,7 +684,13 @@ class Manager(QThread):
         # maxPosErrMM = float(variable_list["Max. position error (+/- mm)"])
         # elemPosTest = bool(variable_list["ElementPositionTest"])
         #
+        #
+        #
         # # Configure hardware
+        # frequency_Hz = self.test_data['low_frequency_MHz'] * 1000000
+        # self.AWG.SetFrequency_Hz(frequency_Hz)
+        # self.AWG.SetOutput(True)
+        #
         # if acquisition_type.upper() == 'N Averaged Waveform'.upper():
         #     self.Oscilloscope.SetAveraging(averages)
         # else:
@@ -761,123 +770,128 @@ class Manager(QThread):
         # self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
         # #update element r position
         # self.element_r_coordinates[element] = r_max_position
+        #
+        # #update results summary
+        # self.test_data['results_summary'][element-1][1] = x_max_position
+        # self.test_data['results_summary'][element-1][2] = r_max_position
+        # self.test_data['results_summary'][element-1][3] = frequency
 
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, variable_list):
-        # element = int(re.search(r'\d+', str(variable_list['Element'])).group())
-        # element_x_coordinate = self.element_x_coordinates[element]
-        # element_r_coordinate = self.element_x_coordinates[element]
-        # print(f"Measuring effeciency of {element}, at coordinate x={element_x_coordinate}, r={element_r_coordinate}")
-        # self.element_number_signal.emit(str(element))
-        # self.Motors.go_to_position(['X','R'], [element_x_coordinate,element_r_coordinate])
-        # frequency_range = variable_list['Frequency range']
-        # on_off_cycles = int(variable_list['RFB.#on/off cycles'])
-        # rfb_on_time = float(variable_list['RFB.On time (s)'])
-        # rfb_off_time = float(variable_list['RFB.Off time (s)'])
-        #
-        # if frequency_range == "High frequency":
-        #     frequency_Hz = self.test_data['high_frequency_MHz'] * 1000000
-        # elif frequency_range == "Low frequency":
-        #     frequency_Hz = self.test_data['low_frequency_MHz'] * 1000000
-        # else:
-        #     self.log("Improper frequency set, defaulting to low frequency")
-        #     frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
-        #
-        # self.AWG.SetFrequency_Hz(frequency_Hz)
-        # self.AWG.SetOutput(False)
-        #
-        # self.Balance.zero_balance_instantly()
-        #
-        # forward_powers_w = list()
-        # forward_powers_time_s = list()
-        # reflected_powers_w = list()
-        # reflected_powers_time_s = list()
-        # acoustic_powers_w = list()
-        # acoustic_powers_time_s = list()
-        #
-        # awg_on = list()
-        #
-        # startTime = t.time()
-        # current_cycle = 1
-        #
-        # while current_cycle <= on_off_cycles:
-        #     cycle_start_time = t.time()
-        #     self.AWG.SetOutput(True)
-        #     while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
-        #         forward_power_w = self.Forward_Power_Meter.get_reading()
-        #         forward_powers_w.append(forward_power_w)
-        #         forward_powers_time_s.append(t.time() - startTime)
-        #
-        #         reflected_power_w = self.Reflected_Power_Meter.get_reading()
-        #         reflected_powers_w.append(reflected_power_w)
-        #         reflected_powers_time_s.append(t.time() - startTime)
-        #
-        #         balance_reading = self.Balance.get_reading()
-        #         if balance_reading is not None:
-        #             acoustic_power_w = calculate_power_from_balance_reading(balance_reading*-30)
-        #             acoustic_powers_w.append(acoustic_power_w)
-        #             acoustic_powers_time_s.append(t.time() - startTime)
-        #             awg_on.append(True)
-        #
-        #         # package data to send it to the rfb ui tab
-        #         args = dict()
-        #         args['forward_s'] = forward_powers_time_s
-        #         args['forward_w'] = forward_powers_w
-        #         args['reflected_s'] = reflected_powers_time_s
-        #         args['reflected_w'] = reflected_powers_w
-        #         args['acoustic_s'] = acoustic_powers_time_s
-        #         args['acoustic_w'] = acoustic_powers_w
-        #         args['awg_on'] = awg_on
-        #         args['grams'] = balance_reading
-        #         args['forward_power_w'] = forward_power_w
-        #         args['reflected_power_w'] = reflected_power_w
-        #         self.rfb_tab_signal.emit(args)
-        #
-        #         self.app.processEvents()
-        #
-        #     #  turn off awg
-        #     self.AWG.SetOutput(False)
-        #
-        #     while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
-        #         forward_power_w = self.Forward_Power_Meter.get_reading()
-        #         forward_powers_w.append(forward_power_w)
-        #         forward_powers_time_s.append(t.time() - startTime)
-        #
-        #         reflected_power_w = self.Reflected_Power_Meter.get_reading()
-        #         reflected_powers_w.append(reflected_power_w)
-        #         reflected_powers_time_s.append(t.time() - startTime)
-        #
-        #         balance_reading = self.Balance.get_reading()
-        #         if balance_reading is not None:
-        #             acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
-        #             acoustic_powers_w.append(acoustic_power_w)
-        #             acoustic_powers_time_s.append(t.time() - startTime)
-        #             awg_on.append(False)
-        #
-        #         # package data to send it to the rfb ui tab
-        #         args = dict()
-        #         args = dict()
-        #         args['forward_s'] = forward_powers_time_s
-        #         args['forward_w'] = forward_powers_w
-        #         args['reflected_s'] = reflected_powers_time_s
-        #         args['reflected_w'] = reflected_powers_w
-        #         args['acoustic_s'] = acoustic_powers_time_s
-        #         args['acoustic_w'] = acoustic_powers_w
-        #         args['awg_on'] = awg_on
-        #         args['grams'] = balance_reading
-        #         args['forward_power_w'] = forward_power_w
-        #         args['reflected_power_w'] = reflected_power_w
-        #         self.rfb_tab_signal.emit(args)
-        #         self.app.processEvents()
-        #
-        #     current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
-        #
-        # print(f"Final time: {t.time() - startTime}")
-        #
-        # self.element_number_signal.emit(str(element))
+        element = int(re.search(r'\d+', str(variable_list['Element'])).group())
+        element_x_coordinate = self.element_x_coordinates[element]
+        element_r_coordinate = self.element_x_coordinates[element]
+        print(f"Measuring effeciency of {element}, at coordinate x={element_x_coordinate}, r={element_r_coordinate}")
+        self.element_number_signal.emit(str(element))
+        self.Motors.go_to_position(['X','R'], [element_x_coordinate,element_r_coordinate])
+        frequency_range = variable_list['Frequency range']
+        on_off_cycles = int(variable_list['RFB.#on/off cycles'])
+        rfb_on_time = float(variable_list['RFB.On time (s)'])
+        rfb_off_time = float(variable_list['RFB.Off time (s)'])
+
+        if frequency_range == "High frequency":
+            frequency_Hz = self.test_data['high_frequency_MHz'] * 1000000
+        elif frequency_range == "Low frequency":
+            frequency_Hz = self.test_data['low_frequency_MHz'] * 1000000
+        else:
+            self.log("Improper frequency set, defaulting to low frequency")
+            frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
+
+        self.AWG.SetFrequency_Hz(frequency_Hz)
+        self.AWG.SetOutput(False)
+
+        self.Balance.zero_balance_instantly()
+
+        forward_powers_w = list()
+        forward_powers_time_s = list()
+        reflected_powers_w = list()
+        reflected_powers_time_s = list()
+        acoustic_powers_w = list()
+        acoustic_powers_time_s = list()
+
+        awg_on = list()
+
+        startTime = t.time()
+        current_cycle = 1
+
+        while current_cycle <= on_off_cycles:
+            cycle_start_time = t.time()
+            self.AWG.SetOutput(True)
+            while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
+                forward_power_w = self.Forward_Power_Meter.get_reading()
+                forward_powers_w.append(forward_power_w)
+                forward_powers_time_s.append(t.time() - startTime)
+
+                reflected_power_w = self.Reflected_Power_Meter.get_reading()
+                reflected_powers_w.append(reflected_power_w)
+                reflected_powers_time_s.append(t.time() - startTime)
+
+                balance_reading = self.Balance.get_reading()
+                if balance_reading is not None:
+                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading*-30)
+                    acoustic_powers_w.append(acoustic_power_w)
+                    acoustic_powers_time_s.append(t.time() - startTime)
+                    awg_on.append(True)
+
+                # package data to send it to the rfb ui tab
+                args = dict()
+                args['forward_s'] = forward_powers_time_s
+                args['forward_w'] = forward_powers_w
+                args['reflected_s'] = reflected_powers_time_s
+                args['reflected_w'] = reflected_powers_w
+                args['acoustic_s'] = acoustic_powers_time_s
+                args['acoustic_w'] = acoustic_powers_w
+                args['awg_on'] = awg_on
+                args['grams'] = balance_reading
+                args['forward_power_w'] = forward_power_w
+                args['reflected_power_w'] = reflected_power_w
+                self.rfb_tab_signal.emit(args)
+
+                self.app.processEvents()
+
+            #  turn off awg
+            self.AWG.SetOutput(False)
+
+            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
+                forward_power_w = self.Forward_Power_Meter.get_reading()
+                forward_powers_w.append(forward_power_w)
+                forward_powers_time_s.append(t.time() - startTime)
+
+                reflected_power_w = self.Reflected_Power_Meter.get_reading()
+                reflected_powers_w.append(reflected_power_w)
+                reflected_powers_time_s.append(t.time() - startTime)
+
+                balance_reading = self.Balance.get_reading()
+                if balance_reading is not None:
+                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
+                    acoustic_powers_w.append(acoustic_power_w)
+                    acoustic_powers_time_s.append(t.time() - startTime)
+                    awg_on.append(False)
+
+                # package data to send it to the rfb ui tab
+                args = dict()
+                args = dict()
+                args['forward_s'] = forward_powers_time_s
+                args['forward_w'] = forward_powers_w
+                args['reflected_s'] = reflected_powers_time_s
+                args['reflected_w'] = reflected_powers_w
+                args['acoustic_s'] = acoustic_powers_time_s
+                args['acoustic_w'] = acoustic_powers_w
+                args['awg_on'] = awg_on
+                args['grams'] = balance_reading
+                args['forward_power_w'] = forward_power_w
+                args['reflected_power_w'] = reflected_power_w
+                self.rfb_tab_signal.emit(args)
+                self.app.processEvents()
+
+            current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
+
+        print(f"Final time: {t.time() - startTime}")
+
+        self.element_number_signal.emit(str(element))
         self.step_complete = True
 
     '''Save scan results to a file'''
