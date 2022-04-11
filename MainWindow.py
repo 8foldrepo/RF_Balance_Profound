@@ -1,13 +1,6 @@
-import copy
-from configparser import ConfigParser
-
-import os
-import smtplib
+import time as t
 import sys
 import webbrowser
-import yaml
-import csv
-import typing
 from ui_elements.ui_password_dialog import PasswordDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
@@ -18,6 +11,7 @@ from ui_elements.ui_script_complete_dialog import ScriptCompleteDialog
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
+
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
@@ -58,6 +52,7 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
     this class oversees the user interface of the application. It contains a layout of
@@ -76,7 +71,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     command_signal = QtCore.pyqtSignal(str)
 
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-    plot_ready = QtCore.pyqtSignal(str)
     num_tasks = 0
     # Tracks whether the thread is doing something
     ready = True
@@ -94,7 +88,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.system_config.set_config(self.config)
 
         self.manager = Manager(parent=self, config=self.config)
-        self.plot_ready = True
         self.thread_list.append(self.manager)
         self.tree_items = None
         self.arg_dicts = None
@@ -127,13 +120,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
-
-        #Format treewidget
+        # Format treewidget
         self.script_step_view.setColumnCount(2)
         self.script_step_view.setHeaderLabels(["Task", "Arguments"])
         self.script_step_view.header().resizeSection(0, 220)
 
-        #Set defaults for indicators
+        # Set defaults for indicators
         self.script_status_indicator.setStyleSheet("background-color: grey")
         self.script_status_indicator.setText("NO SCRIPT")
 
@@ -169,12 +161,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.retract_button.setEnabled(False)
         self.reset_zero_button.setEnabled(False)
         self.go_theta_button.setEnabled(False)
-        self.insert_button.setEnabled(False)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
         print(arg_dicts)
-        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
         self.arg_dicts = arg_dicts
 
@@ -184,7 +175,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 arg_list = list()
                 for key in self.arg_dicts[i]:
                     if not key == "Task type":
-                        arg_list.append([key,self.arg_dicts[i][key]])
+                        arg_list.append([key, self.arg_dicts[i][key]])
 
                 task_dict[self.arg_dicts[i]["Task type"]] = arg_list
 
@@ -202,7 +193,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def update_script_visual_element_number(self, element_number):
         if 'Element' in element_number:
             return
-        #Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
+        # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         rootItem = self.script_step_view.invisibleRootItem()
         for i in range(rootItem.childCount()):
             task = rootItem.child(i)
@@ -210,9 +201,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 var = task.child(j)
                 var_name = var.text(0)
                 var_value = var.text(1)
-                #If the variable is an element number that is looped
+                # If the variable is an element number that is looped
                 if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
-                    var.setText(1,f'Current: {self.live_element_field.text()}')
+                    var.setText(1, f'Current: {self.live_element_field.text()}')
 
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
@@ -222,11 +213,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 white_background = QColor(255, 255, 255)
                 brush_for_background = QBrush(white_background)
                 item.setBackground(0, brush_for_background)
-            if 0<= step_index < len(self.tree_items):
+            if 0 <= step_index < len(self.tree_items):
                 self.tree_items[step_index].setExpanded(True)
-                blue_background = QColor(95,180,230)
+                blue_background = QColor(95, 180, 230)
                 brush_for_background = QBrush(blue_background)
-                self.tree_items[step_index].setBackground(0,brush_for_background)
+                self.tree_items[step_index].setBackground(0, brush_for_background)
 
     def prompt_for_password(self):
         dlg = PasswordDialog(parent=self, config=self.config)
@@ -262,7 +253,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.step_number_signal.connect(self.calc_progress)
         self.manager.expand_step_signal.connect(self.expand_step)
 
-        #When manager loads a script, visualize it in the left pane as well as loading it into the script editor
+        # When manager loads a script, visualize it in the left pane as well as loading it into the script editor
         self.manager.script_info_signal.connect(self.visualize_script)
         self.manager.script_info_signal.connect(self.script_editor.visualize_script)
         self.manager.script_info_signal.connect(self.update_script_indicator)
@@ -272,9 +263,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         # Hardware control signals
         self.command_signal.connect(self.manager.exec_command)
-        self.insert_button.clicked.connect(self.insert_button_clicked)
+        self.insert_button.clicked.connect(self.position_tab.insert_button_clicked)
+        self.retract_button.clicked.connect(self.position_tab.retract_button_clicked)
 
-        #enable/disable buttons signals
+        # enable/disable buttons signals
         self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
 
         # Hardware info signals
@@ -331,7 +323,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.moving_indicator.setStyleSheet("background-color:grey")
             self.moving_indicator.setText("STATIONARY")
 
-
     @pyqtSlot(str)
     def update_water_level_indicator(self, water_level):
         print(f"inside update water lvl indicator method; water_level = {water_level}")
@@ -355,9 +346,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.ua_pump_indicator.setText("UA PUMP OFF")
 
     """Command the motors to go to the insertion point"""
-    @pyqtSlot()
-    def insert_button_clicked(self):
-        self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
 
     @pyqtSlot()
     def update_x_speed(self):
@@ -523,7 +511,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot()
     def show_ua_retract_warn_prompt(self):
-        dlg = UARetractDialog()
+        dlg = UARetractDialog(config=self.config)
         dlg.continue_signal.connect(self.manager.cont)
         dlg.cancel_signal.connect(self.manager.abort)
         dlg.exec()
@@ -541,7 +529,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.command.setText(calibration_data[0][7])
         dlg.status.setText(calibration_data[0][8])
         dlg.fw_version.setText(calibration_data[0][9])
-        
+
         dlg.schema_lo.setText(calibration_data[1][0])
         dlg.serial_no_lo.setText(calibration_data[1][1])
         dlg.prod_date_lo.setText(calibration_data[1][2])
@@ -552,7 +540,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.command_lo.setText(calibration_data[1][7])
         dlg.status_lo.setText(calibration_data[1][8])
         dlg.fw_version_lo.setText(calibration_data[1][9])
-        
+
         dlg.schema_hi.setText(calibration_data[2][0])
         dlg.serial_no_hi.setText(calibration_data[2][1])
         dlg.prod_date_hi.setText(calibration_data[2][2])
@@ -563,7 +551,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.command_hi.setText(calibration_data[2][7])
         dlg.status_hi.setText(calibration_data[2][8])
         dlg.fw_version_hi.setText(calibration_data[2][9])
-        
+
         dlg.write_ua_signal.connect(self.manager.write_cal_data_to_ua_button)
         dlg.cancel_signal.connect(self.manager.abort)
         dlg.exec()
@@ -597,7 +585,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot(list,list)
+    @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):
         dlg = ScriptCompleteDialog(passed_ray, description_ray)
         dlg.cancel_signal.connect(self.manager.cont)
@@ -606,13 +594,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
-        #Todo: make this ebable/disable all buttons of all tabs that could interfere with operations in progress
+        # Todo: make this ebable/disable all buttons of all tabs that could interfere with operations in progress
         self.position_tab.set_buttons_enabled(enabled)
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
 
-    def log(self, message, level = 'info'):
-        log_msg(self,self.root_logger, message= message,level=level)
+    def log(self, message, level='info'):
+        log_msg(self, self.root_logger, message=message, level=level)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -19,4 +19,4 @@ class MyQWidget(QWidget):
         super().__init__(parent=parent)
 
     def log(self, message, level='info'):
-        log_msg(self, self.root_logger, message=message, level=level)
+        log_msg(self, root_logger, message=message, level=level)

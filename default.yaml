@@ -64,7 +64,7 @@ Keysight_Oscilloscope:
   timeout_s: 20
 MT_Balance:
   port: COM4
-  timeout_s: 30
+  timeout_s: .5
 Paths:
   UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
     numbers.txt
@@ -109,8 +109,8 @@ VIX_Motors:
   - false
   - true
   speeds_ray:
-  - 5.0
-  - 5.0
+  - 100
+  - 100
   time_limit_s: 2
   timeout_s: 0.1
 WTF_DIO:

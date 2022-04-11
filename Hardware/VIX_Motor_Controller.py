@@ -251,7 +251,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         def setup_home(self):
             #todo: test these values and edit accordingly
             self.setup_home_1d('X', True, reference_edge='-', normally_closed=False, speed=50, mode=1)
-            self.setup_home_1d('R', False, reference_edge='-', normally_closed=False, speed=5, mode=1)
+            self.setup_home_1d('R', True, reference_edge='-', normally_closed=False, speed=50, mode=1)
 
         def setup_home_1d(self, axis, enabled = True, reference_edge = '+', normally_closed = False, speed = -5, mode = 1):
             axis_number = self.get_ax_number(axis)
@@ -267,7 +267,6 @@ class VIX_Motor_Controller(AbstractMotorController):
                 closedString = '0'
 
             command_string = f"{axis_number}HOME{onString}({reference_edge},{closedString},{speed},100,{mode})"
-            print(command_string)
 
             self.command(command_string)
 
@@ -280,6 +279,7 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         def connect_hardware(self):
             try:
+                self.log("Connecting to motor controller...")
                 self.ser = serial.Serial(
                     port=self.port,  # May vary depending on computer
                     baudrate=19200,
@@ -296,7 +296,9 @@ class VIX_Motor_Controller(AbstractMotorController):
                     f"{self.device_key} COM port found but motor controller is not responding. "
                     f"Make sure it is powered up and click setup.")
                 else:
+                    self.setup()
                     self.connected = True
+                    self.log("Motor controller connected and set to default settings")
             except serial.serialutil.SerialException:
                 self.connected = False
                 self.log(level='error', message=
@@ -595,7 +597,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.scanning = False
 
         def get_position(self, mutex_locked = False):
-            moving_ray = [True, True]
+            #Assume motors are not moving unless their position is changing
+            moving_ray = [False, False]
             moving_margin_ray = [0.001,.001]
 
 
@@ -621,8 +624,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                     self.r_pos_mm_signal.emit(round(position_deg_or_mm,2))
 
                 #Check if position has not changed. If all axes have not changed moving will be false
-                if abs(position_deg_or_mm-self.coords_mm[i]) < moving_margin_ray[i]:
-                    moving_ray[i] = False
+                if abs(position_deg_or_mm-self.coords_mm[i]) > moving_margin_ray[i]:
+                    moving_ray[i] = True
 
                 self.coords_mm[i] = position_deg_or_mm
 

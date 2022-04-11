@@ -9,11 +9,12 @@ class NI_DAQ(AbstractDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
 
-    def __init__(self, config=None, device_key="NI_DAQ", parent=None):
+    def __init__(self, config=None, device_key="WTF_DIO", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
         self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
+        self.fields_setup()
         self.active_channel = 0  # 0 means all channels are off
 
     def get_active_relay_channel(self) -> int:
@@ -21,8 +22,8 @@ class NI_DAQ(AbstractDevice):
 
     def set_pump_on(self, on):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
-            task.do_channels.add_do_chan("Dev1/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.do_channels.add_do_chan("Dev1/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
+            task.do_channels.add_do_chan(f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
+            task.do_channels.add_do_chan(f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
 
             if on:
                 task.write([False,False], auto_start=True)  # I've only seen P1.6 react
@@ -51,9 +52,9 @@ class NI_DAQ(AbstractDevice):
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
-            task.di_channels.add_di_chan("Dev1/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
-            task.di_channels.add_di_chan("Dev1/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
-            task.di_channels.add_di_chan("Dev1/port2/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
+            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
+            task.di_channels.add_di_chan(f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
+            task.di_channels.add_di_chan(f"{self.name}/port2/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
 
             list_of_values = task.read()
             print(list_of_values[2])
@@ -71,7 +72,7 @@ class NI_DAQ(AbstractDevice):
                 return states[2]
 
     def fields_setup(self):
-        pass
+        self.name = self.config[self.device_key]['DAQ Device name']
 
     def connect_hardware(self):
         try:
@@ -88,8 +89,8 @@ class NI_DAQ(AbstractDevice):
     def activate_relay_channel(self, channel_number: int):
         with nidaqmx.Task() as task:
             try:
-                task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.do_channels.add_do_chan(f"{self.name}/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
 
                 if channel_number == 1:
                     task.write([True, False, False, False, False, False, False, False, False, False], auto_start=True)

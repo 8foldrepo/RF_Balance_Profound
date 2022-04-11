@@ -1,7 +1,5 @@
 import os
-import time as t
 import numpy as np
-import yaml
 import collections.abc
 
 named_devices = {
@@ -29,6 +27,15 @@ def create_coord_rays(coords:str,ax_letters:list):
     # Remove empty elements
     coords = list(filter(lambda val: val != '', coords))
     return axes, coords
+
+def get_element_distances(element_1_index, element_pitch):
+    # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
+    element_coords = [None,None,None,None,None,None,None,None,None,None,None]
+    for i in range(1,11):
+        offset = i * element_pitch
+        element_coords[i] = element_1_index + offset
+
+    return element_coords
 
 #Inverse of create coord_rays
 def create_comma_string(axes:list,coords:list,ax_letters:list):
