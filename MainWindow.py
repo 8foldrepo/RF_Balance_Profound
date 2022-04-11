@@ -92,8 +92,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.tree_items = None
         self.arg_dicts = None
         self.configure_signals()
-        self.manager.connect_hardware()
-        self.manager.start(priority=4)
+
 
         self.style_ui()
         self.activateWindow()
@@ -119,6 +118,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.scan_tab_widget.set_manager(self.manager)
         self.scan_tab_widget.set_mainwindow(self)
 
+        self.manager.connect_hardware()
+        self.manager.start(priority=4)
+
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
 
@@ -139,6 +141,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.ua_pump_indicator.setStyleSheet("background-color: grey")
         self.ua_pump_indicator.setText("UA PUMP OFF")
+
+        self.tank_level_indicator.setStyleSheet("background-color: red")
+        self.tank_level_indicator.setText("TANK LOW")
 
         self.ua_on_indicator.setStyleSheet("background-color: grey")
         self.ua_on_indicator.setText("UA OFF")
