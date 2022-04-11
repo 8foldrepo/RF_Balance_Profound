@@ -14,7 +14,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.configure_signals()
         self.style_ui()
-        self.mainwindow = self.parent().parent()
+        self.mainwindow = None
 
     def configure_signals(self):
         self.file_browser_button.clicked.connect(self.browse_clicked)
@@ -31,6 +31,9 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager = manager
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
+
+    def set_mainwindow(self, mainwindow):
+        self.mainwindow = mainwindow
 
     def style_ui(self):
         self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
@@ -53,7 +56,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
             return
 
         # Cancel if the current tab is not visible
-        if not self.mainwindow.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Scan':
+        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
             return
 
         tabs = self.scan_tabs
@@ -73,7 +76,18 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     @pyqtSlot(list,list, str)
     def update_profile_plot(self, x, y, axis_label):
+        # Cancel if this widget is not plot ready
+        if not self.plot_ready:
+            return
 
+        # Cancel if the current tab is not visible
+        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
+            return
+
+        tabs = self.scan_tabs
+
+        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
+            return
 
         if x is None or y is None:
             return

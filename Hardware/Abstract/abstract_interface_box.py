@@ -20,7 +20,7 @@ class UAInterfaceBox(AbstractDevice):
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
-
+        self.UA_Write_Result = False
         self.ua_calibration_data = {
             'cal_data_array': {
                 'schema': '',

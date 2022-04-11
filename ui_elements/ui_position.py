@@ -55,6 +55,8 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_signal.connect(self.motors.set_origin_here)
         self.go_to_signal.connect(self.motors.go_to_position)
 
+        self.configure_signals()
+
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()

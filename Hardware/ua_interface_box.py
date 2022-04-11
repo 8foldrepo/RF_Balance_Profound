@@ -15,12 +15,12 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 class UAInterfaceBox(AbstractDevice):
     connected_signal = pyqtSignal(bool)
     dummy_command_signal = pyqtSignal(str)
-
     cal_data_signal = pyqtSignal(list, int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.ip_address = '192.168.3.3'
+        self.UA_Write_Result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
 
         self.ua_calibration_data = {
@@ -155,6 +155,7 @@ class UAInterfaceBox(AbstractDevice):
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_low_list'])) + "," + \
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_high_list']))
         subprocess.call(process_call)
+        self.UA_Write_Result = True
 
 if __name__ == '__main__':
     wtf = UAInterfaceBox(config=None)
