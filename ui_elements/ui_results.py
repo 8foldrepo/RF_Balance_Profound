@@ -23,19 +23,21 @@ class Results(MyQWidget, Ui_Form):
         self.test_data = dict()
         self.style_ui()
         self.configure_signals()
+        self.log_2d_list = list()
 
     def populate_log_table(self, log_path):
         log_file = open(log_path, 'r')
         line_counter = 0
         for line in log_file:
             line_ray = line.split('\t')
-            print_list(line_ray)
+            self.log_2d_list.append(line_ray)  # populates class' internal 2d log list
             self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
             for x in range(len(line_ray)):  # for all the lines in the script text file
                 item = QTableWidgetItem()
                 item.setText(line_ray[x].strip())
                 self.script_log_table.setItem(line_counter, x, item)
             line_counter = line_counter + 1  # keep track of which line we're on
+
 
     @pyqtSlot(object)
     def populate_table(self, test_contents):
@@ -71,6 +73,14 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.horizontalHeader().setStretchLastSection(True)
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
+
+    def write_log_file(self, log_path):
+        if not os.path.exists(os.path.dirname(log_path)):
+            os.makedirs(os.path.dirname(log_path))
+
+        f = open(log_path, 'w')
+        for x in range(len(self.log_2d_list)):
+            f.write('\t'.join(self.log_2d_list[x]))
 
     """saves the results as a text file with a path specified in the config file."""
     @pyqtSlot()
@@ -223,6 +233,7 @@ if __name__ == '__main__':
     # res_widget.populate_table(results_ray)
     # res_widget.save_test_results_summary()
     res_widget.populate_log_table("../logs/ScriptResults.log")
+    res_widget.write_log_file("../logs2/ScriptResults.log")
 
     res_widget.show()
     sys.exit(app.exec_())
