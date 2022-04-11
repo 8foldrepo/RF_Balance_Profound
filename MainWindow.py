@@ -98,10 +98,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.style_ui()
         self.activateWindow()
 
+        #Pass objects to widgets
+
         self.position_tab.set_manager(self.manager)
         self.position_tab.set_motors(self.manager.Motors)
         self.position_tab.set_config(self.config)
-        self.position_tab.configure_signals()
 
         self.rfb.set_manager(self.manager)
         self.rfb.set_config(self.config)
@@ -116,6 +117,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.scan_tab_widget.set_config(self.config)
         self.scan_tab_widget.set_manager(self.manager)
+        self.scan_tab_widget.set_mainwindow(self)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -496,7 +498,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.date_output.setText(formatted_date)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
-        dlg.pretest_signal.connect(self.manager.pretest_info_slot)
+        dlg.pretest_metadata_signal.connect(self.manager.pretest_metadata_slot)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 

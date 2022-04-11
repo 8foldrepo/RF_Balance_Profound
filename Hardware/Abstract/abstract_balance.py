@@ -102,7 +102,6 @@ class AbstractBalance(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
-        self.log("Getting weight, please wait")
         return random.random()
 
     def reset(self):

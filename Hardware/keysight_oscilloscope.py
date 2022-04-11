@@ -25,7 +25,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         self.inst = self.rm.open_resource(resource)
                         self.connected = True
                         self.connected_signal.emit(True)
-                        self.set_to_defaults()
+                        if self.config[self.device_key]['set_on_startup']:
+                            self.set_to_defaults()
                         self.log("Oscilloscope connected and set to default settings")
                         break
                     except pyvisa.errors.VisaIOError as e:
@@ -35,6 +36,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
                             self.log(level='error',
                                      message=f"Input protocol error, retrying: {e}")
                             retry = True
+                        elif 'Unknown system error' in str(e):
+                            self.log(level='error',
+                                     message=f"Unknown oscilloscope system error, restart program: {e}")
+                            retry = False
                         else:
                             self.log(level='error', message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
                             retry = True
@@ -119,11 +124,11 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def getVertRange_V(self, channel, volts):
         return float(self.ask(f":CHAN{channel}:RANG?"))
-        
+
 
     def setVertRange_V(self, channel, volts):
         self.command(f":CHAN{channel}:RANG {volts}")
-        
+
 
     def getVertOffset(self, channel):
         return float(self.ask(f":CHAN{channel}:OFFS?"))
@@ -238,19 +243,19 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.Period = period
         Peri = "C" + channel + ":BTWV PRD,{}".format(self.Period)
         self.command(Peri)
-        
+
 
 
     def SetCycles(self, channel, cycle):
         self.Cycle = cycle
         Cycl = "C" + channel + ":BTWV TIME," + self.Cycle
         self.command(Cycl)
-        
+
 
     def command(self, command):
         try:
             self.inst.write(command)
-            t.sleep(.03)
+            #t.sleep(.03)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
@@ -266,8 +271,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return self.inst.query(command)
 
 
+
+import pyvisa
+
+#Script/example code for testing out hardware class
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
+    for i in range(1000):
+        osc.inst.write("WAV:DATA?")
+        print(osc.inst.read())
 
-    osc.capture(1)
+    #may not be run if script is terminated early
+    osc.disconnect_hardware()
