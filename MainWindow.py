@@ -376,6 +376,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         self.command_signal.emit('LOAD ' + path)
 
+    @pyqtSlot(bool)
+    def load_results(self, triggered):
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Open file", "", "Results files (*.txt)"
+        )
+        results_dict = self.results_tab.load_test_results(path)
+        self.results_tab.populate_table(results_dict['results_summary'])
+
     @pyqtSlot(int)
     def set_num_tasks(self, num_tasks):
         self.num_tasks = num_tasks
@@ -406,9 +414,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             "Open scan data",
             self,
         )
-        open_file_action.setStatusTip("Open file")
-        open_file_action.triggered.connect(self.load_script)
-        file_menu.addAction(open_file_action)
+        open_result_file_action = QAction(
+            QIcon(os.path.join("images", "blue-folder-open-document.png")),
+            "Open result data",
+            self,
+        )
+        open_result_file_action.setStatusTip("Open file")
+        open_result_file_action.triggered.connect(self.load_results)
+        file_menu.addAction(open_result_file_action)
 
         print_action = QAction(
             QIcon(os.path.join("images", "printer.png")), "Print notes", self
