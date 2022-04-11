@@ -26,8 +26,17 @@ class Ui_Form(object):
         self.script_log_table = QtWidgets.QTableWidget(self.scriptlog_tab)
         self.script_log_table.setGeometry(QtCore.QRect(10, 40, 971, 501))
         self.script_log_table.setObjectName("script_log_table")
-        self.script_log_table.setColumnCount(0)
+        self.script_log_table.setColumnCount(4)
         self.script_log_table.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.script_log_table.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.script_log_table.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.script_log_table.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.script_log_table.setHorizontalHeaderItem(3, item)
+        self.script_log_table.horizontalHeader().setStretchLastSection(True)
         self.label_131 = QtWidgets.QLabel(self.scriptlog_tab)
         self.label_131.setGeometry(QtCore.QRect(10, 10, 111, 21))
         font = QtGui.QFont()
@@ -163,7 +172,7 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.tabWidget_2)
 
         self.retranslateUi(Form)
-        self.tabWidget_2.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):

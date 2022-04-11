@@ -24,7 +24,18 @@ class Results(MyQWidget, Ui_Form):
         self.style_ui()
         self.configure_signals()
 
-    """Takes 2d list of strings"""
+    def populate_log_table(self, log_path):
+        log_file = open(log_path, 'r')
+        line_counter = 0
+        for line in log_file:
+            line_ray = line.split('\t')
+            print_list(line_ray)
+            self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
+            for x in range(len(line_ray)):  # for all the lines in the script text file
+                item = QTableWidgetItem()
+                item.setText(line_ray[x].strip())
+                self.script_log_table.setItem(line_counter, x, item)
+            line_counter = line_counter + 1  # keep track of which line we're on
 
     @pyqtSlot(object)
     def populate_table(self, test_contents):
@@ -56,6 +67,10 @@ class Results(MyQWidget, Ui_Form):
 
     def style_ui(self):
         self.results_table.horizontalHeader().resizeSection(15, 362)
+        self.script_log_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.script_log_table.horizontalHeader().setStretchLastSection(True)
+        self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
     """saves the results as a text file with a path specified in the config file."""
     @pyqtSlot()
@@ -174,8 +189,10 @@ class Results(MyQWidget, Ui_Form):
 # list of lists given a txt file, other 2 take a list of lists and either save/display it; for the load method, use QFileDialog.get_open_file_name, will create prompt to find and select file'''
 
 def print_list(a):
+    print("*** beginning of list ***")
     for x in range(len(a)):
-        print(a[x])
+        print(f"{x}: ", a[x])
+    print("*** end of list ***")
 
 
 def print_dict(a):
@@ -197,17 +214,18 @@ def print_indent_dict(a):
 
 
 if __name__ == '__main__':
-    # import sys
-    #
-    # app = QApplication(sys.argv)
-    # res_widget = Results()
+    import sys
+
+    app = QApplication(sys.argv)
+    res_widget = Results()
     #
     # results_ray = res_widget.load_test_results()
     # res_widget.populate_table(results_ray)
     # res_widget.save_test_results_summary()
+    res_widget.populate_log_table("../logs/ScriptResults.log")
 
-    # res_widget.show()
-    # sys.exit(app.exec_())
+    res_widget.show()
+    sys.exit(app.exec_())
 
     '''test all three steps: load one, display it, then save it'''
 
