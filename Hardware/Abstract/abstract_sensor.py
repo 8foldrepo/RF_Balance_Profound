@@ -26,4 +26,7 @@ class AbstractSensor(AbstractDevice):
     def get_reading(self):
          noise = .1* random.random()
          signal = 23.2 + noise
-         self.reading_signal.emit(round(signal,1))
+         reading = round(signal,1)
+
+         self.reading_signal.emit(reading)
+         return reading

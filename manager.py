@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime
+
 import re
 import pyvisa
 from PyQt5.QtWidgets import QApplication
@@ -17,7 +17,7 @@ import time as t
 import numpy as np
 from scipy import integrate
 
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_off_values, get_awg_on_values
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, blank_test_data
 from Utilities.formulas import calculate_power_from_balance_reading
 from definitions import ROOT_DIR
 import os
@@ -34,27 +34,7 @@ tank_status = ""
 
 
 class Manager(QThread):
-    """
-    this class acts as the chief executive for the application. It is in charge of recieving commands from the UI,
-    dictating actions to other classes, and emitting feedback back to the UI
-
-    Signals:
-        logger_signal: convey info to the user via a feedback widget
-        finished_signal: emitted when the thread is ready to be deleted.
-
-        description_signal = pyqtSignal(str): Convey script metadata to UI
-        created_on_signal = pyqtSignal(str): Convey script metadata to UI
-        num_tasks_signal = pyqtSignal(str): Convey script metadata to UI
-
-    Slots:
-        execute_command: execute a command given to the application
-
-    Methods:
-
-    """
-
     # Dialog signals
-    pretest_dialog_signal = pyqtSignal(str)  # str is date (man -> mainwindow)
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal(str)  # str is water level
@@ -67,20 +47,26 @@ class Manager(QThread):
     created_by_signal = pyqtSignal(str)
     num_tasks_signal = pyqtSignal(int)
     script_name_signal = pyqtSignal(str)
-    step_number_signal = pyqtSignal(int)
-    expand_step_signal = pyqtSignal(int)
+
+    #Emits the number of the task as shown in the .wtf file, not including repeats. Pretest_initialization should be 0
+    task_number_signal = pyqtSignal(int)
+    #Tracks the index of the task in the order it is executed, including repeats. Pretest_initialization should be 0
+    task_index_signal = pyqtSignal(int)
+
     element_number_signal = pyqtSignal(str)
     script_info_signal = pyqtSignal(list)
 
     plot_signal = pyqtSignal(object, object)
 
     logger_signal = pyqtSignal(str)
-    finished_signal = pyqtSignal()
+    script_finished_signal = pyqtSignal()
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
     plot_signal = pyqtSignal(list, list, float)  # float is refresh rate
-    rfb_tab_signal = pyqtSignal(dict)
+
+    rfb_args = dict() #contains info for rfb tab
+    update_rfb_tab_signal = pyqtSignal()
     save_results_signal = pyqtSignal()
     # contains
 
@@ -106,17 +92,8 @@ class Manager(QThread):
         # Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
-        self.test_data = dict()
-        # Test Metadata
-        self.test_data['test_comment'] = ""
-        self.test_data['serial_number'] = ""
-        self.test_data['operator_name'] = ""
-        self.test_data['script_name'] = ""
-        self.test_data['low_frequency_MHz'] = float('nan')
-        self.test_data['high_frequency_MHz'] = float('nan')
-        self.test_data['hardware_code'] = ""
-        self.test_data['results_summary'] = list()
-        self.test_data["write_result"] = False
+        #Set test_data to default values
+        self.test_data = blank_test_data()
 
         self.freq_highlimit_hz = None
         self.freq_lowlimit_hz = None
@@ -502,12 +479,11 @@ class Manager(QThread):
 
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if self.scripting and 0 <= self.step_index < len(self.taskNames):
-
                 if self.step_complete:
                     self.step_complete = False
                     self.execute_script_step(self.step_index)
         elif self.step_index >= len(self.taskNames):
-            self.abort()
+            self.script_finished_signal.emit()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
 
@@ -519,10 +495,8 @@ class Manager(QThread):
         name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
         args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
-        self.step_number_signal.emit(step_index - 1)
-        t.sleep(.1)
-
-        self.expand_step_signal.emit(self.taskExecOrder[step_index][0])
+        self.task_number_signal.emit(self.taskExecOrder[step_index][0])
+        self.task_index_signal.emit(step_index)
 
         if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
@@ -541,10 +515,7 @@ class Manager(QThread):
         elif "Home system".upper() in name.upper():
             self.home_system(args)
 
-        self.step_number_signal.emit(step_index)
-
-        # below: this should allow for the retry function by setting the iteration variable backwards 1
-        # so when it gets incremented it returns to the previous position
+        self.task_index_signal.emit(step_index+1)
 
     '''Aborts script'''
 
@@ -556,16 +527,10 @@ class Manager(QThread):
         self.step_index = -1
         self.step_complete = True
         self.continue_var = True
-        self.step_number_signal.emit(-1)
-
+        self.task_number_signal.emit(0)
+        self.task_index_signal.emit(0)
+        self.script_finished_signal.emit()
         # Todo: add option to save before exiting
-
-        self.erase_metadata()
-
-    def erase_metadata(self):
-        self.test_data['serial_number'] = ""
-        self.test_data['test_comment'] = ""
-        self.test_data['operator_name'] = ""
 
     '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
 
@@ -595,18 +560,6 @@ class Manager(QThread):
     '''Collects metadata from user and prompts user until water level is ok'''
 
     def pretest_initialization(self, variable_list):
-        now = datetime.now()
-        self.test_data['test_date_time'] = now.strftime("%Y.%m.%d-%H.%M")
-
-        # Show dialog until name and serial number are input
-        while self.test_data['operator_name'] == "" or self.test_data['serial_number'] == "":
-            self.pretest_dialog_signal.emit(
-                self.test_data['test_date_time'])  # sends signal from manager to MainWindow to open dialog box
-            try:
-                self.wait_for_cont()
-            except AbortException:
-                return self.abort()
-
         # Show dialogs until pump is on and the water sensor reads level
         while True:
             break #todo: remove this line later. for testing only
@@ -635,34 +588,11 @@ class Manager(QThread):
 
     @pyqtSlot(dict)
     def pretest_metadata_slot(self, pretest_metadata):
+        self.abort()
+        #reset test data to default values
+        test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
-
-        lf = str(self.test_data['low_frequency_MHz'])
-        hf = str(self.test_data['high_frequency_MHz'])
-
-        #Default values, will be updated during test
-        self.test_data['results_summary'].append(['Element_01','0','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_02','5','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_03','10','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_04','15','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_05','20','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_06','25','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_07','30','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append(['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-        self.test_data['results_summary'].append([])
-
-        self.test_data['results_summary'].append(['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
-
-        elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
-        elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
-
-        #Todo: add ability to set manual frequencies per element
-        self.test_data['results_summary'].append([elements_with_manual_lf])
-        self.test_data['results_summary'].append([elements_with_manual_hf])
-
-        self.cont()
+        self.run_script()
 
     '''Find UA element with given number'''
 
@@ -709,9 +639,11 @@ class Manager(QThread):
         position = -1 * (XPts * x_increment_MM)/2 + element_x_coordinate
 
         # begin with arbitrarily low values
-        x_max_rms = sys.float_info.min
-        x_max_position = sys.float_info.min
+        x_max_rms = -1 * sys.float_info.max
+        x_max_position = -1 * sys.float_info.max
         for i in range(XPts):
+            if not self.scripting:
+                return
             self.Motors.go_to_position(['X'], [position])
             position = position + abs(x_increment_MM)
 
@@ -736,21 +668,30 @@ class Manager(QThread):
 
         status = self.Motors.go_to_position(['X'], [x_max_position])
 
-        if not status and self.config["Debugging"]["end_script_on_errors"]:
-            self.abort()
-            return
+        #todo: test this to make sure it triggers if and only if the movement fails
+        if not status:
+            self.log(level="error", message="Motor movement not successful")
+            if self.config["Debugging"]["end_script_on_errors"]:
+                self.abort()
+                return
 
         self.scan_data["X sweep waveforms"] = x_sweep_waveforms
 
         # Loop over r through a given range, move to the position where maximal RMS voltage was measured
         r_sweep_waveforms = list()
         position = -1 * (thetaPts * thetaIncrDeg)/2 + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
-        r_max_rms = -1
-        r_max_position = 0
+
+        # begin with arbitrarily low values
+        r_max_rms = -1 * sys.float_info.max
+        r_max_position = -1 * sys.float_info.max
+
         r_positions = list()
         r_rms_values = list()
 
         for i in range(thetaPts):
+            if not self.scripting:
+                return
+
             self.Motors.go_to_position(['R'], [position])
             position = position + thetaIncrDeg
 
@@ -776,13 +717,14 @@ class Manager(QThread):
         self.element_r_coordinates[element] = r_max_position
 
         #update results summary
-        self.test_data['results_summary'][element-1][1] = x_max_position
-        self.test_data['results_summary'][element-1][2] = r_max_position
+        self.test_data['results_summary'][element-1][1] = "%.2f" % x_max_position
+        self.test_data['results_summary'][element-1][2] = "%.2f" % r_max_position
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, variable_list):
+        #Todo: implement zeroing such that balance reading subtracts the averaging reading when the balance is off
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
         element_x_coordinate = self.element_x_coordinates[element]
         element_r_coordinate = self.element_x_coordinates[element]
@@ -823,6 +765,9 @@ class Manager(QThread):
             cycle_start_time = t.time()
             self.AWG.SetOutput(True)
             while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
+                if not self.scripting:
+                    return
+
                 forward_power_w = self.Forward_Power_Meter.get_reading()
                 forward_powers_w.append(forward_power_w)
                 forward_powers_time_s.append(t.time() - startTime)
@@ -833,24 +778,23 @@ class Manager(QThread):
 
                 balance_reading = self.Balance.get_reading()
                 if balance_reading is not None:
-                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading*-30)
+                    acoustic_power_w = calculate_power_from_balance_reading(balance_reading)
                     acoustic_powers_w.append(acoustic_power_w)
                     acoustic_powers_time_s.append(t.time() - startTime)
                     awg_on.append(True)
 
                 # package data to send it to the rfb ui tab
-                args = dict()
-                args['forward_s'] = forward_powers_time_s
-                args['forward_w'] = forward_powers_w
-                args['reflected_s'] = reflected_powers_time_s
-                args['reflected_w'] = reflected_powers_w
-                args['acoustic_s'] = acoustic_powers_time_s
-                args['acoustic_w'] = acoustic_powers_w
-                args['awg_on'] = awg_on
-                args['grams'] = balance_reading
-                args['forward_power_w'] = forward_power_w
-                args['reflected_power_w'] = reflected_power_w
-                self.rfb_tab_signal.emit(args)
+                self.rfb_args['forward_s'] = forward_powers_time_s
+                self.rfb_args['forward_w'] = forward_powers_w
+                self.rfb_args['reflected_s'] = reflected_powers_time_s
+                self.rfb_args['reflected_w'] = reflected_powers_w
+                self.rfb_args['acoustic_s'] = acoustic_powers_time_s
+                self.rfb_args['acoustic_w'] = acoustic_powers_w
+                self.rfb_args['awg_on'] = awg_on
+                self.rfb_args['grams'] = balance_reading
+                self.rfb_args['forward_power_w'] = forward_power_w
+                self.rfb_args['reflected_power_w'] = reflected_power_w
+                self.update_rfb_tab_signal.emit()
 
                 self.app.processEvents()
 
@@ -858,6 +802,9 @@ class Manager(QThread):
             self.AWG.SetOutput(False)
 
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
+                if not self.scripting:
+                    return
+
                 forward_power_w = self.Forward_Power_Meter.get_reading()
                 forward_powers_w.append(forward_power_w)
                 forward_powers_time_s.append(t.time() - startTime)
@@ -874,19 +821,17 @@ class Manager(QThread):
                     awg_on.append(False)
 
                 # package data to send it to the rfb ui tab
-                args = dict()
-                args = dict()
-                args['forward_s'] = forward_powers_time_s
-                args['forward_w'] = forward_powers_w
-                args['reflected_s'] = reflected_powers_time_s
-                args['reflected_w'] = reflected_powers_w
-                args['acoustic_s'] = acoustic_powers_time_s
-                args['acoustic_w'] = acoustic_powers_w
-                args['awg_on'] = awg_on
-                args['grams'] = balance_reading
-                args['forward_power_w'] = forward_power_w
-                args['reflected_power_w'] = reflected_power_w
-                self.rfb_tab_signal.emit(args)
+                self.rfb_args['forward_s'] = forward_powers_time_s
+                self.rfb_args['forward_w'] = forward_powers_w
+                self.rfb_args['reflected_s'] = reflected_powers_time_s
+                self.rfb_args['reflected_w'] = reflected_powers_w
+                self.rfb_args['acoustic_s'] = acoustic_powers_time_s
+                self.rfb_args['acoustic_w'] = acoustic_powers_w
+                self.rfb_args['awg_on'] = awg_on
+                self.rfb_args['grams'] = balance_reading
+                self.rfb_args['forward_power_w'] = forward_power_w
+                self.rfb_args['reflected_power_w'] = reflected_power_w
+                self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
 
             current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
@@ -918,20 +863,20 @@ class Manager(QThread):
 
         if frequency_range == "High frequency":
             # High frequency
-            self.test_data['results_summary'][element - 1][5] = self.test_data['high_frequency_MHz'] / 1000000
+            self.test_data['results_summary'][element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
             # HF effeciency (%)
-            self.test_data['results_summary'][element - 1][11] = effeciency_percent
-            self.test_data['results_summary'][element - 1][12] = reflected_power_percent
-            self.test_data['results_summary'][element - 1][13] = forward_power_max
-            self.test_data['results_summary'][element - 1][14] = water_temperature
+            self.test_data['results_summary'][element - 1][11] = "%.0f" % effeciency_percent
+            self.test_data['results_summary'][element - 1][12] = "%.1f" % reflected_power_percent
+            self.test_data['results_summary'][element - 1][13] = "%.1f" % forward_power_max
+            self.test_data['results_summary'][element - 1][14] = "%.1f" % water_temperature
         else: #Default to low frequency
             #Low Frequency
-            self.test_data['results_summary'][element - 1][3] = self.test_data['low_frequency_MHz'] / 1000000
+            self.test_data['results_summary'][element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
             # LF effeciency (%)
-            self.test_data['results_summary'][element - 1][7] = effeciency_percent
-            self.test_data['results_summary'][element - 1][8] = reflected_power_percent
-            self.test_data['results_summary'][element - 1][9] = forward_power_max
-            self.test_data['results_summary'][element - 1][10] = water_temperature
+            self.test_data['results_summary'][element - 1][7] = "%.0f" % effeciency_percent
+            self.test_data['results_summary'][element - 1][8] = "%.1f" % reflected_power_percent
+            self.test_data['results_summary'][element - 1][9] = "%.1f" % forward_power_max
+            self.test_data['results_summary'][element - 1][10] = "%.1f" % water_temperature
 
         self.element_number_signal.emit(str(element))
         self.step_complete = True
@@ -954,7 +899,7 @@ class Manager(QThread):
 
         angle_average = sum/count
 
-        self.test_data['results_summary'][11][2] = angle_average
+        self.test_data['results_summary'][10][2] = str(angle_average)
 
         self.save_results_signal.emit()
 

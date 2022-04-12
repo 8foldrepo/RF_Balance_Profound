@@ -62,7 +62,7 @@ class MT_balance(AbstractBalance):
         if self.ser is None or self.connected == False:
             self.log("Device is not connected")
             return
-        self.log("Zeroing Balance, Please wait")
+        self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
 
         starttime = t.time()
