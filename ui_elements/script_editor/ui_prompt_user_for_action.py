@@ -20,7 +20,6 @@ class PromptUserForAction(QWidget, Ui_Form):
             arg_dict['Prompt type'] = 'Selection 2'
         elif self.prompt_field.currentIndex() == 2:
             arg_dict['Prompt type'] = 'Selection 3'
-
         return arg_dict
 
     def dictionary_to_ui(self, arg_dict: dict):

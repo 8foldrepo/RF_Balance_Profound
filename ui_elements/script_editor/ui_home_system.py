@@ -1,17 +1,14 @@
 from Widget_Library.widget_home_system import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
-import time as t
-
+from collections import OrderedDict
 
 class HomeSystem(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
+        self.dictionary_to_ui(OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'X')]))
 
-    def configure_signals(self):
-        pass
-
-    def dictionary_to_ui(self, arg_dict: dict):
+    def orderedDict_to_ui(self, arg_dict: OrderedDict):
         if arg_dict['Axis to home'] == 'All Axes':
             self.radioButton.setChecked(True)
         elif arg_dict['Axis to home'] == 'X':
@@ -19,8 +16,8 @@ class HomeSystem(QWidget, Ui_Form):
         elif arg_dict['Axis to home'] == 'Theta':
             self.radioButton_3.setChecked(True)
 
-    def ui_to_dictionary(self) -> dict:
-        arg_dict = dict()
+    def ui_to_orderedDict(self) -> OrderedDict:
+        arg_dict = OrderedDict()
         arg_dict['Task type'] = 'Home system'
 
         if self.radioButton.isChecked():
@@ -35,6 +32,7 @@ class HomeSystem(QWidget, Ui_Form):
 
 if __name__ == "__main__":
     import sys
+    import time as t
 
     app = QApplication(sys.argv)
     ui = HomeSystem()
