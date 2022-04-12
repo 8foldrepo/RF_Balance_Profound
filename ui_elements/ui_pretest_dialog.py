@@ -69,7 +69,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
             return
 
         self.metadata_dict['test_comment'] = self.comment_inputbox.toPlainText()
-        self.metadata_dict['ua_serial_number'] = self.ua_serial_no_inputline.text()
+        self.metadata_dict['serial_number'] = self.ua_serial_no_inputline.text()
         self.metadata_dict['operator_name'] = self.test_operator_inputline.text()
         self.metadata_dict['low_frequency_MHz'] = float(self.lf_MHz_field.text())
         self.metadata_dict['high_frequency_MHz'] = float(self.hf_MHz_field.text())

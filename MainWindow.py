@@ -248,7 +248,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def configure_signals(self):
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
-        self.run_button.clicked.connect(lambda: self.command_signal.emit("RUN"))
+        self.run_button.clicked.connect(self.manager.run_script)
         self.abort_button.clicked.connect(self.manager.abort)
 
         # Script metadata signals

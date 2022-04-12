@@ -6,7 +6,7 @@ Debugging:
   simulate_hw: true
   simulate_motors: true
   simulate_oscilloscope: true
-  end_script_on_errors: true
+  end_script_on_errors: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
