@@ -2,6 +2,7 @@ from Widget_Library.widget_rfb import Ui_Form
 from PyQt5.QtCore import pyqtSlot
 from ui_elements.my_qwidget import MyQWidget
 from Utilities.formulas import calculate_total_unceratainty_percent, calculate_random_unceratainty_percent
+from Utilities.useful_methods import get_awg_on_values, get_awg_off_values
 
 
 class RFB(MyQWidget, Ui_Form):
@@ -29,32 +30,6 @@ class RFB(MyQWidget, Ui_Form):
         y = range(0, 100)
         x = range(0, 100)
         self.rfb_graph.refresh(x, y)
-
-    # Additional feature: add smart transition detection
-    def get_awg_on_values(self, acoustic_power_trace_w, awg_on_ray):
-        if len(acoustic_power_trace_w) == 0:
-            return float('nan')
-
-        acoustic_power_on_data = list()
-
-        for i in range(len(acoustic_power_trace_w)):
-            if awg_on_ray[i]:
-                acoustic_power_on_data.append(acoustic_power_trace_w[i])
-
-        return acoustic_power_on_data
-
-    # Additional feature: add smart transition detection
-    def get_awg_off_values(self, acoustic_power_trace_w, awg_on_ray):
-        if len(acoustic_power_trace_w) == 0:
-            return float('nan')
-
-        acoustic_power_off_data = list()
-
-        for i in range(len(acoustic_power_trace_w)):
-            if not awg_on_ray[i]:
-                acoustic_power_off_data.append(acoustic_power_trace_w[i])
-
-        return acoustic_power_off_data
 
     """
     Updates the rfb tab, including the plot and all spinboxes.
@@ -92,8 +67,8 @@ class RFB(MyQWidget, Ui_Form):
             self.log(level='error', message='Length mismatch in power meter data')
             return
 
-        acoustic_power_on_data = self.get_awg_on_values(acoustic_w, awg_on)
-        acoustic_power_off_data = self.get_awg_off_values(acoustic_w, awg_on)
+        acoustic_power_on_data = get_awg_on_values(acoustic_w, awg_on)
+        acoustic_power_off_data = get_awg_off_values(acoustic_w, awg_on)
 
         if len(acoustic_power_off_data) !=0:
             acoustic_power_off_mean = sum(acoustic_power_off_data)/len(acoustic_power_off_data)

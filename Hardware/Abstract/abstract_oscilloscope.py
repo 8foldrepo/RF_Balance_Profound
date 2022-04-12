@@ -50,6 +50,9 @@ class AbstractOscilloscope(AbstractDevice):
                 if key == 'delay_cycles':
                     self.delay_cycles = parameters[key]
 
+        def SetAveraging(self, averages):
+            pass
+
         @abstractmethod
         def toggle_connection(self):
             if self.connected():

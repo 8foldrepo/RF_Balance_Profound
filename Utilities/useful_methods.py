@@ -98,6 +98,32 @@ def unique(list):
 
     return unique_list
 
+# Additional feature: add smart transition detection
+def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_on_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if awg_on_ray[i]:
+            acoustic_power_on_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_on_data
+
+# Additional feature: add smart transition detection
+def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_off_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if not awg_on_ray[i]:
+            acoustic_power_off_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_off_data
+
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
