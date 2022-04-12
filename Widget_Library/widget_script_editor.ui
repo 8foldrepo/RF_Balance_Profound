@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget_5">
+  <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -46,7 +46,11 @@
     <attribute name="title">
      <string>Tab 1</string>
     </attribute>
-    <layout class="QGridLayout" name="gridLayout_8"/>
+    <layout class="QGridLayout" name="gridLayout_8">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="action_widget_layout"/>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QComboBox" name="script_cmd_dropdown">
@@ -64,13 +68,8 @@
     </font>
    </property>
    <property name="currentText">
-    <string>Measure element efficiency (RFB)</string>
+    <string>Pre-test initialisation</string>
    </property>
-   <item>
-    <property name="text">
-     <string>Measure element efficiency (RFB)</string>
-    </property>
-   </item>
    <item>
     <property name="text">
      <string>Pre-test initialisation</string>
@@ -78,12 +77,72 @@
    </item>
    <item>
     <property name="text">
-     <string>Find element n</string>
+     <string>Loop over elements</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Loop over elements</string>
+     <string>End loop</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure function generator</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure oscilloscope channels</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure oscilloscope timebase</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Run &quot;Auto Gain Control&quot;</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Autoset timebase</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Home system</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Move system</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Select UA channel</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Find element &quot;n&quot;</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Frequency sweep</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Measure element efficiency (RFB)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Save results</string>
     </property>
    </item>
   </widget>

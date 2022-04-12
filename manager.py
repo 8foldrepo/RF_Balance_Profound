@@ -32,7 +32,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 pump_status = ""
 tank_status = ""
 
-
+#todo: continue adding prebuilt methods for all of the actions in script editor
 class Manager(QThread):
     # Dialog signals
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read

@@ -1,7 +1,14 @@
 from ui_elements.my_qwidget import MyQWidget
-from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog, QWidget
 from Widget_Library.widget_script_editor import Ui_Form
 from collections import OrderedDict
+from ui_elements.script_editor.ui_find_element import FindElement
+from ui_elements.script_editor.ui_home_system import HomeSystem
+from ui_elements.script_editor.ui_prompt_user_for_action import PromptUserForAction
+from ui_elements.script_editor.ui_loop_over_elements import LoopOverElements
+from ui_elements.script_editor.ui_measure_element_efficiency_rfb import MeasureElementEffeciency
+#from ui_elements.script_editor. import
+#from ui_elements.script_editor. import
 
 #Todo: add the rest of the methods to the dropdown
 class ScriptEditor(MyQWidget, Ui_Form):
@@ -16,6 +23,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
 
     def configure_signals(self):
+        self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
         self.move_cmd_down_button.clicked.connect(self.move_selection_down)
         self.move_cmd_up_button.clicked.connect(self.move_selection_up)
@@ -23,6 +31,35 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.save_script_button.clicked.connect(self.save_script)
         self.delete_step_button.clicked.connect(self.delete_step)
         self.delete_all_button.clicked.connect(self.delete_all)
+
+    def show_task_type_widget(self):
+        #clear layout
+        for i in reversed(range(self.action_widget_layout.count())):
+            self.action_widget_layout.itemAt(i).widget().setParent(None)
+
+        task_type = self.script_cmd_dropdown.currentText()
+
+        widget = None
+        if task_type == "Find element \"n\"":
+            widget = FindElement()
+        elif task_type == "Loop over elements":
+            widget = LoopOverElements()
+        #elif task_type == "End loop"
+        elif task_type == "Measure element efficiency (RFB)":
+            widget = MeasureElementEffeciency()
+        #elif task_type == "Save results"
+        elif task_type == "Prompt user for action":
+            widget = PromptUserForAction()
+        elif task_type == "Home system":
+            widget = HomeSystem()
+        #elif task_type == ""
+        #elif task_type == ""
+        #elif task_type == ""
+        #elif task_type == ""
+        else:
+            widget = QWidget()
+
+        self.action_widget_layout.addWidget(widget, 0,0)
 
     """Delete the step at the given index"""
     def delete_step(self):
@@ -127,7 +164,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                             ('Element 10', 'TRUE')])
 
     def home_system_dict(self):
-        return OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'X')])
+        return
 
     def end_loop_dict(self):
         return OrderedDict([('Task type', 'End loop_1')])
@@ -216,6 +253,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
             new_arg_dict = self.find_element_dict()
         elif task_name == 'Loop over elements':
             new_arg_dict = self.loop_over_elements_dict()
+        else:
+            new_arg_dict = OrderedDict()
 
         #add the new dictionary to arg_dicts at the correct index
         self.list_of_arg_dicts.insert(row + 1, new_arg_dict)
