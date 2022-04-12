@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog
+from datetime import  datetime
 from Widget_Library import dialog_pretest
 from PyQt5.QtCore import pyqtSignal
 from ui_elements.my_qdialog import MyQDialog
@@ -14,6 +14,12 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.setupUi(self)
         self.configure_signals()
         self.metadata_dict = dict()
+        now = datetime.now()
+
+        #Get the current date, save it to the metadata dictionary, and show it in the UI
+        formatted_date = now.strftime("%Y.%m.%d-%H.%M")
+        self.metadata_dict['test_date_time'] = formatted_date
+        self.date_output.setText(formatted_date)
 
     def configure_signals(self):
         self.ok_button.clicked.connect(self.ok_clicked)
@@ -74,6 +80,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.metadata_dict['low_frequency_MHz'] = float(self.lf_MHz_field.text())
         self.metadata_dict['high_frequency_MHz'] = float(self.hf_MHz_field.text())
         self.metadata_dict['hardware_code'] = self.hardware_code_field.text()
+        self.metadata_dict['test_date_time'] = self.date_output.text()
 
         self.pretest_metadata_signal.emit(self.metadata_dict)
         self.close()
@@ -81,6 +88,10 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     def cancel_clicked(self):
         self.abort_signal.emit()
         self.close()
+
+    def closeEvent(self, event):
+        self.abort_signal.emit()
+        event.accept()
 
 def print_info(dict):
     print(f"metadate {dict}")

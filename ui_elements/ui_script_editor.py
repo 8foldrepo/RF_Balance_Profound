@@ -1,21 +1,19 @@
-from PyQt5.QtWidgets import *
-from Widget_Library.widget_script_editor import  Ui_Form
+from ui_elements.my_qwidget import MyQWidget
+from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog
+from Widget_Library.widget_script_editor import Ui_Form
 from collections import OrderedDict
 
 #Todo: add the rest of the methods to the dropdown
-class ScriptEditor(QWidget, Ui_Form):
+class ScriptEditor(MyQWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.list_of_arg_dicts = list()
         self.setupUi(self)
-        self.style_ui()
         self.configure_signals()
-        self.arg_dicts = None
 
-    def style_ui(self):
-        # Format treewidget
-        self.treeWidget.setColumnCount(2)
-        self.treeWidget.setHeaderLabels(["Task", "Arguments"])
-        self.treeWidget.header().resizeSection(0, 220)
+    def set_tree_widget(self, treeWidget):
+        self.treeWidget = treeWidget
+        self.treeWidget.itemClicked.connect(self.on_item_clicked)
 
     def configure_signals(self):
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
@@ -23,7 +21,6 @@ class ScriptEditor(QWidget, Ui_Form):
         self.move_cmd_up_button.clicked.connect(self.move_selection_up)
         self.update_tree_button.clicked.connect(self.updateTree)
         self.save_script_button.clicked.connect(self.save_script)
-        self.treeWidget.itemClicked.connect(self.on_item_clicked)
         self.delete_step_button.clicked.connect(self.delete_step)
         self.delete_all_button.clicked.connect(self.delete_all)
 
@@ -31,13 +28,13 @@ class ScriptEditor(QWidget, Ui_Form):
     def delete_step(self):
         index = self.treeWidget.currentIndex().row()
         self.treeWidget.takeTopLevelItem(index)
-        self.arg_dicts.pop(index + 1) #account for header
+        self.list_of_arg_dicts.pop(index + 1) #account for header
         pass
 
     """Clear the ui script visual and clear the internal arg_dicts variable"""
     def delete_all(self):
         self.treeWidget.clear()
-        self.arg_dicts = list()
+        self.list_of_arg_dicts = list()
         pass
 
     def on_item_clicked(self):
@@ -60,21 +57,19 @@ class ScriptEditor(QWidget, Ui_Form):
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
-        self.arg_dicts = arg_dicts
+        self.list_of_arg_dicts = arg_dicts
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.treeWidget.clear()
-        self.arg_dicts = arg_dicts
-        print(self.arg_dicts)
 
         task_dict = {}
-        for i in range(len(self.arg_dicts)):
-            if not '# of Tasks' in self.arg_dicts[i].keys():
+        for i in range(len(self.list_of_arg_dicts)):
+            if not '# of Tasks' in self.list_of_arg_dicts[i].keys():
                 arg_list = list()
-                for key in self.arg_dicts[i]:
+                for key in self.list_of_arg_dicts[i]:
                     if not key == "Task type":
-                        arg_list.append([key, self.arg_dicts[i][key]])
+                        arg_list.append([key, self.list_of_arg_dicts[i][key]])
 
-                task_dict[self.arg_dicts[i]["Task type"]] = arg_list
+                task_dict[self.list_of_arg_dicts[i]["Task type"]] = arg_list
 
         #Add an item for each task and child items for all of its variables
         tree_items = []
@@ -146,8 +141,6 @@ class ScriptEditor(QWidget, Ui_Form):
                 arg_list.append([key, task_dict[key]])
 
         #Add parameters as child items
-        print(task_dict)
-
         for parameter in arg_list:
             child = QTreeWidgetItem(parameter)
             item.addChild(child)
@@ -155,11 +148,9 @@ class ScriptEditor(QWidget, Ui_Form):
         return  item
 
     def updateTree(self):
-        arg_dict_copy = list(self.arg_dicts)
+        arg_dict_copy = list(self.list_of_arg_dicts)
 
         task_names = [self.script_cmd_dropdown.itemText(i) for i in range(self.script_cmd_dropdown.count())]
-        print(arg_dict_copy)
-        print(type(arg_dict_copy))
 
         #For each task name,
         for task_name in task_names:
@@ -179,10 +170,29 @@ class ScriptEditor(QWidget, Ui_Form):
         self.visualize_script(arg_dict_copy)
 
     def move_selection_down(self):
+        # If there is no selection, try to set selection to the first item
+        if self.treeWidget.currentItem() is None:
+            first_item = self.treeWidget.invisibleRootItem().child(0)
+            if first_item is not None:
+                self.treeWidget.setCurrentItem(first_item)
+                return
+            else:
+                return
+
         index = self.treeWidget.currentIndex()
         self.treeWidget.setCurrentIndex(index.sibling(index.row()+1, index.column()))
 
     def move_selection_up(self):
+        # If there is no selection, try to set selection to the last item
+        if self.treeWidget.currentItem() is None:
+            child_count = self.treeWidget.invisibleRootItem().childCount()
+            last_item = self.treeWidget.invisibleRootItem().child(child_count-1)
+            if last_item is not None:
+                self.treeWidget.setCurrentItem(last_item)
+                return
+            else:
+                return
+
         index = self.treeWidget.currentIndex()
         self.treeWidget.setCurrentIndex(index.sibling(index.row()-1, index.column()))
 
@@ -202,17 +212,19 @@ class ScriptEditor(QWidget, Ui_Form):
             new_arg_dict = self.measure_effeciency_dict()
         elif task_name == 'Pre-test initialisation':
             new_arg_dict = self.pre_test_dict()
-        elif task_name == 'Find element n':
+        elif task_name == 'Find element \"n\"':
             new_arg_dict = self.find_element_dict()
         elif task_name == 'Loop over elements':
             new_arg_dict = self.loop_over_elements_dict()
 
         #add the new dictionary to arg_dicts at the correct index
-        self.arg_dicts.insert(row+1, new_arg_dict)
+        self.list_of_arg_dicts.insert(row + 1, new_arg_dict)
 
-        self.treeWidget.insertTopLevelItems(index, [self.dict_to_tree_item(new_arg_dict)])
+        item = self.dict_to_tree_item(new_arg_dict)
 
-        print(self.arg_dicts)
+        self.treeWidget.insertTopLevelItems(index, [item])
+
+        self.treeWidget.setCurrentItem(item)
 
     def save_script(self):
         path = QFileDialog.getSaveFileName(parent=self,caption='Save script',filter='Script files (*.wtf)')[0]
@@ -220,14 +232,14 @@ class ScriptEditor(QWidget, Ui_Form):
         with open(path, 'w') as f:
             #Write header info
             f.write('[Top Level]\n')
-            for arg in self.arg_dicts[0].keys():
-                f.write(f"{arg} = \"{self.arg_dicts[0][arg]}\"\n")
+            for arg in self.list_of_arg_dicts[0].keys():
+                f.write(f"{arg} = \"{self.list_of_arg_dicts[0][arg]}\"\n")
             f.write("\n")
 
             #Write arguments of each step
-            for i in range(len(self.arg_dicts)-1):
+            for i in range(len(self.list_of_arg_dicts) - 1):
                 f.write(f'[Task{i}]\n')
-                task_args = self.arg_dicts[i+1]
+                task_args = self.list_of_arg_dicts[i + 1]
                 for arg in task_args.keys():
                     f.write(f"{arg} = \"{task_args[arg]}\"\n")
                 f.write("\n")

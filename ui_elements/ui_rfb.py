@@ -20,7 +20,7 @@ class RFB(MyQWidget, Ui_Form):
 
     def set_manager(self, manager):
         self.manager = manager
-        self.manager.rfb_tab_signal.connect(self.update_rfb_tab)
+        self.manager.update_rfb_tab_signal.connect(self.update_rfb_tab)
 
     def set_balance(self, balance):
         self.balance = balance
@@ -37,8 +37,9 @@ class RFB(MyQWidget, Ui_Form):
     list of booleans indicating if the output was on, grams is a float of the latest balance reading.
     """
 
-    @pyqtSlot(dict)
-    def update_rfb_tab(self, args):
+    @pyqtSlot()
+    def update_rfb_tab(self):
+        args = self.manager.rfb_args
         forward_s = args['forward_s']
         forward_w = args['forward_w']
         reflected_s = args['reflected_s']
@@ -56,21 +57,10 @@ class RFB(MyQWidget, Ui_Form):
         if not self.plot_ready:
             return
 
-        if forward_w is None:
-            return
-
-        if len(acoustic_w) != len(acoustic_s) or len(awg_on) != len(acoustic_s):
-            self.log(level='error', message='Length mismatch in rfb data')
-            return
-
-        if len(forward_w) != len(forward_s) or len(reflected_w) != len(reflected_s):
-            self.log(level='error', message='Length mismatch in power meter data')
-            return
-
         acoustic_power_on_data = get_awg_on_values(acoustic_w, awg_on)
         acoustic_power_off_data = get_awg_off_values(acoustic_w, awg_on)
 
-        if len(acoustic_power_off_data) !=0:
+        if len(acoustic_power_off_data) != 0:
             acoustic_power_off_mean = sum(acoustic_power_off_data)/len(acoustic_power_off_data)
         else:
             acoustic_power_off_mean = float('nan')
@@ -105,9 +95,12 @@ class RFB(MyQWidget, Ui_Form):
         self.reflected_power_w_field.setText(str(round(reflected_power_w,2)))
 
         self.plot_ready = False
-        self.rfb_graph.refresh(forward_s, forward_w, pen='k', clear=True)
-        if reflected_w is not None:
+
+        if forward_w is not None and len(forward_w) == len(forward_s):
+            self.rfb_graph.refresh(forward_s, forward_w, pen='k', clear=True)
+        if reflected_w is not None and len(reflected_w) == len(reflected_s):
             self.rfb_graph.refresh(reflected_s, reflected_w, pen='g', clear=False)
-        if acoustic_w is not None:
+        if acoustic_w is not None and len(acoustic_w) == len(acoustic_s):
             self.rfb_graph.refresh(acoustic_s, acoustic_w, pen='r', clear=False)
+
         self.plot_ready = True
