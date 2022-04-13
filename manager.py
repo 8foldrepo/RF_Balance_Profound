@@ -78,6 +78,10 @@ class Manager(QThread):
         self.last_get_position_time = 0
         self.app = QApplication.instance()
         self.scan_data = dict()
+        self.scan_data["script_log"] = list()
+
+        self.scriptlog = self.scan_data["script_log"]
+
         self.config = config
         self.element_x_coordinates = get_element_distances(
             element_1_index=self.config['WTF_PositionParameters']['X-Element1'],
@@ -560,6 +564,15 @@ class Manager(QThread):
     '''Collects metadata from user and prompts user until water level is ok'''
 
     def pretest_initialization(self, variable_list):
+        #todo: add first 4 lines of scriptlog
+
+        self.scriptlog.append(f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}")
+
+        #Check if wtfib is connected and add that to the scriptlog
+        if self.UAInterface.is_connected():
+            self.scriptlog.append(["","Check UA present","Connected","OK"])
+        else:
+            self.scriptlog.append(["", "Check UA present", "Connected", "FAIL"])
         # Show dialogs until pump is on and the water sensor reads level
         while True:
             break #todo: remove this line later. for testing only
