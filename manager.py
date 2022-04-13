@@ -464,6 +464,10 @@ class Manager(QThread):
     # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
     @pyqtSlot()
     def advance_script(self):
+        if self.taskNames is None:
+            self.abort()
+            return
+
         if self.retry_var is True:
             self.step_index = self.step_index - 1
             self.step_complete = True

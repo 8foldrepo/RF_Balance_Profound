@@ -284,7 +284,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
-        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
+        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_results_table)
 
         # Manager communication signals
         self.abort_signal.connect(self.manager.abort)
@@ -391,7 +391,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def load_results(self, triggered):
         self.results_tab.load_test_results()
         try:
-            self.results_tab.populate_table()
+            self.results_tab.populate_results_table()
         except:
             self.log("Invalid file")
 
@@ -458,6 +458,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.setText(s)
         dlg.setIcon(QMessageBox.Critical)
         dlg.show()
+
+
+    def dialog_user_action(self, s):
+        dlg = QMessageBox(self)
+        dlg.setText(s)
+        #todo: change icon to one that is less error, more info/ notify
+        dlg.setIcon(QMessageBox.Critical)
+        dlg.show()
+        dlg.finished.connect(self.manager.cont) #todo: test this
+        #todo: maker sure script doesn't continue until this is dismissed
 
     # Open help document
     def Show_Help(self):

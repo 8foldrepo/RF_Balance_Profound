@@ -51,6 +51,7 @@ def blank_test_data() -> dict:
     test_data['serial_number'] = ""
     test_data['operator_name'] = ""
     test_data['script_name'] = ""
+    test_data['script_log'] = list()
     test_data['low_frequency_MHz'] = float('nan')
     test_data['high_frequency_MHz'] = float('nan')
     test_data['hardware_code'] = ""

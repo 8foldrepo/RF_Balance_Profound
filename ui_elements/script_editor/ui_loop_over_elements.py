@@ -1,6 +1,6 @@
 from Widget_Library.loop_over_elements import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
-
+from collections import OrderedDict
 
 class LoopOverElements(QWidget, Ui_Form):
     def __init__(self, parent=None):
@@ -16,6 +16,26 @@ class LoopOverElements(QWidget, Ui_Form):
         self.element_checkbox_8.clicked.connect(self.read_in)
         self.element_checkbox_9.clicked.connect(self.read_in)
         self.element_checkbox_10.clicked.connect(self.read_in)
+
+    def orderedDict_to_ui(self, arg_dict: OrderedDict):
+        # todo, fill UI according to dictionary
+        #example lines
+        #self..setText(arg_dict[""])
+        #self..setChecked(arg_dict[""])
+        #self..setValue(arg_dict[""])
+        pass
+
+    # todo: populate arg_dict, arrange the arguments in the order of the example script
+    def ui_to_orderedDict(self) -> OrderedDict:
+        arg_dict = OrderedDict()
+        arg_dict['Task type'] = 'Loop over elements'
+        #example lines, insert the name of the argument on the left as it appears in the example script.
+        #the name of the ui element goes between the dots
+        #self.arg_dict[""] = self..currentText()
+        #self.arg_dict[""] = self..isChecked()
+        #self.arg_dict[""] = round(self..value(),2)
+
+        return arg_dict
 
     def read_in(self):
         element_check_list = [str(self.element_checkbox_1.checkState()),
