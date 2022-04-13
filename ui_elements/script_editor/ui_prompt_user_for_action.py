@@ -1,6 +1,6 @@
 from Widget_Library.widget_prompt_user_for_action import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
-
+from collections import OrderedDict
 
 class PromptUserForAction(QWidget, Ui_Form):
     def __init__(self, parent=None):
@@ -10,7 +10,7 @@ class PromptUserForAction(QWidget, Ui_Form):
     def configure_signals(self):
         pass
 
-    def ui_to_dictionary(self) -> dict:
+    def ui_to_orderedDict(self) -> dict:
         arg_dict = dict()
         arg_dict['Task type'] = 'Prompt user for action'
 
@@ -22,7 +22,7 @@ class PromptUserForAction(QWidget, Ui_Form):
             arg_dict['Prompt type'] = 'Selection 3'
         return arg_dict
 
-    def dictionary_to_ui(self, arg_dict: dict):
+    def orderedDict_to_ui(self, arg_dict: dict):
         if arg_dict['Prompt type'] == 'Disable UA pump':
             self.prompt_field.setCurrentIndex(0)
         elif arg_dict['Prompt type'] == 'Selection 2':  # Placeholder value for key.
