@@ -32,7 +32,8 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 pump_status = ""
 tank_status = ""
 
-#todo: continue adding prebuilt methods for all of the actions in script editor
+
+# todo: continue adding prebuilt methods for all of the actions in script editor
 class Manager(QThread):
     # Dialog signals
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
@@ -48,9 +49,9 @@ class Manager(QThread):
     num_tasks_signal = pyqtSignal(int)
     script_name_signal = pyqtSignal(str)
 
-    #Emits the number of the task as shown in the .wtf file, not including repeats. Pretest_initialization should be 0
+    # Emits the number of the task as shown in the .wtf file, not including repeats. Pretest_initialization should be 0
     task_number_signal = pyqtSignal(int)
-    #Tracks the index of the task in the order it is executed, including repeats. Pretest_initialization should be 0
+    # Tracks the index of the task in the order it is executed, including repeats. Pretest_initialization should be 0
     task_index_signal = pyqtSignal(int)
 
     element_number_signal = pyqtSignal(str)
@@ -65,7 +66,7 @@ class Manager(QThread):
     profile_plot_signal = pyqtSignal(list, list, str)
     plot_signal = pyqtSignal(list, list, float)  # float is refresh rate
 
-    rfb_args = dict() #contains info for rfb tab
+    rfb_args = dict()  # contains info for rfb tab
     update_rfb_tab_signal = pyqtSignal()
     save_results_signal = pyqtSignal()
     # contains
@@ -87,16 +88,16 @@ class Manager(QThread):
             element_1_index=self.config['WTF_PositionParameters']['X-Element1'],
             element_pitch=self.config['WTF_PositionParameters']['X-Element pitch (mm)'])
 
-        #put a none at position zero because there is no element zero
+        # put a none at position zero because there is no element zero
         self.element_r_coordinates = [None]
-        #fill in default theta home coordinates
+        # fill in default theta home coordinates
         for i in range(10):
             self.element_r_coordinates.append(self.config['WTF_PositionParameters']['ThetaHomeCoord'])
 
         # Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
 
-        #Set test_data to default values
+        # Set test_data to default values
         self.test_data = blank_test_data()
 
         self.freq_highlimit_hz = None
@@ -363,6 +364,7 @@ class Manager(QThread):
         self.starttime = t.time()
 
     def load_script(self, path):
+        # get UA serial no. and append behind date
         self.scripting = True
         self.script = open(path, "r")
 
@@ -519,7 +521,7 @@ class Manager(QThread):
         elif "Home system".upper() in name.upper():
             self.home_system(args)
 
-        self.task_index_signal.emit(step_index+1)
+        self.task_index_signal.emit(step_index + 1)
 
     '''Aborts script'''
 
@@ -564,26 +566,76 @@ class Manager(QThread):
     '''Collects metadata from user and prompts user until water level is ok'''
 
     def pretest_initialization(self, variable_list):
-        #todo: add first 4 lines of scriptlog
+        # todo: add first 4 lines of scriptlog
+        self.scriptlog.append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
+        self.scriptlog.append(["Running script: ", self.test_data['script_name'], '', '', ''])
+        self.scriptlog.append(["Pretest_initialization", '', '', ''])
 
-        self.scriptlog.append(f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}")
-
-        #Check if wtfib is connected and add that to the scriptlog
+        # Check if wtfib is connected and add that to the scriptlog
         if self.UAInterface.is_connected():
-            self.scriptlog.append(["","Check UA present","Connected","OK"])
+            self.scriptlog.append(["", "Get UA Serial", "Connected", "OK"])
         else:
-            self.scriptlog.append(["", "Check UA present", "Connected", "FAIL"])
+            self.scriptlog.append(["", "Get UA Serial", "Connected", "FAIL"])
+            return "pretest_init fail"
         # Show dialogs until pump is on and the water sensor reads level
+        # todo: have ua inserted to certain x position like in the ScriptResults.log
         while True:
-            break #todo: remove this line later. for testing only
+            break  # todo: remove this line later. for testing only
             if not self.IO_Board.get_pump_reading():  # if the pump is not running
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
                 try:
                     self.wait_for_cont()
                 except AbortException:
+                    self.scriptlog.append('', 'Check/prompt UA Pump', 'FAIL', '')
                     return self.abort()
             else:
+                self.scriptlog.append('', 'Check/prompt UA Pump', 'OK', '')
+
+                if self.thermocouple.is_connected():
+                    self.scriptlog.append('', 'CheckThermocouple', 'OK', '')
+                else:
+                    self.scriptlog.append('', 'CheckThermocouple', 'FAIL', '')
+                    # have the script aborted or wait for thermocouple?
+
+                burst_mode, unused = self.AWG.GetBurst()
+                if burst_mode == 1:
+                    burst_mode = "Toneburst"
+                else:
+                    burst_mode = "Continuous"
+
+                self.scriptlog.append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
+
+                # todo: have the user be prompted to ensure the power amplifier is on; check if successful if not log FAIL
+                try:
+                    self.scriptlog.append(['', 'Prompt PowerAmp', 'OK', ''])
+                except:
+                    self.scriptlog.append(['', 'Prompt PowerAmp', 'FAIL', ''])
+
+                # todo: create data directories here
+                try:
+                    self.scriptlog.append(['', 'CreateDataDirectories', 'OK', ''])
+                except:
+                    self.scriptlog.append(['', 'CreateDataDirectories', 'FAIL', ''])
+
+                # todo: create h/w log here
+                try:
+                    self.scriptlog.append(['', 'Create h/w log', 'OK', ''])
+                except:
+                    self.scriptlog.append(['', 'Create h/w log', 'FAIL', ''])
+
+                # todo: initialize results FGV here
+                try:
+                    self.scriptlog.append(['', 'Initialize results FGV', 'OK', ''])
+                except:
+                    self.scriptlog.append(['', 'Initialize results FGV', 'FAIL', ''])
+
+                # todo: duplicate main script?
+                try:
+                    self.scriptlog.append(['', 'duplicate main script', 'OK', ''])
+                except:
+                    self.scriptlog.append(['', 'Duplicate main script', 'FAIL', ''])
+
                 water_level = self.IO_Board.get_water_level()
                 if not water_level == 'level':  # if the water level is not level
                     # launch the dialog box signifying this issue
@@ -591,8 +643,10 @@ class Manager(QThread):
                     try:
                         self.wait_for_cont()
                     except AbortException:
+                        self.scriptlog.append(['', 'Check/prompt water level', 'FAIL', ''])
                         return
                 else:
+                    self.scriptlog.append(['', 'Check/prompt water level', 'OK', ''])
                     break
 
         self.step_complete = True
@@ -602,17 +656,19 @@ class Manager(QThread):
     @pyqtSlot(dict)
     def pretest_metadata_slot(self, pretest_metadata):
         self.abort()
-        #reset test data to default values
+        # reset test data to default values
         test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
         self.run_script()
+        self.scriptlog.append(['', "Prompt username+UA serial", 'OK', ''])
 
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
+        self.scriptlog.append(['Find element "n"', 'OK', '', ''])
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
 
-        #Update UI visual to reflect the element we are on
+        # Update UI visual to reflect the element we are on
         self.element_number_signal.emit(str(element))
 
         element_x_coordinate = self.element_x_coordinates[element]
@@ -649,7 +705,7 @@ class Manager(QThread):
         x_rms_values = list()
 
         # sweep from the expected element position minus the max error to the expected element position plus max error
-        position = -1 * (XPts * x_increment_MM)/2 + element_x_coordinate
+        position = -1 * (XPts * x_increment_MM) / 2 + element_x_coordinate
 
         # begin with arbitrarily low values
         x_max_rms = -1 * sys.float_info.max
@@ -676,12 +732,12 @@ class Manager(QThread):
 
         self.log(f"Maximum of {x_max_rms} @ x = {x_max_position} mm. Going there.")
 
-        #update element x position
+        # update element x position
         self.element_x_coordinates[element] = x_max_position
 
         status = self.Motors.go_to_position(['X'], [x_max_position])
 
-        #todo: test this to make sure it triggers if and only if the movement fails
+        # todo: test this to make sure it triggers if and only if the movement fails
         if not status:
             self.log(level="error", message="Motor movement not successful")
             if self.config["Debugging"]["end_script_on_errors"]:
@@ -692,7 +748,7 @@ class Manager(QThread):
 
         # Loop over r through a given range, move to the position where maximal RMS voltage was measured
         r_sweep_waveforms = list()
-        position = -1 * (thetaPts * thetaIncrDeg)/2 + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
+        position = -1 * (thetaPts * thetaIncrDeg) / 2 + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
 
         # begin with arbitrarily low values
         r_max_rms = -1 * sys.float_info.max
@@ -726,24 +782,24 @@ class Manager(QThread):
         self.scan_data["Theta sweep waveforms"] = r_sweep_waveforms
 
         self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
-        #update element r position
+        # update element r position
         self.element_r_coordinates[element] = r_max_position
 
-        #update results summary
-        self.test_data['results_summary'][element-1][1] = "%.2f" % x_max_position
-        self.test_data['results_summary'][element-1][2] = "%.2f" % r_max_position
+        # update results summary
+        self.test_data['results_summary'][element - 1][1] = "%.2f" % x_max_position
+        self.test_data['results_summary'][element - 1][2] = "%.2f" % r_max_position
         self.step_complete = True
 
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, variable_list):
-        #Todo: implement zeroing such that balance reading subtracts the averaging reading when the balance is off
+        # Todo: implement zeroing such that balance reading subtracts the averaging reading when the balance is off
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
         element_x_coordinate = self.element_x_coordinates[element]
         element_r_coordinate = self.element_x_coordinates[element]
         print(f"Measuring effeciency of {element}, at coordinate x={element_x_coordinate}, r={element_r_coordinate}")
         self.element_number_signal.emit(str(element))
-        self.Motors.go_to_position(['X','R'], [element_x_coordinate,element_r_coordinate])
+        self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
         frequency_range = variable_list['Frequency range']
         on_off_cycles = int(variable_list['RFB.#on/off cycles'])
         rfb_on_time = float(variable_list['RFB.On time (s)'])
@@ -851,24 +907,24 @@ class Manager(QThread):
 
         print(f"Final time: {t.time() - startTime}")
 
-        #List containing all readings while AWG was on
+        # List containing all readings while AWG was on
         acoustic_power_on_data = get_awg_on_values(acoustic_powers_w, awg_on)
-        #Mean acoustic power while on
-        acoustic_power_on_mean = sum(acoustic_power_on_data)/len(acoustic_power_on_data)
+        # Mean acoustic power while on
+        acoustic_power_on_mean = sum(acoustic_power_on_data) / len(acoustic_power_on_data)
 
         # List containing all readings while AWG was on
         forward_power_on_data = get_awg_on_values(forward_powers_w, awg_on)
         # Mean acoustic power while on
         forward_power_on_mean = sum(forward_power_on_data) / len(forward_power_on_data)
 
-        effeciency_percent = acoustic_power_on_mean/forward_power_on_mean
+        effeciency_percent = acoustic_power_on_mean / forward_power_on_mean
 
         # List containing all readings while AWG was on
         reflected_power_on_data = get_awg_on_values(reflected_powers_w, awg_on)
         # Mean acoustic power while on
         reflected_power_on_mean = sum(reflected_power_on_data) / len(reflected_power_on_data)
 
-        reflected_power_percent = reflected_power_on_mean/forward_power_on_mean
+        reflected_power_percent = reflected_power_on_mean / forward_power_on_mean
 
         forward_power_max = max(forward_power_on_data)
 
@@ -882,8 +938,8 @@ class Manager(QThread):
             self.test_data['results_summary'][element - 1][12] = "%.1f" % reflected_power_percent
             self.test_data['results_summary'][element - 1][13] = "%.1f" % forward_power_max
             self.test_data['results_summary'][element - 1][14] = "%.1f" % water_temperature
-        else: #Default to low frequency
-            #Low Frequency
+        else:  # Default to low frequency
+            # Low Frequency
             self.test_data['results_summary'][element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
             # LF effeciency (%)
             self.test_data['results_summary'][element - 1][7] = "%.0f" % effeciency_percent
@@ -910,7 +966,7 @@ class Manager(QThread):
             sum = sum + float(self.test_data['results_summary'][i][2])
             count = count + 1
 
-        angle_average = sum/count
+        angle_average = sum / count
 
         self.test_data['results_summary'][10][2] = str(angle_average)
 
@@ -930,6 +986,7 @@ class Manager(QThread):
     '''Return axis to zero coordinate'''
 
     def home_system(self, variable_list):
+        # TODO: have this be called in pretest_initialization and have it add to script log
         axis_to_home = variable_list['Axis to home']
         if axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
@@ -941,6 +998,7 @@ class Manager(QThread):
         # TODO: have the pump home in the desired direction
 
         self.step_complete = True
+        # self.scriptlog.append(['', "Home all", f"X={X}; Theta={theta}", ''])
 
     '''Warn the user that the UA is being retracted in x'''
 
