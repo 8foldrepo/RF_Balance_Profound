@@ -30,9 +30,9 @@ class PowerMeter(AbstractSensor):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
-        on =  random.choice([True, False])
-        self.reading_signal.emit(on)
-        return on
+        reading = random.random()
+        self.reading_signal.emit(reading)
+        return reading
 
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')

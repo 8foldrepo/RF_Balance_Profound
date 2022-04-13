@@ -6,7 +6,7 @@ Debugging:
   simulate_hw: true
   simulate_motors: true
   simulate_oscilloscope: true
-  end_script_on_errors: true
+  end_script_on_errors: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
@@ -62,6 +62,7 @@ Keysight_Oscilloscope:
   range_mV: 2000
   ext_trigger: False
   timeout_s: 20
+  set_on_startup: True
 MT_Balance:
   port: COM4
   timeout_s: .5
@@ -105,6 +106,12 @@ VIX_Motors:
   reverse_ray:
   - false
   - false
+  enable_homing_ray:
+    - false
+    - false
+  homing_offset_ray: #Difference between motor's home position and the desired home position (defined by wtf_position_parameters)
+    - false
+    - false
   rotational_ray:
   - false
   - true
@@ -130,3 +137,5 @@ WTF_PositionParameters:
   X-Element1: 0
   X-TankInsertionPoint: 108
   XHomeCoord: 263
+Software_Version:
+  '1.0'

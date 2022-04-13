@@ -1,7 +1,7 @@
 #placeholder formula
 #todo: fill in with  the correct formula
 def calculate_power_from_balance_reading(balance_reading_g:float):
-    acoustic_power_w = balance_reading_g * 14 #placeholder, not correct
+    acoustic_power_w = balance_reading_g #placeholder, not correct
     return acoustic_power_w
 
 #returns the random uncertainty of a data set as a percentage

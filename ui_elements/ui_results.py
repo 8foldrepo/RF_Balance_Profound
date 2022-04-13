@@ -39,33 +39,31 @@ class Results(MyQWidget, Ui_Form):
             line_counter = line_counter + 1  # keep track of which line we're on
 
 
-    @pyqtSlot(object)
-    def populate_table(self, test_contents):
-        self.results_summary = self.test_data["results_summary"]
-        self.ua_serial_number = self.test_data['ua_serial_number']
-        self.operator_name = self.test_data['operator_name']
-        self.script_name = self.test_data["script_name"]
-        self.write_test_result = self.test_data["ua_hardware_code"]
+    @pyqtSlot()
+    def populate_table(self, results_summary = None):
+        if results_summary is not None:
+            self.test_data["results_summary"] = results_summary
+
+        results_summary = self.test_data["results_summary"]
 
         for i in range(11):  # covers range of all elements and "UA Common"
             for x in range(16):  # covers all the data units in each element
                 item = QTableWidgetItem()
-                item.setText(test_contents[i][x+1])  # skip the header data and ignore name of element
+                item.setText(results_summary[i][x+1])  # skip the header data and ignore name of element
                 if i == 10:  # if we're on the "UA Common" line
                     self.results_table.setItem(i + 2, x, item)  # there is a line break between elements and "UA Common"
                 else:
                     self.results_table.setItem(i+1, x, item)  # first row is reserved for units
 
         for i in range(11, 13):  # LF and HF are in the last two rows of test_contents
-            for x in range(len(test_contents[-2])):
+            for x in range(len(results_summary[-2])):
                 item = QTableWidgetItem()
-                item.setText(test_contents[i][x])  # Elements with manual LF starts at row number 15 in table
+                item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
                 self.results_table.setItem(i+2, x, item)  # offset for table alignment
-            for x in range(len(test_contents[-1])):
+            for x in range(len(results_summary[-1])):
                 item = QTableWidgetItem()
-                item.setText(test_contents[i][x])  # Elements with manual LF starts at row number 15 in table
+                item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
                 self.results_table.setItem(i+2, x, item)
-
 
     def style_ui(self):
         self.results_table.horizontalHeader().resizeSection(15, 362)
@@ -85,60 +83,80 @@ class Results(MyQWidget, Ui_Form):
     """saves the results as a text file with a path specified in the config file."""
     @pyqtSlot()
     def save_test_results_summary(self):
-        if self.test_data:  # if dictionary is not empty
-            try:  # path might not be populated
-                path = self.config['Paths']['UA results root directory'] + self.test_data["ua_serial_number"] + "-" + self.test_data["test_date_time"] + ".txt" # retrieve path
-            except (TypeError, KeyError):
-                self.log("UA results root directory not defined in either yaml, defaulting to output.txt")
-                if not os.path.exists("..\\results"):
-                    os.makedirs("..\\results")
-                path = "..\\results\\" + self.test_data["ua_serial_number"] + "-" + self.test_data["test_date_time"] + ".txt"
+        if not self.test_data:  # if dictionary is empty return
+            return
 
-            if not os.path.exists(os.path.dirname(path)):
-                self.log("creating results path...")
-                os.makedirs(os.path.dirname(path))
+        path = self.config['Paths']['UA results root directory'] + "\\" + self.test_data["serial_number"] + "-" + \
+               self.test_data["test_date_time"] + ".txt"  # retrieve path
 
-            f = open(path, "w")  # replace output.txt with path later
+        try:  # path might not be populated
+            pass
+        except (TypeError, KeyError):
+            self.log("UA results root directory not defined in either yaml, defaulting to output.txt")
+            if not os.path.exists("..\\results"):
+                os.makedirs("..\\results")
+            path = "..\\results\\" + self.test_data["serial_number"] + "-" + self.test_data["test_date_time"] + ".txt"
 
-            f.write(self.test_data["ua_serial_number"] + '-' + self.test_data["test_date_time"] + '\n')
-            f.write("Test operator\t" + self.test_data['operator_name'] + '\n')
-            f.write("Comment\t" + self.test_data['comment'] + '\n')
-            f.write("Software Version\t" + self.test_data['software_version'] + '\n')
-            f.write("Script\t" + self.test_data['script_name'] + '\n')
-            f.write("UA Write\t" + self.test_data['ua_write'] + '\n')
-            f.write("UA hardware code\t" + self.test_data['ua_hardware_code'] + '\n')
-            f.write('\n')  # empty line
-            f.write("\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\tLF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\tFailure description\n")
+        self.log(f"Saving results summary to: {path}")
 
-            element_data_list = self.test_data['results_summary']
-            for x in range(len(element_data_list)):
-                if 0 <= x <= 10:  # for all the element lines and the UA Common line
-                    if x == 10:
-                        f.write('\n')  # there are empty lines around "UA Common" row
-                    f.write('\t'.join(element_data_list[x]))
-                    f.write('\n')
-                if x == 11:  # for the elements with manual LF...
-                    f.write('\n')
-                    f.write('Elements with manual LF\t' + ','.join(element_data_list[x]))
-                    f.write('\n')
-                if x == 12:  # for the elements with manual HF...
-                    f.write('Elements with manual HF\t' + ','.join(element_data_list[x]))
+        if not os.path.exists(os.path.dirname(path)):
+             self.log("creating results path...")
+             os.makedirs(os.path.dirname(path))
+
+        f = open(path, "w")
+
+        f.write(self.test_data["serial_number"] + '-' + self.test_data["test_date_time"] + '\n')
+        f.write("Test operator\t" + self.test_data['operator_name'] + '\n')
+        f.write("Comment\t" + self.test_data['test_comment'] + '\n')
+        f.write("Software Version\t" + self.test_data['software_version'] + '\n')
+        f.write("Script\t" + self.test_data['script_name'] + '\n')
+        if self.test_data["write_result"]:
+            f.write("UA Write\tOK\n")
+        else:
+            f.write("UA Write\tFAIL\n")
+        f.write("UA hardware code\t" + self.test_data['hardware_code'] + '\n')
+        f.write('\n')  # empty line
+        f.write("\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\tLF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\tFailure description\n")
+
+        element_data_list = self.test_data['results_summary']
+        for x in range(len(element_data_list)):
+            if 0 <= x <= 10:  # for all the element lines and the UA Common line
+                if x == 10:
+                    f.write('\n')  # there are empty lines around "UA Common" row
+                f.write('\t'.join(element_data_list[x]))
+                f.write('\n')
+            if x == 11:  # for the elements with manual LF...
+                f.write('\n')
+                f.write('Elements with manual LF\t' + ','.join(element_data_list[x]))
+                f.write('\n')
+            if x == 12:  # for the elements with manual HF...
+                f.write('Elements with manual HF\t' + ','.join(element_data_list[x]))
 
     def set_manager(self, manager):
         self.manager = manager
         # by reference, whenever manager changes these, this object will be updated
         self.test_data = manager.test_data
-
+        self.manager.save_results_signal.connect(self.save_results)
         #self.populate_table_signal.connect(self.manager.visualize_scan_data)
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
 
+    def save_results(self):
+
+        self.log("Saving test results")
+        self.save_test_results_summary()
+
     def set_config(self, config):
         self.config = config
 
-    def load_test_results(self, path_to_load_test_results):
+    def load_test_results(self, path = None):
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
+
         """header of the table starts at 0th row so start populating it at row 1 and down"""
-        test_results_file = open(path_to_load_test_results, "r")
+        if path == '':
+            return
+        test_results_file = open(path, "r")
         test_contents = list()
         line_counter = 0
 
@@ -148,7 +166,7 @@ class Results(MyQWidget, Ui_Form):
 
                 if line_counter == 0:  # the first line of the test results summary file will have the serial no. and date
                     delimited_line = line.split("-")  # separates the serial number from the date
-                    self.test_data['ua_serial_number'] = delimited_line[0]
+                    self.test_data['serial_number'] = delimited_line[0]
                     removed_new_line = delimited_line[2].replace('\n', '')
                     date_time_pre = delimited_line[1] + "-" + removed_new_line
                     self.test_data['test_date_time'] = date_time_pre
@@ -188,9 +206,12 @@ class Results(MyQWidget, Ui_Form):
         self.test_data['comment'] = test_contents[1][1]
         self.test_data['software_version'] = test_contents[2][1]
         self.test_data["script_name"] = test_contents[3][1]
-        self.test_data["ua_write"] = test_contents[4][1]
-        self.test_data["ua_hardware_code"] = test_contents[5][1]
+        self.test_data["write_result"] = test_contents[4][1]
+        self.test_data["hardware_code"] = test_contents[5][1]
         self.test_data['results_summary'] = test_contents[6:][:]
+
+        print_dict(self.test_data)
+        print_list(self.test_data['results_summary'])
 
         return self.test_data
 
@@ -203,7 +224,6 @@ def print_list(a):
     for x in range(len(a)):
         print(f"{x}: ", a[x])
     print("*** end of list ***")
-
 
 def print_dict(a):
     for key, value in a.items():
@@ -229,11 +249,16 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     res_widget = Results()
     #
+
+
+
+    res_widget.save_test_results_summary()
+
     # results_ray = res_widget.load_test_results()
     # res_widget.populate_table(results_ray)
     # res_widget.save_test_results_summary()
-    res_widget.populate_log_table("../logs/ScriptResults.log")
-    res_widget.write_log_file("../logs2/ScriptResults.log")
+    # res_widget.populate_log_table("../logs/ScriptResults.log")
+    # res_widget.write_log_file("../logs2/ScriptResults.log")
 
     res_widget.show()
     sys.exit(app.exec_())

@@ -15,7 +15,6 @@ class AbstractBalance(AbstractSensor):
     def __init__(self, config, device_key = "MT_Balance", parent = None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
-        self.ser = None
         self.latest_weight = -1
         self.connected = False
 
@@ -34,11 +33,10 @@ class AbstractBalance(AbstractSensor):
     def zero_balance_stable(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
-        if self.ser is None or self.connected == False:
+        if self.connected == False:
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
-        self.ser.write(b"\nZ\n")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
@@ -63,13 +61,13 @@ class AbstractBalance(AbstractSensor):
 
     @abstractmethod
     def zero_balance_instantly(self):
+        self.log("Zeroing Balance")
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
-        if self.ser is None or self.connected == False:
+        if self.connected == False:
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
-        self.ser.write(b"\nZ\n")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
@@ -102,7 +100,6 @@ class AbstractBalance(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
-        self.log("Getting weight, please wait")
         return random.random()
 
     def reset(self):

@@ -31,11 +31,50 @@ def create_coord_rays(coords:str,ax_letters:list):
 def get_element_distances(element_1_index, element_pitch):
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coords = [None,None,None,None,None,None,None,None,None,None,None]
-    for i in range(1,11):
+    for i in range(10):
         offset = i * element_pitch
-        element_coords[i] = element_1_index + offset
+        element_coords[i+1] = element_1_index + offset
 
     return element_coords
+
+def blank_test_data() -> dict:
+    test_data = dict()
+    test_data['test_comment'] = ""
+    test_data['serial_number'] = ""
+    test_data['operator_name'] = ""
+    test_data['script_name'] = ""
+    test_data['low_frequency_MHz'] = float('nan')
+    test_data['high_frequency_MHz'] = float('nan')
+    test_data['hardware_code'] = ""
+    test_data['results_summary'] = list()
+    test_data["write_result"] = False
+    test_data['test_date_time'] = None
+    test_data["script_name"] = ""
+    lf = str(test_data['low_frequency_MHz'])
+    hf = str(test_data['high_frequency_MHz'])
+
+    #Default values, will be updated during test
+    test_data['results_summary'].append(['Element_01','0','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_02','5','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_03','10','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_04','15','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_05','20','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_06','25','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_07','30','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+    test_data['results_summary'].append(['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+
+    test_data['results_summary'].append(['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass'])
+
+    elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
+    elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
+
+    #Todo: add ability to set manual frequencies per element
+    test_data['results_summary'].append(elements_with_manual_lf)
+    test_data['results_summary'].append(elements_with_manual_hf)
+
+    return test_data
 
 #Inverse of create coord_rays
 def create_comma_string(axes:list,coords:list,ax_letters:list):
@@ -97,6 +136,32 @@ def unique(list):
             unique_list.append(x)
 
     return unique_list
+
+# Additional feature: add smart transition detection
+def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_on_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if awg_on_ray[i]:
+            acoustic_power_on_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_on_data
+
+# Additional feature: add smart transition detection
+def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_off_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if not awg_on_ray[i]:
+            acoustic_power_off_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_off_data
 
 def clearLayout(layout):
     while layout.count():
