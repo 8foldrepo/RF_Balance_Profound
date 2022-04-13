@@ -85,7 +85,6 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
-    #TODO: make code recognize the com port without hard coding it
     def connect_hardware(self):
         try:
             self.ser = serial.Serial(
