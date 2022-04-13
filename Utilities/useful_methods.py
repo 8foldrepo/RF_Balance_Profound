@@ -48,8 +48,7 @@ def blank_test_data() -> dict:
     test_data['hardware_code'] = ""
     test_data['results_summary'] = list()
     test_data["write_result"] = False
-    
-    
+    test_data['test_date_time'] = None
     lf = str(test_data['low_frequency_MHz'])
     hf = str(test_data['high_frequency_MHz'])
 
