@@ -1,5 +1,6 @@
 from ui_elements.my_qwidget import MyQWidget
 from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog, QWidget
+from PyQt5.QtCore import pyqtSignal
 from Widget_Library.widget_script_editor import Ui_Form
 from collections import OrderedDict
 from ui_elements.script_editor.ui_find_element import FindElement
@@ -12,6 +13,8 @@ from ui_elements.script_editor.ui_measure_element_efficiency_rfb import MeasureE
 
 #Todo: add the rest of the methods to the dropdown
 class ScriptEditor(MyQWidget, Ui_Form):
+    script_changed_signal = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.list_of_arg_dicts = list()
@@ -63,6 +66,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     """Delete the step at the given index"""
     def delete_step(self):
+        self.script_changed_signal.emit()
+
         index = self.treeWidget.currentIndex().row()
         self.treeWidget.takeTopLevelItem(index)
         self.list_of_arg_dicts.pop(index + 1) #account for header
@@ -70,6 +75,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     """Clear the ui script visual and clear the internal arg_dicts variable"""
     def delete_all(self):
+        self.script_changed_signal.emit()
+
         self.treeWidget.clear()
         self.list_of_arg_dicts = list()
         pass
@@ -146,7 +153,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return  OrderedDict([('Task type', 'Pre-test initialisation')])
 
     def find_element_dict(self):
-        return OrderedDict([('Task type', 'Find element \"n\"'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
+        return OrderedDict([('Task type', 'Find element n'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
                             ('X #Pts.', '21'), ('Theta Incr. (deg)', '-0.400000'), ('Theta #Pts.', '41'),
                             ('Scope channel', 'Channel 1'), ('Acquisition type', 'N Averaged Waveform'),
                             ('Averages', '16'), ('Data storage', 'Do not store'),
@@ -170,6 +177,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return OrderedDict([('Task type', 'End loop_1')])
 
     def dict_to_tree_item(self, task_dict):
+        self.script_changed_signal.emit()
+
         item = QTreeWidgetItem([task_dict["Task type"]])
 
         arg_list = list()
@@ -185,9 +194,12 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return  item
 
     def updateTree(self):
+        self.script_changed_signal.emit()
+
         arg_dict_copy = list(self.list_of_arg_dicts)
 
-        task_names = [self.script_cmd_dropdown.itemText(i) for i in range(self.script_cmd_dropdown.count())]
+        #remove quotes
+        task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in range(self.script_cmd_dropdown.count())]
 
         #For each task name,
         for task_name in task_names:
@@ -234,6 +246,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.setCurrentIndex(index.sibling(index.row()-1, index.column()))
 
     def add_cmd_to_script_clicked(self):
+        self.script_changed_signal.emit()
+
         row = self.treeWidget.currentIndex().row()
         task_name = self.script_cmd_dropdown.currentText()
 

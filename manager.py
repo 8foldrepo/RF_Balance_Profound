@@ -60,7 +60,7 @@ class Manager(QThread):
     plot_signal = pyqtSignal(object, object)
 
     logger_signal = pyqtSignal(str)
-    script_finished_signal = pyqtSignal()
+    enable_ui_signal = pyqtSignal()
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
@@ -68,7 +68,7 @@ class Manager(QThread):
 
     rfb_args = dict()  # contains info for rfb tab
     update_rfb_tab_signal = pyqtSignal()
-    save_results_signal = pyqtSignal()
+    save_results_signal = pyqtSignal(dict)
     # contains
 
     Motors = None
@@ -127,6 +127,8 @@ class Manager(QThread):
 
         # Keeps track of script step in progress
         self.step_complete = True
+
+        #step_index = -1 if no script is being run. It is also the way to check if the script has been aborted
         self.step_index = -1
 
         self.devices = list()
@@ -282,15 +284,7 @@ class Manager(QThread):
 
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
-            if cmd_ray[0] == 'LOAD':
-                log_msg(self, root_logger, level='info', message="Loading script")
-                try:
-                    cmd_ray.pop(0)
-                    path = ' '.join(cmd_ray)
-                    self.load_script(path)
-                except Exception as e:
-                    log_msg(self, root_logger, "info", f"Error in load script: {e}")
-            elif cmd_ray[0] == 'CLOSE':
+            if cmd_ray[0] == 'CLOSE':
                 self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
@@ -323,8 +317,9 @@ class Manager(QThread):
 
     @pyqtSlot()
     def run_script(self):
+        if self.scripting:
+            self.abort()
         log_msg(self, root_logger, level='info', message="Running script")
-        self.abort()
         self.scripting = True
 
     def update_motor_position(self):
@@ -365,13 +360,12 @@ class Manager(QThread):
 
     def load_script(self, path):
         # get UA serial no. and append behind date
-        self.scripting = True
         self.script = open(path, "r")
 
         # Send name of script to UI
         split_path = path.split('/')
         self.test_data["script_name"] = split_path[len(split_path) - 1]
-        self.script_name_signal.emit("script_name")
+        self.script_name_signal.emit(self.test_data["script_name"])
 
         tasks = []  # the upper layer of our variable list
         loops = []
@@ -387,6 +381,7 @@ class Manager(QThread):
         for line in self.script:
             ray = line.split(' = ')
 
+            #Populate script metadata to UI using signals
             if ray[0].upper() == '# OF TASKS':
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
             elif ray[0].upper() == 'CREATEDON':
@@ -467,46 +462,49 @@ class Manager(QThread):
         self.scripting = False
 
     # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
+    @pyqtSlot()
     def advance_script(self):
-        if self.scripting is False:
-            return
-
         if self.retry_var is True:
             self.step_index = self.step_index - 1
             self.step_complete = True
             self.retry_var = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
-        if self.scripting and self.step_complete:
+        if self.step_complete:
             self.step_index = self.step_index + 1
 
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
+        if self.step_index >= len(self.taskNames):
+            self.enable_ui_signal.emit()
+            return
+
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
-            if self.scripting and 0 <= self.step_index < len(self.taskNames):
+            if 0 <= self.step_index < len(self.taskNames):
                 if self.step_complete:
                     self.step_complete = False
-                    self.execute_script_step(self.step_index)
-        elif self.step_index >= len(self.taskNames):
-            self.script_finished_signal.emit()
+                    self.run_script_step()
+
+        if not self.scripting:
+            self.enable_ui_signal.emit()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
 
-    def execute_script_step(self, step_index):
+    def run_script_step(self):
         if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
             return
 
-        name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
-        args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
+        name = self.taskNames[self.step_index]  # sets name (str) to current iteration in taskNames list
+        args = self.taskArgs[self.step_index]  # sets args (list) to current iteration in taskArgs list
 
-        self.task_number_signal.emit(self.taskExecOrder[step_index][0])
-        self.task_index_signal.emit(step_index)
+        self.task_number_signal.emit(self.taskExecOrder[self.step_index][0])
+        self.task_index_signal.emit(self.step_index)
 
-        if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
+        if not self.taskExecOrder[self.step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
-            args['Element'] = self.taskExecOrder[step_index][1]
+            args['Element'] = self.taskExecOrder[self.step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb(args)
@@ -521,7 +519,7 @@ class Manager(QThread):
         elif "Home system".upper() in name.upper():
             self.home_system(args)
 
-        self.task_index_signal.emit(step_index + 1)
+        self.task_index_signal.emit(self.step_index + 1)
 
     '''Aborts script'''
 
@@ -535,15 +533,15 @@ class Manager(QThread):
         self.continue_var = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.script_finished_signal.emit()
+        self.enable_ui_signal.emit()
         # Todo: add option to save before exiting
 
     '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
-
     def wait_for_cont(self):
         self.continue_var = False
         while not self.continue_var:
-            if self.scripting == False:
+            #check if script has been aborted
+            if self.step_index == -1:
                 # Always handle this exception
                 raise AbortException
 
@@ -572,7 +570,7 @@ class Manager(QThread):
         self.scriptlog.append(["Pretest_initialization", '', '', ''])
 
         # Check if wtfib is connected and add that to the scriptlog
-        if self.UAInterface.is_connected():
+        if self.UAInterface.is_connected:
             self.scriptlog.append(["", "Get UA Serial", "Connected", "OK"])
         else:
             self.scriptlog.append(["", "Get UA Serial", "Connected", "FAIL"])
@@ -655,9 +653,8 @@ class Manager(QThread):
 
     @pyqtSlot(dict)
     def pretest_metadata_slot(self, pretest_metadata):
-        self.abort()
-        # reset test data to default values
-        test_data = blank_test_data()
+        #reset test data to default values
+        self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
         self.run_script()
         self.scriptlog.append(['', "Prompt username+UA serial", 'OK', ''])
@@ -711,7 +708,7 @@ class Manager(QThread):
         x_max_rms = -1 * sys.float_info.max
         x_max_position = -1 * sys.float_info.max
         for i in range(XPts):
-            if not self.scripting:
+            if self.step_index == -1:
                 return
             self.Motors.go_to_position(['X'], [position])
             position = position + abs(x_increment_MM)
@@ -758,7 +755,8 @@ class Manager(QThread):
         r_rms_values = list()
 
         for i in range(thetaPts):
-            if not self.scripting:
+            #check if the script has been aborted
+            if self.step_index == -1:
                 return
 
             self.Motors.go_to_position(['R'], [position])
@@ -834,7 +832,7 @@ class Manager(QThread):
             cycle_start_time = t.time()
             self.AWG.SetOutput(True)
             while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
-                if not self.scripting:
+                if self.step_index == -1:
                     return
 
                 forward_power_w = self.Forward_Power_Meter.get_reading()
@@ -871,7 +869,7 @@ class Manager(QThread):
             self.AWG.SetOutput(False)
 
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
-                if not self.scripting:
+                if self.step_index == -1:
                     return
 
                 forward_power_w = self.Forward_Power_Meter.get_reading()
@@ -970,7 +968,7 @@ class Manager(QThread):
 
         self.test_data['results_summary'][10][2] = str(angle_average)
 
-        self.save_results_signal.emit()
+        self.save_results_signal.emit(self.test_data)
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.write_cal_data_to_ua_dialog(calibration_data)
