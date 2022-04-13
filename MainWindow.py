@@ -369,7 +369,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(bool)
     def load_results(self, triggered):
         self.results_tab.load_test_results()
-        self.results_tab.populate_table()
+        try:
+            self.results_tab.populate_table()
+        except:
+            self.log("Invalid file")
 
     @pyqtSlot(int)
     def set_num_tasks(self, num_tasks):
