@@ -21,7 +21,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         #This will be the menu for changing parameters of the current task type
         self.widget = None
-        
+
         self.setupUi(self)
         self.configure_signals()
 
@@ -263,7 +263,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
             index = row
             # Insert @ selection, shifting items down
 
-        if self.widget is not None: #todo: or if it is not a blank QtWidget (check if ui_to_orderedDict is a function)
+        #if the widget has a ui_to_orderedDict method
+        if callable(getattr(self.widget, "ui_to_orderedDict", None)):
             new_arg_dict = self.widget.ui_to_orderedDict()
         else:
             if task_name == 'Measure element efficiency (RFB)':
@@ -274,6 +275,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_arg_dict = self.find_element_dict()
             elif task_name == 'Loop over elements':
                 new_arg_dict = self.loop_over_elements_dict()
+            elif task_name == 'End loop'
             else:
                 new_arg_dict = OrderedDict()
 
