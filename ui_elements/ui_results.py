@@ -47,7 +47,7 @@ class Results(MyQWidget, Ui_Form):
         results_summary = self.test_data["results_summary"]
 
         for i in range(11):  # covers range of all elements and "UA Common"
-            for x in range(16):  # covers all the data units in each element
+            for x in range(15):  # covers all the data units in each element
                 item = QTableWidgetItem()
                 item.setText(results_summary[i][x+1])  # skip the header data and ignore name of element
                 if i == 10:  # if we're on the "UA Common" line
@@ -135,16 +135,17 @@ class Results(MyQWidget, Ui_Form):
     def set_manager(self, manager):
         self.manager = manager
         # by reference, whenever manager changes these, this object will be updated
-        self.test_data = manager.test_data
         self.manager.save_results_signal.connect(self.save_results)
         #self.populate_table_signal.connect(self.manager.visualize_scan_data)
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
 
-    def save_results(self):
-
+    @pyqtSlot(dict)
+    def save_results(self, dict):
         self.log("Saving test results")
+        self.test_data = dict
         self.save_test_results_summary()
+        self.populate_table()
 
     def set_config(self, config):
         self.config = config
