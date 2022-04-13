@@ -69,6 +69,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
 
     command_signal = QtCore.pyqtSignal(str)
+    run_step_signal = QtCore.pyqtSignal()
+    abort_signal = QtCore.pyqtSignal()
+
+    #str is the path to the file
+    load_script_signal = QtCore.pyqtSignal(str)
 
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
     num_tasks = 0
@@ -91,6 +96,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.thread_list.append(self.manager)
         self.arg_dicts = None
         self.configure_signals()
+
+        self.script_changed = False
 
         self.style_ui()
         self.activateWindow()
@@ -150,7 +157,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
-        print(arg_dicts)
+        self.script_reloaded()
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
         self.arg_dicts = arg_dicts
@@ -230,11 +237,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             sys.exit()
 
     def configure_signals(self):
+        self.script_editor.script_changed_signal.connect(self.script_changed)
         self.command_signal.connect(self.manager.exec_command)
         self.load_button.clicked.connect(self.load_script)
         self.run_button.clicked.connect(self.run_button_clicked)
         self.abort_button.clicked.connect(self.manager.abort)
-        self.manager.script_finished_signal.connect(lambda: self.set_buttons_enabled(True))
+        self.run_step_button.clicked.connect(self.run_step_clicked)
+
+        self.manager.enable_ui_signal.connect(lambda: self.set_buttons_enabled(True))
 
         # Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
@@ -277,6 +287,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
 
         # Manager communication signals
+        self.abort_signal.connect(self.manager.abort)
+        self.load_script_signal.connect(self.manager.load_script)
+        self.run_step_signal.connect(self.manager.advance_script)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
         self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
         self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
@@ -291,6 +304,22 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def run_button_clicked(self):
         self.set_buttons_enabled(False)
         self.show_pretest_dialog()
+
+    def run_step_clicked(self):
+        self.set_buttons_enabled(False)
+        self.run_step_signal.emit()
+
+    def script_changed(self):
+        self.script_changed = True
+        self.run_button.setEnabled(False)
+        self.run_button.setStyleSheet("background-color:red")
+        self.run_button.setText("RUN SCRIPT (Reload)")
+
+    def script_reloaded(self):
+        self.script_changed = False
+        self.run_button.setEnabled(True)
+        self.run_button.setStyleSheet("background-color:white")
+        self.run_button.setText("RUN SCRIPT")
 
     @pyqtSlot(bool)
     def update_ua_indicator(self, on):
@@ -344,14 +373,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     """Command the motors to go to the insertion point"""
 
-    @pyqtSlot()
-    def update_x_speed(self):
-        self.command_signal.emit(f"MOTOR SCAN SPEED X {self.lin_incr_double_sb.value()}")
-
-    @pyqtSlot()
-    def update_r_speed(self):
-        self.command_signal.emit(f"MOTOR SCAN SPEED R {self.ang_inc_double_sb.value()}")
-
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
         self.temp_field.setText(str(temp))
@@ -364,7 +385,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         path, _ = QFileDialog.getOpenFileName(
             self, "Open file", "", "Script files (*.wtf *.txt)"
         )
-        self.command_signal.emit('LOAD ' + path)
+        self.load_script_signal.emit(path)
 
     @pyqtSlot(bool)
     def load_results(self, triggered):
@@ -492,7 +513,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         if qReply == QMessageBox.Yes:
             bQuit = True
-            self.command_signal.emit("CLOSE")
+            self.abort_signal.emit()
             t.sleep(.1)
             self.manager.exit()
         if bQuit:
@@ -607,8 +628,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.position_tab.set_buttons_enabled(enabled)
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
-        self.run_button.setEnabled(enabled)
+        self.run_button.setEnabled(enabled and not self.script_changed)
         self.load_button.setEnabled(enabled)
+        self.run_step_button.setEnabled(enabled)
 
     def log(self, message, level='info'):
         log_msg(self, self.root_logger, message=message, level=level)
