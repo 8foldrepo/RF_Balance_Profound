@@ -38,7 +38,15 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coords
 
 def blank_test_data() -> dict:
+    from datetime import datetime
+
     test_data = dict()
+
+    #add formatted date
+    now = datetime.now()
+    formatted_date = now.strftime("%Y.%m.%d-%H.%M")
+    test_data['test_date_time'] = formatted_date
+    test_data['software_version'] = ""
     test_data['test_comment'] = ""
     test_data['serial_number'] = ""
     test_data['operator_name'] = ""
@@ -48,7 +56,6 @@ def blank_test_data() -> dict:
     test_data['hardware_code'] = ""
     test_data['results_summary'] = list()
     test_data["write_result"] = False
-    test_data['test_date_time'] = None
     test_data["script_name"] = ""
     lf = str(test_data['low_frequency_MHz'])
     hf = str(test_data['high_frequency_MHz'])

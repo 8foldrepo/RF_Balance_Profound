@@ -1,9 +1,9 @@
-from datetime import  datetime
 from Widget_Library import dialog_pretest
 from PyQt5.QtCore import pyqtSignal
 from ui_elements.my_qdialog import MyQDialog
 from definitions import ROOT_DIR
 from Utilities.useful_methods import is_number
+from datetime import datetime
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     pretest_metadata_signal = pyqtSignal(dict)  # signal from MainWindow to manager; operator, serial no., comment
@@ -14,11 +14,13 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.setupUi(self)
         self.configure_signals()
         self.metadata_dict = dict()
+        self.ok = False
+
+        # add formatted date
         now = datetime.now()
+        formatted_date = now.strftime("%Y.%m.%d-%H.%M")
 
         #Get the current date, save it to the metadata dictionary, and show it in the UI
-        formatted_date = now.strftime("%Y.%m.%d-%H.%M")
-        self.metadata_dict['test_date_time'] = formatted_date
         self.date_output.setText(formatted_date)
 
     def configure_signals(self):
@@ -83,14 +85,17 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.metadata_dict['test_date_time'] = self.date_output.text()
 
         self.pretest_metadata_signal.emit(self.metadata_dict)
+        self.ok = True
+
         self.close()
 
     def cancel_clicked(self):
-        self.abort_signal.emit()
         self.close()
 
     def closeEvent(self, event):
-        self.abort_signal.emit()
+        if not self.ok:
+            self.abort_signal.emit()
+
         event.accept()
 
 def print_info(dict):
