@@ -138,7 +138,7 @@
      <string>X-Axis Increment:</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="THETA_INCREMENT_FIELD_2">
+   <widget class="QDoubleSpinBox" name="THETA_INCREMENT_FIELD">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -175,7 +175,7 @@
      <double>1.000000000000000</double>
     </property>
    </widget>
-   <widget class="QLabel" name="THETA_INCREMENT_FIELD">
+   <widget class="QLabel" name="label_22">
     <property name="geometry">
      <rect>
       <x>210</x>
@@ -188,7 +188,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta Increment:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="X_PNT_FIELD">
+   <widget class="QSpinBox" name="X_PNT_FIELD">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -205,24 +205,6 @@
     </property>
     <property name="whatsThis">
      <string/>
-    </property>
-    <property name="prefix">
-     <string/>
-    </property>
-    <property name="suffix">
-     <string> Pts</string>
-    </property>
-    <property name="decimals">
-     <number>4</number>
-    </property>
-    <property name="minimum">
-     <double>-1000000.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>1000000.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>0.000100000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -251,7 +233,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta # of Points:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="THETA_PNT_FIELD">
+   <widget class="QSpinBox" name="THETA_PNT_FIELD">
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -268,24 +250,6 @@
     </property>
     <property name="whatsThis">
      <string/>
-    </property>
-    <property name="prefix">
-     <string/>
-    </property>
-    <property name="suffix">
-     <string> Pts</string>
-    </property>
-    <property name="decimals">
-     <number>4</number>
-    </property>
-    <property name="minimum">
-     <double>-1000000.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>1000000.000000000000000</double>
-    </property>
-    <property name="singleStep">
-     <double>0.000100000000000</double>
     </property>
    </widget>
   </widget>

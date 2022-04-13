@@ -6,7 +6,7 @@ class HomeSystem(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
-        self.dictionary_to_ui(OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'X')]))
+        self.orderedDict_to_ui(OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'Theta')]))
 
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
         if arg_dict['Axis to home'] == 'All Axes':
@@ -37,6 +37,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui = HomeSystem()
     ui.show()
+
+    print(ui.ui_to_orderedDict())
 
     # Testing the UIs function and ability to dump to a dictionary and read into one.
     # Expected behavior, the dialog should open, check the first box after one second, return

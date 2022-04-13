@@ -67,9 +67,10 @@ MT_Balance:
   port: COM4
   timeout_s: .5
 Paths:
-  UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
+  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt
-  UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
+  UA results root directory: C:\Users\Isaiah\Documents\UA results
+  Script log directory: C:\Users\Public\Documents\Results\Logs
 Daq_Power_Relay:
   on_by_default: false
   port: COM3

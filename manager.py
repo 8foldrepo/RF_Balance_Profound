@@ -78,11 +78,6 @@ class Manager(QThread):
         self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
         self.app = QApplication.instance()
-        self.scan_data = dict()
-        self.scan_data["script_log"] = list()
-
-        self.scriptlog = self.scan_data["script_log"]
-
         self.config = config
         self.element_x_coordinates = get_element_distances(
             element_1_index=self.config['WTF_PositionParameters']['X-Element1'],
@@ -570,16 +565,23 @@ class Manager(QThread):
 
     def pretest_initialization(self, variable_list):
         # todo: add first 4 lines of scriptlog
-        self.scriptlog.append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
-        self.scriptlog.append(["Running script: ", self.test_data['script_name'], '', '', ''])
-        self.scriptlog.append(["Pretest_initialization", '', '', ''])
+
+        self.test_data["script_log"].append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
+        self.test_data["script_log"].append(["Running script: ", self.test_data['script_name'], '', '', ''])
+        self.test_data["script_log"].append(["Pretest_initialization", '', '', ''])
 
         # Check if wtfib is connected and add that to the scriptlog
-        if self.UAInterface.is_connected():
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "OK"])
+        if self.UAInterface.is_connected:
+            self.test_data["script_log"].append(["", "Get UA Serial", "Connected", "OK"])
         else:
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "FAIL"])
+            self.test_data["script_log"].append(["", "Get UA Serial", "Connected", "FAIL"])
             return "pretest_init fail"
+
+        if "serial_number" in self.test_data.keys() and self.test_data["serial_number"] != '':
+            self.test_data["script_log"].append(['', "Prompt username+UA serial", 'OK', ''])
+        else:
+            self.test_data["script_log"].append(['', "Prompt username+UA serial", 'Fail', ''])
+
         # Show dialogs until pump is on and the water sensor reads level
         # todo: have ua inserted to certain x position like in the ScriptResults.log
         while True:
@@ -590,15 +592,15 @@ class Manager(QThread):
                 try:
                     self.wait_for_cont()
                 except AbortException:
-                    self.scriptlog.append('', 'Check/prompt UA Pump', 'FAIL', '')
+                    self.test_data["script_log"].append('', 'Check/prompt UA Pump', 'FAIL', '')
                     return self.abort()
             else:
-                self.scriptlog.append('', 'Check/prompt UA Pump', 'OK', '')
+                self.test_data["script_log"].append('', 'Check/prompt UA Pump', 'OK', '')
 
                 if self.thermocouple.is_connected():
-                    self.scriptlog.append('', 'CheckThermocouple', 'OK', '')
+                    self.test_data["script_log"].append('', 'CheckThermocouple', 'OK', '')
                 else:
-                    self.scriptlog.append('', 'CheckThermocouple', 'FAIL', '')
+                    self.test_data["script_log"].append('', 'CheckThermocouple', 'FAIL', '')
                     # have the script aborted or wait for thermocouple?
 
                 burst_mode, unused = self.AWG.GetBurst()
@@ -607,37 +609,37 @@ class Manager(QThread):
                 else:
                     burst_mode = "Continuous"
 
-                self.scriptlog.append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
+                self.test_data["script_log"].append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
 
                 # todo: have the user be prompted to ensure the power amplifier is on; check if successful if not log FAIL
                 try:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Prompt PowerAmp', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Prompt PowerAmp', 'FAIL', ''])
 
                 # todo: create data directories here
                 try:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'CreateDataDirectories', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'CreateDataDirectories', 'FAIL', ''])
 
                 # todo: create h/w log here
                 try:
-                    self.scriptlog.append(['', 'Create h/w log', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Create h/w log', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Create h/w log', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Create h/w log', 'FAIL', ''])
 
                 # todo: initialize results FGV here
                 try:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Initialize results FGV', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Initialize results FGV', 'FAIL', ''])
 
                 # todo: duplicate main script?
                 try:
-                    self.scriptlog.append(['', 'duplicate main script', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'duplicate main script', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Duplicate main script', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Duplicate main script', 'FAIL', ''])
 
                 water_level = self.IO_Board.get_water_level()
                 if not water_level == 'level':  # if the water level is not level
@@ -646,10 +648,10 @@ class Manager(QThread):
                     try:
                         self.wait_for_cont()
                     except AbortException:
-                        self.scriptlog.append(['', 'Check/prompt water level', 'FAIL', ''])
+                        self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', ''])
                         return
                 else:
-                    self.scriptlog.append(['', 'Check/prompt water level', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Check/prompt water level', 'OK', ''])
                     break
 
         self.step_complete = True
@@ -662,12 +664,11 @@ class Manager(QThread):
         self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
         self.run_script()
-        self.scriptlog.append(['', "Prompt username+UA serial", 'OK', ''])
 
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        self.scriptlog.append(['Find element "n"', 'OK', '', ''])
+        self.test_data["script_log"].append(['Find element "n"', 'OK', '', ''])
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
 
         # Update UI visual to reflect the element we are on
@@ -746,7 +747,7 @@ class Manager(QThread):
                 self.abort()
                 return
 
-        self.scan_data["X sweep waveforms"] = x_sweep_waveforms
+        self.test_data["X sweep waveforms"] = x_sweep_waveforms
 
         # Loop over r through a given range, move to the position where maximal RMS voltage was measured
         r_sweep_waveforms = list()
@@ -781,7 +782,7 @@ class Manager(QThread):
             self.profile_plot_signal.emit(r_positions, r_rms_values, 'Angle (deg)')
 
         self.Motors.go_to_position(['R'], [r_max_position])
-        self.scan_data["Theta sweep waveforms"] = r_sweep_waveforms
+        self.test_data["Theta sweep waveforms"] = r_sweep_waveforms
 
         self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
         # update element r position
@@ -1000,7 +1001,7 @@ class Manager(QThread):
         # TODO: have the pump home in the desired direction
 
         self.step_complete = True
-        # self.scriptlog.append(['', "Home all", f"X={X}; Theta={theta}", ''])
+        # self.test_data["script_log"].append(['', "Home all", f"X={X}; Theta={theta}", ''])
 
     '''Warn the user that the UA is being retracted in x'''
 

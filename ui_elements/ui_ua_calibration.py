@@ -22,7 +22,7 @@ class UACalibration(QWidget, Ui_Form):
 
     def set_ua_interface(self, ua_interface):
         self.ua_interface = ua_interface
-        self.ua_interface.cal_data_signal.connect(self.populate_table)
+        self.ua_interface.cal_data_signal.connect(self.populate_results_table)
         self.read_from_ua_button.clicked.connect(self.ua_interface.read_data)
         self.main_window = self.parent().parent().parent().parent().parent()
 
@@ -33,7 +33,7 @@ class UACalibration(QWidget, Ui_Form):
         return float(self.tableWidget.item(4, 0).text())
 
     @pyqtSlot(list, int)
-    def populate_table(self, data = None, status = None):
+    def populate_results_table(self, data = None, status = None):
         if status == -1:
             self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
             self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
