@@ -284,7 +284,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
-        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_table)
+        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_results_table)
 
         # Manager communication signals
         self.abort_signal.connect(self.manager.abort)
@@ -391,7 +391,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def load_results(self, triggered):
         self.results_tab.load_test_results()
         try:
-            self.results_tab.populate_table()
+            self.results_tab.populate_results_table()
         except:
             self.log("Invalid file")
 

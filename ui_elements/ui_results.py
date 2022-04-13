@@ -25,22 +25,37 @@ class Results(MyQWidget, Ui_Form):
         self.configure_signals()
         self.log_2d_list = list()
 
-    def populate_log_table(self, log_path):
-        log_file = open(log_path, 'r')
-        line_counter = 0
+    # load log file, put it into a 2d list, store it in self.test_data['script_log'], and also return it
+    def load_log_data(self, path=None):
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
+        log_2d_list = list()
+        log_file = open(path, 'r')
         for line in log_file:
             line_ray = line.split('\t')
-            self.log_2d_list.append(line_ray)  # populates class' internal 2d log list
+            log_2d_list.append(line_ray)  # populates class' internal 2d log list
+
+        self.test_data['script_log'] = log_2d_list
+        self.populate_log_table()  # populate the log table since we're done loading it
+        return self.test_data['script_log']
+
+    # populates the ui given a 2d list
+    def populate_log_table(self, log_table=None):
+        print("inside populate_log_table")
+        if log_table is None:
+            log_table = self.test_data["script_log"]
+
+        print(log_table)
+        for line_counter in range(len(log_table)):
+            line_ray = log_table[line_counter]
             self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
-            for x in range(len(line_ray)):  # for all the lines in the script text file
+            for x in range(len(line_ray)):
                 item = QTableWidgetItem()
                 item.setText(line_ray[x].strip())
                 self.script_log_table.setItem(line_counter, x, item)
-            line_counter = line_counter + 1  # keep track of which line we're on
-
 
     @pyqtSlot()
-    def populate_table(self, results_summary = None):
+    def populate_results_table(self, results_summary=None):
         if results_summary is not None:
             self.test_data["results_summary"] = results_summary
 
@@ -49,21 +64,21 @@ class Results(MyQWidget, Ui_Form):
         for i in range(11):  # covers range of all elements and "UA Common"
             for x in range(15):  # covers all the data units in each element
                 item = QTableWidgetItem()
-                item.setText(results_summary[i][x+1])  # skip the header data and ignore name of element
+                item.setText(results_summary[i][x + 1])  # skip the header data and ignore name of element
                 if i == 10:  # if we're on the "UA Common" line
                     self.results_table.setItem(i + 2, x, item)  # there is a line break between elements and "UA Common"
                 else:
-                    self.results_table.setItem(i+1, x, item)  # first row is reserved for units
+                    self.results_table.setItem(i + 1, x, item)  # first row is reserved for units
 
         for i in range(11, 13):  # LF and HF are in the last two rows of test_contents
             for x in range(len(results_summary[-2])):
                 item = QTableWidgetItem()
                 item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
-                self.results_table.setItem(i+2, x, item)  # offset for table alignment
+                self.results_table.setItem(i + 2, x, item)  # offset for table alignment
             for x in range(len(results_summary[-1])):
                 item = QTableWidgetItem()
                 item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
-                self.results_table.setItem(i+2, x, item)
+                self.results_table.setItem(i + 2, x, item)
 
     def style_ui(self):
         self.results_table.horizontalHeader().resizeSection(15, 362)
@@ -72,15 +87,27 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
-    def write_log_file(self, log_path):
+    # turn a 2d list into a .log file (a text file with a different extension
+    '''this method must be called manually'''
+    def save_log_file(self, log_table=None):
+        if log_table is None:
+            log_table = self.test_data["script_log"]
+
+        try:
+            log_path = self.config["Paths"]["Script log directory"] + "ScriptResults.log"
+        except TypeError:
+            self.log("config has not been loaded and therefore the log path cannot be pulled from there, defaulting log path")
+            log_path = "../logs2/ScriptResults.log"
+
         if not os.path.exists(os.path.dirname(log_path)):
             os.makedirs(os.path.dirname(log_path))
 
         f = open(log_path, 'w')
-        for x in range(len(self.log_2d_list)):
-            f.write('\t'.join(self.log_2d_list[x]))
+        for x in range(len(log_table)):
+            f.write('\t'.join(log_table[x]))
 
     """saves the results as a text file with a path specified in the config file."""
+
     @pyqtSlot()
     def save_test_results_summary(self):
         if not self.test_data:  # if dictionary is empty return
@@ -100,8 +127,8 @@ class Results(MyQWidget, Ui_Form):
         self.log(f"Saving results summary to: {path}")
 
         if not os.path.exists(os.path.dirname(path)):
-             self.log("creating results path...")
-             os.makedirs(os.path.dirname(path))
+            self.log("creating results path...")
+            os.makedirs(os.path.dirname(path))
 
         f = open(path, "w")
 
@@ -135,22 +162,28 @@ class Results(MyQWidget, Ui_Form):
     def set_manager(self, manager):
         self.manager = manager
         # by reference, whenever manager changes these, this object will be updated
-        self.manager.save_results_signal.connect(self.save_results)
-        #self.populate_table_signal.connect(self.manager.visualize_scan_data)
+        self.manager.save_results_signal.connect(self.retrieve_data_from_manager)
+        # self.populate_table_signal.connect(self.manager.visualize_scan_data)
+
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
 
+    """Recieve the test_data dictionary from manager, visualize the summary and the scriptlog, and save both to disk"""
+
     @pyqtSlot(dict)
-    def save_results(self, dict):
+    def retrieve_data_from_manager(self, dict):
         self.log("Saving test results")
         self.test_data = dict
         self.save_test_results_summary()
-        self.populate_table()
+        self.populate_results_table()
+
+        self.populate_log_table()
+        self.save_log_file()
 
     def set_config(self, config):
         self.config = config
 
-    def load_test_results(self, path = None):
+    def load_test_results(self, path=None):
         if path is None:
             path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
 
@@ -211,8 +244,10 @@ class Results(MyQWidget, Ui_Form):
         self.test_data["hardware_code"] = test_contents[5][1]
         self.test_data['results_summary'] = test_contents[6:][:]
 
-        print_dict(self.test_data)
-        print_list(self.test_data['results_summary'])
+        # print_dict(self.test_data)
+        # print_list(self.test_data['results_summary'])
+
+        self.populate_results_table()
 
         return self.test_data
 
@@ -225,6 +260,7 @@ def print_list(a):
     for x in range(len(a)):
         print(f"{x}: ", a[x])
     print("*** end of list ***")
+
 
 def print_dict(a):
     for key, value in a.items():
@@ -249,17 +285,11 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     res_widget = Results()
-    #
 
-
-
+    res_widget.load_test_results()
     res_widget.save_test_results_summary()
-
-    # results_ray = res_widget.load_test_results()
-    # res_widget.populate_table(results_ray)
-    # res_widget.save_test_results_summary()
-    # res_widget.populate_log_table("../logs/ScriptResults.log")
-    # res_widget.write_log_file("../logs2/ScriptResults.log")
+    res_widget.load_log_data("../logs/ScriptResults.log")
+    res_widget.save_log_file()
 
     res_widget.show()
     sys.exit(app.exec_())

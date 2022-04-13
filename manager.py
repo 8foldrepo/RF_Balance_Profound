@@ -60,7 +60,7 @@ class Manager(QThread):
     plot_signal = pyqtSignal(object, object)
 
     logger_signal = pyqtSignal(str)
-    enable_ui_signal = pyqtSignal()
+    script_finished_signal = pyqtSignal()
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
@@ -78,11 +78,6 @@ class Manager(QThread):
         self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
         self.app = QApplication.instance()
-        self.scan_data = dict()
-        self.scan_data["script_log"] = list()
-
-        self.scriptlog = self.scan_data["script_log"]
-
         self.config = config
         self.element_x_coordinates = get_element_distances(
             element_1_index=self.config['WTF_PositionParameters']['X-Element1'],
@@ -127,8 +122,6 @@ class Manager(QThread):
 
         # Keeps track of script step in progress
         self.step_complete = True
-
-        #step_index = -1 if no script is being run. It is also the way to check if the script has been aborted
         self.step_index = -1
 
         self.devices = list()
@@ -284,7 +277,15 @@ class Manager(QThread):
 
             self.cmd = self.cmd.upper()
             cmd_ray = self.cmd.split(' ')
-            if cmd_ray[0] == 'CLOSE':
+            if cmd_ray[0] == 'LOAD':
+                log_msg(self, root_logger, level='info', message="Loading script")
+                try:
+                    cmd_ray.pop(0)
+                    path = ' '.join(cmd_ray)
+                    self.load_script(path)
+                except Exception as e:
+                    log_msg(self, root_logger, "info", f"Error in load script: {e}")
+            elif cmd_ray[0] == 'CLOSE':
                 self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
@@ -381,7 +382,6 @@ class Manager(QThread):
         for line in self.script:
             ray = line.split(' = ')
 
-            #Populate script metadata to UI using signals
             if ray[0].upper() == '# OF TASKS':
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
             elif ray[0].upper() == 'CREATEDON':
@@ -462,49 +462,49 @@ class Manager(QThread):
         self.scripting = False
 
     # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
-    @pyqtSlot()
     def advance_script(self):
+        if self.scripting is False:
+            return
+
         if self.retry_var is True:
             self.step_index = self.step_index - 1
             self.step_complete = True
             self.retry_var = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
-        if self.step_complete:
+        if self.scripting and self.step_complete:
             self.step_index = self.step_index + 1
 
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
         if self.step_index >= len(self.taskNames):
-            self.enable_ui_signal.emit()
+            self.script_finished_signal.emit()
             return
 
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
-            if 0 <= self.step_index < len(self.taskNames):
+            if self.scripting and 0 <= self.step_index < len(self.taskNames):
                 if self.step_complete:
                     self.step_complete = False
-                    self.run_script_step()
+                    self.run_script_step(self.step_index)
 
-        if not self.scripting:
-            self.enable_ui_signal.emit()
 
     '''Executes script step with given step index in taskNames/taskArgs'''
 
-    def run_script_step(self):
+    def run_script_step(self, step_index):
         if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
             return
 
-        name = self.taskNames[self.step_index]  # sets name (str) to current iteration in taskNames list
-        args = self.taskArgs[self.step_index]  # sets args (list) to current iteration in taskArgs list
+        name = self.taskNames[step_index]  # sets name (str) to current iteration in taskNames list
+        args = self.taskArgs[step_index]  # sets args (list) to current iteration in taskArgs list
 
-        self.task_number_signal.emit(self.taskExecOrder[self.step_index][0])
-        self.task_index_signal.emit(self.step_index)
+        self.task_number_signal.emit(self.taskExecOrder[step_index][0])
+        self.task_index_signal.emit(step_index)
 
-        if not self.taskExecOrder[self.step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
+        if not self.taskExecOrder[step_index][1] is None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
-            args['Element'] = self.taskExecOrder[self.step_index][1]
+            args['Element'] = self.taskExecOrder[step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb(args)
@@ -519,7 +519,7 @@ class Manager(QThread):
         elif "Home system".upper() in name.upper():
             self.home_system(args)
 
-        self.task_index_signal.emit(self.step_index + 1)
+        self.task_index_signal.emit(step_index + 1)
 
     '''Aborts script'''
 
@@ -533,15 +533,15 @@ class Manager(QThread):
         self.continue_var = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.enable_ui_signal.emit()
+        self.script_finished_signal.emit()
         # Todo: add option to save before exiting
 
     '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
+
     def wait_for_cont(self):
         self.continue_var = False
         while not self.continue_var:
-            #check if script has been aborted
-            if self.step_index == -1:
+            if self.scripting == False:
                 # Always handle this exception
                 raise AbortException
 
@@ -565,16 +565,23 @@ class Manager(QThread):
 
     def pretest_initialization(self, variable_list):
         # todo: add first 4 lines of scriptlog
-        self.scriptlog.append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
-        self.scriptlog.append(["Running script: ", self.test_data['script_name'], '', '', ''])
-        self.scriptlog.append(["Pretest_initialization", '', '', ''])
+
+        self.test_data["script_log"].append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
+        self.test_data["script_log"].append(["Running script: ", self.test_data['script_name'], '', '', ''])
+        self.test_data["script_log"].append(["Pretest_initialization", '', '', ''])
 
         # Check if wtfib is connected and add that to the scriptlog
         if self.UAInterface.is_connected:
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "OK"])
+            self.test_data["script_log"].append(["", "Get UA Serial", "Connected", "OK"])
         else:
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "FAIL"])
+            self.test_data["script_log"].append(["", "Get UA Serial", "Connected", "FAIL"])
             return "pretest_init fail"
+
+        if "serial_number" in self.test_data.keys() and self.test_data["serial_number"] != '':
+            self.test_data["script_log"].append(['', "Prompt username+UA serial", 'OK', ''])
+        else:
+            self.test_data["script_log"].append(['', "Prompt username+UA serial", 'Fail', ''])
+
         # Show dialogs until pump is on and the water sensor reads level
         # todo: have ua inserted to certain x position like in the ScriptResults.log
         while True:
@@ -585,15 +592,15 @@ class Manager(QThread):
                 try:
                     self.wait_for_cont()
                 except AbortException:
-                    self.scriptlog.append('', 'Check/prompt UA Pump', 'FAIL', '')
+                    self.test_data["script_log"].append('', 'Check/prompt UA Pump', 'FAIL', '')
                     return self.abort()
             else:
-                self.scriptlog.append('', 'Check/prompt UA Pump', 'OK', '')
+                self.test_data["script_log"].append('', 'Check/prompt UA Pump', 'OK', '')
 
                 if self.thermocouple.is_connected():
-                    self.scriptlog.append('', 'CheckThermocouple', 'OK', '')
+                    self.test_data["script_log"].append('', 'CheckThermocouple', 'OK', '')
                 else:
-                    self.scriptlog.append('', 'CheckThermocouple', 'FAIL', '')
+                    self.test_data["script_log"].append('', 'CheckThermocouple', 'FAIL', '')
                     # have the script aborted or wait for thermocouple?
 
                 burst_mode, unused = self.AWG.GetBurst()
@@ -602,37 +609,37 @@ class Manager(QThread):
                 else:
                     burst_mode = "Continuous"
 
-                self.scriptlog.append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
+                self.test_data["script_log"].append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
 
                 # todo: have the user be prompted to ensure the power amplifier is on; check if successful if not log FAIL
                 try:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Prompt PowerAmp', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Prompt PowerAmp', 'FAIL', ''])
 
                 # todo: create data directories here
                 try:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'CreateDataDirectories', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'CreateDataDirectories', 'FAIL', ''])
 
                 # todo: create h/w log here
                 try:
-                    self.scriptlog.append(['', 'Create h/w log', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Create h/w log', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Create h/w log', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Create h/w log', 'FAIL', ''])
 
                 # todo: initialize results FGV here
                 try:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Initialize results FGV', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Initialize results FGV', 'FAIL', ''])
 
                 # todo: duplicate main script?
                 try:
-                    self.scriptlog.append(['', 'duplicate main script', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'duplicate main script', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Duplicate main script', 'FAIL', ''])
+                    self.test_data["script_log"].append(['', 'Duplicate main script', 'FAIL', ''])
 
                 water_level = self.IO_Board.get_water_level()
                 if not water_level == 'level':  # if the water level is not level
@@ -641,10 +648,10 @@ class Manager(QThread):
                     try:
                         self.wait_for_cont()
                     except AbortException:
-                        self.scriptlog.append(['', 'Check/prompt water level', 'FAIL', ''])
+                        self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', ''])
                         return
                 else:
-                    self.scriptlog.append(['', 'Check/prompt water level', 'OK', ''])
+                    self.test_data["script_log"].append(['', 'Check/prompt water level', 'OK', ''])
                     break
 
         self.step_complete = True
@@ -657,12 +664,11 @@ class Manager(QThread):
         self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
         self.run_script()
-        self.scriptlog.append(['', "Prompt username+UA serial", 'OK', ''])
 
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        self.scriptlog.append(['Find element "n"', 'OK', '', ''])
+        self.test_data["script_log"].append(['Find element "n"', 'OK', '', ''])
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
 
         # Update UI visual to reflect the element we are on
@@ -708,7 +714,7 @@ class Manager(QThread):
         x_max_rms = -1 * sys.float_info.max
         x_max_position = -1 * sys.float_info.max
         for i in range(XPts):
-            if self.step_index == -1:
+            if not self.scripting:
                 return
             self.Motors.go_to_position(['X'], [position])
             position = position + abs(x_increment_MM)
@@ -741,7 +747,7 @@ class Manager(QThread):
                 self.abort()
                 return
 
-        self.scan_data["X sweep waveforms"] = x_sweep_waveforms
+        self.test_data["X sweep waveforms"] = x_sweep_waveforms
 
         # Loop over r through a given range, move to the position where maximal RMS voltage was measured
         r_sweep_waveforms = list()
@@ -755,8 +761,7 @@ class Manager(QThread):
         r_rms_values = list()
 
         for i in range(thetaPts):
-            #check if the script has been aborted
-            if self.step_index == -1:
+            if not self.scripting:
                 return
 
             self.Motors.go_to_position(['R'], [position])
@@ -777,7 +782,7 @@ class Manager(QThread):
             self.profile_plot_signal.emit(r_positions, r_rms_values, 'Angle (deg)')
 
         self.Motors.go_to_position(['R'], [r_max_position])
-        self.scan_data["Theta sweep waveforms"] = r_sweep_waveforms
+        self.test_data["Theta sweep waveforms"] = r_sweep_waveforms
 
         self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
         # update element r position
@@ -832,7 +837,7 @@ class Manager(QThread):
             cycle_start_time = t.time()
             self.AWG.SetOutput(True)
             while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
-                if self.step_index == -1:
+                if not self.scripting:
                     return
 
                 forward_power_w = self.Forward_Power_Meter.get_reading()
@@ -869,7 +874,7 @@ class Manager(QThread):
             self.AWG.SetOutput(False)
 
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
-                if self.step_index == -1:
+                if not self.scripting:
                     return
 
                 forward_power_w = self.Forward_Power_Meter.get_reading()
@@ -996,7 +1001,7 @@ class Manager(QThread):
         # TODO: have the pump home in the desired direction
 
         self.step_complete = True
-        # self.scriptlog.append(['', "Home all", f"X={X}; Theta={theta}", ''])
+        # self.test_data["script_log"].append(['', "Home all", f"X={X}; Theta={theta}", ''])
 
     '''Warn the user that the UA is being retracted in x'''
 

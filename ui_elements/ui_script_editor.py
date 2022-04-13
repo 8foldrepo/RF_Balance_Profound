@@ -44,25 +44,25 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         widget = None
         if task_type == "Find element \"n\"":
-            widget = FindElement()
+            self.widget = FindElement()
         elif task_type == "Loop over elements":
-            widget = LoopOverElements()
+            self.widget = LoopOverElements()
         #elif task_type == "End loop"
         elif task_type == "Measure element efficiency (RFB)":
-            widget = MeasureElementEffeciency()
+            self.widget = MeasureElementEffeciency()
         #elif task_type == "Save results"
         elif task_type == "Prompt user for action":
-            widget = PromptUserForAction()
+            self.widget = PromptUserForAction()
         elif task_type == "Home system":
-            widget = HomeSystem()
+            self.widget = HomeSystem()
         #elif task_type == ""
         #elif task_type == ""
         #elif task_type == ""
         #elif task_type == ""
         else:
-            widget = QWidget()
+            self.widget = QWidget()
 
-        self.action_widget_layout.addWidget(widget, 0,0)
+        self.action_widget_layout.addWidget(self.widget, 0, 0)
 
     """Delete the step at the given index"""
     def delete_step(self):
@@ -259,16 +259,19 @@ class ScriptEditor(MyQWidget, Ui_Form):
             index = row
             # Insert @ selection, shifting items down
 
-        if task_name == 'Measure element efficiency (RFB)':
-            new_arg_dict = self.measure_effeciency_dict()
-        elif task_name == 'Pre-test initialisation':
-            new_arg_dict = self.pre_test_dict()
-        elif task_name == 'Find element \"n\"':
-            new_arg_dict = self.find_element_dict()
-        elif task_name == 'Loop over elements':
-            new_arg_dict = self.loop_over_elements_dict()
+        if self.widget is not None: #todo: or if it is not a blank QtWidget (check if ui_to_orderedDict is a function)
+            new_arg_dict = self.widget.ui_to_orderedDict()
         else:
-            new_arg_dict = OrderedDict()
+            if task_name == 'Measure element efficiency (RFB)':
+                new_arg_dict = self.measure_effeciency_dict()
+            elif task_name == 'Pre-test initialisation':
+                new_arg_dict = self.pre_test_dict()
+            elif task_name == 'Find element \"n\"':
+                new_arg_dict = self.find_element_dict()
+            elif task_name == 'Loop over elements':
+                new_arg_dict = self.loop_over_elements_dict()
+            else:
+                new_arg_dict = OrderedDict()
 
         #add the new dictionary to arg_dicts at the correct index
         self.list_of_arg_dicts.insert(row + 1, new_arg_dict)
@@ -298,4 +301,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 f.write("\n")
 
 if __name__ == '__main__':
-    editor = ScriptEditor()
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
+    app = QApplication(sys.argv)
+    edit_widget = ScriptEditor()
+
+    edit_widget.show()
+    sys.exit(app.exec_())
+
+
