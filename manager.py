@@ -368,8 +368,8 @@ class Manager(QThread):
 
         # Send name of script to UI
         split_path = path.split('/')
-        name = split_path[len(split_path) - 1]
-        self.script_name_signal.emit(name)
+        self.test_data["script_name"] = split_path[len(split_path) - 1]
+        self.script_name_signal.emit("script_name")
 
         tasks = []  # the upper layer of our variable list
         loops = []
