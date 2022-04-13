@@ -459,6 +459,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.setIcon(QMessageBox.Critical)
         dlg.show()
 
+
+    def dialog_user_action(self, s):
+        dlg = QMessageBox(self)
+        dlg.setText(s)
+        #todo: change icon to one that is less error, more info/ notify
+        dlg.setIcon(QMessageBox.Critical)
+        dlg.show()
+        dlg.finished.connect(self.manager.cont) #todo: test this
+        #todo: maker sure script doesn't continue until this is dismissed
+
     # Open help document
     def Show_Help(self):
         webbrowser.open("Help.txt")

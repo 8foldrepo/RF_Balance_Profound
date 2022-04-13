@@ -18,6 +18,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.list_of_arg_dicts = list()
+
+        #This will be the menu for changing parameters of the current task type
+        self.widget = None
+        
         self.setupUi(self)
         self.configure_signals()
 
