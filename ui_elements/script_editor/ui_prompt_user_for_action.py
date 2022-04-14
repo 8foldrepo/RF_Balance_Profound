@@ -1,6 +1,6 @@
 from Widget_Library.widget_prompt_user_for_action import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
-from collections import OrderedDict
+
 
 class PromptUserForAction(QWidget, Ui_Form):
     def __init__(self, parent=None):
@@ -10,7 +10,7 @@ class PromptUserForAction(QWidget, Ui_Form):
     def configure_signals(self):
         pass
 
-    def ui_to_orderedDict(self) -> dict:
+    def ui_to_dictionary(self) -> dict:
         arg_dict = dict()
         arg_dict['Task type'] = 'Prompt user for action'
 
