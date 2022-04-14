@@ -7,9 +7,6 @@ class PromptUserForAction(QWidget, Ui_Form):
         super().__init__(parent=parent)
         self.setupUi(self)
 
-    def configure_signals(self):
-        pass
-
     def ui_to_dictionary(self) -> dict:
         arg_dict = dict()
         arg_dict['Task type'] = 'Prompt user for action'
@@ -44,6 +41,7 @@ if __name__ == "__main__":
     # Testing dictionary to UI function # couldn't figure out how to test this
     #arg_dict = {'Task type': 'Prompt user for action',
     #            "Prompt type": 'Selection 3'}
+    #ui.dictionary_to_ui(arg_dict)
     #print(arg_dict)
     # Testing done.
     sys.exit(app.exec_())
