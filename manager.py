@@ -1,5 +1,4 @@
 import sys
-
 import re
 import pyvisa
 from PyQt5.QtWidgets import QApplication
@@ -75,6 +74,8 @@ class Manager(QThread):
 
     def __init__(self, parent: Optional[QObject], config: dict):
         super().__init__(parent=parent, objectName=u"manager_thread")
+        QThread.currentThread().setObjectName("manager_thread")
+        print()
         self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
         self.last_get_position_time = 0
         self.app = QApplication.instance()
