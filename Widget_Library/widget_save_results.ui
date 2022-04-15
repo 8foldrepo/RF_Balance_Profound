@@ -34,7 +34,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="Save_Summary_File_Checkbox">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -47,7 +47,7 @@
      <string>Save Summary File</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="Write_UA_Calibration_Checkbox">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -60,7 +60,7 @@
      <string>Write UA Calibration</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="With_Prompt_Checkbox">
     <property name="geometry">
      <rect>
       <x>140</x>
