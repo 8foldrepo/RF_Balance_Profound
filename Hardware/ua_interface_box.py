@@ -155,7 +155,10 @@ class UAInterfaceBox(AbstractDevice):
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_low_list'])) + "," + \
                        ','.join(map(str, self.ua_calibration_data['cal_data_array']['efficiency_high_list']))
         subprocess.call(process_call)
+
+        #Todo: call read_data to confirm data was written successfully
         self.UA_Write_Result = True
+        return self.UA_Write_Result
 
 if __name__ == '__main__':
     wtf = UAInterfaceBox(config=None)

@@ -2,7 +2,6 @@ from Widget_Library.loop_over_elements import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
 from collections import OrderedDict
 
-
 class LoopOverElements(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
