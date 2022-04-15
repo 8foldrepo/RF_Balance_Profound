@@ -78,7 +78,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RFB on/off Cycles:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD">
+    <widget class="QDoubleSpinBox" name="RFB_CYCLES_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -115,7 +115,7 @@
       <double>1.000000000000000</double>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_2">
+    <widget class="QDoubleSpinBox" name="RFB_ON_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -165,7 +165,7 @@
       <string>RFB ON time (s):</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_3">
+    <widget class="QDoubleSpinBox" name="RFB_OFF_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -215,7 +215,7 @@
       <string>RFB OFF time(s):</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_4">
+    <widget class="QDoubleSpinBox" name="RFB_THRESHOLD_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -265,7 +265,7 @@
       <string>RFB Threshold:</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_5">
+    <widget class="QDoubleSpinBox" name="RFB_OFFSET_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -315,7 +315,7 @@
       <string>RFB Offset:</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_6">
+    <widget class="QDoubleSpinBox" name="RFB_ANGLE_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -365,7 +365,7 @@
       <string>RFB Target Angle:</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="ELEMENT_SELECTION_FIELD_2">
+    <widget class="QComboBox" name="RFB_TARGET_POSITION_FIELD">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -423,6 +423,9 @@
      </property>
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Select the element you would like to measure the efficiency of.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="maxVisibleItems">
+      <number>11</number>
      </property>
      <item>
       <property name="text">
@@ -525,7 +528,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; text-decoration: underline;&quot;&gt;Frequency Parameters&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_29">
+    <widget class="QDoubleSpinBox" name="FREQUENCY_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -575,7 +578,7 @@
       <string>Frequency (MHz):</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_30">
+    <widget class="QDoubleSpinBox" name="AMPLITUDE_FIELD">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -638,7 +641,7 @@
       <string>Frequency Range Selected</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="ELEMENT_SELECTION_FIELD_4">
+    <widget class="QComboBox" name="FREQUENCY_SELECTION_FIELD">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -666,7 +669,7 @@
       <string>Set Frequency Options</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="ELEMENT_SELECTION_FIELD_6">
+    <widget class="QComboBox" name="OPTIONS_SELECTION_FIELD">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -726,7 +729,7 @@
       <string>Pa max (target, W):</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_31">
+    <widget class="QDoubleSpinBox" name="POWER_TARGET_FIELD">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -763,7 +766,7 @@
       <double>1.000000000000000</double>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_32">
+    <widget class="QDoubleSpinBox" name="POWER_MAX_FIELD">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -813,7 +816,7 @@
       <string>Pf max (limit, W):</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD_33">
+    <widget class="QDoubleSpinBox" name="REFLECTION_LIMIT_FIELD">
      <property name="geometry">
       <rect>
        <x>110</x>
@@ -863,7 +866,7 @@
       <string>Reflection Limit (%):</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="OSCOPE_AUTO_CHECKBOX">
+    <widget class="QCheckBox" name="POWER_TEST_CHECKBOX">
      <property name="geometry">
       <rect>
        <x>50</x>
@@ -895,7 +898,7 @@
     <property name="lineWidth">
      <number>2</number>
     </property>
-    <widget class="QComboBox" name="OSCOPE_DATALOC_FIELD">
+    <widget class="QComboBox" name="DATALOC_FIELD">
      <property name="geometry">
       <rect>
        <x>120</x>
@@ -933,7 +936,7 @@
       <string>Storage Location:</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="OSCOPE_DATA_DIRECTORY_BUTTON">
+    <widget class="QPushButton" name="DATA_DIRECTORY_BUTTON">
      <property name="geometry">
       <rect>
        <x>510</x>
@@ -946,7 +949,7 @@
       <string>Browse</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="OSCOPE_DATA_DIRECTORY_FIELD">
+    <widget class="QLineEdit" name="DATA_DIRECTORY_FIELD">
      <property name="geometry">
       <rect>
        <x>300</x>
