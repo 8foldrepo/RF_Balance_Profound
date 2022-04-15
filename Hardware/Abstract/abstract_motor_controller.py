@@ -117,7 +117,7 @@ class AbstractMotorController(AbstractDevice):
         def begin_motion(self):
             pass
 
-        def go_home_1d(self):
+        def go_home_1d(self, axis):
             pass
 
         def fields_setup(self):

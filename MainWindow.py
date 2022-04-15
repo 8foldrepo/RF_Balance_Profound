@@ -2,56 +2,35 @@ import time as t
 import sys
 import webbrowser
 from ui_elements.ui_password_dialog import PasswordDialog
-
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-import logging
-from datetime import datetime
 from ui_elements.ui_script_complete_dialog import ScriptCompleteDialog
-
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-import os
-from definitions import ROOT_DIR
-
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
-file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
-root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-
 from ui_elements.ui_pretest_dialog import PretestDialog
 from ui_elements.ui_user_prompt import WTFUserPrompt
 from ui_elements.ui_retracting_ua_warning import UARetractDialog
 from ui_elements.ui_write_cal_to_ua import WriteCalDataToUA
 from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
-
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSlot, QThread, QItemSelectionModel, QModelIndex
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
-from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QFont, QColor, QBrush
-from Utilities.useful_methods import *
+from PyQt5.QtGui import QColor, QBrush
 from Widget_Library import window_wet_test
 from manager import Manager
 from Utilities.load_config import load_configuration
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
-
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-
-import os
 from Utilities.useful_methods import log_msg
+import os
 from definitions import ROOT_DIR
 
-balance_logger = logging.getLogger('wtf_log')
+log_formatter = logging.Formatter(LOGGER_FORMAT)
+wtf_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
+wtf_logger.addHandler(file_handler)
+wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
-
+log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     """
@@ -72,7 +51,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     run_step_signal = QtCore.pyqtSignal()
     abort_signal = QtCore.pyqtSignal()
 
-    #str is the path to the file
+    # str is the path to the file
     load_script_signal = QtCore.pyqtSignal(str)
 
     root_logger = logging.getLogger(ROOT_LOGGER_NAME)
@@ -239,7 +218,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def configure_signals(self):
         self.script_editor.script_changed_signal.connect(self.script_changed)
         self.command_signal.connect(self.manager.exec_command)
-        self.load_button.clicked.connect(self.load_script)
+        self.load_button.clicked.connect(self.load_script_clicked)
         self.run_button.clicked.connect(self.run_button_clicked)
         self.abort_button.clicked.connect(self.manager.abort)
         self.run_step_button.clicked.connect(self.run_step_clicked)
@@ -295,6 +274,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
         self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
+        self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
 
         self.manager.IO_Board.pump_reading_signal.connect(self.update_pump_indicator)
         self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
@@ -381,10 +361,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def plot(self, x, y, refresh_rate):
         self.scan_tab_widget.plot(x, y, refresh_rate)
 
-    def load_script(self):
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Open file", "", "Script files (*.wtf *.txt)"
-        )
+    def load_script_clicked(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Script files (*.wtf *.txt)")
+
+        if path == '':
+            return
+
         self.load_script_signal.emit(path)
 
     @pyqtSlot(bool)
@@ -453,21 +435,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         Show_Help_action.triggered.connect(self.Show_Help)
         file_menu.addAction(Show_Help_action)
 
-    def dialog_critical(self, s):
-        dlg = QMessageBox(self)
-        dlg.setText(s)
-        dlg.setIcon(QMessageBox.Critical)
-        dlg.show()
-
-
     def dialog_user_action(self, s):
         dlg = QMessageBox(self)
         dlg.setText(s)
-        #todo: change icon to one that is less error, more info/ notify
+        # todo: change icon to one that is less error, more info/ notify
         dlg.setIcon(QMessageBox.Critical)
         dlg.show()
-        dlg.finished.connect(self.manager.cont) #todo: test this
-        #todo: maker sure script doesn't continue until this is dismissed
+        dlg.finished.connect(self.manager.cont)  # todo: test this
+        # todo: maker sure script doesn't continue until this is dismissed
 
     # Open help document
     def Show_Help(self):
@@ -553,8 +528,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def show_ua_retract_warn_prompt(self):
         dlg = UARetractDialog(config=self.config)
         dlg.continue_signal.connect(self.manager.cont)
-        dlg.cancel_signal.connect(self.manager.abort)
+        dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
+
+    @pyqtSlot(list, list)
+    def show_script_complete_dialog(self, passed_ray, description_ray):
+        dlg = ScriptCompleteDialog(passed_ray=passed_ray, description_ray=description_ray, config=self.config)
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.abort)
 
     @pyqtSlot()
     def show_write_cal_data_prompt(self, calibration_data):  # calibration data var is 2d list
@@ -593,7 +574,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.fw_version_hi.setText(calibration_data[2][9])
 
         dlg.write_ua_signal.connect(self.manager.write_cal_data_to_ua_button)
-        dlg.cancel_signal.connect(self.manager.abort)
+        dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
     @pyqtSlot(str)
@@ -627,8 +608,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):
-        dlg = ScriptCompleteDialog(passed_ray, description_ray)
-        dlg.cancel_signal.connect(self.manager.cont)
+        dlg = ScriptCompleteDialog(config=self.config, passed_ray=passed_ray, description_ray=description_ray)
+        dlg.abort_signal.connect(self.manager.cont)
         dlg.continue_signal.connect(self.manager.cont)
         dlg.exec()
 
