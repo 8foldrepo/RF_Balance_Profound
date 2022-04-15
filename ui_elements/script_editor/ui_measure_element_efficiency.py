@@ -1,4 +1,4 @@
-from Widget_Library.measure_element_efficiency import Ui_Form_2
+from Widget_Library.widget_measure_element_efficiency import Ui_Form_2
 from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict

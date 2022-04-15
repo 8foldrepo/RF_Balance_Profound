@@ -21,15 +21,15 @@ class Ui_Form(object):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
-        self.checkBox = QtWidgets.QCheckBox(self.frame)
-        self.checkBox.setGeometry(QtCore.QRect(20, 10, 125, 17))
-        self.checkBox.setObjectName("checkBox")
-        self.checkBox_2 = QtWidgets.QCheckBox(self.frame)
-        self.checkBox_2.setGeometry(QtCore.QRect(20, 40, 125, 17))
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.checkBox_3 = QtWidgets.QCheckBox(self.frame)
-        self.checkBox_3.setGeometry(QtCore.QRect(140, 10, 80, 17))
-        self.checkBox_3.setObjectName("checkBox_3")
+        self.Save_Summary_File_Checkbox = QtWidgets.QCheckBox(self.frame)
+        self.Save_Summary_File_Checkbox.setGeometry(QtCore.QRect(20, 10, 125, 17))
+        self.Save_Summary_File_Checkbox.setObjectName("Save_Summary_File_Checkbox")
+        self.Write_UA_Calibration_Checkbox = QtWidgets.QCheckBox(self.frame)
+        self.Write_UA_Calibration_Checkbox.setGeometry(QtCore.QRect(20, 40, 125, 17))
+        self.Write_UA_Calibration_Checkbox.setObjectName("Write_UA_Calibration_Checkbox")
+        self.With_Prompt_Checkbox = QtWidgets.QCheckBox(self.frame)
+        self.With_Prompt_Checkbox.setGeometry(QtCore.QRect(140, 10, 80, 17))
+        self.With_Prompt_Checkbox.setObjectName("With_Prompt_Checkbox")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -37,9 +37,9 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Save Results"))
-        self.checkBox.setText(_translate("Form", "Save Summary File"))
-        self.checkBox_2.setText(_translate("Form", "Write UA Calibration"))
-        self.checkBox_3.setText(_translate("Form", "With Prompt"))
+        self.Save_Summary_File_Checkbox.setText(_translate("Form", "Save Summary File"))
+        self.Write_UA_Calibration_Checkbox.setText(_translate("Form", "Write UA Calibration"))
+        self.With_Prompt_Checkbox.setText(_translate("Form", "With Prompt"))
 
 
 if __name__ == "__main__":

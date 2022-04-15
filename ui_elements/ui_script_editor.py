@@ -8,6 +8,7 @@ from ui_elements.script_editor.ui_home_system import HomeSystem
 from ui_elements.script_editor.ui_prompt_user_for_action import PromptUserForAction
 from ui_elements.script_editor.ui_loop_over_elements import LoopOverElements
 from ui_elements.script_editor.ui_measure_element_efficiency import MeasureElementEfficiency
+from ui_elements.script_editor.ui_save_results import SaveResults
 #from ui_elements.script_editor. import
 #from ui_elements.script_editor. import
 
@@ -54,6 +55,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         #elif task_type == "End loop"
         elif task_type == "Measure element efficiency (RFB)":
             self.widget = MeasureElementEfficiency()
+        elif task_type == "Save results":
+            self.widget = SaveResults()
         #elif task_type == "Save results"
         elif task_type == "Prompt user for action":
             self.widget = PromptUserForAction()
