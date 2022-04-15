@@ -1,0 +1,238 @@
+2022-04-15 18:06:34,804 [INFO] [Manager] [manager_thread] : Running script
+2022-04-15 18:06:34,829 [INFO] [Results] [manager_thread] : Saving test results
+2022-04-15 18:06:34,829 [INFO] [Results] [manager_thread] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\123-2022.04.15-18.06.txt
+2022-04-15 18:06:35,060 [INFO] [DummyMotors] [manager_thread] : GO -2.625,,
+2022-04-15 18:06:35,071 [INFO] [Manager] [] : Maximum of -27950048.779760063 @ x = -1.625 mm. Going there.
+2022-04-15 18:06:35,072 [INFO] [DummyMotors] [manager_thread] : GO -2.375,,
+2022-04-15 18:06:35,077 [ERROR] [Manager] [] : Motor movement not successful
+2022-04-15 18:06:35,078 [INFO] [DummyMotors] [manager_thread] : GO -2.125,,
+2022-04-15 18:06:35,085 [INFO] [DummyMotors] [manager_thread] : GO -1.875,,
+2022-04-15 18:06:35,087 [INFO] [DummyMotors] [manager_thread] : GO -1.625,,
+2022-04-15 18:06:35,093 [INFO] [DummyMotors] [manager_thread] : GO -1.375,,
+2022-04-15 18:06:35,101 [INFO] [Manager] [] : Maximum of -27108573.07883691 @ theta = -90.0 degrees. Going there.
+2022-04-15 18:06:35,102 [INFO] [DummyMotors] [manager_thread] : GO -1.125,,
+2022-04-15 18:06:35,105 [INFO] [DummyMotors] [manager_thread] : GO -0.875,,
+2022-04-15 18:06:35,105 [INFO] [DummyMotors] [manager_thread] : GO -0.625,,
+2022-04-15 18:06:35,107 [INFO] [DummyMotors] [manager_thread] : GO -0.375,,
+2022-04-15 18:06:35,108 [INFO] [DummyMotors] [manager_thread] : GO -0.125,,
+2022-04-15 18:06:35,109 [INFO] [DummyMotors] [manager_thread] : GO 0.125,,
+2022-04-15 18:06:35,110 [INFO] [DummyMotors] [manager_thread] : GO 0.375,,
+2022-04-15 18:06:35,111 [INFO] [DummyMotors] [manager_thread] : GO 0.625,,
+2022-04-15 18:06:35,112 [INFO] [DummyMotors] [manager_thread] : GO 0.875,,
+2022-04-15 18:06:35,114 [INFO] [DummyMotors] [manager_thread] : GO 1.125,,
+2022-04-15 18:06:35,115 [INFO] [DummyMotors] [manager_thread] : GO 1.375,,
+2022-04-15 18:06:35,116 [INFO] [DummyMotors] [manager_thread] : GO 1.625,,
+2022-04-15 18:06:35,117 [INFO] [DummyMotors] [manager_thread] : GO 1.875,,
+2022-04-15 18:06:35,118 [INFO] [DummyMotors] [manager_thread] : GO 2.125,,
+2022-04-15 18:06:35,119 [INFO] [DummyMotors] [manager_thread] : GO 2.375,,
+2022-04-15 18:06:35,120 [INFO] [DummyMotors] [manager_thread] : GO -1.625,,
+2022-04-15 18:06:35,121 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,122 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,123 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,123 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,124 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,124 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,125 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,126 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,126 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,127 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,127 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,128 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,129 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,129 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,130 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,131 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,132 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,132 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,133 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,134 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,135 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,135 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,136 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,137 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,137 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,138 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,139 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,140 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,140 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,141 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,142 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,142 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,143 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,144 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,144 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,145 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,146 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,147 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,147 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,148 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,149 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:35,150 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:06:38,623 [INFO] [Manager] [] : Moved to 1, at coordinate x=-1.62, r=-1.6
+2022-04-15 18:06:38,624 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:06:38,624 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:06:38,625 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:06:38,625 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:06:38,628 [INFO] [DummyMotors] [manager_thread] : GO -1.625,-1.625,
+2022-04-15 18:07:38,911 [INFO] [Manager] [] : Moved to 2, at coordinate x=5.00, r=5.0
+2022-04-15 18:07:38,956 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:07:38,957 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:07:38,958 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:07:38,959 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:07:39,070 [INFO] [DummyMotors] [manager_thread] : GO 5,5,
+2022-04-15 18:08:39,260 [INFO] [Manager] [] : Moved to 3, at coordinate x=10.00, r=10.0
+2022-04-15 18:08:39,261 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:08:39,266 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:08:39,317 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:08:39,318 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:08:39,501 [INFO] [DummyMotors] [manager_thread] : GO 10,10,
+2022-04-15 18:09:39,544 [INFO] [Manager] [] : Moved to 4, at coordinate x=15.00, r=15.0
+2022-04-15 18:09:39,600 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:09:39,602 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:09:39,644 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:09:39,644 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:09:39,829 [INFO] [DummyMotors] [manager_thread] : GO 15,15,
+2022-04-15 18:10:17,828 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:17,832 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:18,198 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:18,199 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:18,367 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:20,942 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:20,943 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:20,944 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:20,945 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:20,945 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-15 18:10:59,168 [INFO] [Manager] [manager_thread] : Running script
+2022-04-15 18:10:59,174 [INFO] [Results] [manager_thread] : Saving test results
+2022-04-15 18:10:59,175 [INFO] [Results] [manager_thread] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\234-2022.04.15-18.10.txt
+2022-04-15 18:10:59,405 [INFO] [DummyMotors] [manager_thread] : GO -4.25,,
+2022-04-15 18:10:59,408 [INFO] [DummyMotors] [manager_thread] : GO -4.0,,
+2022-04-15 18:10:59,409 [INFO] [Manager] [] : Maximum of -27779076.502545606 @ x = -2.5 mm. Going there.
+2022-04-15 18:10:59,409 [INFO] [DummyMotors] [manager_thread] : GO -3.75,,
+2022-04-15 18:10:59,410 [ERROR] [Manager] [] : Motor movement not successful
+2022-04-15 18:10:59,410 [INFO] [DummyMotors] [manager_thread] : GO -3.5,,
+2022-04-15 18:10:59,415 [INFO] [DummyMotors] [manager_thread] : GO -3.25,,
+2022-04-15 18:10:59,417 [INFO] [Manager] [] : Maximum of -26940301.166316517 @ theta = -90.0 degrees. Going there.
+2022-04-15 18:10:59,418 [INFO] [DummyMotors] [manager_thread] : GO -3.0,,
+2022-04-15 18:10:59,419 [INFO] [DummyMotors] [manager_thread] : GO -2.75,,
+2022-04-15 18:10:59,419 [INFO] [DummyMotors] [manager_thread] : GO -2.5,,
+2022-04-15 18:10:59,420 [INFO] [DummyMotors] [manager_thread] : GO -2.25,,
+2022-04-15 18:10:59,421 [INFO] [DummyMotors] [manager_thread] : GO -2.0,,
+2022-04-15 18:10:59,421 [INFO] [DummyMotors] [manager_thread] : GO -1.75,,
+2022-04-15 18:10:59,422 [INFO] [DummyMotors] [manager_thread] : GO -1.5,,
+2022-04-15 18:10:59,422 [INFO] [DummyMotors] [manager_thread] : GO -1.25,,
+2022-04-15 18:10:59,423 [INFO] [DummyMotors] [manager_thread] : GO -1.0,,
+2022-04-15 18:10:59,424 [INFO] [DummyMotors] [manager_thread] : GO -0.75,,
+2022-04-15 18:10:59,425 [INFO] [DummyMotors] [manager_thread] : GO -0.5,,
+2022-04-15 18:10:59,425 [INFO] [DummyMotors] [manager_thread] : GO -0.25,,
+2022-04-15 18:10:59,426 [INFO] [DummyMotors] [manager_thread] : GO 0,,
+2022-04-15 18:10:59,426 [INFO] [DummyMotors] [manager_thread] : GO 0.25,,
+2022-04-15 18:10:59,427 [INFO] [DummyMotors] [manager_thread] : GO 0.5,,
+2022-04-15 18:10:59,427 [INFO] [DummyMotors] [manager_thread] : GO 0.75,,
+2022-04-15 18:10:59,428 [INFO] [DummyMotors] [manager_thread] : GO -2.5,,
+2022-04-15 18:10:59,429 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,429 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,430 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,430 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,431 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,431 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,432 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,432 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,433 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,433 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,434 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,435 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,435 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,436 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,436 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,437 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,438 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,438 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,439 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,440 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,440 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,441 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,441 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,442 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,442 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,443 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,444 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,444 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,445 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,445 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,446 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,446 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,447 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,447 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,448 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,449 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,449 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,450 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,450 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,451 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,452 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:10:59,452 [INFO] [DummyMotors] [manager_thread] : GO ,-90.0,
+2022-04-15 18:11:05,718 [INFO] [Manager] [] : Moved to 1, at coordinate x=-2.50, r=-2.5
+2022-04-15 18:11:05,719 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:11:05,719 [INFO] [DummyMotors] [manager_thread] : GO -2.5,-2.5,
+2022-04-15 18:11:05,720 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:11:05,721 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:11:05,722 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:12:05,996 [INFO] [Manager] [] : Moved to 2, at coordinate x=5.00, r=5.0
+2022-04-15 18:12:05,997 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:12:05,998 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:12:05,999 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:12:06,000 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:12:06,006 [INFO] [DummyMotors] [manager_thread] : GO 5,5,
+2022-04-15 18:13:06,267 [INFO] [Manager] [] : Moved to 3, at coordinate x=10.00, r=10.0
+2022-04-15 18:13:06,269 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:13:06,271 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:13:06,275 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:13:06,275 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:13:06,277 [INFO] [DummyMotors] [manager_thread] : GO 10,10,
+2022-04-15 18:14:06,548 [INFO] [Manager] [] : Moved to 4, at coordinate x=15.00, r=15.0
+2022-04-15 18:14:06,550 [INFO] [DummyMotors] [manager_thread] : GO 15,15,
+2022-04-15 18:14:06,551 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:14:06,552 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:14:06,552 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:14:06,552 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:15:06,859 [INFO] [Manager] [] : Moved to 5, at coordinate x=20.00, r=20.0
+2022-04-15 18:15:06,862 [INFO] [DummyMotors] [manager_thread] : GO 20,20,
+2022-04-15 18:15:06,865 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:15:06,869 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:15:06,871 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:15:06,873 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:16:07,110 [INFO] [Manager] [] : Moved to 6, at coordinate x=25.00, r=25.0
+2022-04-15 18:16:07,112 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:16:07,113 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:16:07,115 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:16:07,135 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:16:07,167 [INFO] [DummyMotors] [manager_thread] : GO 25,25,
+2022-04-15 18:17:07,468 [INFO] [Manager] [] : Moved to 7, at coordinate x=30.00, r=30.0
+2022-04-15 18:17:07,468 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:17:07,469 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:17:07,470 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:17:07,471 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:17:07,480 [INFO] [DummyMotors] [manager_thread] : GO 30,30,
+2022-04-15 18:18:21,906 [INFO] [Manager] [] : Moved to 8, at coordinate x=35.00, r=35.0
+2022-04-15 18:18:21,907 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:18:21,908 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:18:21,908 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:18:21,909 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:18:21,921 [INFO] [DummyMotors] [manager_thread] : GO 35,35,
+2022-04-15 18:19:22,142 [INFO] [Manager] [] : Moved to 9, at coordinate x=40.00, r=40.0
+2022-04-15 18:19:22,143 [INFO] [DummyMotors] [manager_thread] : GO 40,40,
+2022-04-15 18:19:22,144 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:19:22,145 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:19:22,145 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:19:22,146 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-15 18:20:22,417 [INFO] [Manager] [] : Moved to 10, at coordinate x=45.00, r=45.0
+2022-04-15 18:20:22,419 [INFO] [DummyMotors] [manager_thread] : GO 45,45,
+2022-04-15 18:20:22,421 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:20:22,423 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:20:22,425 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:20:22,427 [INFO] [AbstractBalance] [] : Balance Zeroed
+:20:22,421 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-15 18:20:22,423 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-15 18:20:22,425 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-15 18:20:22,427 [INFO] [AbstractBalance] [] : Balance Zeroed

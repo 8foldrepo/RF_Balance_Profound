@@ -485,8 +485,9 @@ class Manager(QThread):
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
-        if self.step_index >= len(self.taskNames):
+        if self.step_index > len(self.taskNames):
             self.script_complete()
+            return
 
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if 0 <= self.step_index < len(self.taskNames):
@@ -712,7 +713,8 @@ class Manager(QThread):
         thetaPts = int(variable_list['Theta #Pts.'])
         scope_channel = int(variable_list['Scope channel'][8:])
         acquisition_type = variable_list['Acquisition type']
-        averages = int(variable_list['Averages'])
+        averages = int(re.search(r'\d+', str(variable_list['Averages'])).group())
+        #todo: add data storage
         data_storage = variable_list['Data storage']
         storage_location = variable_list['Storage location']
         data_directory = variable_list["Data directory"]

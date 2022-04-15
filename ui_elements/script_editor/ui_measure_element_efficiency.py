@@ -25,7 +25,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         # todo, fill UI according to dictionary
         self.ELEMENT_SELECTION_FIELD.setCurrentText(arg_dict["Element"])
         self.FREQUENCY_SELECTION_FIELD.setCurrentText(arg_dict["Frequency range"])
-        self.RFB_CYCLES_FIELD.setValue(float(arg_dict["RFB.#on/off cycles"]))
+        self.RFB_CYCLES_FIELD.setValue(int(arg_dict["RFB.#on/off cycles"]))
         self.RFB_ON_FIELD.setValue(float(arg_dict["RFB.On time (s)"]))
         self.RFB_OFF_FIELD.setValue(float(arg_dict["RFB.Off time (s)"]))
         self.RFB_THRESHOLD_FIELD.setValue(float(arg_dict["RFB.Threshold"]))
@@ -55,7 +55,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         arg_dict["Task type"] = 'Measure element efficiency (RFB)'
         arg_dict["Element"] = self.ELEMENT_SELECTION_FIELD.currentText()
         arg_dict["Frequency range"] = self.FREQUENCY_SELECTION_FIELD.currentText()
-        arg_dict["RFB.#on/off cycles"] = str(self.RFB_CYCLES_FIELD.value())
+        arg_dict["RFB.#on/off cycles"] = str(int(self.RFB_CYCLES_FIELD.value()))
         arg_dict["RFB.On time (s)"] = "%.1f" % (self.RFB_ON_FIELD.value())
         arg_dict["RFB.Off time (s)"] = "%.1f" % (self.RFB_OFF_FIELD.value())
         arg_dict["RFB.Threshold"] = "%.2f" % (self.RFB_THRESHOLD_FIELD.value())

@@ -22,6 +22,15 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
                                             ('#Cycles.Delay', '0'),
                                             ('Frequency (MHz)', '4.400000'), ('Amplitude (mV)', '50.000000'),
                                             ('Burst count', '50')]))
+        self.configure_signals()
+
+    def configure_signals(self):
+        self.OSCOPE_DATA_DIRECTORY_BUTTON.clicked.connect(self.browse_clicked)
+
+    def browse_clicked(self):
+        self.filename = QFileDialog.getExistingDirectory(self)
+        self.OSCOPE_DATA_DIRECTORY_FIELD.setText(self.filename)
+        return self.filename
 
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
         # todo, fill UI according to dictionary
@@ -59,6 +68,7 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         arg_dict["Averages"] = self.OSCOPE_SAMPLES_FIELD.currentText()
         arg_dict["Data storage"] = self.OSCOPE_DATASTORE_FIELD.currentText()
         arg_dict["Storage location"] = self.OSCOPE_DATALOC_FIELD.currentText()
+        arg_dict["Data directory"] = self.OSCOPE_DATA_DIRECTORY_FIELD.text()
         arg_dict["Frequency settings"] = self.FREQANG_PRESET_FIELD.currentText()
         arg_dict["ElementPositionTest"] = str(self.FREQANG_POS_TEST_CHECKBOX.isChecked())
         arg_dict["BeamAngleTest"] = str(self.FREQANG_ANG_TEST_CHECKBOX.isChecked())
@@ -76,11 +86,6 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         arg_dict["Theta Incr. (deg)"] = str(self.THETA_INCREMENT_FIELD.value())
 
         return arg_dict
-
-    def filebrowser(self):
-        filename = QFileDialog.getOpenFileName(self, 'Select File', 'Desktop')
-        self.OSCOPE_DATA_DIRECTORY_FIELD.setText(filename[0])
-
 
 if __name__ == "__main__":
     import sys
