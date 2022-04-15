@@ -2,30 +2,26 @@ import sys
 import re
 import pyvisa
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QMutex, QObject, QThread, QWaitCondition, pyqtSignal, pyqtSlot
-from typing import Optional
+from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from collections import OrderedDict
 import distutils.util
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
-
-log_formatter = logging.Formatter(LOGGER_FORMAT)
-
 import time as t
 import numpy as np
 from scipy import integrate
-
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, blank_test_data
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, blank_test_data, \
+    generate_calibration_data
 from Utilities.formulas import calculate_power_from_balance_reading
 from definitions import ROOT_DIR
 import os
 
-balance_logger = logging.getLogger('wtf_log')
+log_formatter = logging.Formatter(LOGGER_FORMAT)
+wtf_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
-balance_logger.addHandler(file_handler)
-balance_logger.setLevel(logging.INFO)
+wtf_logger.addHandler(file_handler)
+wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 pump_status = ""
@@ -40,6 +36,7 @@ class Manager(QThread):
     user_prompt_signal_water_too_low_signal = pyqtSignal(str)  # str is water level
     write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
+    script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
 
     # Script metadata
     description_signal = pyqtSignal(str)
@@ -56,8 +53,6 @@ class Manager(QThread):
     element_number_signal = pyqtSignal(str)
     script_info_signal = pyqtSignal(list)
 
-    plot_signal = pyqtSignal(object, object)
-
     logger_signal = pyqtSignal(str)
     enable_ui_signal = pyqtSignal()
 
@@ -72,17 +67,15 @@ class Manager(QThread):
 
     Motors = None
 
-    def __init__(self, parent: Optional[QObject], config: dict):
-        super().__init__(parent=parent, objectName=u"manager_thread")
+    def __init__(self, config: dict, parent=None):
+        super().__init__(parent=parent)
         QThread.currentThread().setObjectName("manager_thread")
         print()
-        self.get_position_cooldown_s = .2  # decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        # decreasing this improves the refresh rate of the position, at the cost of responsiveness
+        self.get_position_cooldown_s = .2
         self.last_get_position_time = 0
         self.app = QApplication.instance()
-        self.scan_data = dict()
-        self.scan_data["script_log"] = list()
-
-        self.scriptlog = self.scan_data["script_log"]
+        self.scan_data = blank_test_data()
 
         self.config = config
         self.element_x_coordinates = get_element_distances(
@@ -129,7 +122,7 @@ class Manager(QThread):
         # Keeps track of script step in progress
         self.step_complete = True
 
-        #step_index = -1 if no script is being run. It is also the way to check if the script has been aborted
+        # step_index = -1 if no script is being run. It is also the way to check if the script has been aborted
         self.step_index = -1
 
         self.devices = list()
@@ -324,7 +317,14 @@ class Manager(QThread):
         self.scripting = True
 
     def update_motor_position(self):
-        if self.Motors.connected and self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
+        #Return if there the user is not looking at positional feedback
+        if self.parent is not None:
+            if not hasattr(self.parent, 'tabWidget'):
+                return
+            if not self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) == 'Position':
+                return
+
+        if self.Motors.connected:
             if t.time() - self.last_get_position_time > self.get_position_cooldown_s:
                 lock_aquired = self.motor_control_lock.tryLock()
 
@@ -333,6 +333,7 @@ class Manager(QThread):
                     self.last_get_position_time = t.time()
                     self.motor_control_lock.unlock()
 
+    # noinspection PyUnresolvedReferences
     def capture_and_plot(self):
         # Do these things if a script is not being run
 
@@ -359,7 +360,9 @@ class Manager(QThread):
 
         self.starttime = t.time()
 
+    # noinspection PyUnresolvedReferences
     def load_script(self, path):
+        self.abort(log=False)
         # get UA serial no. and append behind date
         self.script = open(path, "r")
 
@@ -382,7 +385,7 @@ class Manager(QThread):
         for line in self.script:
             ray = line.split(' = ')
 
-            #Populate script metadata to UI using signals
+            # Populate script metadata to UI using signals
             if ray[0].upper() == '# OF TASKS':
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
             elif ray[0].upper() == 'CREATEDON':
@@ -416,10 +419,12 @@ class Manager(QThread):
                     buildingLoop = True  # set a flag that we're building a loop for the script
                     addingElementsToLoop = True  # set a flag that we're adding element names from script for loop
 
-                if addingElementsToLoop and "Element" in x0:  # if we're on a line that adds an element name for the loop
-                    elementNamePre = x0.split(' ')  # split the left side of the variable assigner by space
-                    elementName = elementNamePre[
-                        1]  # retrieve the second word of the left side, that's the element name
+                # if we're on a line that adds an element name for the loop
+                if addingElementsToLoop and "Element" in x0:
+                    # split the left side of the variable assigner by space
+                    elementNamePre = x0.split(' ')
+                    # retrieve the second word of the left side, that's the element name
+                    elementName = elementNamePre[1]
                     elementNamesForLoop.append(int(elementName))
 
                 if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
@@ -460,7 +465,6 @@ class Manager(QThread):
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.taskNames))
         f.close()
-        self.scripting = False
 
     # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
     @pyqtSlot()
@@ -482,8 +486,7 @@ class Manager(QThread):
         # run the next script step
 
         if self.step_index >= len(self.taskNames):
-            self.enable_ui_signal.emit()
-            return
+            self.script_complete()
 
         if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if 0 <= self.step_index < len(self.taskNames):
@@ -518,7 +521,7 @@ class Manager(QThread):
         elif "Find element n".upper() in name.upper():
             self.find_element(args)
         elif name.upper() == "Save results".upper():
-            self.save_results(args, self.test_data)
+            self.save_results(args)
         elif name.upper() == "Prompt user for action".upper():
             self.prompt_user_for_action(args)
         elif "Home system".upper() in name.upper():
@@ -529,8 +532,9 @@ class Manager(QThread):
     '''Aborts script'''
 
     @pyqtSlot()
-    def abort(self):
-        self.log('Aborting script')
+    def abort(self, log=True):
+        if log:
+            self.log('Aborting script')
         # Reset script control variables
         self.scripting = False
         self.step_index = -1
@@ -542,10 +546,11 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
+
     def wait_for_cont(self):
         self.continue_var = False
         while not self.continue_var:
-            #check if script has been aborted
+            # check if script has been aborted
             if self.step_index == -1:
                 # Always handle this exception
                 raise AbortException
@@ -566,19 +571,39 @@ class Manager(QThread):
         # Todo: make this method write calibration data to UA
         pass
 
+    '''Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI'''
+
+    def script_complete(self):
+        # Fetch pass list and description list from testdata
+        pass_list = [None] * 11
+        description_list = [None] * 11
+        for i in range(10):
+            pass_list[i] = self.test_data['results_summary'][i][15]
+            description_list[i] = self.test_data['results_summary'][i][16]
+
+        # Add ua write result to output
+        pass_list[10] = self.test_data['write_result']
+        description_list[10] = ''
+
+        self.script_complete_signal.emit(pass_list, description_list)
+        self.scripting = False
+        self.enable_ui_signal.emit()
+
     '''Collects metadata from user and prompts user until water level is ok'''
 
     def pretest_initialization(self, variable_list):
         # todo: add first 4 lines of scriptlog
-        self.scriptlog.append([f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '', ''])  # this is the first line
-        self.scriptlog.append(["Running script: ", self.test_data['script_name'], '', '', ''])
-        self.scriptlog.append(["Pretest_initialization", '', '', ''])
+        self.scan_data["script_log"].append(
+            [f"{self.test_data['serial_number']}-{self.test_data['test_date_time']}", '', '',
+             ''])  # this is the first line
+        self.scan_data["script_log"].append(["Running script: ", self.test_data['script_name'], '', '', ''])
+        self.scan_data["script_log"].append(["Pretest_initialization", '', '', ''])
 
         # Check if wtfib is connected and add that to the scriptlog
         if self.UAInterface.is_connected:
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "OK"])
+            self.scan_data["script_log"].append(["", "Get UA Serial", "Connected", "OK"])
         else:
-            self.scriptlog.append(["", "Get UA Serial", "Connected", "FAIL"])
+            self.scan_data["script_log"].append(["", "Get UA Serial", "Connected", "FAIL"])
             return "pretest_init fail"
         # Show dialogs until pump is on and the water sensor reads level
         # todo: have ua inserted to certain x position like in the ScriptResults.log
@@ -590,15 +615,15 @@ class Manager(QThread):
                 try:
                     self.wait_for_cont()
                 except AbortException:
-                    self.scriptlog.append('', 'Check/prompt UA Pump', 'FAIL', '')
+                    self.scan_data["script_log"].append('', 'Check/prompt UA Pump', 'FAIL', '')
                     return self.abort()
             else:
-                self.scriptlog.append('', 'Check/prompt UA Pump', 'OK', '')
+                self.scan_data["script_log"].append('', 'Check/prompt UA Pump', 'OK', '')
 
                 if self.thermocouple.is_connected():
-                    self.scriptlog.append('', 'CheckThermocouple', 'OK', '')
+                    self.scan_data["script_log"].append('', 'CheckThermocouple', 'OK', '')
                 else:
-                    self.scriptlog.append('', 'CheckThermocouple', 'FAIL', '')
+                    self.scan_data["script_log"].append('', 'CheckThermocouple', 'FAIL', '')
                     # have the script aborted or wait for thermocouple?
 
                 burst_mode, unused = self.AWG.GetBurst()
@@ -607,37 +632,39 @@ class Manager(QThread):
                 else:
                     burst_mode = "Continuous"
 
-                self.scriptlog.append(['', 'Config FGen', f"{round(self.AWG.getAmplitudeV()*1000, 0)}mVpp;{round(self.AWG.getFreq_Hz()/1000000, 2)}MHz;{burst_mode}", ''])
+                self.scan_data["script_log"].append(['', 'Config FGen',
+                                                     f"{round(self.AWG.getAmplitudeV() * 1000, 0)}mVpp;{round(self.AWG.getFreq_Hz() / 1000000, 2)}MHz;{burst_mode}",
+                                                     ''])
 
                 # todo: have the user be prompted to ensure the power amplifier is on; check if successful if not log FAIL
                 try:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'Prompt PowerAmp', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Prompt PowerAmp', 'FAIL', ''])
+                    self.scan_data["script_log"].append(['', 'Prompt PowerAmp', 'FAIL', ''])
 
                 # todo: create data directories here
                 try:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'CreateDataDirectories', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'CreateDataDirectories', 'FAIL', ''])
+                    self.scan_data["script_log"].append(['', 'CreateDataDirectories', 'FAIL', ''])
 
                 # todo: create h/w log here
                 try:
-                    self.scriptlog.append(['', 'Create h/w log', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'Create h/w log', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Create h/w log', 'FAIL', ''])
+                    self.scan_data["script_log"].append(['', 'Create h/w log', 'FAIL', ''])
 
                 # todo: initialize results FGV here
                 try:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'Initialize results FGV', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Initialize results FGV', 'FAIL', ''])
+                    self.scan_data["script_log"].append(['', 'Initialize results FGV', 'FAIL', ''])
 
                 # todo: duplicate main script?
                 try:
-                    self.scriptlog.append(['', 'duplicate main script', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'duplicate main script', 'OK', ''])
                 except:
-                    self.scriptlog.append(['', 'Duplicate main script', 'FAIL', ''])
+                    self.scan_data["script_log"].append(['', 'Duplicate main script', 'FAIL', ''])
 
                 water_level = self.IO_Board.get_water_level()
                 if not water_level == 'level':  # if the water level is not level
@@ -646,28 +673,28 @@ class Manager(QThread):
                     try:
                         self.wait_for_cont()
                     except AbortException:
-                        self.scriptlog.append(['', 'Check/prompt water level', 'FAIL', ''])
+                        self.scan_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', ''])
                         return
                 else:
-                    self.scriptlog.append(['', 'Check/prompt water level', 'OK', ''])
+                    self.scan_data["script_log"].append(['', 'Check/prompt water level', 'OK', ''])
                     break
 
         self.step_complete = True
 
-    '''latches info from user in MainWindow to manager local vars'''
+    '''Retrieve metadata from mainwindow and trigger the script to run'''
 
     @pyqtSlot(dict)
     def pretest_metadata_slot(self, pretest_metadata):
-        #reset test data to default values
+        # reset test data to default values
         self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
         self.run_script()
-        self.scriptlog.append(['', "Prompt username+UA serial", 'OK', ''])
+        self.scan_data["script_log"].append(['', "Prompt username+UA serial", 'OK', ''])
 
     '''Find UA element with given number'''
 
     def find_element(self, variable_list):
-        self.scriptlog.append(['Find element "n"', 'OK', '', ''])
+        self.scan_data["script_log"].append(['Find element "n"', 'OK', '', ''])
         element = int(re.search(r'\d+', str(variable_list['Element'])).group())
 
         # Update UI visual to reflect the element we are on
@@ -760,7 +787,7 @@ class Manager(QThread):
         r_rms_values = list()
 
         for i in range(thetaPts):
-            #check if the script has been aborted
+            # check if the script has been aborted
             if self.step_index == -1:
                 return
 
@@ -955,12 +982,19 @@ class Manager(QThread):
 
     '''Save scan results to a file'''
 
-    def save_results(self, variable_list, calibration_data):  # calibration_data is the data gathered by the UA test
+    def save_results(self, variable_list):  # calibration_data is the data gathered by the UA test
         save_summary_file = bool(distutils.util.strtobool(variable_list["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(variable_list["Write UA Calibration"]))
         prompt_for_calibration_write = bool(distutils.util.strtobool(variable_list["PromptForCalWrite"]))
 
-        self.test_data["write_result"] = self.UAInterface.UA_Write_Result
+        # Todo: test
+        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
+            # Todo: populate calibration data from test data in useful_methods
+            calibration_data = generate_calibration_data(self.test_data)
+            self.test_data["write_result"] = self.write_cal_data_to_ua_dialog(calibration_data)
+        else:
+            self.test_data["write_result"] = "Not Attempted"
+
         self.test_data["software_version"] = self.config["Software_Version"]
 
         sum = 0
@@ -974,9 +1008,6 @@ class Manager(QThread):
         self.test_data['results_summary'][10][2] = str(angle_average)
 
         self.save_results_signal.emit(self.test_data)
-
-        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
-            self.write_cal_data_to_ua_dialog(calibration_data)
 
         self.step_complete = True
 
@@ -993,15 +1024,18 @@ class Manager(QThread):
         axis_to_home = variable_list['Axis to home']
         if axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
+            self.Motors.go_home_1d('X')
             try:
                 self.wait_for_cont()
             except AbortException:
                 return self.abort()
-
-        # TODO: have the pump home in the desired direction
+        elif axis_to_home == 'All Axes':
+            self.Motors.go_home()
+        elif axis_to_home == 'Theta':
+            self.Motors.go_home_1d('R')
 
         self.step_complete = True
-        # self.scriptlog.append(['', "Home all", f"X={X}; Theta={theta}", ''])
+        # self.scan_data["script_log"].append(['', "Home all", f"X={X}; Theta={theta}", ''])
 
     '''Warn the user that the UA is being retracted in x'''
 
