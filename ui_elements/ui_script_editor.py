@@ -61,7 +61,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         elif task_type == "Prompt user for action":
             self.widget = PromptUserForAction()
         elif task_type == "Home system":
-            widget = HomeSystem()
+            self.widget = HomeSystem()
         #elif task_type == ""
         #elif task_type == ""
         #elif task_type == ""
