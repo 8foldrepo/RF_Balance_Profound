@@ -2,11 +2,11 @@ from Widget_Library.widget_system_info import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
 from configparser import ConfigParser
 from definitions import SYSTEM_INFO_INI_PATH
+from ui_elements.my_qwidget import MyQWidget
 
-
-class SystemInfo(QWidget, Ui_Form):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
+class SystemInfo(MyQWidget, Ui_Form):
+    def __init__(self, parent = None):
+        super().__init__(parent = parent)
         self.setupUi(self)
 
     def load_system_info(self):
@@ -69,7 +69,6 @@ class SystemInfo(QWidget, Ui_Form):
         self.HYDRO_SN_FIELD.setText(parser['Hydrophone system']['Hydrophone SN'])
         self.PREAMP_SN_FIELD.setText(parser['Hydrophone system']['Preamplifier SN'])
         self.DC_SN_FIELD.setText(parser['Hydrophone system']['DC Coupler SN'])
-
 
 if __name__ == "__main__":
     import sys

@@ -15,7 +15,6 @@ class AbstractBalance(AbstractSensor):
     def __init__(self, config, device_key = "MT_Balance", parent = None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
-        self.ser = None
         self.latest_weight = -1
         self.connected = False
 
@@ -31,20 +30,50 @@ class AbstractBalance(AbstractSensor):
 
     """Zeroes the scale with the next stale weight reading"""
     @abstractmethod
-    def zero_balance(self):
+    def zero_balance_stable(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
-        if self.ser is None or self.connected == False:
+        if self.connected == False:
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
-        self.ser.write(b"\nZ\n")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             item  = random.choice([b"ZA", b"I"])
 
             if item == b'Z A':
+                self.log(level='info', message='Balance Zeroed')
+                return
+            else:
+                if item == b'I':
+                    self.log(level='error', message='Weight unstable or balance busy')
+                    return
+                elif item == b'+':
+                    self.log(level='error', message='Balance overloaded')
+                    return
+                elif item == b'-':
+                    self.log(level='error', message='Balance underloaded')
+                    return
+        self.log(level='error', message=f'{self.device_key} timed out')
+
+    """Zeroes the scale with the next stale weight reading"""
+
+    @abstractmethod
+    def zero_balance_instantly(self):
+        self.log("Zeroing Balance")
+        # Command: I2 Inquiry of balance data.
+        # Response: I2 A Balance data as "text_item".
+        if self.connected == False:
+            self.log("Device is not connected")
+            return
+        self.log("Zeroing Balance, Please wait")
+
+        starttime = t.time()
+        while t.time() - starttime < self.timeout_s:
+            item = random.choice([b"Z S", b"Z D", b"Z I"])
+
+            if item == b'Z S' or b'Z D':
                 self.log(level='info', message='Balance Zeroed')
                 return
             else:
@@ -71,29 +100,7 @@ class AbstractBalance(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
-        self.log("Getting weight, please wait")
-
-        item = random.choice([b'S D', b'I'])
-        if b'S D' in item:
-            chunks = item.split(b" ")
-            for chunk in chunks:
-                if is_number(chunk):
-                    val = float(chunk)
-                    self.log(f'Weight acquired: {val} g')
-                    self.latest_weight = val
-                    self.reading_signal.emit(val)
-                    return
-        else:
-            if item == b'I':
-                self.log(level = 'error', message='Weight unstable or balance busy')
-                return
-            elif item == b'+':
-                self.log(level = 'error', message='Balance overloaded')
-                return
-            elif item == b'-':
-                self.log(level = 'error', message='Balance underloaded')
-                return
-        self.log(level='error', message=f'{self.device_key} timed out')
+        return random.random()
 
     def reset(self):
         self.log("Reset")
@@ -101,27 +108,7 @@ class AbstractBalance(AbstractSensor):
     @abstractmethod
     def get_stable_reading(self):
         self.log("Getting stable weight, please wait")
-        item = random.choice([b"S S", b"I"])
-
-        if b'S S' in item:
-            chunks = item.split(b" ")
-            for chunk in chunks:
-                if is_number(chunk):
-                    val = float(chunk)
-                    self.log(f'Stable weight acquired: {val} g')
-                    self.latest_weight = val
-                    self.reading_signal.emit(val)
-                    return
-        else:
-            if item == b'I':
-                self.log(level = 'error', message='Weight unstable or balance busy')
-                return
-            elif item == b'+':
-                self.log(level = 'error', message='Balance overloaded')
-                return
-            elif item == b'-':
-                self.log(level = 'error', message='Balance underloaded')
-                return
+        return random.random()
 
 if __name__ == '__main__':
     balance = AbstractBalance(config=load_configuration())

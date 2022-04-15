@@ -6,6 +6,7 @@ Debugging:
   simulate_hw: true
   simulate_motors: true
   simulate_oscilloscope: true
+  end_script_on_errors: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
@@ -60,14 +61,16 @@ Keysight_Oscilloscope:
   autorange_v_startup: False
   range_mV: 2000
   ext_trigger: False
-  timeout_s: 10
+  timeout_s: 20
+  set_on_startup: True
 MT_Balance:
   port: COM4
-  timeout_s: 30
+  timeout_s: .5
 Paths:
-  UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
+  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt
-  UA results root directory: C:\Users\Isaiah\OneDrive\Documents\UA results
+  UA results root directory: C:\Users\Isaiah\Documents\UA results
+  Script log directory: C:\Users\Public\Documents\Results\Logs
 Daq_Power_Relay:
   on_by_default: false
   port: COM3
@@ -104,12 +107,18 @@ VIX_Motors:
   reverse_ray:
   - false
   - false
+  enable_homing_ray:
+    - false
+    - false
+  homing_offset_ray: #Difference between motor's home position and the desired home position (defined by wtf_position_parameters)
+    - false
+    - false
   rotational_ray:
   - false
   - true
   speeds_ray:
-  - 5.0
-  - 5.0
+  - 100
+  - 100
   time_limit_s: 2
   timeout_s: 0.1
 WTF_DIO:
@@ -129,3 +138,5 @@ WTF_PositionParameters:
   X-Element1: 0
   X-TankInsertionPoint: 108
   XHomeCoord: 263
+Software_Version:
+  '1.0'

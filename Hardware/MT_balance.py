@@ -27,7 +27,7 @@ class MT_balance(AbstractBalance):
         self.port = self.config[self.device_key]['port']
 
     """Zeroes the scale with the next stale weight reading"""
-    def zero_balance(self):
+    def zero_balance_stable(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected == False:
@@ -55,7 +55,36 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
-    #TODO: make code recognize the com port without hard coding it
+    """Zeroes the scale immediately"""
+    def zero_balance_instantly(self):
+        # Command: I2 Inquiry of balance data.
+        # Response: I2 A Balance data as "text_item".
+        if self.ser is None or self.connected == False:
+            self.log("Device is not connected")
+            return
+        self.log("Zeroing Balance")
+        self.ser.write(b"\nZ\n")
+
+        starttime = t.time()
+        while t.time() - starttime < self.timeout_s:
+            y = self.ser.readline().split(b"\r\n")
+            for item in y:
+                #For some reason when debugging these can also appear as b'ES'. that is normal.
+                if item == b'ZI D' or b'ZI S':
+                    self.log(level='info', message='Balance Zeroed')
+                    return
+                else:
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
+                        return
+                    elif item == b'+':
+                        self.log(level='error', message='Balance overloaded')
+                        return
+                    elif item == b'-':
+                        self.log(level='error', message='Balance underloaded')
+                        return
+        self.log(level='error', message=f'{self.device_key} timed out')
+
     def connect_hardware(self):
         try:
             self.ser = serial.Serial(
@@ -89,22 +118,19 @@ class MT_balance(AbstractBalance):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write(b"SI\n")
-        self.log("Getting weight, please wait")
-
+        self.ser.write(b"\nSI\n")
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                if b'S D' in item:
+                if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
                         if is_number(chunk):
                             val = float(chunk)
-                            self.log(f'Weight acquired: {val} g')
                             self.latest_weight = val
                             self.reading_signal.emit(val)
-                            return
+                            return val
                 else:
                     if item == b'I':
                         self.log(level = 'error', message='Weight unstable or balance busy')
@@ -140,12 +166,13 @@ class MT_balance(AbstractBalance):
         #Command: I2 Inquiry of balance data.
         #Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
-        self.log("Getting stable weight, please wait")
+        self.log("Getting stable reading, please wait")
 
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
+                print(item)
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:

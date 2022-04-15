@@ -1,16 +1,19 @@
+import logging
+
 import yaml
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import *
 
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import is_number
-from Widget_Library.widget_position import Ui_Form
 from Utilities.useful_methods import log_msg
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-import logging
+from Widget_Library.widget_position import Ui_Form
+from ui_elements.my_qwidget import MyQWidget
+
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
+
 balance_logger = logging.getLogger('wtf_log')
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
 file_handler.setFormatter(log_formatter)
@@ -18,11 +21,12 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-class Position(QWidget, Ui_Form):
+
+class Position(MyQWidget, Ui_Form):
     command_signal = QtCore.pyqtSignal(str)
     setup_signal = QtCore.pyqtSignal(dict)
-    #Only the sign of the integer matters, and determines the direction of motion.
-    begin_motion_signal = QtCore.pyqtSignal(str,int)
+    # Only the sign of the integer matters, and determines the direction of motion.
+    begin_motion_signal = QtCore.pyqtSignal(str, int)
     stop_motion_signal = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -31,7 +35,6 @@ class Position(QWidget, Ui_Form):
         self.motors = None
         self.manager = None
         self.config = None
-
 
     def set_config(self, config):
         self.config = config
@@ -53,7 +56,7 @@ class Position(QWidget, Ui_Form):
                                 'lin_speed': self.linear_speed_mm_s_sb.value(),
                                 'rot_speed': self.rotational_speed_deg_s_sb.value(),
                                 'steps_per_deg': self.steps_per_degree_sb.value(),
-                                'ang_incr':self.ang_inc_double_sb.value(),})
+                                'ang_incr': self.ang_inc_double_sb.value(), })
 
     def populate_default_ui(self):
         self.movement_mode_comboBox.setCurrentText(self.config[self.motors.device_key]['movement_mode'])
@@ -91,7 +94,7 @@ class Position(QWidget, Ui_Form):
         self.go_x_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go {self.go_x_sb.value()}"))
         self.go_theta_button.clicked.connect(lambda: self.command_signal.emit(f"Motor Go ,{self.go_theta_sb.value()}"))
         self.reset_zero_button.clicked.connect(lambda: self.command_signal.emit("Motor Origin Here"))
-        self.manual_home_button.clicked.connect(self.manual_home_clicked) 
+        self.manual_home_button.clicked.connect(self.manual_home_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
         self.insert_ua_button.clicked.connect(self.insert_button_clicked)
         self.retract_ua_button.clicked.connect(self.retract_button_clicked)
@@ -104,9 +107,10 @@ class Position(QWidget, Ui_Form):
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
     '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
+
     def begin_motion(self, axis, direction):
-        #Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
-        #self.motors.moving = True
+        # Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
+        # self.motors.moving = True
         self.begin_motion_signal.emit(axis, direction)
         self.log("Beginning motion")
 
@@ -117,6 +121,7 @@ class Position(QWidget, Ui_Form):
             self.stop_motion_signal.emit()
 
     """Command the motors to go to the insertion point"""
+
     @pyqtSlot()
     def insert_button_clicked(self):
         self.command_signal.emit(f"Motor Go {self.config['WTF_PositionParameters']['X-TankInsertionPoint']}")
@@ -137,25 +142,24 @@ class Position(QWidget, Ui_Form):
 
     @pyqtSlot()
     def go_element_button_clicked(self):
-        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
-        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
-
-        if is_number(self.go_element_combo.currentText()):
-            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
-            target_position = element_1_pos + offset
+        element_number = self.go_element_combo.currentText()
+        if is_number(element_number):
+            target_position = self.manager.element_x_coordinates[element_number]
             self.command_signal.emit(f"Motor Go {target_position}")
         else:
             # TODO: fill in later to handle "current" element condition
             return
 
     """Command the motors to retract until a sensor is reached"""
+
     @pyqtSlot()
     def retract_button_clicked(self):
         # TODO: fill in later with the code that uses the retraction sensor
         self.command_signal.emit(f"Motor Go {-50}")
 
+    """Command the motors to blindly go to an element as defined by the 
+    element number times the offset from element 1"""
 
-    """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
     @pyqtSlot()
     def manual_home_clicked(self):
         if self.x_home_radio.isChecked():

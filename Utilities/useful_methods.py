@@ -1,23 +1,15 @@
 import os
-import time as t
 import numpy as np
-import yaml
 import collections.abc
 
-named_devices = {
-    "USB0::0x1AB1::0x0643::DG8A223502685::INSTR": "Rigol 1",
-    "USB0::0x1AB1::0x0643::DG8A221701373::INSTR": "Rigol 2",
-    "USB0::0x1AB1::0x0643::DG8A223502698::INSTR": "Rigol 3",
-    "USB0::0x1AB1::0x0643::DG8A221701383::INSTR": "Rigol 4",
-    "USB0::0x1AB1::0x0643::DG8A223502692::INSTR": "Rigol 5",
-}
-
-#Inputs:
-#A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
-#A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
-#Output:
-#A list containing the axis letters of the coordinates provided, and a list of equal length containing the coordinates.
-#With the given inputs the output should be axes: [Z,R] coords [3,2]
+'''
+Inputs:
+A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+Output:
+A list containing the axis letters of the coordinates provided, and a list of equal length containing the coordinates.
+With the given inputs the output should be axes: [Z,R] coords [3,2]
+'''
 
 def create_coord_rays(coords:str,ax_letters:list):
     axes = list()
@@ -29,6 +21,118 @@ def create_coord_rays(coords:str,ax_letters:list):
     # Remove empty elements
     coords = list(filter(lambda val: val != '', coords))
     return axes, coords
+
+
+'''Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager'''
+
+def get_element_distances(element_1_index, element_pitch):
+    # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
+    element_coords = [None,None,None,None,None,None,None,None,None,None,None]
+    for i in range(10):
+        offset = i * element_pitch
+        element_coords[i+1] = element_1_index + offset
+
+    return element_coords
+
+
+'''Create a dictionary containing all the fields available for UA test data, to be filled in by the manager class'''
+
+def blank_test_data() -> dict:
+    from datetime import datetime
+
+    test_data = dict()
+
+    #add formatted date
+    now = datetime.now()
+    formatted_date = now.strftime("%Y.%m.%d-%H.%M")
+    test_data['test_date_time'] = formatted_date
+    test_data['software_version'] = ""
+    test_data['test_comment'] = ""
+    test_data['serial_number'] = ""
+    test_data['operator_name'] = ""
+    test_data['script_name'] = ""
+    test_data['script_log'] = list()
+    test_data['low_frequency_MHz'] = float('nan')
+    test_data['high_frequency_MHz'] = float('nan')
+    test_data['hardware_code'] = ""
+    test_data['results_summary'] = list()
+    test_data["write_result"] = False
+    test_data["script_name"] = ""
+    lf = str(test_data['low_frequency_MHz'])
+    hf = str(test_data['high_frequency_MHz'])
+
+    #Create reults_summary table
+    table = [None] * 13
+    #Default values, will be updated during test
+    table[0] = ['Element_01','0','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[1] = ['Element_02','5','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[2] = ['Element_03','10','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[3] = ['Element_04','15','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[4] = ['Element_05','20','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[5] = ['Element_06','25','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[6] = ['Element_07','30','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[7] = ['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[8] = ['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[9] = ['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+
+    table[10] = ['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+
+    elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
+    elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
+
+    #Todo: add ability to set manual frequencies per element
+    table[11] = elements_with_manual_lf
+    table[12] = elements_with_manual_hf
+
+    test_data['results_summary'] = table
+
+    return test_data
+
+
+'''Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class'''
+
+def generate_calibration_data(test_data):
+    #Todo: populate this array according to the test_data
+    calibration_data = {
+        'cal_data_array': {
+            'schema': '',
+            'serial_no': '',
+            'production_date': '',
+            'hardware_code': '',
+            'common_lo_freq': '',
+            'common_hi_freq': '',
+            'beam_align': '',
+            'command': '',
+            'status': '',
+            'fwversion': '',
+            'efficiency_low_list': '',
+            'efficiency_high_list': ''
+        },
+        'low_freq': {
+            'schema': '',
+            'serial_no': '',
+            'production_date': '',
+            'hardware_code': '',
+            'common_lo_freq': '',
+            'common_hi_freq': '',
+            'beam_align': '',
+            'command': '',
+            'status': '',
+            'fwversion': ''
+        },
+        'high_freq': {
+            'schema': '',
+            'serial_no': '',
+            'production_date': '',
+            'hardware_code': '',
+            'common_lo_freq': '',
+            'common_hi_freq': '',
+            'beam_align': '',
+            'command': '',
+            'status': '',
+            'fwversion': ''
+        }
+    }
 
 #Inverse of create coord_rays
 def create_comma_string(axes:list,coords:list,ax_letters:list):
@@ -90,6 +194,32 @@ def unique(list):
             unique_list.append(x)
 
     return unique_list
+
+# Additional feature: add smart transition detection
+def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_on_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if awg_on_ray[i]:
+            acoustic_power_on_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_on_data
+
+# Additional feature: add smart transition detection
+def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
+    if len(acoustic_power_trace_w) == 0:
+        return float('nan')
+
+    acoustic_power_off_data = list()
+
+    for i in range(len(acoustic_power_trace_w)):
+        if not awg_on_ray[i]:
+            acoustic_power_off_data.append(acoustic_power_trace_w[i])
+
+    return acoustic_power_off_data
 
 def clearLayout(layout):
     while layout.count():
@@ -184,7 +314,5 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
     print(f'[{level}] {log_entry}')
 
 if __name__ == '__main__':
-    rigols, names = get_rigol_addresses()
-
-    print(rigols)
-    print(names)
+    data = blank_test_data()
+    print(data["results_summary"][10])

@@ -5,15 +5,17 @@ from Hardware.relay_board import Relay_Board
 from Hardware.Abstract.abstract_device import AbstractDevice
 import time as t
 
+
 class NI_DAQ(AbstractDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
 
-    def __init__(self, config=None, device_key="NI_DAQ", parent=None):
+    def __init__(self, config=None, device_key="WTF_DIO", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
         self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
+        self.fields_setup()
         self.active_channel = 0  # 0 means all channels are off
 
     def get_active_relay_channel(self) -> int:
@@ -21,13 +23,13 @@ class NI_DAQ(AbstractDevice):
 
     def set_pump_on(self, on):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
-            task.do_channels.add_do_chan("Dev1/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.do_channels.add_do_chan("Dev1/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
+            task.do_channels.add_do_chan(f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
+            task.do_channels.add_do_chan(f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
 
             if on:
-                task.write([False,False], auto_start=True)  # I've only seen P1.6 react
+                task.write([False, False], auto_start=True)  # I've only seen P1.6 react
             elif not on:
-                task.write([True,True],
+                task.write([True, True],
                            auto_start=True)  # I think true should turn the pump off
         pass
 
@@ -51,9 +53,9 @@ class NI_DAQ(AbstractDevice):
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
-            task.di_channels.add_di_chan("Dev1/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
-            task.di_channels.add_di_chan("Dev1/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
-            task.di_channels.add_di_chan("Dev1/port2/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
+            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
+            task.di_channels.add_di_chan(f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
+            task.di_channels.add_di_chan(f"{self.name}/port2/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
 
             list_of_values = task.read()
             print(list_of_values[2])
@@ -62,7 +64,7 @@ class NI_DAQ(AbstractDevice):
             P1_5 = list_of_values[1]  # seen True
             P2_2 = list_of_values[2]  # can't see this change, this value from the doc
 
-            #Todo: change this to reflect model number of switches
+            # Todo: change this to reflect model number of switches
             if P1_5 and P1_2:  # making up random combinations, should change once get documentation
                 return states[0]
             elif P1_5 and not P1_2:
@@ -71,7 +73,7 @@ class NI_DAQ(AbstractDevice):
                 return states[2]
 
     def fields_setup(self):
-        pass
+        self.name = self.config[self.device_key]['DAQ Device name']
 
     def connect_hardware(self):
         try:
@@ -80,7 +82,8 @@ class NI_DAQ(AbstractDevice):
         except Exception as e:
             if str(e) == '\'Task\' object has no attribute \'_handle\'':
                 self.log(level='error', message=f'Error with nidaqmx library: {e}')
-                self.log(level='error', message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, and reinstall the software from the NI website')
+                self.log(level='error',
+                         message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, and reinstall the software from the NI website')
             else:
                 self.log(level='error', message=f'Error in connect hardware: {e}')
         # Todo: setup all channels
@@ -88,8 +91,8 @@ class NI_DAQ(AbstractDevice):
     def activate_relay_channel(self, channel_number: int):
         with nidaqmx.Task() as task:
             try:
-                task.do_channels.add_do_chan("Dev1/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                task.do_channels.add_do_chan("Dev1/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.do_channels.add_do_chan(f"{self.name}/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
 
                 if channel_number == 1:
                     task.write([True, False, False, False, False, False, False, False, False, False], auto_start=True)
@@ -142,4 +145,3 @@ if __name__ == '__main__':
     #     print(f"turning on relay {i}")
     #     daq.activate_relay_channel(i)
     #     t.sleep(5)
-

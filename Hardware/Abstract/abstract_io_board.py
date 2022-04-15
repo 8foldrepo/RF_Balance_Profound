@@ -39,6 +39,7 @@ class IO_Board(AbstractDevice):
 
     def connect_hardware(self):
         self.connected_signal.emit(True)
+        self.get_water_level()
         return True
 
     def activate_relay_channel(self, channel_number: int):

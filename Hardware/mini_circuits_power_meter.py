@@ -6,12 +6,9 @@
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown)
 import clr # pythonnet
-from abc import abstractmethod
 from PyQt5.QtCore import pyqtSignal
-import random
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 import ctypes
-from definitions import POWER_METER_DLL_PATH
 import sys
 from definitions import POWER_METER_DLL_PATH
 sys.path.append(POWER_METER_DLL_PATH)
