@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
-
 #todo: change class name to one matching the task type
 class EditTemplate(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
     def __init__(self, config=None, parent=None):

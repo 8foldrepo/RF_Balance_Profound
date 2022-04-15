@@ -2,11 +2,15 @@ from Widget_Library.loop_over_elements import Ui_Form
 from PyQt5.QtWidgets import QWidget, QApplication
 from collections import OrderedDict
 
-
 class LoopOverElements(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
+        self.orderedDict_to_ui(
+            OrderedDict([('Task type', 'Loop over elements'), ('Element 1', 'TRUE'), ('Element 2', 'TRUE'),
+                         ('Element 3', 'TRUE'), ('Element 4', 'TRUE'), ('Element 5', 'TRUE'), ('Element 6', 'TRUE'),
+                         ('Element 7', 'TRUE'), ('Element 8', 'TRUE'), ('Element 9', 'TRUE'),
+                         ('Element 10', 'TRUE')]))
         self.configure_signals()
 
     def configure_signals(self):
@@ -53,26 +57,33 @@ class LoopOverElements(QWidget, Ui_Form):
 
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
         # todo, fill UI according to dictionary
-        # example lines
-        # self..setText(arg_dict[""])
-        # self..setChecked(arg_dict[""])
-        # self..setValue(arg_dict[""])
-        pass
+        self.element_checkbox_1.setChecked(bool(arg_dict["Element 1"]))
+        self.element_checkbox_2.setChecked(bool(arg_dict["Element 2"]))
+        self.element_checkbox_3.setChecked(bool(arg_dict["Element 3"]))
+        self.element_checkbox_4.setChecked(bool(arg_dict["Element 4"]))
+        self.element_checkbox_5.setChecked(bool(arg_dict["Element 5"]))
+        self.element_checkbox_6.setChecked(bool(arg_dict["Element 6"]))
+        self.element_checkbox_7.setChecked(bool(arg_dict["Element 7"]))
+        self.element_checkbox_8.setChecked(bool(arg_dict["Element 8"]))
+        self.element_checkbox_9.setChecked(bool(arg_dict["Element 9"]))
+        self.element_checkbox_10.setChecked(bool(arg_dict["Element 10"]))
 
     # todo: populate arg_dict, arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:
-        arg_dict = OrderedDict()
+        arg_dict = OrderedDict([])
         arg_dict['Task type'] = 'Loop over elements'
-        # example lines, insert the name of the argument on the left as it appears in the example script.
-        # the name of the ui element goes between the dots
-        # self.arg_dict[""] = self..currentText()
-        # self.arg_dict[""] = self..isChecked()
-        # self.arg_dict[""] = round(self..value(),2)
+        arg_dict["Element 1"] = str(self.element_checkbox_1.isChecked())
+        arg_dict["Element 2"] = str(self.element_checkbox_2.isChecked())
+        arg_dict["Element 3"] = str(self.element_checkbox_3.isChecked())
+        arg_dict["Element 4"] = str(self.element_checkbox_4.isChecked())
+        arg_dict["Element 5"] = str(self.element_checkbox_5.isChecked())
+        arg_dict["Element 6"] = str(self.element_checkbox_6.isChecked())
+        arg_dict["Element 7"] = str(self.element_checkbox_7.isChecked())
+        arg_dict["Element 8"] = str(self.element_checkbox_8.isChecked())
+        arg_dict["Element 9"] = str(self.element_checkbox_9.isChecked())
+        arg_dict["Element 10"] = str(self.element_checkbox_10.isChecked())
 
         return arg_dict
-
-    def read_in(self):
-        pass
 
 
 if __name__ == "__main__":

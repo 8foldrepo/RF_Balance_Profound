@@ -7,9 +7,6 @@ class PromptUserForAction(QWidget, Ui_Form):
         super().__init__(parent=parent)
         self.setupUi(self)
 
-    def configure_signals(self):
-        pass
-
     def ui_to_dictionary(self) -> dict:
         arg_dict = dict()
         arg_dict['Task type'] = 'Prompt user for action'
