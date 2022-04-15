@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
+
 class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
     def __init__(self, config = None, parent=None):
         super().__init__(parent=parent)

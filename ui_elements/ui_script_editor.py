@@ -7,7 +7,7 @@ from ui_elements.script_editor.ui_find_element import FindElement
 from ui_elements.script_editor.ui_home_system import HomeSystem
 from ui_elements.script_editor.ui_prompt_user_for_action import PromptUserForAction
 from ui_elements.script_editor.ui_loop_over_elements import LoopOverElements
-from ui_elements.script_editor.ui_measure_element_efficiency_rfb import MeasureElementEffeciency
+from ui_elements.script_editor.ui_measure_element_efficiency import MeasureElementEfficiency
 #from ui_elements.script_editor. import
 #from ui_elements.script_editor. import
 
@@ -53,12 +53,12 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.widget = LoopOverElements()
         #elif task_type == "End loop"
         elif task_type == "Measure element efficiency (RFB)":
-            self.widget = MeasureElementEffeciency()
+            self.widget = MeasureElementEfficiency()
         #elif task_type == "Save results"
         elif task_type == "Prompt user for action":
             self.widget = PromptUserForAction()
         elif task_type == "Home system":
-            self.widget = HomeSystem()
+            widget = HomeSystem()
         #elif task_type == ""
         #elif task_type == ""
         #elif task_type == ""
@@ -156,6 +156,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def pre_test_dict(self):
         return  OrderedDict([('Task type', 'Pre-test initialisation')])
 
+    def end_loop_dict(self):
+        return  OrderedDict([('Task type', 'End loop')])
+
     def find_element_dict(self):
         return OrderedDict([('Task type', 'Find element n'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
                             ('X #Pts.', '21'), ('Theta Incr. (deg)', '-0.400000'), ('Theta #Pts.', '41'),
@@ -175,7 +178,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                             ('Element 10', 'TRUE')])
 
     def home_system_dict(self):
-        return
+        return OrderedDict([('Task type', 'Home system')])
 
     def end_loop_dict(self):
         return OrderedDict([('Task type', 'End loop_1')])
@@ -266,6 +269,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         #if the widget has a ui_to_orderedDict method
         if callable(getattr(self.widget, "ui_to_orderedDict", None)):
             new_arg_dict = self.widget.ui_to_orderedDict()
+        #if not, this class creates a prebuilt dictionary
         else:
             if task_name == 'Measure element efficiency (RFB)':
                 new_arg_dict = self.measure_effeciency_dict()
@@ -275,7 +279,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_arg_dict = self.find_element_dict()
             elif task_name == 'Loop over elements':
                 new_arg_dict = self.loop_over_elements_dict()
-            elif task_name == 'End loop'
+            elif task_name == 'End loop':
+                new_arg_dict = self.end_loop_dict()
+            #todo: add more methods
             else:
                 new_arg_dict = OrderedDict()
 
