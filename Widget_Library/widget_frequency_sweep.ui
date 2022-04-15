@@ -499,6 +499,11 @@
          <string>UA results directory</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Custom directory</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

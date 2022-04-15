@@ -515,7 +515,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot()
+    @pyqtSlot(str)
     def show_user_prompt(self, message):
         dlg = WTFUserPrompt()
         dlg.user_prompt_output.setText(message)

@@ -201,6 +201,7 @@ class Ui_Form(object):
         self.storage_loc_combo.setStyleSheet("background:white")
         self.storage_loc_combo.setObjectName("storage_loc_combo")
         self.storage_loc_combo.addItem("")
+        self.storage_loc_combo.addItem("")
         self.storage_grid.addWidget(self.storage_loc_combo, 1, 1, 1, 1)
 
         self.retranslateUi(Form)
@@ -233,6 +234,7 @@ class Ui_Form(object):
         self.label_13.setText(_translate("Form", "Storage location"))
         self.data_storage_combo.setItemText(0, _translate("Form", "Do not store"))
         self.storage_loc_combo.setItemText(0, _translate("Form", "UA results directory"))
+        self.storage_loc_combo.setItemText(1, _translate("Form", "Custom directory"))
 
 
 if __name__ == "__main__":

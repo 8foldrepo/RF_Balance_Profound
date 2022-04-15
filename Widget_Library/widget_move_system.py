@@ -16,7 +16,7 @@ class Ui_Form(object):
         Form.setObjectName("Form")
         Form.resize(371, 308)
         self.move_tabs = QtWidgets.QTabWidget(Form)
-        self.move_tabs.setGeometry(QtCore.QRect(40, 30, 261, 231))
+        self.move_tabs.setGeometry(QtCore.QRect(20, 20, 261, 231))
         self.move_tabs.setObjectName("move_tabs")
         self.mov_to_pos_tab = QtWidgets.QWidget()
         self.mov_to_pos_tab.setObjectName("mov_to_pos_tab")
@@ -135,6 +135,8 @@ class Ui_Form(object):
         self.orientation_target_combo = QtWidgets.QComboBox(self.layoutWidget4)
         self.orientation_target_combo.setObjectName("orientation_target_combo")
         self.orientation_target_combo.addItem("")
+        self.orientation_target_combo.addItem("")
+        self.orientation_target_combo.addItem("")
         self.orientation_vert.addWidget(self.orientation_target_combo)
         self.elem_orientation_vert.addLayout(self.orientation_vert)
         self.move_tabs.addTab(self.mov_to_elem_tab, "")
@@ -170,6 +172,8 @@ class Ui_Form(object):
         self.element_combo.setItemText(10, _translate("Form", "Element 10"))
         self.label_2.setText(_translate("Form", "Orientation/target"))
         self.orientation_target_combo.setItemText(0, _translate("Form", "Hydrophone"))
+        self.orientation_target_combo.setItemText(1, _translate("Form", "Down"))
+        self.orientation_target_combo.setItemText(2, _translate("Form", "RFB"))
         self.move_tabs.setTabText(self.move_tabs.indexOf(self.mov_to_elem_tab), _translate("Form", "Move to element"))
 from ui_elements.switch import Switch
 
