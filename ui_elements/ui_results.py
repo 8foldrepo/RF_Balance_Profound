@@ -118,7 +118,10 @@ class Results(MyQWidget, Ui_Form):
 
         if not os.path.exists(os.path.dirname(path)):
             self.log("creating results path...")
-            os.makedirs(os.path.dirname(path))
+            try:
+                os.makedirs(os.path.dirname(path))
+            except PermissionError:
+                path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
 
         f = open(path, "w")
 
