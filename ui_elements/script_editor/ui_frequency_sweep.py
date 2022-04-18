@@ -1,11 +1,12 @@
 #todo: change this import to the Qtdesigner file for this task type
-from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
+from Widget_Library. import Ui_FIND_ELEMENT_WIDGET
 from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
+
 #todo: change class name to one matching the task type
-class EditTemplate(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
+class FrequencySweep(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
     def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)

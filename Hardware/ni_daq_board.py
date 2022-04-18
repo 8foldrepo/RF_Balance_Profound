@@ -26,9 +26,9 @@ class NI_DAQ(AbstractDevice):
             task.do_channels.add_do_chan(f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
 
             if on:
-                task.write([False,False], auto_start=True)  # I've only seen P1.6 react
+                task.write([False, False], auto_start=True)  # I've only seen P1.6 react
             elif not on:
-                task.write([True,True],
+                task.write([True, True],
                            auto_start=True)  # I think true should turn the pump off
         pass
 
@@ -63,7 +63,7 @@ class NI_DAQ(AbstractDevice):
             P1_5 = list_of_values[1]  # seen True
             P2_2 = list_of_values[2]  # can't see this change, this value from the doc
 
-            #Todo: change this to reflect model number of switches
+            # Todo: change this to reflect model number of switches
             if P1_5 and P1_2:  # making up random combinations, should change once get documentation
                 return states[0]
             elif P1_5 and not P1_2:
@@ -81,7 +81,8 @@ class NI_DAQ(AbstractDevice):
         except Exception as e:
             if str(e) == '\'Task\' object has no attribute \'_handle\'':
                 self.log(level='error', message=f'Error with nidaqmx library: {e}')
-                self.log(level='error', message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, and reinstall the software from the NI website')
+                self.log(level='error',
+                         message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, and reinstall the software from the NI website')
             else:
                 self.log(level='error', message=f'Error in connect hardware: {e}')
         # Todo: setup all channels
@@ -143,4 +144,3 @@ if __name__ == '__main__':
     #     print(f"turning on relay {i}")
     #     daq.activate_relay_channel(i)
     #     t.sleep(5)
-

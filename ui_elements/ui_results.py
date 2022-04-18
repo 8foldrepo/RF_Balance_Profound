@@ -41,11 +41,9 @@ class Results(MyQWidget, Ui_Form):
 
     # populates the ui given a 2d list
     def populate_log_table(self, log_table=None):
-        print("inside populate_log_table")
         if log_table is None:
             log_table = self.test_data["script_log"]
 
-        print(log_table)
         for line_counter in range(len(log_table)):
             line_ray = log_table[line_counter]
             self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
@@ -88,7 +86,8 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
     # turn a 2d list into a .log file (a text file with a different extension
-    '''this method must be called manually'''
+    '''saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided'''
+
     def save_log_file(self, log_table=None):
         if log_table is None:
             log_table = self.test_data["script_log"]
@@ -108,7 +107,6 @@ class Results(MyQWidget, Ui_Form):
 
     """saves the results as a text file with a path specified in the config file."""
 
-    @pyqtSlot()
     def save_test_results_summary(self):
         if not self.test_data:  # if dictionary is empty return
             return
@@ -116,19 +114,14 @@ class Results(MyQWidget, Ui_Form):
         path = self.config['Paths']['UA results root directory'] + "\\" + self.test_data["serial_number"] + "-" + \
                self.test_data["test_date_time"] + ".txt"  # retrieve path
 
-        try:  # path might not be populated
-            pass
-        except (TypeError, KeyError):
-            self.log("UA results root directory not defined in either yaml, defaulting to output.txt")
-            if not os.path.exists("..\\results"):
-                os.makedirs("..\\results")
-            path = "..\\results\\" + self.test_data["serial_number"] + "-" + self.test_data["test_date_time"] + ".txt"
-
         self.log(f"Saving results summary to: {path}")
 
         if not os.path.exists(os.path.dirname(path)):
             self.log("creating results path...")
-            os.makedirs(os.path.dirname(path))
+            try:
+                os.makedirs(os.path.dirname(path))
+            except PermissionError:
+                path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
 
         f = open(path, "w")
 
@@ -161,9 +154,7 @@ class Results(MyQWidget, Ui_Form):
 
     def set_manager(self, manager):
         self.manager = manager
-        # by reference, whenever manager changes these, this object will be updated
         self.manager.save_results_signal.connect(self.retrieve_data_from_manager)
-        # self.populate_table_signal.connect(self.manager.visualize_scan_data)
 
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)

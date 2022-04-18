@@ -16,8 +16,8 @@
   <widget class="QTabWidget" name="move_tabs">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>30</y>
+     <x>20</x>
+     <y>20</y>
      <width>261</width>
      <height>231</height>
     </rect>
@@ -309,6 +309,16 @@
           <item>
            <property name="text">
             <string>Hydrophone</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Down</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>RFB</string>
            </property>
           </item>
          </widget>

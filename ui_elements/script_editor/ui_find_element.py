@@ -3,25 +3,39 @@ from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
+
 class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
-    def __init__(self, config = None, parent=None):
+    def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
-        self.orderedDict_to_ui(OrderedDict([('Task type', 'Find element \"n\"'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
-                            ('X #Pts.', '21'), ('Theta Incr. (deg)', '-0.400000'), ('Theta #Pts.', '41'),
-                            ('Scope channel', 'Channel 1'), ('Acquisition type', 'N Averaged Waveform'),
-                            ('Averages', '16'), ('Data storage', 'Do not store'),
-                            ('Storage location', 'UA results directory'), ('Data directory', ''),
-                            ('Max. position error (+/- mm)', '0.200000'), ('ElementPositionTest', 'FALSE'),
-                            ('Max angle variation (deg)', '2.000000'), ('BeamAngleTest', 'FALSE'),
-                            ('Frequency settings', 'Avg. Low frequency'), ('Auto set timebase', 'TRUE'),
-                            ('#Cycles.Capture', '10'), ('#Cycles.Delay', '0'), ('Frequency (MHz)', '4.400000'),
-                            ('Amplitude (mV)', '50.000000'), ('Burst count', '50')]))
+        self.orderedDict_to_ui(OrderedDict([('Task type', 'Find element \"n\"'), ('Element', 'Element 1'),
+                                            ('X Incr. (mm)', '0.250000'), ('X #Pts.', '21'),
+                                            ('Theta Incr. (deg)', '-0.400000'),
+                                            ('Theta #Pts.', '41'), ('Scope channel', 'Channel 1'),
+                                            ('Acquisition type', 'N Averaged Waveform'), ('Averages', '16'),
+                                            ('Data storage', 'Do not store'),
+                                            ('Storage location', 'UA results directory'),
+                                            ('Data directory', ''), ('Max. position error (+/- mm)', '0.200000'),
+                                            ('ElementPositionTest', 'FALSE'), ('Max angle variation (deg)', '2.000000'),
+                                            ('BeamAngleTest', 'FALSE'), ('Frequency settings', 'Avg. Low frequency'),
+                                            ('Auto set timebase', 'TRUE'), ('#Cycles.Capture', '10'),
+                                            ('#Cycles.Delay', '0'),
+                                            ('Frequency (MHz)', '4.400000'), ('Amplitude (mV)', '50.000000'),
+                                            ('Burst count', '50')]))
+        self.configure_signals()
+
+    def configure_signals(self):
+        self.OSCOPE_DATA_DIRECTORY_BUTTON.clicked.connect(self.browse_clicked)
+
+    def browse_clicked(self):
+        self.filename = QFileDialog.getExistingDirectory(self)
+        self.OSCOPE_DATA_DIRECTORY_FIELD.setText(self.filename)
+        return self.filename
 
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
-        #todo, fill UI according to dictionary
+        # todo, fill UI according to dictionary
         self.ELEMENT_SELECTION_FIELD.setCurrentText(arg_dict["Element"])
-        #self.OSCOPE_CHANNEL_FIELD.setCurrentText(arg_dict["Scope channel"].split(" "[1]))
+        # self.OSCOPE_CHANNEL_FIELD.setCurrentText(arg_dict["Scope channel"].split(" "[1]))
         self.OSCOPE_AQTYPE_FIELD.setCurrentText(arg_dict["Acquisition type"])
         self.OSCOPE_SAMPLES_FIELD.setCurrentText(arg_dict["Averages"])
         self.OSCOPE_DATASTORE_FIELD.setCurrentText(arg_dict["Data storage"])
@@ -42,9 +56,9 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         self.X_INCREMENT_FIELD.setValue(float(arg_dict["X Incr. (mm)"]))
         self.THETA_INCREMENT_FIELD.setValue(float(arg_dict["Theta Incr. (deg)"]))
 
-    #todo: populate arg_dict
-    #todo: change variable names to dict assignment with correct name like the first line
-    #todo: arrange the arguments in the order of the example script
+    # todo: populate arg_dict
+    # todo: change variable names to dict assignment with correct name like the first line
+    # todo: arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:
         arg_dict = OrderedDict([])
         arg_dict["Task type"] = 'Find element n'
@@ -54,6 +68,7 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         arg_dict["Averages"] = self.OSCOPE_SAMPLES_FIELD.currentText()
         arg_dict["Data storage"] = self.OSCOPE_DATASTORE_FIELD.currentText()
         arg_dict["Storage location"] = self.OSCOPE_DATALOC_FIELD.currentText()
+        arg_dict["Data directory"] = self.OSCOPE_DATA_DIRECTORY_FIELD.text()
         arg_dict["Frequency settings"] = self.FREQANG_PRESET_FIELD.currentText()
         arg_dict["ElementPositionTest"] = str(self.FREQANG_POS_TEST_CHECKBOX.isChecked())
         arg_dict["BeamAngleTest"] = str(self.FREQANG_ANG_TEST_CHECKBOX.isChecked())
@@ -71,10 +86,6 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         arg_dict["Theta Incr. (deg)"] = str(self.THETA_INCREMENT_FIELD.value())
 
         return arg_dict
-
-    def filebrowser(self):
-        filename = QFileDialog.getOpenFileName(self, 'Select File', 'Desktop')
-        self.OSCOPE_DATA_DIRECTORY_FIELD.setText(filename[0])
 
 if __name__ == "__main__":
     import sys

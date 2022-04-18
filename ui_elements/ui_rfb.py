@@ -97,10 +97,16 @@ class RFB(MyQWidget, Ui_Form):
         self.plot_ready = False
 
         if forward_w is not None and len(forward_w) == len(forward_s):
-            self.rfb_graph.refresh(forward_s, forward_w, pen='k', clear=True)
+            try:
+                self.rfb_graph.refresh(forward_s, forward_w, pen='k', clear=True)
+            except Exception: pass
         if reflected_w is not None and len(reflected_w) == len(reflected_s):
-            self.rfb_graph.refresh(reflected_s, reflected_w, pen='g', clear=False)
+            try:
+                self.rfb_graph.refresh(reflected_s, reflected_w, pen='g', clear=False)
+            except Exception: pass
         if acoustic_w is not None and len(acoustic_w) == len(acoustic_s):
-            self.rfb_graph.refresh(acoustic_s, acoustic_w, pen='r', clear=False)
+            try:
+                self.rfb_graph.refresh(acoustic_s, acoustic_w, pen='r', clear=False)
+            except Exception: pass
 
         self.plot_ready = True
