@@ -82,7 +82,8 @@ class NI_DAQ(AbstractDevice):
             if str(e) == '\'Task\' object has no attribute \'_handle\'':
                 self.log(level='error', message=f'Error with nidaqmx library: {e}')
                 self.log(level='error',
-                         message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, and reinstall the software from the NI website')
+                         message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, '
+                                 f'and reinstall the software from the NI website')
             else:
                 self.log(level='error', message=f'Error in connect hardware: {e}')
         # Todo: setup all channels

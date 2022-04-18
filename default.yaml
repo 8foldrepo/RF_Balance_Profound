@@ -121,8 +121,11 @@ VIX_Motors:
   - 100
   time_limit_s: 2
   timeout_s: 0.1
+TempMon:
+  DeviceName: "TankTemp"
+  TCoupleType: "J"
 WTF_DIO:
-  DAQ Device name: WTF3
+  DAQ Device name: WTF4
   Fill/Drain mode: Automatic
   Water level timeout (s): 230
 WTF_Interface_Board:
