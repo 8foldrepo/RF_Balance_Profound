@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1025</width>
-    <height>629</height>
+    <height>656</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,30 +78,17 @@
         <rect>
          <x>110</x>
          <y>10</y>
-         <width>591</width>
+         <width>851</width>
          <height>41</height>
         </rect>
        </property>
        <property name="title">
         <string/>
        </property>
-       <widget class="QLabel" name="label_127">
-        <property name="geometry">
-         <rect>
-          <x>420</x>
-          <y>10</y>
-          <width>62</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Extrapolated</string>
-        </property>
-       </widget>
        <widget class="QLabel" name="reverse_pwr_img">
         <property name="geometry">
          <rect>
-          <x>134</x>
+          <x>10</x>
           <y>10</y>
           <width>30</width>
           <height>21</height>
@@ -117,7 +104,7 @@
        <widget class="QLabel" name="label_125">
         <property name="geometry">
          <rect>
-          <x>170</x>
+          <x>440</x>
           <y>10</y>
           <width>73</width>
           <height>21</height>
@@ -130,7 +117,7 @@
        <widget class="QLabel" name="xsition_pwr_img">
         <property name="geometry">
          <rect>
-          <x>260</x>
+          <x>400</x>
           <y>10</y>
           <width>30</width>
           <height>21</height>
@@ -156,26 +143,10 @@
          <string>Forward Power</string>
         </property>
        </widget>
-       <widget class="QLabel" name="extrapolated_img">
-        <property name="geometry">
-         <rect>
-          <x>384</x>
-          <y>10</y>
-          <width>30</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap>../ui_elements/images/extrapolated.png</pixmap>
-        </property>
-       </widget>
        <widget class="QLabel" name="forward_pwr_img">
         <property name="geometry">
          <rect>
-          <x>7</x>
+          <x>710</x>
           <y>10</y>
           <width>31</width>
           <height>21</height>
@@ -197,43 +168,14 @@
        <widget class="QLabel" name="label_126">
         <property name="geometry">
          <rect>
-          <x>296</x>
+          <x>750</x>
           <y>10</y>
-          <width>65</width>
+          <width>91</width>
           <height>21</height>
          </rect>
         </property>
         <property name="text">
-         <string>Transition Pts</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_128">
-        <property name="geometry">
-         <rect>
-          <x>500</x>
-          <y>10</y>
-          <width>31</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="pixmap">
-         <pixmap>../ui_elements/images/combined.png</pixmap>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_129">
-        <property name="geometry">
-         <rect>
-          <x>540</x>
-          <y>10</y>
-          <width>47</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Combined</string>
+         <string>Acoustic Power</string>
         </property>
        </widget>
       </widget>
@@ -256,21 +198,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="time_spin_box">
+        <widget class="QLineEdit" name="time_s_field">
          <property name="enabled">
           <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -282,21 +212,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="mass_spin_box">
+        <widget class="QLineEdit" name="mass_mg_field">
          <property name="enabled">
           <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -308,21 +226,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="power_spin_box">
+        <widget class="QLineEdit" name="power_w_field">
          <property name="enabled">
           <bool>false</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
          </property>
         </widget>
        </item>
@@ -441,21 +347,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="power_spin_box_on">
+               <widget class="QLineEdit" name="power_on_w_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -473,21 +367,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="random_uc_spin_box_on">
+               <widget class="QLineEdit" name="power_on_rand_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -505,21 +387,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="total_uc_spinbox_on">
+               <widget class="QLineEdit" name="power_on_total_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -584,21 +454,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="power_spin_box_off">
+               <widget class="QLineEdit" name="power_off_w_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -616,21 +474,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="random_uc_spin_box_off">
+               <widget class="QLineEdit" name="power_off_rand_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -648,21 +494,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="total_uc_spinbox_off">
+               <widget class="QLineEdit" name="power_off_total_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -727,21 +561,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="power_spin_box_combined">
+               <widget class="QLineEdit" name="power_combined_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -759,21 +581,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="random_uc_spin_box_combined">
+               <widget class="QLineEdit" name="power_combined_rand_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -791,21 +601,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="total_uc_spinbox_combined">
+               <widget class="QLineEdit" name="power_combined_total_uc_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>20</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -870,21 +668,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="pf_spinbox">
+               <widget class="QLineEdit" name="forward_power_w_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>
@@ -902,21 +688,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="pr_spinbox">
+               <widget class="QLineEdit" name="reflected_power_w_field">
                 <property name="enabled">
                  <bool>false</bool>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>80</width>
-                  <height>16777215</height>
-                 </size>
                 </property>
                </widget>
               </item>

@@ -55,6 +55,8 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_signal.connect(self.motors.set_origin_here)
         self.go_to_signal.connect(self.motors.go_to_position)
 
+        self.configure_signals()
+
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
@@ -196,8 +198,7 @@ class Position(MyQWidget, Ui_Form):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         # TODO: fill in later with the code that uses the retraction sensor
-        self.go_to_signal.emit(["X"], [-50])
-
+        self.home_1d_signal.emit('X')
 
     """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
     @pyqtSlot()

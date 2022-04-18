@@ -14,7 +14,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class MyQDialog(QDialog):
     def __init__(self, config, parent = None, ):
-        super.__init__(parent=parent)
+        super().__init__(parent=parent)
 
         if config is not None:
             self.config = config

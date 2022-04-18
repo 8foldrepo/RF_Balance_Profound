@@ -4,10 +4,10 @@ from ui_elements.my_qdialog import MyQDialog
 
 class UARetractDialog(MyQDialog, retracting_ua_warning.Ui_retracting_ua_warn):
     continue_signal = pyqtSignal()
-    cancel_signal = pyqtSignal()
+    abort_signal = pyqtSignal()
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, config = None, parent=None):
+        super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
 
@@ -20,5 +20,5 @@ class UARetractDialog(MyQDialog, retracting_ua_warning.Ui_retracting_ua_warn):
         self.close()
 
     def cancel_clicked(self):
-        self.cancel_signal.emit()
+        self.abort_signal.emit()
         self.close()

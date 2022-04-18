@@ -8,8 +8,13 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.setupUi(self)
         self.manager = None
         self.config = None
+
+        # True if the widget is not currently plotting
+        self.plot_ready = True
+
         self.configure_signals()
         self.style_ui()
+        self.mainwindow = None
 
     def configure_signals(self):
         self.file_browser_button.clicked.connect(self.browse_clicked)
@@ -27,6 +32,9 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
 
+    def set_mainwindow(self, mainwindow):
+        self.mainwindow = mainwindow
+
     def style_ui(self):
         self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
@@ -43,6 +51,19 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.voltage_time_plot.refresh(x,y)
 
     def plot(self, x, y, refresh_rate):
+        # Cancel if this widget is not plot ready
+        if not self.plot_ready:
+            return
+
+        # Cancel if the current tab is not visible
+        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
+            return
+
+        tabs = self.scan_tabs
+
+        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
+            return
+
         self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
@@ -53,12 +74,27 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
         self.plot_ready = True
 
-    @pyqtSlot(list,list)
-    def update_profile_plot(self, x, y):
+    @pyqtSlot(list,list, str)
+    def update_profile_plot(self, x, y, axis_label):
+        # Cancel if this widget is not plot ready
+        if not self.plot_ready:
+            return
+
+        # Cancel if the current tab is not visible
+        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
+            return
+
+        tabs = self.scan_tabs
+
+        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
+            return
+
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
             return
+
+        self.profile_plot.setLabel("bottom", axis_label, **self.profile_plot.styles)
 
         self.plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)

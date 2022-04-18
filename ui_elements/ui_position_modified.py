@@ -142,12 +142,9 @@ class Position(MyQWidget, Ui_Form):
 
     @pyqtSlot()
     def go_element_button_clicked(self):
-        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
-        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
-
-        if is_number(self.go_element_combo.currentText()):
-            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
-            target_position = element_1_pos + offset
+        element_number = self.go_element_combo.currentText()
+        if is_number(element_number):
+            target_position = self.manager.element_x_coordinates[element_number]
             self.command_signal.emit(f"Motor Go {target_position}")
         else:
             # TODO: fill in later to handle "current" element condition

@@ -11,9 +11,8 @@ class UACalibration(QWidget, Ui_Form):
         self.manager = None
         self.config = None
 
-        #Todo: default values, make sure these are not used without a warning
-        self.High_Frequency_MHz = 13.58
-        self.Low_Frequency_MHz = 4.29
+        self.High_Frequency_MHz = float('nan')
+        self.Low_Frequency_MHz = float('nan')
 
     def set_config(self, config):
         self.config = config
@@ -23,19 +22,18 @@ class UACalibration(QWidget, Ui_Form):
 
     def set_ua_interface(self, ua_interface):
         self.ua_interface = ua_interface
-        self.ua_interface.cal_data_signal.connect(self.populate_table)
+        self.ua_interface.cal_data_signal.connect(self.populate_results_table)
         self.read_from_ua_button.clicked.connect(self.ua_interface.read_data)
         self.main_window = self.parent().parent().parent().parent().parent()
 
     def get_high_frequecy_Mhz(self) -> float:
         return float(self.tableWidget.item(5,0).text())
 
-    # Todo: untested
     def get_low_frequecy_Mhz(self) -> float:
         return float(self.tableWidget.item(4, 0).text())
 
     @pyqtSlot(list, int)
-    def populate_table(self, data = None, status = None):
+    def populate_results_table(self, data = None, status = None):
         if status == -1:
             self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
             self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
@@ -52,8 +50,6 @@ class UACalibration(QWidget, Ui_Form):
         data = '1,CH2380,20170801,1,4.29,13.58,-88.1,64.5,72.7,68.0,67.1,72.8,70.0,63.2,69.4,61.4,65.6,' \
               '32.1,32.5,36.5,30.7,35.2,36.3,31.9,35.2,33.9,35.4'.split(',')
         status = 0
-
-
 
         for i in range(7):
             item = QTableWidgetItem()
