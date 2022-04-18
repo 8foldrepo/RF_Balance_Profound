@@ -62,13 +62,14 @@ class MT_balance(AbstractBalance):
         if self.ser is None or self.connected == False:
             self.log("Device is not connected")
             return
-        self.log("Zeroing Balance, Please wait")
+        self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
-
+        print("written")
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
+                print(item)
                 #For some reason when debugging these can also appear as b'ES'. that is normal.
                 if item == b'ZI D' or b'ZI S':
                     self.log(level='info', message='Balance Zeroed')

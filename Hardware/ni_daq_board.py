@@ -9,7 +9,7 @@ class NI_DAQ(AbstractDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
 
-    def __init__(self, config=None, device_key="NI_DAQ", parent=None):
+    def __init__(self, config=None, device_key="WTF_DIO", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
         self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
@@ -21,8 +21,10 @@ class NI_DAQ(AbstractDevice):
 
     def set_pump_on(self, on):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
-            task.do_channels.add_do_chan("Dev1/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.do_channels.add_do_chan("Dev1/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
+            task.do_channels.add_do_chan(f"{self.config.device_key['DAQ Device name']}/port1/line4:4",
+                                         line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
+            task.do_channels.add_do_chan(f"{self.config['DAQ Device name']}/port1/line6:6",
+                                         line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
 
             if on:
                 task.write([False,False], auto_start=True)  # I've only seen P1.6 react
