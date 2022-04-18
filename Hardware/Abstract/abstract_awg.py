@@ -101,6 +101,7 @@ class AbstractAWG(AbstractDevice):
 
     @abstractmethod
     def GetAmplitude_V(self):
+        return 1  # place holder mock value
         pass
 
     """Sets the dc offset of the waveform in volts"""
@@ -168,6 +169,7 @@ class AbstractAWG(AbstractDevice):
     def __str__(self):
         self.get_state()
         return "Waveform Generator\nSettings:\n"+str(self.state)
+
 
 if __name__ == "__main__":
     awg = AbstractAWG()

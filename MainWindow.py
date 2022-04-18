@@ -270,6 +270,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.load_script_signal.connect(self.manager.load_script)
         self.run_step_signal.connect(self.manager.advance_script)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
+        self.manager.user_info_dialog_signal.connect(self.dialog_user_action)
         self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
         self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
         self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
@@ -435,11 +436,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         Show_Help_action.triggered.connect(self.Show_Help)
         file_menu.addAction(Show_Help_action)
 
-    def dialog_user_action(self, s):
+    @pyqtSlot(str)
+    def dialog_user_action(self, message):
         dlg = QMessageBox(self)
-        dlg.setText(s)
+        dlg.setText(message)
         # todo: change icon to one that is less error, more info/ notify
-        dlg.setIcon(QMessageBox.Critical)
+        dlg.setIcon(QMessageBox.Info)
         dlg.show()
         dlg.finished.connect(self.manager.cont)  # todo: test this
         # todo: maker sure script doesn't continue until this is dismissed
