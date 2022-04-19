@@ -1,13 +1,4 @@
-from PyQt5.QtCore import pyqtSignal, QObject
-import subprocess
-from Hardware.Abstract.abstract_device import AbstractDevice
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
-from Utilities.useful_methods import log_msg
-from abc import abstractmethod
-import os
-from subprocess import Popen, PIPE
-import time as t
-from definitions import ROOT_DIR
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from Utilities.useful_methods import log_msg
 from Hardware.Abstract.abstract_device import AbstractDevice
 

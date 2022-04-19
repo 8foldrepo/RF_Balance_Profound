@@ -87,6 +87,7 @@ class MT_balance(AbstractBalance):
         self.log(level='error', message=f'{self.device_key} timed out')
 
     def connect_hardware(self):
+        print(self.port)
         try:
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
@@ -98,11 +99,16 @@ class MT_balance(AbstractBalance):
             )
             self.ser.write(b"ON\r")
             self.connected = True
-        except serial.serialutil.SerialException:
+        except serial.serialutil.SerialException as e:
             self.connected = False
-            self.log(level='error', message=
-            f"{self.device_key} not connected. Check that it is plugged in and look at Device manager to "
-            f"determine which COM port to use. It is currently hard coded")
+            if "Access is denied" in str(e):
+                self.log(level='error', message=
+                f"{self.device_key} is in use by another program, close it and restart (also check the com ports in "
+                f"the config file): \n{e}")
+            else:
+                self.log(level='error', message=
+                f"{self.device_key} not connected. Check that it is plugged in and look at Device manager to "
+                f"determine which COM port to use. It is currently hard coded: \n{e}")
         self.connected_signal.emit(self.connected)
 
     def disconnect_hardware(self):
@@ -198,5 +204,6 @@ class MT_balance(AbstractBalance):
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())
     balance.connect_hardware()
+    print(balance.connected)
     input('press enter when weight is on scale')
     balance.get_reading()

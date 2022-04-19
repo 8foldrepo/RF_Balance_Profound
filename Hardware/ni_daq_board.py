@@ -20,10 +20,13 @@ class NI_DAQ(AbstractDevice):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-    def set_pump_on(self, on):
+    def set_tank_pump_on(self, on):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
-            task.do_channels.add_do_chan(f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.4
-            task.do_channels.add_do_chan(f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.6
+            #CW/CCW
+            task.do_channels.add_do_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)
+
+            #ON/OFF
+            task.do_channels.add_do_chan(f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)
 
             if on:
                 task.write([False, False], auto_start=True)  # I've only seen P1.6 react
@@ -52,7 +55,7 @@ class NI_DAQ(AbstractDevice):
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
-            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
+            #task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
             task.di_channels.add_di_chan(f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
             task.di_channels.add_di_chan(f"{self.name}/port2/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
 
@@ -136,7 +139,7 @@ class NI_DAQ(AbstractDevice):
 if __name__ == '__main__':
     daq = NI_DAQ()
     daq.connect_hardware()
-    daq.set_pump_on(False)
+    daq.set_tank_pump_on(False)
 
     while True:
         print(daq.get_pump_reading())
