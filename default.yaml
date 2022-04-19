@@ -80,7 +80,8 @@ Sequence pass/fail:
   Interrupt action: No dialog (abort)
   Pass fail action: No dialog (abort)
   Retries: 0
-UAInterface: null
+UAInterface:
+  timeout_s: 2.0
 User Accounts:
   Administrator: PMI_Admin
   Engineer: Engineer
