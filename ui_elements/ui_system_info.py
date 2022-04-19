@@ -14,47 +14,47 @@ class SystemInfo(MyQWidget, Ui_Form):
         parser = ConfigParser()
         parser.read(SYSTEM_INFO_INI_PATH)
 
-        # Radio Force Balance Frame
+        # Radio Force Balance Frame (good; checked by Rameen on 4/18)
         self.RFB_MANUFACTURER_FIELD.setText(parser['RFB']['Manufacturer'])
         self.RFB_MODELNUM_FIELD.setText(parser['RFB']['Model'])
-        self.RFB_SN_FIELD.setText(parser['RFB']['serial number'])
+        self.RFB_SN_FIELD.setText(parser['RFB']['Serial number'])
         self.RF_FIRMWARE_V_FIELD.setText(parser['RFB']['F/W version'])
         self.RFB_CAL_FIELD.setText(parser['RFB']['Last calibration'])
-        # Wet Test Fixture Frame
+        # Wet Test Fixture Frame (good; checked by Rameen on 4/18)
         self.WTF_SN_FIELD.setText(parser['System info']['WTF Serial number'])
-        self.SW_VERSION_FIELD.setText(parser['RFB']['Last calibration'])                  # Requires Updated Information
+        self.SW_VERSION_FIELD.setText(parser['System info']['Software version'])
         self.UA_WATER_CIRCUIT_FIELD.setText(parser['System info']['UA Water circuit'])
         self.TANK_WATER_CIRCUIT_FIELD.setText(parser['System info']['Tank water circuit'])
-        # Oscilloscope Frame
-        self.OSCOPE_MANUFACTURER_FIELD.setText(parser['RFB']['Last calibration'])         # Requires Updated Information
-        self.OSCOPE_MODELNUM_FIELD.setText(parser['RFB']['Last calibration'])             # Requires Updated Information
-        self.OSCOPE_SN_FIELD.setText(parser['RFB']['Last calibration'])                   # Requires Updated Information
-        self.OSCOPE_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])           # Requires Updated Information
-        # Arbitrary Waveform Generator Frame
-        self.AWG_MANUFACTURER_FIELD.setText(parser['RFB']['Last calibration'])            # Requires Updated Information
-        self.AWG_MODELNUM_FIELD.setText(parser['RFB']['Last calibration'])                # Requires Updated Information
-        self.AWG_SN_FIELD.setText(parser['RFB']['Last calibration'])                      # Requires Updated Information
-        self.AWG_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])              # Requires Updated Information
-        # Forward Power Meter Frame
-        self.FPM_MANUFACTURER_FIELD.setText(parser['RFB']['Last calibration'])            # Requires Updated Information
-        self.FPM_MODELNUM_FIELD.setText(parser['RFB']['Last calibration'])                # Requires Updated Information
-        self.FPM_SN_FIELD.setText(parser['RFB']['Last calibration'])                      # Requires Updated Information
-        self.FPM_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])              # Requires Updated Information
-        # Reflected Power Meter Frame
-        self.RPM_MANUFACTURER_FIELD.setText(parser['RFB']['Last calibration'])            # Requires Updated Information
-        self.RPM_MODELNUM_FIELD.setText(parser['RFB']['Last calibration'])                # Requires Updated Information
-        self.RPM_SN_FIELD.setText(parser['RFB']['Last calibration'])                      # Requires Updated Information
-        self.RPM_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])              # Requires Updated Information
-        # Power Amplifier Frame
+        # Oscilloscope Frame (good; checked by Rameen on 4/18)
+        self.OSCOPE_MANUFACTURER_FIELD.setText(parser['Oscilloscope']['Manufacturer'])
+        self.OSCOPE_MODELNUM_FIELD.setText(parser['Oscilloscope']['Model'])
+        self.OSCOPE_SN_FIELD.setText(parser['Oscilloscope']['Serial number'])
+        self.OSCOPE_FIRMWARE_V_FIELD.setText(parser['Oscilloscope']['F/W version'])
+        # Arbitrary Waveform Generator Frame (done)
+        self.AWG_MANUFACTURER_FIELD.setText(parser['Function generator']['Manufacturer'])
+        self.AWG_MODELNUM_FIELD.setText(parser['Function generator']['Model'])
+        self.AWG_SN_FIELD.setText(parser['Function generator']['Serial number'])
+        self.AWG_FIRMWARE_V_FIELD.setText(parser['Function generator']['F/W version'])
+        # Forward Power Meter Frame (done)
+        self.FPM_MANUFACTURER_FIELD.setText(parser['Forward power meter']['Manufacturer'])
+        self.FPM_MODELNUM_FIELD.setText(parser['Forward power meter']['Model'])
+        self.FPM_SN_FIELD.setText(parser['Forward power meter']['Serial number'])
+        self.FPM_FIRMWARE_V_FIELD.setText(parser['Forward power meter']['F/W version'])
+        # Reflected Power Meter Frame (done)
+        self.RPM_MANUFACTURER_FIELD.setText(parser['Reflected power meter']['Manufacturer'])
+        self.RPM_MODELNUM_FIELD.setText(parser['Reflected power meter']['Model'])
+        self.RPM_SN_FIELD.setText(parser['Reflected power meter']['Serial number'])
+        self.RPM_FIRMWARE_V_FIELD.setText(parser['Reflected power meter']['F/W version'])
+        # Power Amplifier Frame (done)
         self.AMP_MANUFACTURER_FIELD.setText(parser['Power Amplifier']['Manufacturer'])
         self.AMP_MODELNUM_FIELD.setText(parser['Power Amplifier']['Model'])
         self.AMP_SN_FIELD.setText(parser['Power Amplifier']['Serial number'])
         self.AMP_REV_FIELD.setText(parser['Power Amplifier']['Rev#'])
-        # Thermocouple Frame
-        self.THERMO_MANUFACTURER_FIELD.setText(parser['RFB']['Last calibration'])         # Requires Updated Information
-        self.THERMO_MODELNUM_FIELD.setText(parser['RFB']['Last calibration'])             # Requires Updated Information
-        self.THERMO_SN_FIELD.setText(parser['RFB']['Last calibration'])                   # Requires Updated Information
-        self.THERMO_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])           # Requires Updated Information
+        # Thermocouple Frame (done)
+        self.THERMO_MANUFACTURER_FIELD.setText(parser['Thermocouple']['Manufacturer'])
+        self.THERMO_MODELNUM_FIELD.setText(parser['Thermocouple']['Model'])
+        self.THERMO_SN_FIELD.setText(parser['Thermocouple']['Serial number'])
+        self.THERMO_FIRMWARE_V_FIELD.setText(parser['Thermocouple']['F/W version'])
         # Power Measurement & Switching Module Frame
         self.POWERSWITCH_MANUFACTURER_FIELD.setText(parser['RF measurement and switching module']['Manufacturer'])
         self.POWERSWITCH_MODELNUM_FIELD.setText(parser['RF measurement and switching module']['Model'])
@@ -62,7 +62,7 @@ class SystemInfo(MyQWidget, Ui_Form):
         # Wet Test Fixture Interface Board Frame
         self.WTFIB_MODELNUM_FIELD.setText(parser['WTFiB']['Model'])
         self.WTFIB_SN_FIELD.setText(parser['WTFiB']['Serial number'])
-        self.WTFIB_FIRMWARE_V_FIELD.setText(parser['RFB']['Last calibration'])            # Requires Updated Information
+        self.WTFIB_FIRMWARE_V_FIELD.setText(parser['WTFiB']['F/W version'])
         # Radio Force Balance Frame
         self.HYDRO_TYPE_FIELD.setText(parser['Hydrophone system']['Hydrophone Type'])
         self.HYDR_DIAM_FIELD.setText(parser['Hydrophone system']['Hydrophone Diameter'])
