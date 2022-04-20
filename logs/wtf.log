@@ -1,10 +1,12 @@
-2022-04-19 12:57:11,784 [INFO] [PowerMeter] [manager_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-19 12:57:12,392 [INFO] [PowerMeter] [manager_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-19 12:57:12,470 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
-2022-04-19 12:57:12,483 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully
-2022-04-19 12:57:12,484 [INFO] [VIX_Motor_Controller] [manager_thread] : Connecting to motor controller...
-2022-04-19 12:57:12,484 [ERROR] [VIX_Motor_Controller] [manager_thread] : VIX_Motors not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded
-2022-04-19 12:57:12,484 [INFO] [KeysightOscilloscope] [manager_thread] : Attempting to connect to oscilloscope...
-2022-04-19 12:57:12,739 [INFO] [KeysightOscilloscope] [manager_thread] : Oscilloscope connected and set to default settings
-2022-04-19 12:57:12,741 [ERROR] [MT_balance] [manager_thread] : MT_Balance not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded
-12,741 [ERROR] [MT_balance] [manager_thread] : MT_Balance not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded
+2022-04-19 12:23:33,283 [INFO] [PowerMeter] [manager_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-19 12:23:33,892 [INFO] [PowerMeter] [manager_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-19 12:23:34,012 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
+2022-04-19 12:23:34,026 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully
+2022-04-19 12:23:34,027 [INFO] [VIX_Motor_Controller] [manager_thread] : Connecting to motor controller...
+2022-04-19 12:23:34,027 [ERROR] [VIX_Motor_Controller] [manager_thread] : VIX_Motors not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded
+2022-04-19 12:23:34,033 [INFO] [KeysightOscilloscope] [manager_thread] : Attempting to connect to oscilloscope...
+2022-04-19 12:23:34,253 [INFO] [KeysightOscilloscope] [manager_thread] : Oscilloscope connected and set to default settings
+2022-04-19 12:23:34,253 [ERROR] [MT_balance] [manager_thread] : MT_Balance not connected. Check that it is plugged in and look at Device manager to determine which COM port to use. It is currently hard coded: 
+could not open port 'COM3': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+ok at Device manager to determine which COM port to use. It is currently hard coded: 
+could not open port 'COM3': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)

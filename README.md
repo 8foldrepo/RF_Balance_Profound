@@ -169,8 +169,31 @@ The output should resemble this:
 7. Enter 1 if a 50 ohm load was used in paralell to the oscilloscope. Enter 2 otherwise.
 8. You should see a visualization of the scan (and other data depending on what file you ran)
 
-#### Data analysis using your own scripts.
+### Hardware setup notes:
+Use NI Max to look at connected devices. 
+1. There should be 3 com ports (the motor controller, the RF switcher power relay,
+and the balance). 
+2. The thermocouple shows up as NI-TC01 (rename it to TankTemp in NI-MAX, confirm local.yaml matches)
+3. The digital IO board (located in the power module box) shows up as NI-USB 6501. Rename it to WTF4 (or whatever name
+you choose), confirm its name in local.yaml matches.
+4. The waveform generator should show up as a VISA identifier containing the model code 0x2507 
+ex: USB0::0x0957::0x2507::MY59001263::INSTR
+5. The oscilloscope should show up as a VISA identifier containing the model code 0x179B 
+ex: USB0::0x0957::0x2507::MY59001263::INSTR
+6. Finally, to configure the UA interface box, go to Network and Sharing center in control panel, look for an unknown 
+network corresponding to the network adapter the UA iterface box is plugged into. Click on the ethernet number
+link next to it (EX: ethernet 3), go to properties, uncheck all except ipv4, click on ipv4, click on properties, click
+"Use a specific address", type 192.168.3.1, and use the default subnet mask: 255.255.255.0. To confirm the device is
+connected, go to command prompt and type ping 192.168.3.3. All 4 bytes should be received. Note that the ip address of
+the device in the code differs from the ip address in control panel. I am not sure why this works, but it does.
 
-1. Contents of scans are stored in a .hdf5 format. There is a 3D array containing the voltage amplitude at each point, as well as a data group for each point containing the voltage waveform. There is also metadata containing hardware settings.
-2. To view the contents of a scan file, the free software hdfview is a simple solution. Matlab commands can also be used to list the contents.
-3. Reviewing the existing matlab scripts is a great way to get started making your own.
+### Tools for troubleshooting/testing hardware
+1. "Test panels" in NI MAX: control the digital IO board and thermocouple with a GUI
+
+2. NI-VISA interactive control suite: Terminal to send commands to Oscilloscope and function generator
+
+3. Wet test fixture EXE file (located in hardware/interface box executable).
+Use it with the command line, refer to the email in the same folder for syntax
+
+4. Test com devices, including the balance, motor controller, and RF switcher on/off relay, 
+using arduino serial monitor (works for more than just arduinos)

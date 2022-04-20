@@ -189,8 +189,7 @@ class Manager(QThread):
         self.SIMULATE_MOTORS = self.config['Debugging']['simulate_motors']
         self.SIMULATE_OSCILLOSCOPE = self.config['Debugging']['simulate_oscilloscope']
 
-        from Hardware.Abstract.abstract_sensor import AbstractSensor
-        self.thermocouple = AbstractSensor(config=self.config)
+
 
         if self.SIMULATE_MOTORS:
             from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
@@ -216,7 +215,8 @@ class Manager(QThread):
             from Hardware.Abstract.abstract_power_meter import PowerMeter
             from Hardware.Abstract.abstract_io_board import IO_Board
             from Hardware.Abstract.abstract_interface_box import UAInterfaceBox
-
+            from Hardware.Abstract.abstract_sensor import AbstractSensor
+            self.thermocouple = AbstractSensor(config=self.config)
             self.AWG = AbstractAWG(config=self.config)
             self.Balance = AbstractBalance(config=self.config)
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
@@ -229,16 +229,18 @@ class Manager(QThread):
             from Hardware.ua_interface_box import UAInterfaceBox
             from Hardware.ni_daq_board import NI_DAQ
             from Hardware.mini_circuits_power_meter import PowerMeter
+            from Hardware.NI_thermocouple import Thermocouple
+            from Hardware.keysight_awg import KeysightAWG
 
             if self.rm is None:
                 self.rm = pyvisa.ResourceManager()
-            from Hardware.keysight_awg import KeysightAWG
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
             self.Balance = MT_balance(config=self.config)
             self.UAInterface = UAInterfaceBox(config=self.config)
             self.IO_Board = NI_DAQ(config=self.config)
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
+            self.thermocouple = Thermocouple(config=self.config)
 
         self.devices.append(self.Forward_Power_Meter)
         self.devices.append(self.Reflected_Power_Meter)

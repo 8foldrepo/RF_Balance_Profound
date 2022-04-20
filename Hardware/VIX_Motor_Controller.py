@@ -297,17 +297,23 @@ class VIX_Motor_Controller(AbstractMotorController):
                 stopbits=serial.STOPBITS_ONE,
                 bytesize=serial.EIGHTBITS,
             )
-            self.ser.write(b"1R(BD)")
-            reply = self.ser.read()
-            if reply == b'':
-                self.connected = False
-                self.log(level='error', message=
-                f"{self.device_key} COM port found but motor controller is not responding. "
-                f"Make sure it is powered up and click setup.")
-            else:
-                self.setup()
-                self.connected = True
-                self.log("Motor controller connected and set to default settings")
+
+            self.setup()
+            # startTime = t.time()
+            # while t.time()-startTime < self.time_limit_s:
+            #     self.ser.write(b"1R(BD)")
+            #     reply = self.ser.read()
+            #     if not reply == '':
+            #         self.connected = True
+            #
+            #         self.log("Motor controller connected and set to default settings")
+            #         return
+            #
+            # self.connected = False
+            # self.log(level='error', message=
+            # f"{self.device_key} COM port found but motor controller is not responding. "
+            # f"Make sure it is powered up and click setup.")
+
         except serial.serialutil.SerialException:
             self.connected = False
             self.log(level='error', message=
@@ -478,12 +484,18 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command(f'{axis_number}OFF')
 
     def setup(self, settings=None):
-        self.ser.write(b"1R(BD)")
-        reply = self.ser.read()
-        if reply == b'':
-            self.connected = False
-        else:
-            self.connected = True
+        #confirm drive is responding
+        startTime = t.time()
+        self.connected = False
+        while t.time() - startTime < self.time_limit_s:
+            self.ser.write(b"1R(BD)")
+            t.sleep(.1)
+            reply = self.ser.read()
+            if not reply == '':
+                self.connected = True
+                self.log("Motor controller connected and set to default settings")
+                break
+
         self.connected_signal.emit(self.connected)
 
         if self.connected == False:
@@ -510,7 +522,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.calibrate_ray_steps_per[1] = settings['steps_per_deg']
             self.movement_mode = settings['movement_mode']
 
-        self.set_limits_enabled(False)
+        self.set_limits_enabled(True)
         self.set_position_maintanance(on=False)
         self.set_movement_mode(self.movement_mode)
         self.set_motors_on(True)
@@ -550,9 +562,9 @@ class VIX_Motor_Controller(AbstractMotorController):
 
     def set_limits_enabled(self, enabled):
         if enabled:
-            self.command('0LIMITS(0,1,0)')
+            self.command('0LIMITS(0,0,0)')
         else:
-            self.command("0LIMITS(3,0,0)")
+            self.command("0LIMITS(1,0,0)")
 
     def set_position_maintanance(self, on):
         if on:
