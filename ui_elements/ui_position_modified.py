@@ -49,6 +49,10 @@ class Position(MyQWidget, Ui_Form):
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)
 
+        # Hardware info signals
+        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
+        self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
+
     def setup_pressed(self):
         self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
                                 'steps_per_mm': self.steps_per_mm_sb.value(),
@@ -101,10 +105,6 @@ class Position(MyQWidget, Ui_Form):
         self.go_element_button.clicked.connect(self.go_element_button_clicked)
         self.setup_button.clicked.connect(self.setup_pressed)
         self.save_settings_button.clicked.connect(self.save_config_ui)
-
-        # Hardware info signals
-        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
-        self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
     '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
 

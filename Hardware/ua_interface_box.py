@@ -15,6 +15,7 @@ class UAInterfaceBox(AbstractDevice):
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.ip_address = '192.168.3.3'
+        self.UA_Read_Result = False
         self.UA_Write_Result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
 

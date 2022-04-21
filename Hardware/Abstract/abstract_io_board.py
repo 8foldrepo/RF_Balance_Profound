@@ -55,6 +55,8 @@ class IO_Board(AbstractDevice):
     def wrap_up(self):
         self.disconnect_hardware()
 
+    def get_ua_pump_reading(self):
+        self.pump_reading_signal.emit(random.choice([True,False]))
 
 if __name__ == '__main__':
     daq = IO_Board()
@@ -64,4 +66,3 @@ if __name__ == '__main__':
     #     print(f"turning on relay {i}")
     #     daq.activate_relay_channel(i)
     #     t.sleep(5)
-

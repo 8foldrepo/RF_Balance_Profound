@@ -36,6 +36,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
                             self.log(level='error',
                                      message=f"Input protocol error, retrying: {e}")
                             retry = True
+                        elif 'VI_ERROR_RSRC_NFOUND' in str(e):
+                            self.log(level='error',
+                                     message=f"Oscilloscope not connected, connect and restart program: {e}")
+                            retry = False
                         elif 'Unknown system error' in str(e):
                             self.log(level='error',
                                      message=f"Unknown oscilloscope system error, restart program: {e}")

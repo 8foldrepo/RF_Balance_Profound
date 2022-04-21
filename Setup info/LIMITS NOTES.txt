@@ -1,0 +1,5 @@
+Negative limit and home are wired to pins 8 and 7 normally open
+
+Positive and negative limit are wired to pins 6 and 7 
+
+

@@ -9,7 +9,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     pretest_metadata_signal = pyqtSignal(dict)  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
-    def __init__(self, parent=None, config=None):
+    def __init__(self, serial_no = None, parent=None, config=None):
         super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
@@ -21,6 +21,8 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         formatted_date = now.strftime("%Y.%m.%d-%H.%M")
 
         #Get the current date, save it to the metadata dictionary, and show it in the UI
+        self.ua_serial_no_inputline.setText(serial_no)
+        self.lookup_clicked()
         self.date_output.setText(formatted_date)
 
     def configure_signals(self):

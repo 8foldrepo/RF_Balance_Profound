@@ -9,6 +9,8 @@ from ui_elements.ui_retracting_ua_warning import UARetractDialog
 from ui_elements.ui_write_cal_to_ua import WriteCalDataToUA
 from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
+from ui_elements.filling_dialog import FillingDialog
+from ui_elements.draining_dialog import DrainingDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
@@ -106,6 +108,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.manager.connect_hardware()
         self.manager.start(priority=4)
+
+        #Note: the UA interface box is instantiated in both the manager and the UI thread.
+        #This is done to improve responsiveness, as triggering UI dialogs with a signal causes a delay.
+        #There should be no conflicts between the two objects, as they both just send commands to the exe file
+        if self.config['Debugging']['simulate_hw']:
+            from Hardware.Abstract.abstract_interface_box import UAInterfaceBox
+            self.UAInterface = UAInterfaceBox(config=self.config)
+        else:
+            from Hardware.ua_interface_box import UAInterfaceBox
+            self.UAInterface = UAInterfaceBox(config=self.config)
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
@@ -253,7 +265,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # enable/disable buttons signals
         self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
 
-        # Hardware info signals
+        # Hardware indicator signals
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
@@ -262,25 +274,35 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.IO_Board.connected_signal.connect(self.dio_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
+        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_pos_field)
+        self.manager.Motors.r_pos_mm_signal.connect(self.update_theta_pos_field)
         self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
         self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_results_table)
+        self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
+        self.manager.user_prompt_signal.connect(self.show_user_prompt)
+        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
+        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
+        self.manager.IO_Board.filling_signal.connect(self.show_filling_tank_dialog)
+        self.manager.IO_Board.draining_signal.connect(self.show_draining_tank_dialog)
+        self.manager.IO_Board.pump_reading_signal.connect(self.update_pump_indicator)
+        self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
+        self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
+        self.manager.AWG.output_signal.connect(self.update_ua_indicator)
 
         # Manager communication signals
         self.abort_signal.connect(self.manager.abort)
         self.load_script_signal.connect(self.manager.load_script)
         self.run_step_signal.connect(self.manager.advance_script)
-        self.manager.user_prompt_signal.connect(self.show_user_prompt)
-        self.manager.user_info_dialog_signal.connect(self.dialog_user_action)
-        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
-        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
-        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
-        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
-        self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
 
-        self.manager.IO_Board.pump_reading_signal.connect(self.update_pump_indicator)
-        self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
-        self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
-        self.manager.AWG.output_signal.connect(self.update_ua_indicator)
+    @pyqtSlot(float)
+    def update_x_pos_field(self, position_mm):
+        self.x_pos_field.setText('%.2f' % position_mm)
+
+    @pyqtSlot(float)
+    def update_theta_pos_field(self, position_mm):
+        self.theta_pos_field.setText('%.2f' % position_mm)
 
     def run_button_clicked(self):
         self.set_buttons_enabled(False)
@@ -314,7 +336,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(str)
     def update_system_status(self, status):
         self.system_indicator.setText(status)
-        if status != 'IDLE':
+        if status == 'IDLE':
+            self.system_indicator.setStyleSheet('IDLE')
+            self.system_indicator.setStyleSheet("background-color: green")
+        else:
+            self.system_indicator.setStyleSheet('BUSY')
             self.system_indicator.setStyleSheet("background-color: yellow")
 
     @pyqtSlot(list)
@@ -356,11 +382,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
-        self.temp_field.setText(str(temp))
+        self.temp_field.setText('%.1f' % (temp/50)) #todo: remove /50 its for demo purposes
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
-        self.scan_tab_widget.plot(x, y, refresh_rate)
+        self.scan_tab_widget.plot_scope(x, y, refresh_rate)
 
     def load_script_clicked(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Script files (*.wtf *.txt)")
@@ -436,16 +462,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         Show_Help_action.triggered.connect(self.Show_Help)
         file_menu.addAction(Show_Help_action)
 
-    @pyqtSlot(str)
-    def dialog_user_action(self, message):
-        dlg = QMessageBox(self)
-        dlg.setText(message)
-        # todo: change icon to one that is less error, more info/ notify
-        dlg.setIcon(QMessageBox.Info)
-        dlg.show()
-        dlg.finished.connect(self.manager.cont)  # todo: test this
-        # todo: maker sure script doesn't continue until this is dismissed
-
     # Open help document
     def Show_Help(self):
         webbrowser.open("Help.txt")
@@ -508,9 +524,39 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             event.ignore()
 
+    @pyqtSlot()
+    def show_filling_tank_dialog(self):
+        dlg = FillingDialog(config=self.config)
+        self.manager.IO_Board.water_level_reading_signal.connect(dlg.water_level_slot)
+        dlg.exec()
+
+    @pyqtSlot()
+    def show_draining_tank_dialog(self):
+        dlg = DrainingDialog(config=self.config)
+        self.manager.IO_Board.water_level_reading_signal.connect(dlg.water_level_slot)
+        dlg.exec()
+
     @pyqtSlot(str)
     def show_pretest_dialog(self):
-        dlg = PretestDialog()
+        #Read UA serial number
+        UA_read_data, status = self.UAInterface.read_data()
+
+        #If their access level is operator, do not proceed with the script unless the read was successful.
+
+        if status != 0:
+            if self.access_level_combo.currentText() == "Operator":
+                self.dialog_critical("UA Read failed, aborting test")
+                self.abort_signal.emit()
+                return
+            elif self.config["Debugging"]["end_script_on_errors"]:
+                self.dialog_critical("UA Read failed, aborting test. Disable end_script_on_errors in the "
+                                     "config if you wish to continue")
+        if UA_read_data != []:
+            serial_no = UA_read_data[1]
+        else:
+            serial_no = None
+
+        dlg = PretestDialog(serial_no=serial_no)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.pretest_metadata_slot)
@@ -539,6 +585,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
 
+    def dialog_critical(self, text):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Error")
+        dlg.setText(text)
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Critical)
+        dlg.exec()
+
+    #todo: test
     @pyqtSlot()
     def show_write_cal_data_prompt(self, calibration_data):  # calibration data var is 2d list
         dlg = WriteCalDataToUA()
@@ -617,6 +672,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
         # Todo: make this ebable/disable all buttons of all tabs that could interfere with operations in progress
+        if enabled:
+            self.update_system_status('IDLE')
+        else:
+            self.update_system_status('BUSY')
+
         self.position_tab.set_buttons_enabled(enabled)
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)

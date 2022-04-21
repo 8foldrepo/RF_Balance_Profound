@@ -109,6 +109,10 @@ class VIX_Motor_Controller(AbstractMotorController):
         self.scanning = False
         self.jogging = False
         self.moving = None
+
+        # Serial communication object for the motor controllers
+        self.ser = None
+
         self.fields_setup()
 
     def fields_setup(self):
@@ -130,10 +134,15 @@ class VIX_Motor_Controller(AbstractMotorController):
     # Tells one axis what coordinate to travel to
     # Axis must be 'x' , 'y' , 'z' , or 'r'
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: list, coords_mm: list):
+    def go_to_position(self, axes: list, coords_mm: list) -> bool:
+        if not self.connected:
+            self.ready_signal.emit()
+            return False
+
         if not len(axes) == len(coords_mm):
             self.log(level='error', message="Axes length does not match coordinates length")
-            return
+            self.ready_signal.emit()
+            return False
 
         axis_numbers = list()
         coords = list()
@@ -258,11 +267,12 @@ class VIX_Motor_Controller(AbstractMotorController):
     def setup_home(self):
         # todo: test these values and edit accordingly
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
-                           reference_edge='-', normally_closed=False, speed=50, mode=1)
-        self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][0],
-                           reference_edge='-', normally_closed=False, speed=50, mode=1)
+                           reference_edge='+', normally_closed=False, speed=10, mode=1)
+        self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
+                           reference_edge='-', normally_closed=False, speed=1, mode=1)
 
-    def setup_home_1d(self, axis, enabled=True, reference_edge='+', normally_closed=False, speed=-5, mode=1):
+    def setup_home_1d(self, axis, enabled=True, reference_edge='+', normally_closed=False, speed=-5, mode=1,
+                      accelleration = 10):
         axis_number = self.get_ax_number(axis)
 
         if enabled:
@@ -275,9 +285,9 @@ class VIX_Motor_Controller(AbstractMotorController):
         else:
             closedString = '0'
 
-        command_string = f"{axis_number}HOME{onString}({reference_edge},{closedString},{speed},100,{mode})"
+        command_string = f"{axis_number}HOME{onString}({reference_edge},{closedString},{speed},{accelleration},{mode})"
 
-        self.command(command_string)
+        self.command(command_string, log=True)
 
     # Hardware interfacing functions
     def toggle_connection(self):
@@ -298,7 +308,8 @@ class VIX_Motor_Controller(AbstractMotorController):
                 bytesize=serial.EIGHTBITS,
             )
 
-            self.setup()
+            #self.setup()
+
             # startTime = t.time()
             # while t.time()-startTime < self.time_limit_s:
             #     self.ser.write(b"1R(BD)")
@@ -313,15 +324,19 @@ class VIX_Motor_Controller(AbstractMotorController):
             # self.log(level='error', message=
             # f"{self.device_key} COM port found but motor controller is not responding. "
             # f"Make sure it is powered up and click setup.")
-
-        except serial.serialutil.SerialException:
+            self.is_connected = True
+        except serial.serialutil.SerialException as e:
             self.connected = False
-            self.log(level='error', message=
-            f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
-            "to determine which COM port to use. It is currently hard coded")
+            if "PermissionError" in str(e):
+                self.log(level='error', message=
+                f"{self.device_key} not connected. Another program is likely using it")
+            else:
+                self.log(level='error', message=
+                f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
+                f"to determine which COM port to use. enter it into Local.yaml {e}")
 
         # TODO: remove this when limits are added
-        self.connected_signal.emit(self.connected)
+        self.connected_signal.emit(self.is_connected)
 
     def disconnect_hardware(self):
         try:
@@ -329,15 +344,15 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.ser.close()
         except:
             pass
-        self.connected = False
+        self.is_connected = False
         self.connected_signal.emit(self.connected)
 
     def connected(self):
-        return self.Motors.connected
+        return self.is_connected
 
     '''Attempt to send command until it is faithfully echoed by the controller, or else return false'''
 
-    def command(self, command, retry=True, time_limit=None, mutex_locked=False, log=False):
+    def command(self, command, retry=True, time_limit=None, mutex_locked=False, log=True):
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
         if self.lock is not None and not mutex_locked:
             self.lock.lock()
@@ -484,6 +499,9 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.command(f'{axis_number}OFF')
 
     def setup(self, settings=None):
+        if self.ser is None:
+            self.connect_hardware()
+
         #confirm drive is responding
         startTime = t.time()
         self.connected = False
@@ -507,9 +525,12 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         # This accounts for the lower idle current of the rotational motor.
         # TODO: check currents of motors in final application
-        sent_successfully = self.command("2W(MS,50)")
+        #Sets the rotational motor to 10% idle current
+        sent_1_successfully = self.command("2W(MS,10)")
+        #Sets the translational motor to 50% idle current
+        sent_2_successfully = self.command("1W(MS,50)")
 
-        if not sent_successfully:
+        if not (sent_1_successfully and sent_2_successfully):
             self.log(level='error', message='failed to setup, check that drivers are powered on and try again')
             return
 
@@ -557,14 +578,15 @@ class VIX_Motor_Controller(AbstractMotorController):
         axis_index = self.ax_letters.index(axis)
         axis_number = axis_index + 1
         steps_per_s = self.calibrate_ray_steps_per[axis_index] * self.speeds_ray[axis_index]
+             #self.calibrate_ray_steps_per[axis_index] *
         self.command(f'{axis_number}V{steps_per_s}')
         self.command(f'{axis_number}D{self.increment_ray[axis_index]}')
 
     def set_limits_enabled(self, enabled):
         if enabled:
-            self.command('0LIMITS(0,0,0)')
+            self.command('0LIMITS(0,1,0,200)')
         else:
-            self.command("0LIMITS(1,0,0)")
+            self.command("0LIMITS(1,1,200)")
 
     def set_position_maintanance(self, on):
         if on:
@@ -801,34 +823,64 @@ class VIX_Motor_Controller(AbstractMotorController):
         # rating.
         r_ohms = 2
         l_mhenry = 2
-        # command = f"1MOTOR({motor_type},{stall_current_amps},{10000},{max_rpm},{thermal_time_constant},{r_ohms},{l_mhenry},{50})"
-        # command = "1MOTOR(716, 2.1, 52000, 1000, 1000, 5, 5, 5)"
+        # command = f"1MOTOR({motor_type},{stall_current_amps},{10000},{max_rpm},{thermal_time_constant}," \
+        #            f"{r_ohms},{l_mhenry},{50})"
+        command = "1MOTOR(716,1.0,50000,1000,5,2,2)"
         # print(command)
-        # self.command(command)
-        # print(self.get_response())
-        # t.sleep(15)
-        self.command("1W(PA,0)")
-        self.command("1D10000")
-        self.command("1ON")
-        self.command("1G")
+        self.command(command)
+        print(self.get_response())
 
-        t.sleep(1)
+    def setup_motor_1(self):
+        self.command('1K')			#Kill any program that is running
+        self.command('1CLEAR(ALL)')		#Erase all routines, etc
+        self.command('1W(BR,19200)')		#BAUD rate
 
-        target_position_string = self.ask(f"1R(PT)")
-        actual_position_string = self.ask(f"1R(PA)")
-        position_error_string = self.ask(f"1R(PE)")
+        self.command('1W(CL,50)')		#Current clamp
 
-        print(f'Tar: {target_position_string}')
-        print(f'Act: {actual_position_string}')
-        print(f'Err: {position_error_string}')
+        self.command('1W(CQ,1)')		#Command queueing
+
+        self.command('1W(IC,8160)')		#I/O configuration
+        self.command('1W(EI,2)')		#Following encoder inputs
+        self.command('1W(EO,2)')		#Simulated encoder outputs
+        self.command('1LIMITS(0,1,0,200.0)')	#;Travel limits
+
+        #Homing setup
+        self.command('1HOME1(+,1,-10.00,10.0,0,0)') #Home setup 1
+        self.command('1W(EW,50)') #Error window
+        self.command('1W(IT,10)')		#Settling time
+        self.command('1GAINS(5.00,0.00,7.00,5.00,0)') #Set gains
+
+        self.command('1W(IM,1)')		#Integral action in window
+        self.command('1W(IW,50)')		#Integral window
+
+        self.command('1W(ES,1)')		#Drive enable sense (can over-ride input)'
+        self.command('1W(PC,100)')  # Peak current
+        self.command('1W(TL,4000)')  # Tracking limit
+        #Motor configuration
+        self.command('1MOTOR(457,1.2,4000,100,100,3.2,5,312.5)') #Setup
+
+
+
+
+
 
 
 if __name__ == '__main__':
     motors = VIX_Motor_Controller(config=None)
     motors.connect_hardware()
-
-    while True:
-        motors.command("1R(PT)")
-        print(motors.get_response())
-
-    motors.disconnect_hardware()
+    motors.setup_motor_1()
+    # t.sleep(15)
+    # motors.command("1W(PA,0)")
+    # motors.command("1D10000")
+    # motors.command("1ON")
+    # motors.command("1G")
+    #
+    # t.sleep(1)
+    #
+    # target_position_string = motors.ask(f"1R(PT)")
+    # actual_position_string = motors.ask(f"1R(PA)")
+    # position_error_string = motors.ask(f"1R(PE)")
+    #
+    # print(f'Tar: {target_position_string}')
+    # print(f'Act: {actual_position_string}')
+    # print(f'Err: {position_error_string}')

@@ -139,7 +139,7 @@ class AbstractAWG(AbstractDevice):
     """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
     @abstractmethod
     def GetBurst(self):
-        return  self.state["burst"]
+        return self.state["burst"]
 
     @abstractmethod
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):

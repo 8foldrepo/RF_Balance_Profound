@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 from Utilities.useful_methods import bound
 from Hardware.Simulators.dummy_motors import  DummyMotors
 from Utilities.useful_methods import create_coord_rays, create_comma_string
-
+import time as t
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractMotorController(AbstractDevice):
@@ -307,6 +307,11 @@ class AbstractMotorController(AbstractDevice):
             comma_string = create_comma_string(axes=axes,coords=coords,ax_letters=self.ax_letters)
 
             self.dummy_command_signal.emit(f'GO {comma_string}')
+
+            t.sleep(.2)
+            self.get_position()
+            self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('X')])
+            self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('R')])
 
         @abstractmethod
         def is_moving(self):

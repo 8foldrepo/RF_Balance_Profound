@@ -4,6 +4,8 @@ Autoset timebase:
   Horizontal scale (us): 5
 Debugging:
   simulate_hw: true
+  simulate_ua_interface: true
+  simulate_sensors: true
   simulate_motors: true
   simulate_oscilloscope: true
   end_script_on_errors: false
@@ -109,11 +111,8 @@ VIX_Motors:
   - false
   - false
   enable_homing_ray:
-    - false
-    - false
-  homing_offset_ray: #Difference between motor's home position and the desired home position (defined by wtf_position_parameters)
-    - false
-    - false
+    - true
+    - true
   rotational_ray:
   - false
   - true
