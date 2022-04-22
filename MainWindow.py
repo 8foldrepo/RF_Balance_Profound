@@ -121,6 +121,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def style_ui(self):
         self.setWindowIcon(QIcon('8foldlogo.ico'))
+        self.tabWidget.setCurrentIndex(0)
 
         # Format treewidget
         self.script_step_view.setColumnCount(2)
@@ -188,6 +189,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 # If the variable is an element number that is looped
                 if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
                     var.setText(1, f'Current: {self.live_element_field.text()}')
+
+    @pyqtSlot(int)
+    def set_tab_slot(self,index):
+        self.tabWidget.setCurrentIndex(index)
 
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
@@ -295,6 +300,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.abort_signal.connect(self.manager.abort)
         self.load_script_signal.connect(self.manager.load_script)
         self.run_step_signal.connect(self.manager.advance_script)
+        self.manager.set_tab_signal.connect(self.set_tab_slot)
 
     @pyqtSlot(float)
     def update_x_pos_field(self, position_mm):
@@ -636,7 +642,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_user_prompt_pump_not_running(self, pump_status):
-        dlg = WTFUserPromptPumpNotRunning(config)
+        dlg = WTFUserPromptPumpNotRunning(config=self.config)
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
         dlg.continue_signal.connect(self.manager.cont)

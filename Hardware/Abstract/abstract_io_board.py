@@ -8,6 +8,8 @@ import time as t
 class IO_Board(AbstractDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
+    filling_signal = pyqtSignal()
+    draining_signal = pyqtSignal()
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -28,6 +30,24 @@ class IO_Board(AbstractDevice):
 
     '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
 
+    def fill_tank(self):
+        self.filling_signal.emit()
+        t.sleep(2)
+        starttime= t.time()
+        while t.time()-starttime<20:
+            if self.get_water_level() == 'level' or self.get_water_level() == 'above_level':
+                return True
+        return False
+
+    def drain_tank(self):
+        self.draining_signal.emit()
+        t.sleep(2)
+        starttime= t.time()
+        while t.time()-starttime<20:
+            if self.get_water_level() == 'below_level':
+                return True
+        return False
+
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         state = random.choice(states)
@@ -46,11 +66,11 @@ class IO_Board(AbstractDevice):
         pass
 
     def disconnect_hardware(self):
-        self.is_connected = True
-        self.connected_signal.emit(self.is_connected)
+        self.connected = True
+        self.connected_signal.emit(self.connected)
 
-    def connected(self):
-        return self.is_connected
+    def is_connected(self):
+        return self.connected
 
     def wrap_up(self):
         self.disconnect_hardware()

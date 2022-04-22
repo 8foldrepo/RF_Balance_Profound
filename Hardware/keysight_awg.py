@@ -243,7 +243,7 @@ class KeysightAWG(AbstractAWG):
 
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
-    def connected(self):
+    def is_connected(self):
         return self.inst is not None
 
     def wrap_up(self):

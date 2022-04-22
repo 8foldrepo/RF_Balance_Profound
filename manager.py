@@ -67,6 +67,9 @@ class Manager(QThread):
     save_results_signal = pyqtSignal(dict)
     # contains
 
+    #sets the current tab of the main window
+    set_tab_signal = pyqtSignal(int)
+
     Motors = None
 
     def __init__(self, config: dict, parent=None):
@@ -330,10 +333,10 @@ class Manager(QThread):
         if t.time() - self.last_sensor_update_time > self.sensor_refresh_interval_s:
             self.last_sensor_update_time = t.time()
 
-            if self.IO_Board.connected():
+            if self.IO_Board.is_connected():
                 self.IO_Board.get_water_level()
 
-            if self.IO_Board.connected():
+            if self.IO_Board.is_connected():
                 self.IO_Board.get_ua_pump_reading()
 
             if self.thermocouple.connected:
@@ -691,7 +694,7 @@ class Manager(QThread):
             self.test_data["script_log"].append(['', 'Insert UA', f'FAIL {e}'])
             if self.config["Debugging"]['end_script_on_errors']: return self.abort()
 
-        if self.thermocouple.is_connected:
+        if self.thermocouple.connected:
             self.test_data["script_log"].append(['', 'CheckThermocouple', 'OK', ''])
         else:
             self.test_data["script_log"].append(['', 'CheckThermocouple', 'FAIL', ''])
@@ -789,6 +792,9 @@ class Manager(QThread):
     '''Find UA element with given number'''
 
     def find_element(self, var_dict):
+        # Set the tab to the scan tab
+        self.set_tab_signal.emit(6)
+
         self.element = self.element_str_to_int(var_dict['Element'])
         x_increment_MM = float(var_dict['X Incr. (mm)'])
         XPts = int(var_dict['X #Pts.'])
@@ -1183,6 +1189,11 @@ class Manager(QThread):
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, var_dict):
+        #Set the tab to the rfb tab
+        self.set_tab_signal.emit(3)
+
+        self.user_prompt_signal.emit("Please ensure that balance is turned on")
+
         self.test_data["script_log"].append(['Measure element efficiency (RFB)', 'OK', '', ''])
 
         try:

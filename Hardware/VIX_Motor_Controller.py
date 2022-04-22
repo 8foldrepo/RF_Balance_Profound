@@ -324,7 +324,7 @@ class VIX_Motor_Controller(AbstractMotorController):
             # self.log(level='error', message=
             # f"{self.device_key} COM port found but motor controller is not responding. "
             # f"Make sure it is powered up and click setup.")
-            self.is_connected = True
+            self.connected = True
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "PermissionError" in str(e):
@@ -336,7 +336,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 f"to determine which COM port to use. enter it into Local.yaml {e}")
 
         # TODO: remove this when limits are added
-        self.connected_signal.emit(self.is_connected)
+        self.connected_signal.emit(self.connected)
 
     def disconnect_hardware(self):
         try:
@@ -344,11 +344,11 @@ class VIX_Motor_Controller(AbstractMotorController):
             self.ser.close()
         except:
             pass
-        self.is_connected = False
+        self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def connected(self):
-        return self.is_connected
+    def is_connected(self):
+        return self.connected
 
     '''Attempt to send command until it is faithfully echoed by the controller, or else return false'''
 

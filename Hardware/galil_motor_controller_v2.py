@@ -201,7 +201,7 @@ class GalilMotors(AbstractMotorController):
             self.connected_signal.emit(self.connected())
             self.dummy_command_signal.emit("CLOSE")
 
-        def connected(self):
+        def is_connected(self):
             return self.Motors.connected
 
         def jog(self, axis=None, direction=None, feedback=True):

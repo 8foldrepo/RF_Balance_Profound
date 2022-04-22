@@ -181,12 +181,12 @@ class NI_DAQ(AbstractDevice):
                     self.log(level='error', message=f'Unknown error {str(e)}')
 
     def disconnect_hardware(self):
-        self.is_connected = True
-        self.connected_signal.emit(self.is_connected)
+        self.connected = True
+        self.connected_signal.emit(self.connected)
         self.power_relay.relay_write(False)
 
-    def connected(self):
-        return self.is_connected
+    def is_connected(self):
+        return self.connected
 
     def wrap_up(self):
         self.disconnect_hardware()

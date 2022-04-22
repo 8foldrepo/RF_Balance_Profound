@@ -37,6 +37,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.mainwindow = mainwindow
 
     def style_ui(self):
+        self.scan_tabs.setCurrentIndex(0)
         self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)

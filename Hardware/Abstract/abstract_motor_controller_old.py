@@ -208,7 +208,7 @@ class AbstractMotorController(AbstractDevice):
             self.dummy_command_signal.emit("CLOSE")
 
         @abstractmethod
-        def connected(self):
+        def is_connected(self):
             return self.Motors.connected
 
         @abstractmethod

@@ -26,7 +26,7 @@ class UAInterfaceBox(AbstractDevice):
         self.timeout_s = self.config[self.device_key]['timeout_s']
 
     def connect_hardware(self):
-        self.is_connected = True
+        self.connected = True
 
         self.log('Attempting to connect to WTFIB... ')
 
@@ -34,19 +34,19 @@ class UAInterfaceBox(AbstractDevice):
         output = p.communicate()[0].decode()
         if 'timed out' in output:
             self.log('ping to WTFIB timed out')
-            self.is_connected = False
-            self.connected_signal.emit(self.is_connected)
+            self.connected = False
+            self.connected_signal.emit(self.connected)
             return
         self.log('WTFIB connected successfully')
-        self.is_connected = True
-        self.connected_signal.emit(self.is_connected)
+        self.connected = True
+        self.connected_signal.emit(self.connected)
 
     def disconnect_hardware(self):
-        self.is_connected = False
-        self.connected_signal.emit(self.is_connected)
+        self.connected = False
+        self.connected_signal.emit(self.connected)
 
-    def connected(self):
-        return self.is_connected
+    def is_connected(self):
+        return self.connected
 
     def wrap_up(self):
         self.disconnect_hardware()
