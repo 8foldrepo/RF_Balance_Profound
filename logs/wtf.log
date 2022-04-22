@@ -1,25 +1,6 @@
-2022-04-22 16:23:19,424 [INFO] [Manager] [manager_thread] : Running script
-2022-04-22 16:23:21,298 [INFO] [Manager] [] : Checking ability to log
-2022-04-22 16:23:22,748 [INFO] [NI_DAQ] [] : Filling tank, please wait...
-2022-04-22 16:23:32,752 [INFO] [NI_DAQ] [] : Tank full
-2022-04-22 16:23:37,152 [INFO] [Manager] [] : Maximum of 1181.0185988787437 @ x = -1.375 mm. Going there.
-2022-04-22 16:23:45,921 [INFO] [Manager] [] : Maximum of -26870460.84789397 @ theta = -98.20000000000023 degrees. Going there.
-2022-04-22 16:23:45,984 [INFO] [Manager] [] : Element number not given, using current element: 1
-2022-04-22 16:23:45,984 [INFO] [Manager] [] : Element number not given, using previous element: 1
-2022-04-22 16:23:46,018 [INFO] [Manager] [] : Element number not given, using previous element: 1
-2022-04-22 16:23:46,234 [INFO] [Manager] [] : Moved to 1, at coordinate x=-1.38, r=-1.4
-2022-04-22 16:23:46,235 [INFO] [MT_balance] [] : Zeroing Balance
-2022-04-22 16:23:46,236 [INFO] [MT_balance] [] : Balance Zeroed
-2022-04-22 16:23:46,236 [INFO] [Manager] [] : Turning off AWG
-2022-04-22 16:23:56,245 [INFO] [Manager] [] : Turning on AWG
-lement number not given, using previous element: 1
-2022-04-22 16:23:46,018 [INFO] [Manager] [] : Element number not given, using previous element: 1
-2022-04-22 16:23:46,234 [INFO] [Manager] [] : Moved to 1, at coordinate x=-1.38, r=-1.4
-2022-04-22 16:23:46,235 [INFO] [MT_balance] [] : Zeroing Balance
-2022-04-22 16:23:46,236 [INFO] [MT_balance] [] : Balance Zeroed
-2022-04-22 16:23:46,236 [INFO] [Manager] [] : Turning off AWG
-2022-04-22 16:23:56,245 [INFO] [Manager] [] : Turning on AWG
-
-2022-04-22 16:23:46,236 [INFO] [MT_balance] [] : Balance Zeroed
-2022-04-22 16:23:46,236 [INFO] [Manager] [] : Turning off AWG
-2022-04-22 16:23:56,245 [INFO] [Manager] [] : Turning on AWG
+2022-04-22 16:33:36,996 [INFO] [PowerMeter] [manager_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-04-22 16:33:37,620 [INFO] [PowerMeter] [manager_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-04-22 16:33:37,676 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
+2022-04-22 16:33:37,684 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully
+2 16:33:37,676 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
+2022-04-22 16:33:37,684 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully

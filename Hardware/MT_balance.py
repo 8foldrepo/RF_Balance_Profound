@@ -210,7 +210,6 @@ class MT_balance(AbstractBalance):
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                print(item)
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
