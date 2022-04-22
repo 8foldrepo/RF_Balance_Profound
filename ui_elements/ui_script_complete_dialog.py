@@ -1,8 +1,10 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QTableWidgetItem, QDialog, QApplication
 from Widget_Library import  dialog_script_complete
+from ui_elements.my_qdialog import MyQDialog
 
-class ScriptCompleteDialog(QDialog, dialog_script_complete.Ui_Dialog):
+
+class ScriptCompleteDialog(MyQDialog, dialog_script_complete.Ui_Dialog):
     continue_signal = pyqtSignal()
     abort_signal = pyqtSignal()
 
@@ -45,10 +47,12 @@ class ScriptCompleteDialog(QDialog, dialog_script_complete.Ui_Dialog):
 
     def ok_clicked(self):
         # currently close will emit the continue signal. If this is changed, emit continue_signal here
+        self.dialog_resolved = True
         self.close()
 
     def closeEvent(self, event) -> None:
         self.continue_signal.emit()
+        self.dialog_resolved = True
         event.accept()
 
 if __name__ == "__main__":

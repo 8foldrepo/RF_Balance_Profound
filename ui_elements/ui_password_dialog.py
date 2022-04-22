@@ -21,7 +21,6 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
         self.setupUi(self)
         self.style_ui()
         self.configure_signals()
-        self.granted = False
 
     def style_ui(self):
         pass
@@ -32,15 +31,15 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
 
     def check_password(self):
         if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == self.config["User Accounts"]["Operator"]:
-            self.granted = True
+            self.dialog_resolved = True
             self.access_level_signal.emit("Operator")
             self.close()
         elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == self.config["User Accounts"]["Engineer"]:
-            self.granted = True
+            self.dialog_resolved = True
             self.access_level_signal.emit("Engineer")
             self.close()
         elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == self.config["User Accounts"]["Administrator"]:
-            self.granted = True
+            self.dialog_resolved = True
             self.access_level_signal.emit("Administrator")
             self.close()
 
@@ -49,8 +48,10 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
         self.close()
 
     def closeEvent(self, event):
-        if not self.granted:
+        if not self.dialog_resolved:
             self.access_level_signal.emit("Denied")
+            self.abort_signal.emit()
+
         event.accept()
 
     def _save_to_path(self, path):

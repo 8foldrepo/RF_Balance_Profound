@@ -636,7 +636,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_user_prompt_pump_not_running(self, pump_status):
-        dlg = WTFUserPromptPumpNotRunning()
+        dlg = WTFUserPromptPumpNotRunning(config)
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
         dlg.continue_signal.connect(self.manager.cont)

@@ -14,7 +14,6 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.setupUi(self)
         self.configure_signals()
         self.metadata_dict = dict()
-        self.ok = False
 
         # add formatted date
         now = datetime.now()
@@ -87,18 +86,12 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.metadata_dict['test_date_time'] = self.date_output.text()
 
         self.pretest_metadata_signal.emit(self.metadata_dict)
-        self.ok = True
+        self.dialog_resolved = True
 
         self.close()
 
     def cancel_clicked(self):
         self.close()
-
-    def closeEvent(self, event):
-        if not self.ok:
-            self.abort_signal.emit()
-
-        event.accept()
 
 def print_info(dict):
     print(f"metadate {dict}")

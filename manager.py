@@ -1345,7 +1345,10 @@ class Manager(QThread):
         # Mean acoustic power while on
         reflected_power_on_mean = sum(reflected_power_on_data) / len(reflected_power_on_data)
 
-        reflected_power_percent = reflected_power_on_mean / forward_power_on_mean
+        if forward_power_on_mean != 0:
+            reflected_power_percent = reflected_power_on_mean / forward_power_on_mean
+        else:
+            reflected_power_percent = 1
 
         forward_power_max = max(forward_power_on_data)
 

@@ -9,6 +9,7 @@ class WTFUserPrompt (MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
 
     def __init__(self, config = None):
         super().__init__(config=config)
+
         self.setupUi(self)
         self.configure_signals()
 
@@ -18,14 +19,15 @@ class WTFUserPrompt (MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
         self.retry_button.clicked.connect(self.retry_clicked)
 
     def continue_clicked(self):
+        self.dialog_resolved = True
         self.continue_signal.emit()
         self.close()
 
     def abort_clicked(self):
-        self.abort_signal.emit()
         self.close()
 
     def retry_clicked(self):
+        self.dialog_resolved = True
         self.retry_signal.emit()
         self.close()
 

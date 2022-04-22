@@ -96,7 +96,7 @@ class MT_balance(AbstractBalance):
                 stopbits=serial.STOPBITS_TWO,
                 bytesize=serial.SEVENBITS,
             )
-            self.ser.write(b"ON\r")
+            # self.ser.write(b"ON\r")
             self.connected = True
         except serial.serialutil.SerialException as e:
             self.connected = False
@@ -155,7 +155,7 @@ class MT_balance(AbstractBalance):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write(b"\nSI\n")
+        # self.ser.write(b"\nSI\n")
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
@@ -235,7 +235,9 @@ class MT_balance(AbstractBalance):
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())
     balance.connect_hardware()
-    print(balance.connected)
-    input('press enter when weight is on scale')
-    print(balance.get_reading())
+    while True:
+        print(balance.get_reading())
+    # print(balance.connected)
+    # input('press enter when weight is on scale')
+    # print(balance.get_reading())
 

@@ -14,9 +14,11 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
+# Features common to all custom widgets in this project
 class MyQWidget(QWidget):
     def __init__(self, parent=None, ):
         super().__init__(parent=parent)
 
+    #Ability to log data
     def log(self, message, level='info'):
         log_msg(self, root_logger, message=message, level=level)
