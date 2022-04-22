@@ -265,7 +265,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         self.command(f'{axis_number}GH')
 
     def setup_home(self):
-        # todo: test these values and edit accordingly
+        #todo: test and uncomment
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
                            reference_edge='+', normally_closed=False, speed=10, mode=1)
         self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
@@ -386,6 +386,7 @@ class VIX_Motor_Controller(AbstractMotorController):
                 self.log(f"output = {output}")
 
             self.ser.write(output)
+            t.sleep(.05) #todo: test this for time and reliability
             # Listen for echo twice
             for i in range(2):
                 echo = self.ser.readline().strip(b'\r\n')
@@ -475,9 +476,9 @@ class VIX_Motor_Controller(AbstractMotorController):
 
         return reply
 
-    def ask(self, command, retries=5, mutex_locked=False):
+    def ask(self, command, retries=5, mutex_locked=False, log=False):
         for i in range(retries):
-            self.command(command, mutex_locked=mutex_locked)
+            self.command(command, mutex_locked=mutex_locked, log=log)
             response = self.get_response(mutex_locked=mutex_locked)
             if not '*E' in response:
                 return response
@@ -582,11 +583,11 @@ class VIX_Motor_Controller(AbstractMotorController):
         self.command(f'{axis_number}V{steps_per_s}')
         self.command(f'{axis_number}D{self.increment_ray[axis_index]}')
 
-    def set_limits_enabled(self, enabled):
+    def set_limits_enabled(self, enabled = True):
         if enabled:
             self.command('0LIMITS(0,1,0,200)')
         else:
-            self.command("0LIMITS(1,1,200)")
+            self.command("0LIMITS(1,1,0,200)")
 
     def set_position_maintanance(self, on):
         if on:
@@ -676,7 +677,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         moving_margin_ray = [0.001, .001]
 
         for i in range(len(self.ax_letters)):
-            position_string = self.ask(f"{i + 1}R(PT)", mutex_locked=mutex_locked)
+            position_string = self.ask(f"{i + 1}R(PT)", mutex_locked=mutex_locked, log = False)
             position_string = position_string.replace('*', '')
             try:
                 position_steps = float(position_string)
@@ -712,7 +713,7 @@ class VIX_Motor_Controller(AbstractMotorController):
         self.app.processEvents()
 
     def check_user_fault(self, axis_number):
-        response = self.ask(f'{axis_number}R(UF)', retries=5)
+        response = self.ask(f'{axis_number}R(UF)', retries=1)
         response = response.replace('_', '')
         if not '1' in response:
             return

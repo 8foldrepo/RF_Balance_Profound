@@ -119,46 +119,15 @@ class MT_balance(AbstractBalance):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def get_reading(self):
-        if self.ser is None:
-            self.log(level='error', message=f'{self.device_key} not connected')
-            return
-
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
-            y = self.ser.readline().split(b"\r\n")
-            print(y)
-            for item in y:
-                if b'S S' in item:
-                    chunks = item.split(b" ")
-                    for chunk in chunks:
-                        print(chunk)
-                        if is_number(chunk):
-                            val = float(chunk)
-                            self.latest_weight = val
-                            self.reading_signal.emit(val)
-                            return val
-                else:
-                    if item == b'I':
-                        self.log(level = 'error', message='Weight unstable or balance busy')
-                        return
-                    elif item == b'+':
-                        self.log(level = 'error', message='Balance overloaded')
-                        return
-                    elif item == b'-':
-                        self.log(level = 'error', message='Balance underloaded')
-                        return
-        self.log(level='error', message=f'{self.device_key} timed out')
-
     # def get_reading(self):
     #     if self.ser is None:
     #         self.log(level='error', message=f'{self.device_key} not connected')
     #         return
     #
-    #     self.ser.write(b"\nSI\n")
     #     starttime = t.time()
     #     while t.time() - starttime < self.timeout_s:
     #         y = self.ser.readline().split(b"\r\n")
+    #         print(y)
     #         for item in y:
     #             if b'S S' in item:
     #                 chunks = item.split(b" ")
@@ -180,6 +149,37 @@ class MT_balance(AbstractBalance):
     #                     self.log(level = 'error', message='Balance underloaded')
     #                     return
     #     self.log(level='error', message=f'{self.device_key} timed out')
+
+    def get_reading(self):
+        if self.ser is None:
+            self.log(level='error', message=f'{self.device_key} not connected')
+            return
+
+        self.ser.write(b"\nSI\n")
+        starttime = t.time()
+        while t.time() - starttime < self.timeout_s:
+            y = self.ser.readline().split(b"\r\n")
+            for item in y:
+                if b'S S' in item:
+                    chunks = item.split(b" ")
+                    for chunk in chunks:
+                        print(chunk)
+                        if is_number(chunk):
+                            val = float(chunk)
+                            self.latest_weight = val
+                            self.reading_signal.emit(val)
+                            return val
+                else:
+                    if item == b'I':
+                        self.log(level = 'error', message='Weight unstable or balance busy')
+                        return
+                    elif item == b'+':
+                        self.log(level = 'error', message='Balance overloaded')
+                        return
+                    elif item == b'-':
+                        self.log(level = 'error', message='Balance underloaded')
+                        return
+        self.log(level='error', message=f'{self.device_key} timed out')
 
     def reset(self):
         if self.ser is None:

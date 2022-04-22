@@ -43,6 +43,7 @@ class NI_DAQ(AbstractDevice):
             return True
         if water_level == "below_level" or 'level':
             self.log("Filling tank, please wait...")
+            self.set_tank_pump_on(on=True,clockwise=True)
             self.filling_signal.emit()
             starttime = t.time()
 
@@ -69,6 +70,7 @@ class NI_DAQ(AbstractDevice):
         if water_level == "below_level" or 'level':
             self.log("Draining tank, please wait...")
             self.draining_signal.emit()
+            self.set_tank_pump_on(on=True, clockwise=False)
             starttime = t.time()
 
             while t.time() - starttime < self.config[self.device_key]["Water level timeout (s)"]:
@@ -194,11 +196,11 @@ if __name__ == '__main__':
     daq = NI_DAQ()
     daq.connect_hardware()
 
-    while True:
-        print(daq.get_ua_pump_reading())
+    # while True:
+    #     print(daq.get_ua_pump_reading())
 
     # for i in range(11):
     #     daq.activate_relay_channel(i)
     #     t.sleep(.5)
     #
-    # daq.set_tank_pump_on(True, False)
+    daq.set_tank_pump_on(True, False)

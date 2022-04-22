@@ -27,6 +27,7 @@ class RFB(MyQWidget, Ui_Form):
 
     def style_ui(self):
         # add default data to plots
+        self.rfb_graph.setLabel("left", "Power (W)", **self.rfb_graph.styles)
         y = range(0, 100)
         x = range(0, 100)
         self.rfb_graph.refresh(x, y)
