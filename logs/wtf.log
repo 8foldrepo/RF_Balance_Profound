@@ -1,6 +1,20 @@
-2022-04-22 16:33:36,996 [INFO] [PowerMeter] [manager_thread] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-04-22 16:33:37,620 [INFO] [PowerMeter] [manager_thread] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-04-22 16:33:37,676 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
-2022-04-22 16:33:37,684 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully
-2 16:33:37,676 [INFO] [UAInterfaceBox] [manager_thread] : Attempting to connect to WTFIB... 
-2022-04-22 16:33:37,684 [INFO] [UAInterfaceBox] [manager_thread] : WTFIB connected successfully
+2022-04-24 13:52:59,789 [INFO] [Manager] [manager_thread] : Running script
+2022-04-24 13:53:02,435 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-24 13:53:02,547 [INFO] [Manager] [] : Aborting script
+2022-04-24 13:53:56,939 [INFO] [Manager] [manager_thread] : Running script
+2022-04-24 13:53:57,010 [INFO] [Manager] [] : Element number not given, using current element: 1
+2022-04-24 13:53:57,011 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-04-24 13:53:57,030 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-04-24 13:53:57,544 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.00, r=0.0
+2022-04-24 13:53:57,545 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-24 13:53:57,546 [INFO] [AbstractBalance] [] : Zeroing Balance
+2022-04-24 13:53:57,547 [INFO] [AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-24 13:53:57,548 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-24 13:53:57,548 [INFO] [Manager] [] : Turning off AWG
+2022-04-24 13:54:07,556 [INFO] [Manager] [] : Turning on AWG
+2022-04-24 13:54:17,572 [INFO] [Manager] [] : Turning off AWG
+[AbstractBalance] [] : Zeroing Balance, Please wait
+2022-04-24 13:53:57,548 [INFO] [AbstractBalance] [] : Balance Zeroed
+2022-04-24 13:53:57,548 [INFO] [Manager] [] : Turning off AWG
+2022-04-24 13:54:07,556 [INFO] [Manager] [] : Turning on AWG
+2022-04-24 13:54:17,572 [INFO] [Manager] [] : Turning off AWG

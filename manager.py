@@ -1262,6 +1262,10 @@ class Manager(QThread):
                 if self.step_index == -1:
                     return
 
+                #Todo: replace this data capture routine with a Data_Logger QThread objecect, and move the balance
+                #and power meters to this QThread. Have it handle capturing from all three sensors at once,
+                #And emit the signals to the rfb tab
+
                 forward_power_w = self.Forward_Power_Meter.get_reading()
                 forward_powers_w.append(forward_power_w)
                 forward_powers_time_s.append(t.time() - startTime)

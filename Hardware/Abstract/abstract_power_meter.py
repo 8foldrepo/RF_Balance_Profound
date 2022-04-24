@@ -30,6 +30,7 @@ class PowerMeter(AbstractSensor):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
+        t.sleep(.5)
         reading = random.random()
         self.reading_signal.emit(reading)
         return reading
