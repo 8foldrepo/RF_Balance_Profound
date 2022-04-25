@@ -59,62 +59,63 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QCheckBox" name="incl_test_check">
      <property name="geometry">
       <rect>
-       <x>6</x>
-       <y>7</y>
-       <width>210</width>
-       <height>41</height>
+       <x>150</x>
+       <y>34</y>
+       <width>66</width>
+       <height>13</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="peak_vsi_test_horz">
-      <property name="spacing">
-       <number>48</number>
-      </property>
-      <item>
-       <layout class="QVBoxLayout" name="peak_vsi_horz_2">
-        <item>
-         <widget class="QLabel" name="label_15">
-          <property name="text">
-           <string>Peak VSI threshold</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="peak_vsi_spinbox">
-          <property name="maximumSize">
-           <size>
-            <width>60</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background:white</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Include test</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="incl_test_check">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="peak_vsi_spinbox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>29</y>
+       <width>60</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>60</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:white</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>90</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Peak VSI threshold</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>10</y>
+       <width>66</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Include test</string>
+     </property>
     </widget>
    </widget>
    <widget class="QPushButton" name="data_direc_button">
@@ -138,7 +139,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>251</width>
+      <width>280</width>
       <height>164</height>
      </rect>
     </property>
@@ -152,17 +153,35 @@
      </item>
      <item row="0" column="1">
       <widget class="QComboBox" name="freq_range_combo">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;- Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;- Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="styleSheet">
         <string notr="true">background:white</string>
        </property>
        <item>
         <property name="text">
-         <string>Low frequency</string>
+         <string>From config cluster</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>High frequency</string>
+         <string>Element pk low frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Element pk high frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Common low frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Common high frequency</string>
         </property>
        </item>
       </widget>
@@ -396,12 +415,20 @@
          <height>20</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Single Waveform &lt;/p&gt;&lt;p&gt;- N Averaged Waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="styleSheet">
         <string notr="true">background:white</string>
        </property>
        <item>
         <property name="text">
          <string>Single Waveform</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>N Averaged Waveform</string>
         </property>
        </item>
       </widget>
@@ -479,12 +506,25 @@
      </item>
      <item row="1" column="0">
       <widget class="QComboBox" name="data_storage_combo">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Do not store&lt;/p&gt;&lt;p&gt;- Store profiles only&lt;/p&gt;&lt;p&gt;- Store entire waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; </string>
+       </property>
        <property name="styleSheet">
         <string notr="true">background:white</string>
        </property>
        <item>
         <property name="text">
          <string>Do not store</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Store profiles only</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Store entire waveform</string>
         </property>
        </item>
       </widget>

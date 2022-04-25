@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>308</height>
+    <width>290</width>
+    <height>260</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>290</width>
+    <height>260</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>290</width>
+    <height>260</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -23,7 +35,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="mov_to_pos_tab">
     <attribute name="title">
@@ -34,12 +46,12 @@
       <rect>
        <x>20</x>
        <y>10</y>
-       <width>63</width>
-       <height>13</height>
+       <width>80</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>Script - Move</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Script - Move&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QFrame" name="move_pos_frame">
@@ -212,120 +224,121 @@
     <attribute name="title">
      <string>Move to element</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QComboBox" name="orientation_target_combo">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>121</width>
-       <height>121</height>
+       <x>70</x>
+       <y>110</y>
+       <width>117</width>
+       <height>20</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="elem_orientation_vert">
-      <property name="spacing">
-       <number>37</number>
+     <item>
+      <property name="text">
+       <string>Hydrophone</string>
       </property>
-      <item>
-       <layout class="QVBoxLayout" name="elem_vert">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Element</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="element_combo">
-          <item>
-           <property name="text">
-            <string>Element 1</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Current</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 2</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 3</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 4</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 5</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 6</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 7</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 8</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 9</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Element 10</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="orientation_vert">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Orientation/target</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="orientation_target_combo">
-          <item>
-           <property name="text">
-            <string>Hydrophone</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Down</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>RFB</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     </item>
+     <item>
+      <property name="text">
+       <string>Down</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RFB</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QComboBox" name="element_combo">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>45</y>
+       <width>117</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Current</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Element 10</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>25</y>
+       <width>51</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Element&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>90</y>
+       <width>111</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Orientation/target&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
     </widget>
    </widget>
   </widget>

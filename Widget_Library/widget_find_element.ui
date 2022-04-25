@@ -336,19 +336,17 @@
       <height>20</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Single Waveform &lt;/p&gt;&lt;p&gt;- N Averaged Waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <item>
      <property name="text">
-      <string>N Averaged</string>
+      <string>N Averaged Waveform</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Type 2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Type 3</string>
+      <string>Single Waveform</string>
      </property>
     </item>
    </widget>
@@ -563,19 +561,22 @@
       <height>20</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Do not store&lt;/p&gt;&lt;p&gt;- Store profiles only&lt;/p&gt;&lt;p&gt;- Store entire waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt; </string>
+    </property>
     <item>
      <property name="text">
-      <string>Stored</string>
+      <string>Do not store</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Not Stored</string>
+      <string>Store profiles only</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Data 3</string>
+      <string>Store entire waveform</string>
      </property>
     </item>
    </widget>
@@ -707,19 +708,32 @@
       <height>20</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;- Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;- Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <item>
      <property name="text">
-      <string>Avg. Low Frequency</string>
+      <string>From config cluster</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Freq 2</string>
+      <string>Element pk low frequency</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Freq 3</string>
+      <string>Element pk high frequency</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Common low frequency</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Common high frequency</string>
      </property>
     </item>
    </widget>

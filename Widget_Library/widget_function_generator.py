@@ -91,6 +91,10 @@ class Ui_config_func_generator(object):
         self.set_freq_opt_combo = QtWidgets.QComboBox(self.layoutWidget3)
         self.set_freq_opt_combo.setObjectName("set_freq_opt_combo")
         self.set_freq_opt_combo.addItem("")
+        self.set_freq_opt_combo.addItem("")
+        self.set_freq_opt_combo.addItem("")
+        self.set_freq_opt_combo.addItem("")
+        self.set_freq_opt_combo.addItem("")
         self.set_freq_opt_vert.addWidget(self.set_freq_opt_combo)
 
         self.retranslateUi(config_func_generator)
@@ -108,7 +112,12 @@ class Ui_config_func_generator(object):
         self.enable_output_switch.setText(_translate("config_func_generator", "PushButton"))
         self.label_6.setText(_translate("config_func_generator", "#Cycles"))
         self.label_2.setText(_translate("config_func_generator", "Set frequency options"))
+        self.set_freq_opt_combo.setToolTip(_translate("config_func_generator", "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>"))
         self.set_freq_opt_combo.setItemText(0, _translate("config_func_generator", "From config cluster"))
+        self.set_freq_opt_combo.setItemText(1, _translate("config_func_generator", "Element pk low frequency"))
+        self.set_freq_opt_combo.setItemText(2, _translate("config_func_generator", "Element pk high frequency"))
+        self.set_freq_opt_combo.setItemText(3, _translate("config_func_generator", "Common low frequency"))
+        self.set_freq_opt_combo.setItemText(4, _translate("config_func_generator", "Common high frequency"))
 from ui_elements.switch import Switch
 
 

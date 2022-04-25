@@ -52,23 +52,43 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>125</width>
+      <width>175</width>
       <height>20</height>
      </rect>
     </property>
     <item>
      <property name="text">
-      <string>Disable UA Pump</string>
+      <string>Fill measurement tank</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Selection 2</string>
+      <string>Drain measurement tank</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Selection 3</string>
+      <string>Enable UA pump</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Disable UA pump</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Enable Power Amplifier</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Testing sequence complete</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Other</string>
      </property>
     </item>
    </widget>

@@ -9,6 +9,12 @@ from ui_elements.script_editor.ui_prompt_user_for_action import PromptUserForAct
 from ui_elements.script_editor.ui_loop_over_elements import LoopOverElements
 from ui_elements.script_editor.ui_measure_element_efficiency import MeasureElementEfficiency
 from ui_elements.script_editor.ui_save_results import SaveResults
+from ui_elements.script_editor.ui_frequency_sweep import FrequencySweep
+from ui_elements.script_editor.ui_oscilloscope_channel import OscilloscopeChannels
+from ui_elements.script_editor.ui_oscilloscope_timebase import OscilloscopeTimebase
+from ui_elements.script_editor.ui_move_system import MoveSystem
+from ui_elements.script_editor.ui_function_generator import FunctionGenerator
+from ui_elements.script_editor.ui_select_ua_channel import SelectUAChannel
 #from ui_elements.script_editor. import
 #from ui_elements.script_editor. import
 
@@ -52,16 +58,26 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.widget = FindElement()
         elif task_type == "Loop over elements":
             self.widget = LoopOverElements()
-        #elif task_type == "End loop"
         elif task_type == "Measure element efficiency (RFB)":
             self.widget = MeasureElementEfficiency()
         elif task_type == "Save results":
             self.widget = SaveResults()
-        #elif task_type == "Save results"
         elif task_type == "Prompt user for action":
             self.widget = PromptUserForAction()
         elif task_type == "Home system":
             self.widget = HomeSystem()
+        elif task_type == "Frequency sweep":
+            self.widget = FrequencySweep()
+        elif task_type == "Configure oscilloscope channels":
+            self.widget = OscilloscopeChannels()
+        elif task_type == "Configure oscilloscope timebase":
+            self.widget = OscilloscopeTimebase()
+        elif task_type == "Move system":
+            self.widget = MoveSystem()
+        elif task_type == "Configure function generator":
+            self.widget = FunctionGenerator()
+        elif task_type == "Select UA channel":
+            self.widget = SelectUAChannel()
         #elif task_type == ""
         #elif task_type == ""
         #elif task_type == ""
@@ -186,6 +202,30 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def end_loop_dict(self):
         return OrderedDict([('Task type', 'End loop_1')])
 
+    def frequency_sweep_dict(self):
+        return OrderedDict([('Task type', 'Frequency sweep')])
+
+    def oscilloscope_channel_dict(self):
+        return OrderedDict([('Task type', 'Configure oscilloscope channels')])
+
+    def oscilloscope_timebase_dict(self):
+        return OrderedDict([('Task type', 'Configure oscilloscope timebase')])
+
+    def move_system_dict(self):
+        return OrderedDict([('Task type', 'Move system')])
+
+    def function_generator_dict(self):
+        return OrderedDict([('Task type', 'Configure function generator')])
+
+    def select_UA_channel_dict(self):
+        return OrderedDict([('Task type', 'Select UA channel')])
+
+    def auto_gain_control_dict(self):
+        return OrderedDict([('Task type', 'Run "Auto Gain Control"')])
+
+    def autoset_timebase_dict(self):
+        return OrderedDict([('Task type', 'Autoset timebase')])
+
     def dict_to_tree_item(self, task_dict):
         self.script_changed_signal.emit()
 
@@ -284,6 +324,22 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_arg_dict = self.loop_over_elements_dict()
             elif task_name == 'End loop':
                 new_arg_dict = self.end_loop_dict()
+            elif task_name == 'Frequency sweep':
+                new_arg_dict = self.frequency_sweep_dict()
+            elif task_name == 'Configure oscilloscope channels':
+                new_arg_dict = self.oscilloscope_channel_dict()
+            elif task_name == 'Configure oscilloscope timebase':
+                new_arg_dict = self.oscilloscope_timebase_dict()
+            elif task_name == 'Move system':
+                new_arg_dict = self.move_system_dict()
+            elif task_name == 'Configure function generator':
+                new_arg_dict = self.function_generator_dict()
+            elif task_name == 'Select UA channel':
+                new_arg_dict = self.select_UA_channel_dict()
+            elif task_name == 'Run "Auto Gain Control"':
+                new_arg_dict = self.auto_gain_control_dict()
+            elif task_name == 'Autoset timebase':
+                new_arg_dict = self.autoset_timebase_dict()
             #todo: add more methods
             else:
                 new_arg_dict = OrderedDict()

@@ -184,9 +184,32 @@
     </item>
     <item>
      <widget class="QComboBox" name="set_freq_opt_combo">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;- Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;- Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <item>
        <property name="text">
         <string>From config cluster</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Element pk low frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Element pk high frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Common low frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Common high frequency</string>
        </property>
       </item>
      </widget>
