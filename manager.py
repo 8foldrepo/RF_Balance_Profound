@@ -38,6 +38,7 @@ class Manager(QThread):
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal(str)  # str is water level
+    user_prompt_signal_water_too_high_signal = pyqtSignal(str)
     write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
     script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
@@ -761,6 +762,7 @@ class Manager(QThread):
 
         while True:
             water_level = self.IO_Board.get_water_level()
+            print(f"water level inside pretest_initialization inside manager.py = {water_level}")
             if water_level == 'below_level':  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit(water_level)
@@ -772,10 +774,10 @@ class Manager(QThread):
                     return self.abort()
             elif water_level == 'above_level':  # if the water level is not level
                 # launch the dialog box signifying this issue
-                self.user_prompt_signal_water_too_low_signal.emit(water_level)
+                self.user_prompt_signal_water_too_high_signal.emit(water_level)
                 try:
                     self.wait_for_cont()
-                    filled_successfully = self.IO_Board.fill_tank()
+                    drained_successfully = self.IO_Board.drain_tank_to_level()
                 except AbortException:
                     self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
                     return self.abort()

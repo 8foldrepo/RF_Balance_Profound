@@ -67,9 +67,9 @@ class NI_DAQ(AbstractDevice):
         if water_level == "below_level":
             self.log("Tank is already below level")
             return True
-        if water_level == "below_level" or 'level':
+        if water_level == "above_level" or 'level':
             self.log("Draining tank, please wait...")
-            self.draining_signal.emit()
+            self.draining_signal.emit('below_level')
             self.set_tank_pump_on(on=True, clockwise=False)
             starttime = t.time()
 
@@ -83,6 +83,49 @@ class NI_DAQ(AbstractDevice):
 
                 if self.get_water_level() == 'below_level':
                     self.log("Tank drained")
+                    return True
+        return False
+
+    #Todo: test
+    def drain_tank_to_level(self):
+        water_level = self.get_water_level()
+
+        if water_level == "level":
+            self.log("Tank is already level")
+            return True
+        elif water_level == "above_level":
+            self.log("Draining tank, please wait...")
+            self.draining_signal.emit('level')
+            self.set_tank_pump_on(on=True, clockwise=False)
+            starttime = t.time()
+
+            while t.time() - starttime < self.config[self.device_key]["Water level timeout (s)"]:
+                elapsed_time_s = t.time() - starttime
+                # If we are simulating hardware wait 10 seconds and then change the simulated water level
+                if self.simulate_sensors:
+                    if elapsed_time_s >= 10:
+                        self.water_level = 'level'
+                        self.water_level_reading_signal.emit(self.water_level)
+
+                if self.get_water_level() == 'level' or 'below_level':
+                    self.log("Tank drained")
+                    return True
+        elif water_level == 'below_level':
+            self.log("Filling tank, please wait...")
+            self.set_tank_pump_on(on=True, clockwise=True)
+            self.filling_signal.emit()
+            starttime = t.time()
+
+            while t.time() - starttime < self.config[self.device_key]["Water level timeout (s)"]:
+                elapsed_time_s = t.time() - starttime
+                # If we are simulating hardware wait 10 seconds and then change the simulated water level
+                if self.simulate_sensors:
+                    if elapsed_time_s >= 10:
+                        self.water_level = 'level'
+                        self.water_level_reading_signal.emit(self.water_level)
+
+                if self.get_water_level() == 'level' or self.get_water_level() == 'above_level':
+                    self.log("Tank full")
                     return True
         return False
 

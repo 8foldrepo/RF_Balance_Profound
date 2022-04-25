@@ -9,7 +9,8 @@ class IO_Board(AbstractDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
     filling_signal = pyqtSignal()
-    draining_signal = pyqtSignal()
+    #the str is the target water level, either 'level' or 'below_level'
+    draining_signal = pyqtSignal(str)
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -40,7 +41,7 @@ class IO_Board(AbstractDevice):
         return False
 
     def drain_tank(self):
-        self.draining_signal.emit()
+        self.draining_signal.emit('below_level')
         t.sleep(2)
         starttime= t.time()
         while t.time()-starttime<20:
@@ -48,9 +49,19 @@ class IO_Board(AbstractDevice):
                 return True
         return False
 
+    def drain_tank_to_level(self):
+        self.draining_signal.emit('level')
+        t.sleep(2)
+        start_time = t.time()
+        while t.time() - start_time < 20:
+            if self.get_water_level() == 'level':
+                return True
+        return False
+
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         state = random.choice(states)
+        print(f"get_water_level called in abstract_io_board.py, water level is {state}")
         self.water_level_reading_signal.emit(state)
         return state
 
