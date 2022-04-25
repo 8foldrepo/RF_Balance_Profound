@@ -758,7 +758,16 @@ class Manager(QThread):
 
         while True:
             water_level = self.IO_Board.get_water_level()
-            if not water_level == 'level':  # if the water level is not level
+            if water_level == 'below_level':  # if the water level is not level
+                # launch the dialog box signifying this issue
+                self.user_prompt_signal_water_too_low_signal.emit(water_level)
+                try:
+                    self.wait_for_cont()
+                    filled_successfully = self.IO_Board.fill_tank()
+                except AbortException:
+                    self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
+                    return self.abort()
+            elif water_level == 'above_level':  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit(water_level)
                 try:

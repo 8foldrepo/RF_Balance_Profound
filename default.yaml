@@ -72,7 +72,8 @@ Paths:
   UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt
   UA results root directory: C:\Users\Isaiah\Documents\UA results
-  Script log directory: C:\Users\Public\Documents\Results\Logs
+  Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
+  UA scripts directory: C:\Users\Isaiah\Documents\UA results
 Daq_Power_Relay:
   on_by_default: true
   port: COM3

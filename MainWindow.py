@@ -649,6 +649,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
+
     @pyqtSlot(str)
     def show_user_prompt_water_too_low(self, water_level):
         if water_level == 'above_level':
@@ -656,17 +657,20 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             dlg = WTFUserPromptWaterTooLow(high=False)
 
-        if water_level == 'above_level':
-            dlg.label.setText("Above level")
-        elif water_level == 'below_level':
-            dlg.label.setText("Below level")
-        elif water_level == 'level':
-            dlg.label.setText("Water level is good")
+        # if water_level == 'above_level':
+        #     dlg.label.setText("Above level")
+        # elif water_level == 'below_level':
+        #     dlg.label.setText("Below level")
+        # elif water_level == 'level':
+        #     dlg.label.setText("Water level is good")
 
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
+
+
+
 
     @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):

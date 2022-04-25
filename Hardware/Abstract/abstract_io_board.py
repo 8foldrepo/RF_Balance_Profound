@@ -76,7 +76,9 @@ class IO_Board(AbstractDevice):
         self.disconnect_hardware()
 
     def get_ua_pump_reading(self):
-        self.pump_reading_signal.emit(random.choice([True,False]))
+        reading = random.choice([True, False])
+        self.pump_reading_signal.emit(reading)
+        return reading
 
 if __name__ == '__main__':
     daq = IO_Board()

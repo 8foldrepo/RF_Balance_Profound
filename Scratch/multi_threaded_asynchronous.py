@@ -21,7 +21,7 @@ class A(QThread):
         self.condition = QWaitCondition()
         self.mutex.lock()
         while self.stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            wait_bool = self.condition.wait(self.mutex, 1)
 
             self.capture_a()
 
@@ -56,7 +56,7 @@ class B(QThread):
         self.condition = QWaitCondition()
         self.mutex.lock()
         while self.stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            wait_bool = self.condition.wait(self.mutex, 1)
 
             self.capture_b()
 
@@ -93,7 +93,7 @@ class C(QThread):
         self.condition = QWaitCondition()
         self.mutex.lock()
         while self.stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            wait_bool = self.condition.wait(self.mutex, 1)
 
             self.capture_c()
 
