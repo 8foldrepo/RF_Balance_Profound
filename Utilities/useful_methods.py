@@ -427,6 +427,37 @@ def store_measure_rfb_waveform(metadata, forward_power, reflected_power, acousti
 
                 file.write(f"{forward_formatted_time}\t{forward_formatted_wattage}\t{reflected_formatted_time}\t{reflected_formatted_wattage}\t{acoustic_formatted_time}\t{acoustic_formatted_wattage}\n")
 
+def save_find_element_profile(metadata, distances, vms, path):
+    file = open(path + f"FindElement{metadata['element_number']:02}_{metadata['axis']}__UMSProfile.txt", 'w+')
+    file.write(f"UASerialNumber={metadata['serial_number']}\n")
+    file.write("[File Format]\n")
+    file.write(f"Version={metadata['version']}\n")  # comes from config file, will come from metadata for now
+    # file.write(f"Version={config['Software_Version']}\n")
+    file.write(f"# Arrays=1\n")
+    file.write("[Position]\n")
+    file.write(f"X={metadata['X']}\n")
+    file.write(f"Theta={metadata['Theta']}\n")
+    file.write(f"Calibration Frequency={metadata['calibration_frequency_(MHz)']}MHz\n")
+    file.write(f"Source Signal Amplitude={metadata['source_signal_amplitude_(mVpp)']}mVpp\n")
+    file.write(f"Source Signal Type={metadata['source_signal_type']}\n")
+    file.write(f"# Cycles={metadata['number_of_cycles']}\n")
+    file.write("[Array 0]\n")
+    file.write("Label=\"\"\n")
+    file.write("X Data Type=\"Distance (mm)\"\n")
+    file.write("Y Data Type=\"Voltage Squared Integral\"\n")
+    file.write("[Data]\n")
+    file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
+    file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
+
+    if len(distances) != len(vms):
+        # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vms = {len(vms)} mismatch in store_find_element_waveform()")
+        print(f"length of distances = {len(distances)} ; length of vms = {len(vms)} size mismatch in store_find_element_waveform()")
+        return
+    else:
+        for x in range(len(distances)):
+            formatted_time = "{:.6e}".format(distances[x])
+            formatted_voltage = "{:.6e}".format(vms[x])
+            file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
 def test_store_find_element_waveform():
     metadata = dict()
@@ -455,8 +486,7 @@ def test_store_find_element_waveform():
 
     store_find_element_waveform(metadata, times, voltages, path)
 
-
-if __name__ == '__main__':
+def test_store_measure_rfb_waveform():
     metadata = dict()
     metadata['element_number'] = 1
     metadata['axis'] = "Th"
@@ -510,3 +540,29 @@ if __name__ == '__main__':
     path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
 
     store_measure_rfb_waveform(metadata, forward_power, reflected_power, acoustic_power, path)
+
+
+if __name__ == '__main__':
+    metadata = dict()
+    metadata['element_number'] = 1
+    metadata['axis'] = "Th"
+    metadata['waveform_number'] = "Theta000"
+    metadata['serial_number'] = 'GH1214'
+    metadata['version'] = 1.0
+    metadata['X'] = 0.750
+    metadata['Theta'] = -171.198
+    metadata['calibration_frequency_(MHz)'] = '4'
+    metadata['source_signal_amplitude_(mVpp)'] = '50'
+    metadata['source_signal_type'] = 'Toneburst'
+    metadata['number_of_cycles'] = 0
+
+    distances = list()
+    vms = list()
+
+    for x in range(100):
+        distances.append(random.uniform(-8.5, 9.5))
+        vms.append(random.uniform(3.2, 5.1))
+
+    path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
+
+    save_find_element_profile(metadata, distances, vms, path)
