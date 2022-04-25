@@ -11,6 +11,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         # True if the widget is not currently plotting
         self.plot_ready = True
+        self.profile_plot_ready = True
 
         self.configure_signals()
         self.style_ui()
@@ -36,6 +37,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.mainwindow = mainwindow
 
     def style_ui(self):
+        self.scan_tabs.setCurrentIndex(0)
         self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
         self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
@@ -77,7 +79,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
     @pyqtSlot(list,list, str)
     def update_profile_plot(self, x, y, axis_label):
         # Cancel if this widget is not plot ready
-        if not self.plot_ready:
+        if not self.profile_plot_ready:
             return
 
         # Cancel if the current tab is not visible
@@ -96,9 +98,9 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.profile_plot.setLabel("bottom", axis_label, **self.profile_plot.styles)
 
-        self.plot_ready = False
+        self.profile_plot_ready = False
         self.profile_plot.refresh(x, y, pen='k', clear=True)
-        self.plot_ready = True
+        self.profile_plot_ready = True
 
 if __name__ == '__main__':
     import sys

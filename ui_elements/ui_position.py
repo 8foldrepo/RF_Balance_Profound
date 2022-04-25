@@ -49,13 +49,18 @@ class Position(MyQWidget, Ui_Form):
         self.setup_signal.connect(self.motors.setup)
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)
-        self.motors.ready_signal.connect(lambda:self.set_buttons_enabled_signal.emit(True))
+        self.motors.ready_signal.connect(self.motors_ready)
         self.home_all_signal.connect(self.motors.go_home)
         self.home_1d_signal.connect(self.motors.go_home_1d)
         self.reset_zero_signal.connect(self.motors.set_origin_here)
         self.go_to_signal.connect(self.motors.go_to_position)
 
         self.configure_signals()
+
+    # Enable ui to control motors unless the manager is running a script
+    def motors_ready(self):
+        if not self.manager.scripting:
+            self.set_buttons_enabled_signal.emit(True)
 
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)

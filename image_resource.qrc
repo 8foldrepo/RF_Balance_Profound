@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="power_plots">
-    <file>ui_elements/images/combined.png</file>
-    <file>ui_elements/images/extrapolated.png</file>
-    <file>ui_elements/images/forward power.png</file>
-    <file>ui_elements/images/reverse power.png</file>
-    <file>ui_elements/images/xsition pts.png</file>
-  </qresource>
-</RCC>

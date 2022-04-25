@@ -12,7 +12,7 @@ plt = pg.plot()
 print(type(plt))
 plt.showGrid(x=True,y=True)
 
-curve = plt.plot(x, y, title=theTitle, pen='r')
+curve = plt.plot_scope(x, y, title=theTitle, pen='r')
 
 print(type(curve))
 
@@ -22,7 +22,7 @@ plt.addItem(text2)
 text2.setPos(4,10)
 
 for i in range(100):
-    curve = plt.plot(x,y,title = theTitle, pen = 'k', clear = True)
+    curve = plt.plot_scope(x, y, title = theTitle, pen ='k', clear = True)
     plt.addItem(text2)
 
 ## Start Qt event loop.

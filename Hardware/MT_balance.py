@@ -1,4 +1,4 @@
-from Hardware.Abstract.abstract_balance import AbstractBalance
+from Hardware.Simulated.simulated_balance import AbstractBalance
 import serial
 from PyQt5.QtCore import pyqtSignal
 import time as t
@@ -64,11 +64,12 @@ class MT_balance(AbstractBalance):
             return
         self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
-
+        print("written")
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
+                print(item)
                 #For some reason when debugging these can also appear as b'ES'. that is normal.
                 if item == b'ZI D' or b'ZI S':
                     self.log(level='info', message='Balance Zeroed')
@@ -95,13 +96,18 @@ class MT_balance(AbstractBalance):
                 stopbits=serial.STOPBITS_TWO,
                 bytesize=serial.SEVENBITS,
             )
-            self.ser.write(b"ON\r")
+            # self.ser.write(b"ON\r")
             self.connected = True
-        except serial.serialutil.SerialException:
+        except serial.serialutil.SerialException as e:
             self.connected = False
-            self.log(level='error', message=
-            f"{self.device_key} not connected. Check that it is plugged in and look at Device manager to "
-            f"determine which COM port to use. It is currently hard coded")
+            if "Access is denied" in str(e):
+                self.log(level='error', message=
+                f"{self.device_key} is in use by another program, close it and restart (also check the com ports in "
+                f"the config file): \n{e}")
+            else:
+                self.log(level='error', message=
+                f"{self.device_key} not connected. Check that it is plugged in and look at Device manager to "
+                f"determine which COM port to use and enter it into local.yaml: \n{e}")
         self.connected_signal.emit(self.connected)
 
     def disconnect_hardware(self):
@@ -113,12 +119,43 @@ class MT_balance(AbstractBalance):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
+    # def get_reading(self):
+    #     if self.ser is None:
+    #         self.log(level='error', message=f'{self.device_key} not connected')
+    #         return
+    #
+    #     starttime = t.time()
+    #     while t.time() - starttime < self.timeout_s:
+    #         y = self.ser.readline().split(b"\r\n")
+    #         print(y)
+    #         for item in y:
+    #             if b'S S' in item:
+    #                 chunks = item.split(b" ")
+    #                 for chunk in chunks:
+    #                     print(chunk)
+    #                     if is_number(chunk):
+    #                         val = float(chunk)
+    #                         self.latest_weight = val
+    #                         self.reading_signal.emit(val)
+    #                         return val
+    #             else:
+    #                 if item == b'I':
+    #                     self.log(level = 'error', message='Weight unstable or balance busy')
+    #                     return
+    #                 elif item == b'+':
+    #                     self.log(level = 'error', message='Balance overloaded')
+    #                     return
+    #                 elif item == b'-':
+    #                     self.log(level = 'error', message='Balance underloaded')
+    #                     return
+    #     self.log(level='error', message=f'{self.device_key} timed out')
+
     def get_reading(self):
         if self.ser is None:
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write(b"\nSI\n")
+        # self.ser.write(b"\nSI\n")
         starttime = t.time()
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
@@ -126,6 +163,7 @@ class MT_balance(AbstractBalance):
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
+                        print(chunk)
                         if is_number(chunk):
                             val = float(chunk)
                             self.latest_weight = val
@@ -172,7 +210,6 @@ class MT_balance(AbstractBalance):
         while t.time() - starttime < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                print(item)
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
@@ -197,8 +234,9 @@ class MT_balance(AbstractBalance):
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())
     balance.connect_hardware()
-    balance.reset()
-    balance.zero_balance()
-    input('press enter when weight is on scale')
-    balance.get_reading()
-    balance.get_stable_reading()
+    while True:
+        print(balance.get_reading())
+    # print(balance.connected)
+    # input('press enter when weight is on scale')
+    # print(balance.get_reading())
+

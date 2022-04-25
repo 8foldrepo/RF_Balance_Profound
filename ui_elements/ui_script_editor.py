@@ -15,6 +15,7 @@ from ui_elements.script_editor.ui_oscilloscope_timebase import OscilloscopeTimeb
 from ui_elements.script_editor.ui_move_system import MoveSystem
 from ui_elements.script_editor.ui_function_generator import FunctionGenerator
 from ui_elements.script_editor.ui_select_ua_channel import SelectUAChannel
+from datetime import date
 #from ui_elements.script_editor. import
 #from ui_elements.script_editor. import
 
@@ -357,8 +358,22 @@ class ScriptEditor(MyQWidget, Ui_Form):
         path = QFileDialog.getSaveFileName(parent=self,caption='Save script',filter='Script files (*.wtf)')[0]
 
         with open(path, 'w') as f:
+            #If there is not a header add a header
+            if not "# of Tasks" in self.list_of_arg_dicts[0].keys():
+                #customize header dictionary
+                num_tasks = len(self.list_of_arg_dicts)
+                self.list_of_arg_dicts.insert(0, self.header_dict())
+                self.list_of_arg_dicts[0]["# of Tasks"] = num_tasks
+                today = date.today()
+                self.list_of_arg_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
+                Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
+                self.list_of_arg_dicts[0]["Createdby"] = Createdby
+                Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
+                self.list_of_arg_dicts[0]["Description"] = Description
+
             #Write header info
             f.write('[Top Level]\n')
+
             for arg in self.list_of_arg_dicts[0].keys():
                 f.write(f"{arg} = \"{self.list_of_arg_dicts[0][arg]}\"\n")
             f.write("\n")

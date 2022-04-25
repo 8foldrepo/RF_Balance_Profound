@@ -2,7 +2,7 @@ import pyvisa
 from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 
-from Hardware.Abstract.abstract_awg import AbstractAWG
+from Hardware.Simulated.simulated_awg import AbstractAWG
 
 class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
@@ -243,7 +243,7 @@ class KeysightAWG(AbstractAWG):
 
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
-    def connected(self):
+    def is_connected(self):
         return self.inst is not None
 
     def wrap_up(self):
