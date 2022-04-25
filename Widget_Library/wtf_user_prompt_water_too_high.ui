@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>wtf_user_prompt_water_too_low</class>
- <widget class="QDialog" name="wtf_user_prompt_water_too_low">
+ <class>wtf_user_prompt_water_too_high</class>
+ <widget class="QDialog" name="wtf_user_prompt_water_too_high">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +42,7 @@
      <enum>QLayout::SetNoConstraint</enum>
     </property>
     <item>
-     <widget class="QPushButton" name="fill_tank_button">
+     <widget class="QPushButton" name="drain_tank_button">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
         <horstretch>0</horstretch>

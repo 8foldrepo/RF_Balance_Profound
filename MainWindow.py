@@ -6,6 +6,7 @@ from ui_elements.ui_script_complete_dialog import ScriptCompleteDialog
 from ui_elements.ui_pretest_dialog import PretestDialog
 from ui_elements.ui_user_prompt import WTFUserPrompt
 from ui_elements.ui_retracting_ua_warning import UARetractDialog
+from ui_elements.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
 from ui_elements.ui_write_cal_to_ua import WriteCalDataToUA
 from ui_elements.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
@@ -287,6 +288,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
         self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
         self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+        self.manager.user_prompt_signal_water_too_high_signal.connect(self.show_user_prompt_water_too_high)
         self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
         self.manager.IO_Board.filling_signal.connect(self.show_filling_tank_dialog)
@@ -365,6 +367,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def update_water_level_indicator(self, water_level):
+        print(f"update_water_level_indicator called in MainWindow.py, water level is {water_level}")
         if water_level == "below_level":
             self.tank_level_indicator.setStyleSheet("background-color:red")
             self.tank_level_indicator.setText("TANK LOW")
@@ -536,9 +539,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.IO_Board.water_level_reading_signal.connect(dlg.water_level_slot)
         dlg.exec()
 
-    @pyqtSlot()
-    def show_draining_tank_dialog(self):
-        dlg = DrainingDialog(config=self.config)
+    @pyqtSlot(str)
+    def show_draining_tank_dialog(self,target_level):
+        dlg = DrainingDialog(config=self.config, target_level=target_level)
         self.manager.IO_Board.water_level_reading_signal.connect(dlg.water_level_slot)
         dlg.exec()
 
@@ -649,28 +652,23 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-
     @pyqtSlot(str)
     def show_user_prompt_water_too_low(self, water_level):
-        if water_level == 'above_level':
-            dlg = WTFUserPromptWaterTooLow(high=True)
-        else:
-            dlg = WTFUserPromptWaterTooLow(high=False)
-
-        # if water_level == 'above_level':
-        #     dlg.label.setText("Above level")
-        # elif water_level == 'below_level':
-        #     dlg.label.setText("Below level")
-        # elif water_level == 'level':
-        #     dlg.label.setText("Water level is good")
-
+        if water_level == 'below_level':
+            dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-
-
+    @pyqtSlot(str)
+    def show_user_prompt_water_too_high(self, water_level):
+        if water_level == 'above_level':
+            dlg = WTFUserPromptWaterTooHigh()
+        # todo: have ua_water_level switch react to water_level var
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.abort)
+        dlg.exec()
 
     @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):

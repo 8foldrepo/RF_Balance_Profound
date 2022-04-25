@@ -1,4 +1,6 @@
 import os
+import random
+
 import numpy as np
 import collections.abc
 
@@ -11,7 +13,8 @@ A list containing the axis letters of the coordinates provided, and a list of eq
 With the given inputs the output should be axes: [Z,R] coords [3,2]
 '''
 
-def create_coord_rays(coords:str,ax_letters:list):
+
+def create_coord_rays(coords: str, ax_letters: list):
     axes = list()
     coords = coords.split(',')
     for i in range(len(coords)):
@@ -25,24 +28,26 @@ def create_coord_rays(coords:str,ax_letters:list):
 
 '''Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager'''
 
+
 def get_element_distances(element_1_index, element_pitch):
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
-    element_coords = [None,None,None,None,None,None,None,None,None,None,None]
+    element_coords = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
         offset = i * element_pitch
-        element_coords[i+1] = element_1_index + offset
+        element_coords[i + 1] = element_1_index + offset
 
     return element_coords
 
 
 '''Create a dictionary containing all the fields available for UA test data, to be filled in by the manager class'''
 
+
 def blank_test_data() -> dict:
     from datetime import datetime
 
     test_data = dict()
 
-    #add formatted date
+    # add formatted date
     now = datetime.now()
     formatted_date = now.strftime("%Y.%m.%d-%H.%M")
     test_data['test_date_time'] = formatted_date
@@ -61,26 +66,26 @@ def blank_test_data() -> dict:
     lf = str(test_data['low_frequency_MHz'])
     hf = str(test_data['high_frequency_MHz'])
 
-    #Create reults_summary table
+    # Create reults_summary table
     table = [None] * 13
-    #Default values, will be updated during test
-    table[0] = ['Element_01','0','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[1] = ['Element_02','5','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[2] = ['Element_03','10','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[3] = ['Element_04','15','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[4] = ['Element_05','20','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[5] = ['Element_06','25','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[6] = ['Element_07','30','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[7] = ['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[8] = ['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-    table[9] = ['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    # Default values, will be updated during test
+    table[0] = ['Element_01', '0', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[1] = ['Element_02', '5', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[2] = ['Element_03', '10', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[3] = ['Element_04', '15', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[4] = ['Element_05', '20', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[5] = ['Element_06', '25', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[6] = ['Element_07', '30', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[7] = ['Element_08', '35', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[8] = ['Element_09', '40', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
+    table[9] = ['Element_10', '45', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
 
-    table[10] = ['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
+    table[10] = ['UA Common', 'NaN', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
 
-    elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
-    elements_with_manual_hf = ['00','01','02','03','04','05','06','07','08','09','10']
+    elements_with_manual_lf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
+    elements_with_manual_hf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
 
-    #Todo: add ability to set manual frequencies per element
+    # Todo: add ability to set manual frequencies per element
     table[11] = elements_with_manual_lf
     table[12] = elements_with_manual_hf
 
@@ -91,8 +96,9 @@ def blank_test_data() -> dict:
 
 '''Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class'''
 
+
 def generate_calibration_data(test_data):
-    #Todo: populate this array according to the test_data
+    # Todo: populate this array according to the test_data
     calibration_data = {
         'cal_data_array': {
             'schema': '',
@@ -134,8 +140,9 @@ def generate_calibration_data(test_data):
         }
     }
 
-#Inverse of create coord_rays
-def create_comma_string(axes:list,coords:list,ax_letters:list):
+
+# Inverse of create coord_rays
+def create_comma_string(axes: list, coords: list, ax_letters: list):
     answer = ""
     for i in range(len(ax_letters)):
         if ax_letters[i] in axes:
@@ -144,7 +151,8 @@ def create_comma_string(axes:list,coords:list,ax_letters:list):
                 answer = answer + str((coords[index]))
 
         answer = answer + ","
-    return  answer
+    return answer
+
 
 def update(d, u):
     for k, v in u.items():
@@ -154,12 +162,15 @@ def update(d, u):
             d[k] = v
     return d
 
+
 def printList(self, list2):
     for x in range(len(list2)):
         print(list2[x])
 
+
 def printList2(self, list2):
     print(str(list2)[1:-1])
+
 
 def is_number(s):
     try:
@@ -168,6 +179,7 @@ def is_number(s):
     except ValueError:
         return False
 
+
 def check_directory(path):
     # Check whether the specified path exists or not
     if not os.path.exists(path):
@@ -175,14 +187,18 @@ def check_directory(path):
         os.makedirs(path)
     return path
 
+
 def precision_round(number, digits=3):
     power = "{:e}".format(number).split("e")[1]
     return round(number, -(int(power) - digits))
+
 
 def bound(x):
     if -.001 < x < .001:
         x = 0
     return x
+
+
 def unique(list):
     # intilize a null list
     unique_list = []
@@ -194,6 +210,7 @@ def unique(list):
             unique_list.append(x)
 
     return unique_list
+
 
 # Additional feature: add smart transition detection
 def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
@@ -209,6 +226,7 @@ def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
 
     return acoustic_power_on_data
 
+
 # Additional feature: add smart transition detection
 def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
     if len(acoustic_power_trace_w) == 0:
@@ -223,6 +241,7 @@ def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
             acoustic_power_off_data.append(acoustic_power_trace_w[i])
 
     return acoustic_power_off_data
+
 
 def clearLayout(layout):
     while layout.count():
@@ -248,7 +267,8 @@ def listToRay(xCoords, yCoords, zCoords, Intensity):
 
     return map, coordinates
 
-#Searches from current directory to grandparent directory for the specified file
+
+# Searches from current directory to grandparent directory for the specified file
 def search_for(filename):
     # This program configures all rigols to settings from a csv file
     current_directory = os.path.dirname(__file__)
@@ -263,7 +283,8 @@ def search_for(filename):
 
     return file_path
 
-def get_rigol_addresses(rm = None):
+
+def get_rigol_addresses(rm=None):
     import pyvisa
 
     if rm is None:
@@ -289,6 +310,7 @@ def get_rigol_addresses(rm = None):
             names = names + [device_name]
 
     return rigols, names
+
 
 def log_msg(self, root_logger, message: str, level: str = None) -> None:
     from PyQt5.QtCore import QThread
@@ -316,6 +338,63 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
         root_logger.info(log_entry)
     print(f'[{level}] {log_entry}')
 
+
+def store_find_element_waveform(metadata, times, voltages, path):  # assume single array every time
+    file = open(path + f"FindElement{metadata['element_number']:02}_{metadata['axis']}_{metadata['waveform_number']}.txt", 'w+')
+    file.write(f"UASerialNumber={metadata['serial_number']}\n")
+    file.write("[File Format]\n")
+    file.write(f"Version={metadata['version']}\n")  # comes from config file, will come from metadata for now
+    # file.write(f"Version={config['Software_Version']}\n")
+    file.write(f"# Arrays=1\n")
+    file.write("[Position]\n")
+    file.write(f"X={metadata['X']}\n")
+    file.write(f"Theta={metadata['Theta']}\n")
+    file.write(f"Calibration Frequency={metadata['calibration_frequency_(MHz)']}MHz\n")
+    file.write(f"Source Signal Amplitude={metadata['source_signal_amplitude_(mVpp)']}mVpp\n")
+    file.write(f"Source Signal Type={metadata['source_signal_type']}\n")
+    file.write(f"# Cycles={metadata['number_of_cycles']}\n")
+    file.write("[Array 0]\n")
+    file.write("Label=\"\"\n")
+    file.write("X Data Type=\"Time (s)\"\n")
+    file.write("Y Data Type=\"Voltage Waveform (V)\"\n")
+    file.write("[Data]\n")
+    file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
+    file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
+
+    if len(times) != len(voltages):
+        # self.log(level="error", message=f"length of times = {len(times)} ; length of voltages = {len(voltages)} mismatch in store_find_element_waveform()")
+        print(f"length of times = {len(times)} ; length of voltages = {len(voltages)} size mismatch in store_find_element_waveform()")
+        return
+    else:
+        for x in range(len(times)):
+            formatted_time = "{:.6e}".format(times[x])
+            formatted_voltage = "{:.6e}".format(voltages[x])
+            file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
+
+
 if __name__ == '__main__':
-    data = blank_test_data()
-    print(data["results_summary"][10])
+    metadata = dict()
+    metadata['element_number'] = 1
+    metadata['axis'] = "Th"
+    metadata['waveform_number'] = "Theta000"
+    metadata['serial_number'] = 'GH1214'
+    metadata['version'] = 1.0
+    metadata['X'] = 0.750
+    metadata['Theta'] = -171.198
+    metadata['calibration_frequency_(MHz)'] = '4'
+    metadata['source_signal_amplitude_(mVpp)'] = '50'
+    metadata['source_signal_type'] = 'Toneburst'
+    metadata['number_of_cycles'] = 0
+
+    times = list()
+    voltages = list()
+
+    for x in range(100):
+        times.append(random.uniform(4.14, 4.64))
+        voltages.append(random.uniform(-9, 7))
+
+    times.sort()
+
+    path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
+
+    store_find_element_waveform(metadata, times, voltages, path)
