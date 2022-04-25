@@ -32,6 +32,7 @@ class OutputDirectory:
         self.create_subfolders()
         self.copy_system_info()
 
+
     def create_results_folder(self):
         self.folder_name = self.test_data["serial_number"] + "-" + self.test_data["test_date_time"]
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)

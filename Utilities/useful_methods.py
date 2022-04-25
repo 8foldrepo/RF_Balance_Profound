@@ -76,7 +76,6 @@ def blank_test_data() -> dict:
     table[7] = ['Element_08','35','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
     table[8] = ['Element_09','40','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
     table[9] = ['Element_10','45','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
-
     table[10] = ['UA Common','NaN','-90',lf,'NaN',hf,'NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','NaN','Pass','']
 
     elements_with_manual_lf = ['00','01','02','03','04','05','06','07','08','09','10']
