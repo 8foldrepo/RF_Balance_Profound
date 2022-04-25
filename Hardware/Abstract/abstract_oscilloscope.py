@@ -77,9 +77,7 @@ class AbstractOscilloscope(AbstractDevice):
             time = np.linspace(start_time, end_time, self.captures)
 
             signal = np.sin(time)
-
             noise = np.random.rand(self.captures)*.1
-
             voltage = signal + noise
 
             return list(time), list(voltage)

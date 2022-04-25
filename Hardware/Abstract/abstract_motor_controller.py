@@ -1,9 +1,6 @@
 from abc import abstractmethod
-
 from PyQt5.QtCore import *
-from Utilities.useful_methods import bound
-from Hardware.Simulators.dummy_motors import  DummyMotors
-from Utilities.useful_methods import create_coord_rays, create_comma_string
+from Utilities.useful_methods import create_coord_rays
 import time as t
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -207,7 +204,8 @@ class AbstractMotorController(AbstractDevice):
             for i in range(len(axes)):
                 self.coords_mm[self.ax_letters.index(axes[i])] = coords_mm[i]
 
-            t.sleep(.2)
+            #t.sleep(.2)
+
             self.get_position()
 
             self.ready_signal.emit()

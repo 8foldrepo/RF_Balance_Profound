@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from collections import OrderedDict
 import distutils.util
+
+from Utilities.OutputDirectory import OutputDirectory
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 import time as t
@@ -64,7 +66,7 @@ class Manager(QThread):
 
     rfb_args = dict()  # contains info for rfb tab
     update_rfb_tab_signal = pyqtSignal()
-    save_results_signal = pyqtSignal(dict)
+    show_results_signal = pyqtSignal(dict)
     # contains
 
     #sets the current tab of the main window
@@ -99,6 +101,7 @@ class Manager(QThread):
 
         # Set test_data to default values
         self.test_data = blank_test_data()
+        self.results_saver = None
 
         self.freq_highlimit_hz = None
         self.freq_lowlimit_hz = None
@@ -789,6 +792,7 @@ class Manager(QThread):
         # reset test data to default values
         self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
+        self.results_saver = OutputDirectory(test_data=self.test_data, config=self.config)
         self.run_script()
 
     def element_str_to_int(self, element_str):
@@ -991,7 +995,10 @@ class Manager(QThread):
 
         self.test_data['results_summary'][10][2] = str(angle_average)
 
-        self.save_results_signal.emit(self.test_data)
+        # Save results summary to results folder
+        self.results_saver.save_test_results_summary_and_log(test_data=self.test_data)
+        # Show results summary in UI
+        self.show_results_signal.emit(self.test_data)
 
         self.step_complete = True
 
@@ -1141,7 +1148,8 @@ class Manager(QThread):
                 path = data_directory + "\\" + self.test_data["serial_number"] + "-" + \
                        self.test_data["test_date_time"] + "-frequency_sweep_data.csv"  # retrieve path
 
-            self.log(f"Saving results summary to: {path}")
+            #todo: implement
+            self.results_saver.save_frequency_sweep()
 
             if not os.path.exists(os.path.dirname(path)):
                 self.log("creating results path...")
@@ -1200,8 +1208,6 @@ class Manager(QThread):
     def measure_element_efficiency_rfb(self, var_dict):
         #Set the tab to the rfb tab
         self.set_tab_signal.emit(3)
-
-        self.user_prompt_signal.emit("Please ensure that balance is turned on")
 
         self.test_data["script_log"].append(['Measure element efficiency (RFB)', 'OK', '', ''])
 

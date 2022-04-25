@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import *
 
 from Utilities.load_config import LOGGER_FORMAT, ROOT_LOGGER_NAME
+from Utilities.useful_methods import create_test_results_summary_file
 from Widget_Library.widget_results import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -85,76 +86,20 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
-    # turn a 2d list into a .log file (a text file with a different extension
-    '''saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided'''
-
-    def save_log_file(self, log_table=None):
-        if log_table is None:
-            log_table = self.test_data["script_log"]
-
-        try:
-            log_path = self.config["Paths"]["Script log directory"] + "ScriptResults.log"
-        except TypeError:
-            self.log("config has not been loaded and therefore the log path cannot be pulled from there, defaulting log path")
-            log_path = "../logs2/ScriptResults.log"
-
-        if not os.path.exists(os.path.dirname(log_path)):
-            os.makedirs(os.path.dirname(log_path))
-
-        f = open(log_path, 'w')
-        for x in range(len(log_table)):
-            f.write('\t'.join(log_table[x]))
-
     """saves the results as a text file with a path specified in the config file."""
 
     def save_test_results_summary(self):
         if not self.test_data:  # if dictionary is empty return
+            self.log(level='error',message='No test results to save')
             return
 
-        path = self.config['Paths']['UA results root directory'] + "\\" + self.test_data["serial_number"] + "-" + \
-               self.test_data["test_date_time"] + ".txt"  # retrieve path
+        path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
 
-        self.log(f"Saving results summary to: {path}")
-
-        if not os.path.exists(os.path.dirname(path)):
-            self.log("creating results path...")
-            try:
-                os.makedirs(os.path.dirname(path))
-            except PermissionError:
-                path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
-
-        f = open(path, "w")
-
-        f.write(self.test_data["serial_number"] + '-' + self.test_data["test_date_time"] + '\n')
-        f.write("Test operator\t" + self.test_data['operator_name'] + '\n')
-        f.write("Comment\t" + self.test_data['test_comment'] + '\n')
-        f.write("Software Version\t" + self.test_data['software_version'] + '\n')
-        f.write("Script\t" + self.test_data['script_name'] + '\n')
-        if self.test_data["write_result"]:
-            f.write("UA Write\tOK\n")
-        else:
-            f.write("UA Write\tFAIL\n")
-        f.write("UA hardware code\t" + self.test_data['hardware_code'] + '\n')
-        f.write('\n')  # empty line
-        f.write("\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\tLF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\tFailure description\n")
-
-        element_data_list = self.test_data['results_summary']
-        for x in range(len(element_data_list)):
-            if 0 <= x <= 10:  # for all the element lines and the UA Common line
-                if x == 10:
-                    f.write('\n')  # there are empty lines around "UA Common" row
-                f.write('\t'.join(element_data_list[x]))
-                f.write('\n')
-            if x == 11:  # for the elements with manual LF...
-                f.write('\n')
-                f.write('Elements with manual LF\t' + ','.join(element_data_list[x]))
-                f.write('\n')
-            if x == 12:  # for the elements with manual HF...
-                f.write('Elements with manual HF\t' + ','.join(element_data_list[x]))
+        create_test_results_summary_file(self.test_data, path)
 
     def set_manager(self, manager):
         self.manager = manager
-        self.manager.save_results_signal.connect(self.retrieve_data_from_manager)
+        self.manager.show_results_signal.connect(self.retrieve_data_from_manager)
 
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
@@ -163,13 +108,11 @@ class Results(MyQWidget, Ui_Form):
 
     @pyqtSlot(dict)
     def retrieve_data_from_manager(self, dict):
-        self.log("Saving test results")
+        self.log("Showing test results")
         self.test_data = dict
-        self.save_test_results_summary()
         self.populate_results_table()
 
         self.populate_log_table()
-        self.save_log_file()
 
     def set_config(self, config):
         self.config = config
