@@ -1,9 +1,9 @@
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from Utilities.useful_methods import log_msg
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 
 
-class UAInterfaceBox(AbstractDevice):
+class UAInterfaceBox(SimulatedDevice):
     connected_signal = pyqtSignal(bool)
     dummy_command_signal = pyqtSignal(str)
 

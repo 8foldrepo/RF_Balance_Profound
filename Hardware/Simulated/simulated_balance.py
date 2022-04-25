@@ -1,6 +1,6 @@
 import random
 from abc import  abstractmethod
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Simulated.simulated_sensor import SimulatedSensor
 import serial
 from PyQt5.QtCore import pyqtSignal
 import  time as t
@@ -8,7 +8,7 @@ import  time as t
 from Utilities.useful_methods import is_number
 from Utilities.load_config import load_configuration
 
-class AbstractBalance(AbstractSensor):
+class SimulatedBalance(SimulatedSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 

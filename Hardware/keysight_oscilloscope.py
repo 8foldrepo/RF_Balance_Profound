@@ -1,6 +1,6 @@
 import pyvisa
 import time as t
-from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+from Hardware.Simulated.simulated_oscilloscope import AbstractOscilloscope
 
 
 class KeysightOscilloscope(AbstractOscilloscope):

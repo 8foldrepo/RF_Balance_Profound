@@ -1,9 +1,9 @@
 from abc import abstractmethod
 from PyQt5.QtCore import pyqtSignal
 import random
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 
-class AbstractSensor(AbstractDevice):
+class SimulatedSensor(SimulatedDevice):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 

@@ -5,7 +5,7 @@ from nidaqmx.constants import LineGrouping
 from pyqtgraph.parametertree.parameterTypes import action
 
 from Hardware.relay_board import Relay_Board
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import AbstractDevice
 import time as t
 
 class NI_DAQ(AbstractDevice):
@@ -194,56 +194,4 @@ class NI_DAQ(AbstractDevice):
             self.activate_relay_channel(-1)
             self.connected_signal.emit(True)
         except Exception as e:
-            if str(e) == '\'Task\' object has no attribute \'_handle\'':
-                self.log(level='error', message=f'Error with nidaqmx library: {e}')
-                self.log(level='error',
-                         message=f'Make sure you are using python 3.8, pip install nidaqmx version 0.6.1, '
-                                 f'and reinstall the software from the NI website')
-            else:
-                self.log(level='error', message=f'Error in connect hardware: {e}')
-        # Todo: setup all channels
-
-    def activate_relay_channel(self, channel_number: int):
-        with nidaqmx.Task() as task:
-            try:
-                task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                task.do_channels.add_do_chan(f"{self.name}/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
-
-                pin_ray = [False]*10
-
-                if 0 < channel_number < 11:
-                    pin_ray[channel_number-1] = True
-
-                task.write(pin_ray, auto_start=True)
-
-            except nidaqmx.errors.DaqError as e:
-                print(e)
-                if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
-                    self.log(level='error', message='Channel not found')
-                else:
-                    self.log(level='error', message=f'Unknown error {str(e)}')
-
-    def disconnect_hardware(self):
-        self.connected = True
-        self.connected_signal.emit(self.connected)
-        self.power_relay.relay_write(False)
-
-    def is_connected(self):
-        return self.connected
-
-    def wrap_up(self):
-        self.disconnect_hardware()
-
-
-if __name__ == '__main__':
-    daq = NI_DAQ()
-    daq.connect_hardware()
-
-    # while True:
-    #     print(daq.get_ua_pump_reading())
-
-    # for i in range(11):
-    #     daq.activate_relay_channel(i)
-    #     t.sleep(.5)
-    #
-    daq.set_tank_pump_on(True, False)
+      

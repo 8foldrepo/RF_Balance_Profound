@@ -6,7 +6,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from collections import OrderedDict
 import distutils.util
 
-from Utilities.OutputDirectory import OutputDirectory
+from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 import time as t
@@ -199,38 +199,38 @@ class Manager(QThread):
     def add_devices(self):
         # -> check if we are simulating hardware
         if self.config['Debugging']['simulate_motors']:
-            from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-            self.Motors = AbstractMotorController(config=self.config)
+            from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
+            self.Motors = SimulatedMotorController(config=self.config)
         else:
             from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
             self.Motors = VIX_Motor_Controller(config=self.config, lock=self.motor_control_lock)
 
         if self.config['Debugging']['simulate_oscilloscope']:
-            from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
-            self.Oscilloscope = AbstractOscilloscope()
+            from Hardware.Simulated.simulated_oscilloscope import SimulatedOscilloscope
+            self.Oscilloscope = SimulatedOscilloscope()
         else:
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
             self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.config['Debugging']['simulate_ua_interface']:
-            from Hardware.Abstract.abstract_interface_box import UAInterfaceBox
+            from Hardware.Simulated.simulated_interface_box import UAInterfaceBox
             self.UAInterface = UAInterfaceBox(config=self.config)
         else:
             from Hardware.ua_interface_box import UAInterfaceBox
             self.UAInterface = UAInterfaceBox(config=self.config)
 
         if self.config['Debugging']['simulate_hw']:
-            from Hardware.Abstract.abstract_awg import AbstractAWG
-            from Hardware.Abstract.abstract_balance import AbstractBalance
-            from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-            from Hardware.Abstract.abstract_power_meter import PowerMeter
-            from Hardware.Abstract.abstract_io_board import IO_Board
+            from Hardware.Simulated.simulated_awg import SimulatedAWG
+            from Hardware.Simulated.simulated_balance import SimulatedBalance
+            from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
+            from Hardware.Simulated.simulated_power_meter import PowerMeter
+            from Hardware.Simulated.simulated_io_board import IO_Board
 
-            from Hardware.Abstract.abstract_sensor import AbstractSensor
-            self.thermocouple = AbstractSensor(config=self.config)
-            self.AWG = AbstractAWG(config=self.config)
-            self.Balance = AbstractBalance(config=self.config)
+            from Hardware.Simulated.simulated_sensor import SimulatedSensor
+            self.thermocouple = SimulatedSensor(config=self.config)
+            self.AWG = SimulatedAWG(config=self.config)
+            self.Balance = SimulatedBalance(config=self.config)
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
             self.IO_Board = IO_Board(config=self.config)
@@ -762,10 +762,9 @@ class Manager(QThread):
 
         while True:
             water_level = self.IO_Board.get_water_level()
-            print(f"water level inside pretest_initialization inside manager.py = {water_level}")
             if water_level == 'below_level':  # if the water level is not level
                 # launch the dialog box signifying this issue
-                self.user_prompt_signal_water_too_low_signal.emit(water_level)
+                self.user_prompt_signal_water_too_low_signal.emit()
                 try:
                     self.wait_for_cont()
                     filled_successfully = self.IO_Board.fill_tank()
@@ -774,10 +773,10 @@ class Manager(QThread):
                     return self.abort()
             elif water_level == 'above_level':  # if the water level is not level
                 # launch the dialog box signifying this issue
-                self.user_prompt_signal_water_too_high_signal.emit(water_level)
+                self.user_prompt_signal_water_too_low_signal.emit()
                 try:
                     self.wait_for_cont()
-                    drained_successfully = self.IO_Board.drain_tank_to_level()
+                    filled_successfully = self.IO_Board.fill_tank()
                 except AbortException:
                     self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
                     return self.abort()
@@ -794,7 +793,7 @@ class Manager(QThread):
         # reset test data to default values
         self.test_data = blank_test_data()
         self.test_data.update(pretest_metadata)
-        self.results_saver = OutputDirectory(test_data=self.test_data, config=self.config)
+        self.results_saver = FileSaver(test_data=self.test_data, config=self.config)
         self.run_script()
 
     def element_str_to_int(self, element_str):
@@ -871,7 +870,20 @@ class Manager(QThread):
             time, voltage = self.capture_scope(scope_channel)
 
             if not data_storage.upper() == 'Do not store'.upper():
-                x_sweep_waveforms.append([voltage, time])
+                metadata = dict()
+                metadata['element_number'] = self.element
+                metadata['axis'] = "X"
+                metadata['waveform_number'] = f"X{i+1:03}"
+                metadata['serial_number'] = 'GH1214'
+                metadata['version'] = 1.0
+                metadata['X'] = 0.750
+                metadata['Theta'] = -171.198
+                metadata['calibration_frequency_(MHz)'] = '4'
+                metadata['source_signal_amplitude_(mVpp)'] = '50'
+                metadata['source_signal_type'] = 'Toneburst'
+                metadata['number_of_cycles'] = 0
+
+                self.results_saver.store_find_element_waveform(metadata=metadata, times=time, voltages=voltage)
 
             rms = self.find_rms(time_s=time, voltage_v=voltage)
 
@@ -932,8 +944,23 @@ class Manager(QThread):
             position = position + thetaIncrDeg
 
             voltage, time = self.capture_scope(channel=scope_channel)
+
+            #todo: fill in metadata
             if not data_storage.upper() == 'Do not store'.upper():
-                r_sweep_waveforms.append([voltage, time])
+                metadata = dict()
+                metadata['element_number'] = self.element
+                metadata['axis'] = "Th"
+                metadata['waveform_number'] = f"Theta{i+1:03}"
+                metadata['serial_number'] = 'GH1214'
+                metadata['version'] = 1.0
+                metadata['X'] = 0.750
+                metadata['Theta'] = -171.198
+                metadata['calibration_frequency_(MHz)'] = '4'
+                metadata['source_signal_amplitude_(mVpp)'] = '50'
+                metadata['source_signal_type'] = 'Toneburst'
+                metadata['number_of_cycles'] = 0
+
+                self.results_saver.store_find_element_waveform(metadata=metadata, times=time, voltages=voltage)
 
             rms = self.find_rms(time_s=time, voltage_v=voltage)
 

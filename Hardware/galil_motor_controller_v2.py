@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from Utilities.useful_methods import bound
 from Hardware.Simulators.dummy_motors import  DummyMotors
 from Utilities.useful_methods import create_coord_rays, create_comma_string
-from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+from Hardware.Simulated.simulated_motor_controller import AbstractMotorController
 #import gclib
 
 class GalilMotors(AbstractMotorController):

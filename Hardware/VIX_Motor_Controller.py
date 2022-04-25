@@ -3,11 +3,11 @@ from abc import abstractmethod
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication
 from Utilities.useful_methods import bound
-from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+from Hardware.Simulated.simulated_motor_controller import AbstractMotorController
 from Utilities.useful_methods import create_coord_rays, create_comma_string
 import serial
 import time as t
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import AbstractDevice
 
 
 class VIX_Motor_Controller(AbstractMotorController):

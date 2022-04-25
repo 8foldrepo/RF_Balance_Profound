@@ -2,9 +2,9 @@ import pyvisa
 from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 from abc import  abstractmethod
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 
-class AbstractAWG(AbstractDevice):
+class SimulatedAWG(SimulatedDevice):
     output_signal = pyqtSignal(bool)
 
     def __init__(self, config = None, device_key = 'Keysight_AWG', parent = None):

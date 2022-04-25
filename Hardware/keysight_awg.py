@@ -2,7 +2,7 @@ import pyvisa
 from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 
-from Hardware.Abstract.abstract_awg import AbstractAWG
+from Hardware.Simulated.simulated_awg import AbstractAWG
 
 class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)

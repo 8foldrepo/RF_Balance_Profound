@@ -1,4 +1,4 @@
-from Hardware.Abstract.abstract_balance import AbstractBalance
+from Hardware.Simulated.simulated_balance import AbstractBalance
 import serial
 from PyQt5.QtCore import pyqtSignal
 import time as t

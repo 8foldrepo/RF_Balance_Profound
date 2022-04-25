@@ -4,10 +4,10 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from subprocess import Popen, PIPE
 import time as t
 from definitions import ROOT_DIR
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 
 
-class UAInterfaceBox(AbstractDevice):
+class UAInterfaceBox(SimulatedDevice):
     connected_signal = pyqtSignal(bool)
     dummy_command_signal = pyqtSignal(str)
     cal_data_signal = pyqtSignal(list, int)

@@ -6,11 +6,11 @@
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown
 import random
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Simulated.simulated_sensor import SimulatedSensor
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 import time as t
 
-class PowerMeter(AbstractSensor):
+class PowerMeter(SimulatedSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 

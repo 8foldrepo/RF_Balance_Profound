@@ -1,6 +1,6 @@
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Simulated.simulated_sensor import AbstractSensor
 
 class Thermocouple(AbstractSensor):
     reading_signal = pyqtSignal(float)

@@ -7,7 +7,7 @@
 #            - Right-click on the file, select properties, click "Unblock" (if shown)
 import clr # pythonnet
 from PyQt5.QtCore import pyqtSignal
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Simulated.simulated_sensor import AbstractSensor
 import ctypes
 import sys
 from definitions import POWER_METER_DLL_PATH

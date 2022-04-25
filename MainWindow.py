@@ -114,7 +114,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         #This is done to improve responsiveness, as triggering UI dialogs with a signal causes a delay.
         #There should be no conflicts between the two objects, as they both just send commands to the exe file
         if self.config['Debugging']['simulate_hw']:
-            from Hardware.Abstract.abstract_interface_box import UAInterfaceBox
+            from Hardware.Simulated.simulated_interface_box import UAInterfaceBox
             self.UAInterface = UAInterfaceBox(config=self.config)
         else:
             from Hardware.ua_interface_box import UAInterfaceBox
@@ -653,18 +653,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.exec()
 
     @pyqtSlot(str)
-    def show_user_prompt_water_too_low(self, water_level):
-        if water_level == 'below_level':
-            dlg = WTFUserPromptWaterTooLow()
+    def show_user_prompt_water_too_low(self):
+        dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
     @pyqtSlot(str)
-    def show_user_prompt_water_too_high(self, water_level):
-        if water_level == 'above_level':
-            dlg = WTFUserPromptWaterTooHigh()
+    def show_user_prompt_water_too_high(self):
+        dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.cont)
         dlg.abort_signal.connect(self.manager.abort)

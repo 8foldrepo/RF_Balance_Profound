@@ -2,12 +2,12 @@ import serial
 from PyQt5.QtCore import pyqtSignal
 
 from Utilities.load_config import load_configuration
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Simulated.simulated_sensor import SimulatedSensor
 import time as t
 from PyQt5.QtCore import pyqtSignal
 from abc import abstractmethod
 
-class AbstractRelay(AbstractSensor):
+class SimulatedRelay(SimulatedSensor):
     reading_signal = pyqtSignal(bool)
 
     def __init__(self, config = None, device_key = 'Pump', parent = None):
@@ -43,7 +43,7 @@ class AbstractRelay(AbstractSensor):
         self.on = on
 
 if __name__ == '__main__':
-    switch = AbstractRelay()
+    switch = SimulatedRelay()
     switch.connect()
     switch.relay_write(True)
     switch.relay_write(False)

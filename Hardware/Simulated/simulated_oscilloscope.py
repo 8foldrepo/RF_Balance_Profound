@@ -2,9 +2,9 @@ from abc import  abstractmethod
 from PyQt5.QtCore import *
 from Utilities.useful_methods import bound
 import numpy as np
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 
-class AbstractOscilloscope(AbstractDevice):
+class SimulatedOscilloscope(SimulatedDevice):
         """
         """
 

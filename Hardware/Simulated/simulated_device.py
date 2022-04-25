@@ -3,7 +3,7 @@ from abc import abstractmethod
 from Utilities.useful_methods import log_msg
 
 
-class AbstractDevice(QObject):
+class SimulatedDevice(QObject):
     connected_signal = pyqtSignal(bool)
     dummy_command_signal = pyqtSignal(str)
 

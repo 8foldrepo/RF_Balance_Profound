@@ -4,10 +4,10 @@ import time as t
 from Utilities.useful_methods import bound
 import gclib
 from PyQt5 import QtWidgets
-from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
 
 
-class Galil(AbstractMotorController):
+class Galil(SimulatedMotorController):
         """
         A hardware interface class for communicating with the Galil_DMC_4143
 

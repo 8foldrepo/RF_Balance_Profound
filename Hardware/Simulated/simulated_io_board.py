@@ -2,10 +2,10 @@ import random
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from Hardware.relay_board import Relay_Board
-from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Simulated.simulated_device import SimulatedDevice
 import time as t
 
-class IO_Board(AbstractDevice):
+class IO_Board(SimulatedDevice):
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(str)
     filling_signal = pyqtSignal()
@@ -17,6 +17,7 @@ class IO_Board(AbstractDevice):
         self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
+        self.ua_pump_on = False
         self.active_channel = 0  # 0 means all channels are off
         self.get_water_level()
 
@@ -26,8 +27,9 @@ class IO_Board(AbstractDevice):
     def set_pump_on(self, on) -> bool:
         self.pump_on = on
 
-    def get_pump_reading(self) -> bool:
-        return self.pump_on
+    def get_ua_pump_reading(self) -> bool:
+        self.ua_pump_on = random.choice([True,False])
+        return self.ua_pump_on
 
     '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
 
@@ -61,7 +63,7 @@ class IO_Board(AbstractDevice):
     def get_water_level(self) -> str:
         states = ['below_level', 'above_level', 'level']
         state = random.choice(states)
-        print(f"get_water_level called in abstract_io_board.py, water level is {state}")
+        print(f"get_water_level called in simulated_io_board.py, water level is {state}")
         self.water_level_reading_signal.emit(state)
         return state
 
@@ -82,20 +84,3 @@ class IO_Board(AbstractDevice):
 
     def is_connected(self):
         return self.connected
-
-    def wrap_up(self):
-        self.disconnect_hardware()
-
-    def get_ua_pump_reading(self):
-        reading = random.choice([True, False])
-        self.pump_reading_signal.emit(reading)
-        return reading
-
-if __name__ == '__main__':
-    daq = IO_Board()
-    daq.connect_hardware()
-    daq.active_channel(1)
-    # for i in range(11):
-    #     print(f"turning on relay {i}")
-    #     daq.activate_relay_channel(i)
-    #     t.sleep(5)
