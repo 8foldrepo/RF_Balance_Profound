@@ -1,7 +1,7 @@
 from Widget_Library.widget_rfb import Ui_Form
 from PyQt5.QtCore import pyqtSlot
 from ui_elements.my_qwidget import MyQWidget
-from Utilities.formulas import calculate_total_unceratainty_percent, calculate_random_unceratainty_percent
+from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent
 from Utilities.useful_methods import get_awg_on_values, get_awg_off_values
 
 
@@ -27,6 +27,7 @@ class RFB(MyQWidget, Ui_Form):
 
     def style_ui(self):
         # add default data to plots
+        self.rfb_graph.setLabel("left", "Power (W)", **self.rfb_graph.styles)
         y = range(0, 100)
         x = range(0, 100)
         self.rfb_graph.refresh(x, y)
@@ -76,16 +77,16 @@ class RFB(MyQWidget, Ui_Form):
             acoustic_power_mean = float('nan')
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean,2)))
-        self.power_on_rand_uc_field.setText(str(round(calculate_random_unceratainty_percent(acoustic_power_on_data),2)))
-        self.power_on_total_uc_field.setText(str(round(calculate_total_unceratainty_percent(acoustic_power_on_data),2)))
+        self.power_on_rand_uc_field.setText(str(round(calculate_random_uncertainty_percent(acoustic_power_on_data), 2)))
+        self.power_on_total_uc_field.setText(str(round(calculate_total_uncertainty_percent(acoustic_power_on_data), 2)))
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean,2)))
-        self.power_off_rand_uc_field.setText(str(round(calculate_random_unceratainty_percent(acoustic_power_off_data),2)))
-        self.power_off_total_uc_field.setText(str(round(calculate_total_unceratainty_percent(acoustic_power_off_data),2)))
+        self.power_off_rand_uc_field.setText(str(round(calculate_random_uncertainty_percent(acoustic_power_off_data), 2)))
+        self.power_off_total_uc_field.setText(str(round(calculate_total_uncertainty_percent(acoustic_power_off_data), 2)))
 
         self.power_combined_field.setText(str(round(acoustic_power_mean,2)))
-        self.power_combined_rand_uc_field.setText(str(round(calculate_random_unceratainty_percent(acoustic_w),2)))
-        self.power_combined_total_uc_field.setText(str(round(calculate_total_unceratainty_percent(acoustic_w),2)))
+        self.power_combined_rand_uc_field.setText(str(round(calculate_random_uncertainty_percent(acoustic_w), 2)))
+        self.power_combined_total_uc_field.setText(str(round(calculate_total_uncertainty_percent(acoustic_w), 2)))
 
         if not len(acoustic_s) == 0:
             self.power_w_field.setText(str(round((acoustic_w[len(acoustic_s)-1]),2)))

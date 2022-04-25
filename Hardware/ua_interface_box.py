@@ -15,6 +15,7 @@ class UAInterfaceBox(AbstractDevice):
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.ip_address = '192.168.3.3'
+        self.UA_Read_Result = False
         self.UA_Write_Result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
 
@@ -25,7 +26,7 @@ class UAInterfaceBox(AbstractDevice):
         self.timeout_s = self.config[self.device_key]['timeout_s']
 
     def connect_hardware(self):
-        self.is_connected = True
+        self.connected = True
 
         self.log('Attempting to connect to WTFIB... ')
 
@@ -33,19 +34,19 @@ class UAInterfaceBox(AbstractDevice):
         output = p.communicate()[0].decode()
         if 'timed out' in output:
             self.log('ping to WTFIB timed out')
-            self.is_connected = False
-            self.connected_signal.emit(self.is_connected)
+            self.connected = False
+            self.connected_signal.emit(self.connected)
             return
         self.log('WTFIB connected successfully')
-        self.is_connected = True
-        self.connected_signal.emit(self.is_connected)
+        self.connected = True
+        self.connected_signal.emit(self.connected)
 
     def disconnect_hardware(self):
-        self.is_connected = False
-        self.connected_signal.emit(self.is_connected)
+        self.connected = False
+        self.connected_signal.emit(self.connected)
 
-    def connected(self):
-        return self.is_connected
+    def is_connected(self):
+        return self.connected
 
     def wrap_up(self):
         self.disconnect_hardware()
@@ -53,20 +54,21 @@ class UAInterfaceBox(AbstractDevice):
     @pyqtSlot()
     def read_data(self):
         # cal_data_signal.emit(self.cal_data_signal)
-        global output
-
         output = self.get_command_output()
 
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
+            self.cal_data_signal.emit([], -1)
             return [], -1
 
         if "status=-2" in output:
             self.log(level="Error", message="wtfib is not connected (check power and ethernet connection)")
+            self.cal_data_signal.emit([], -2)
             return [], -2
 
         if not "Calibration data" in output:
             self.log(level="Error", message="Calibration data not found in output, read failed")
+            self.cal_data_signal.emit([], -3)
             return [], -3
 
         #Try to extract the status number from the output, otherwise retry
@@ -135,7 +137,7 @@ class UAInterfaceBox(AbstractDevice):
         while t.time() - startTime < self.timeout_s:
             # Get command prompt output, if it is illegible, retry
             try:
-                p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address], stdout=PIPE)
+                p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address], shell=False, stdout=PIPE)
                 output = p.communicate()[0].decode()
                 return output
             except UnicodeDecodeError as e:

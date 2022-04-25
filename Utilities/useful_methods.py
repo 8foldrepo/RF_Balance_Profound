@@ -198,8 +198,9 @@ def unique(list):
 # Additional feature: add smart transition detection
 def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
     if len(acoustic_power_trace_w) == 0:
-        return float('nan')
-
+        return [float('nan')]
+    if len(acoustic_power_trace_w) != len(awg_on_ray):
+        return [float('nan')]
     acoustic_power_on_data = list()
 
     for i in range(len(acoustic_power_trace_w)):
@@ -211,7 +212,9 @@ def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
 # Additional feature: add smart transition detection
 def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
     if len(acoustic_power_trace_w) == 0:
-        return float('nan')
+        return [float('nan')]
+    if len(acoustic_power_trace_w) != len(awg_on_ray):
+        return [float('nan')]
 
     acoustic_power_off_data = list()
 

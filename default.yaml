@@ -4,6 +4,8 @@ Autoset timebase:
   Horizontal scale (us): 5
 Debugging:
   simulate_hw: true
+  simulate_ua_interface: true
+  simulate_sensors: true
   simulate_motors: true
   simulate_oscilloscope: true
   end_script_on_errors: false
@@ -65,14 +67,15 @@ Keysight_Oscilloscope:
   set_on_startup: True
 MT_Balance:
   port: COM4
-  timeout_s: .5
+  timeout_s: .6
 Paths:
   UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt
   UA results root directory: C:\Users\Isaiah\Documents\UA results
-  Script log directory: C:\Users\Public\Documents\Results\Logs
+  Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
+  UA scripts directory: C:\Users\Isaiah\Documents\UA results
 Daq_Power_Relay:
-  on_by_default: false
+  on_by_default: true
   port: COM3
   timeout_s: 1
 Sequence pass/fail:
@@ -80,6 +83,7 @@ Sequence pass/fail:
   Interrupt action: No dialog (abort)
   Pass fail action: No dialog (abort)
   Retries: 0
+Software_Version: '1.0'
 UAInterface:
   timeout_s: 2.0
 User Accounts:
@@ -91,35 +95,32 @@ VIX_Motors:
   - X
   - R
   calibrate_ray:
-  - 143.5
-  - 143.5
-  encoder_installed_ray:
+  - 30.0
+  - 15.0
+  enable_homing_ray:
   - true
+  - false
+  encoder_installed_ray:
+  - false
   - false
   encoder_resolution_ray:
   - 4000
   - 1000
   increment_ray:
-  - 360
-  - 360
+  - 5
+  - 2
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
   - false
   - false
-  enable_homing_ray:
-    - false
-    - false
-  homing_offset_ray: #Difference between motor's home position and the desired home position (defined by wtf_position_parameters)
-    - false
-    - false
   rotational_ray:
   - false
   - true
   speeds_ray:
-  - 100
-  - 100
+  - 5.0
+  - 5.0
   time_limit_s: 2
   timeout_s: 0.1
 TempMon:

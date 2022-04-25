@@ -25,18 +25,18 @@ class AbstractDevice(QObject):
         else:
             self.config = load_configuration()
         self.device_key = device_key
-        self.is_connected = False
+        self.connected = False
         pass
 
     @abstractmethod
     def connect_hardware(self):
-        self.is_connected = True
-        self.connected_signal.emit(self.is_connected)
+        self.connected = True
+        self.connected_signal.emit(self.connected)
 
     @abstractmethod
     def disconnect_hardware(self):
-        self.is_connected = False
-        self.connected_signal.emit(self.is_connected)
+        self.connected = False
+        self.connected_signal.emit(self.connected)
 
     def wrap_up(self):
         self.disconnect_hardware()

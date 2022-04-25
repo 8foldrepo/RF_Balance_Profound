@@ -217,7 +217,7 @@ class Galil(AbstractMotorController):
                 print(f"Connection error: {self.tell_error()}")
                 return False
 
-        def connected(self):
+        def is_connected(self):
             try:
                 self.handle.GCommand("WH")
                 print("Handle is OK")

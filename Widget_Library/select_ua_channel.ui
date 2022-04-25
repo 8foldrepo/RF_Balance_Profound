@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>267</width>
+    <height>206</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>90</width>
+     <width>121</width>
      <height>41</height>
     </rect>
    </property>
@@ -26,7 +26,7 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Channel (0=All off</string>
+       <string>Channel (0=All off)</string>
       </property>
      </widget>
     </item>

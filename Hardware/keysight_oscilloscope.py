@@ -2,9 +2,10 @@ import pyvisa
 import time as t
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
+
 class KeysightOscilloscope(AbstractOscilloscope):
-    def __init__(self, device_key = 'Keysight_Oscilloscope', config = None, resource_manager = None, parent = None):
-        super().__init__(device_key = device_key, config = config, parent = parent)
+    def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
+        super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
         if resource_manager is not None:
             self.rm = resource_manager
@@ -36,12 +37,17 @@ class KeysightOscilloscope(AbstractOscilloscope):
                             self.log(level='error',
                                      message=f"Input protocol error, retrying: {e}")
                             retry = True
+                        elif 'VI_ERROR_RSRC_NFOUND' in str(e):
+                            self.log(level='error',
+                                     message=f"Oscilloscope not connected, connect and restart program: {e}")
+                            retry = False
                         elif 'Unknown system error' in str(e):
                             self.log(level='error',
                                      message=f"Unknown oscilloscope system error, restart program: {e}")
                             retry = False
                         else:
-                            self.log(level='error', message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
+                            self.log(level='error',
+                                     message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
                             retry = True
 
         if self.inst == None:
@@ -69,8 +75,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
         self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
         range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
-        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight)/ 1000000
-        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window/2
+        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
+        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         autorange_V = self.config[self.device_key]["autorange_v_startup"]
         range_V = self.config[self.device_key]["range_mV"] / 1000
         average_count = self.config[self.device_key]["averages"]
@@ -86,15 +92,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
         if autorange_v:
             self.autoScale()
         else:
-            self.setVertRange_V(channel=channel,volts=range_v)
+            self.setVertRange_V(channel=channel, volts=range_v)
 
-        #Set averaging count
+        # Set averaging count
         self.SetAveraging(averages=average_count)
 
-        #Set trigger
+        # Set trigger
         self.SetTrigger(ext_trigger)
 
     """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+
     def SetTrigger(self, external):
         if external:
             self.command(":TRIG:MODE EDGE")
@@ -113,7 +120,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":ACQ:TYPE HRES")
 
     """Shows text_item on the oscilloscope screen"""
-    def DisplayText(self, text):
+
+    def DisplayText(self, text: str):
         self.command(f":DISP:TEXT {text}")
 
     def getVertScale_V(self, channel):
@@ -125,10 +133,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def getVertRange_V(self, channel, volts):
         return float(self.ask(f":CHAN{channel}:RANG?"))
 
-
     def setVertRange_V(self, channel, volts):
         self.command(f":CHAN{channel}:RANG {volts}")
-
 
     def getVertOffset(self, channel):
         return float(self.ask(f":CHAN{channel}:OFFS?"))
@@ -163,20 +169,21 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def capture(self, channel):
         if self.connected:
-            #self.command("WAV:POIN:MODE RAW")
+            # self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:FORM ASC")
-            #self.command(f"WAV:SOUR:CHAN{channel}")
+            # self.command(f"WAV:SOUR:CHAN{channel}")
 
             preamble = None
             starttime = t.time()
-            while t.time()-starttime < self.timeout_s:
+            while t.time() - starttime < self.timeout_s:
                 try:
                     preamble = self.ask("WAV:PRE?").split(",")
                 except pyvisa.errors.VisaIOError as e:
                     if "Timeout" in str(e):
                         pass
                     else:
-                        self.log(level="error", message=f"Unknown error when asking for waveform preamble, retrying: {e}")
+                        self.log(level="error",
+                                 message=f"Unknown error when asking for waveform preamble, retrying: {e}")
                 if preamble is not None:
                     break
 
@@ -186,7 +193,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             while not preamble[0] == '+4':
                 self.command(f"WAV:FORM ASC")
 
-            #Interpret preamble
+            # Interpret preamble
             if preamble[1] == '+0':
                 mode = "normal"
             elif preamble[1] == '+1':
@@ -204,7 +211,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             y_origin = float(preamble[8])
             y_reference = float(preamble[9])
 
-            #Capture data
+            # Capture data
             voltages_v_strings = None
             starttime = t.time()
             while t.time() - starttime < self.timeout_s:
@@ -218,8 +225,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 if voltages_v_strings is not None:
                     break
 
-            #temp = voltages_v[0].split()[-1]
-            #voltages_v[0] = temp
+            # temp = voltages_v[0].split()[-1]
+            # voltages_v[0] = temp
             # removes the metadata at the beginning
             if '#' in voltages_v_strings[0]:
                 voltages_v_strings[0] = voltages_v_strings[0][10:]
@@ -230,32 +237,29 @@ class KeysightOscilloscope(AbstractOscilloscope):
             for i in range(len(voltages_v_strings)):
                 try:
                     voltages_v.append(float(voltages_v_strings[i]))
-                    time_s.append((i-x_reference)*sample_interval_s + x_origin)
+                    time_s.append((i - x_reference) * sample_interval_s + x_origin)
                 except ValueError:
                     self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
 
             return time_s, voltages_v
         else:
             self.log(f"Could not capture, {self.device_key} is not connected")
-            return [0],[0]
+            return [0], [0]
 
     def SetPeriod_s(self, channel, period):
         self.Period = period
         Peri = "C" + channel + ":BTWV PRD,{}".format(self.Period)
         self.command(Peri)
 
-
-
     def SetCycles(self, channel, cycle):
         self.Cycle = cycle
         Cycl = "C" + channel + ":BTWV TIME," + self.Cycle
         self.command(Cycl)
 
-
     def command(self, command):
         try:
             self.inst.write(command)
-            #t.sleep(.03)
+            # t.sleep(.03)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
@@ -271,16 +275,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return self.inst.query(command)
 
 
-
-import pyvisa
-
-#Script/example code for testing out hardware class
+# Script/example code for testing out hardware class
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
-    for i in range(1000):
-        osc.inst.write("WAV:DATA?")
-        print(osc.inst.read())
 
-    #may not be run if script is terminated early
+    starttime = t.time()
+    print(osc.capture())
+    print(t.time()-starttime)
+
+    # may not be run if script is terminated early
     osc.disconnect_hardware()

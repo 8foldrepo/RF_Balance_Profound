@@ -32,6 +32,7 @@ class AbstractAWG(AbstractDevice):
 
     @abstractmethod
     def connect_hardware(self):
+        self.setup(frequency_Hz=4290000, amplitude_V=.1)
         self.connected_signal.emit(True)
 
     @abstractmethod
@@ -135,11 +136,10 @@ class AbstractAWG(AbstractDevice):
     def SetBurst(self, on = True):
         self.state["burst"] = on
 
-
     """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
     @abstractmethod
     def GetBurst(self):
-        return  self.state["burst"]
+        return self.state["burst"], ""
 
     @abstractmethod
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):
