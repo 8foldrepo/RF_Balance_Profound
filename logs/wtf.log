@@ -1,9 +1,0 @@
-2022-04-25 12:49:28,654 [INFO] [Manager] [manager_thread] : Running script
-2022-04-25 12:49:44,718 [INFO] [Manager] [] : Checking ability to log
-2022-04-25 12:49:55,113 [INFO] [Manager] [] : Maximum of 1179.163614877542 @ x = -0.125 mm. Going there.
-2022-04-25 12:49:55,942 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-25 12:49:56,116 [INFO] [manager_thread] : app exited with code 0
-44,718 [INFO] [Manager] [] : Checking ability to log
-2022-04-25 12:49:55,113 [INFO] [Manager] [] : Maximum of 1179.163614877542 @ x = -0.125 mm. Going there.
-2022-04-25 12:49:55,942 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-25 12:49:56,116 [INFO] [manager_thread] : app exited with code 0

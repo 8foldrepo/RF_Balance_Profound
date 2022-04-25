@@ -4,6 +4,8 @@ import random
 import numpy as np
 import collections.abc
 
+from PyQt5.QtWidgets import QFileDialog
+
 '''
 Inputs:
 A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
@@ -68,6 +70,7 @@ def blank_test_data() -> dict:
 
     # Create reults_summary table
     table = [None] * 13
+    
     # Default values, will be updated during test
     table[0] = ['Element_01', '0', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
     table[1] = ['Element_02', '5', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
@@ -86,6 +89,7 @@ def blank_test_data() -> dict:
     elements_with_manual_hf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
 
     # Todo: add ability to set manual frequencies per element
+
     table[11] = elements_with_manual_lf
     table[12] = elements_with_manual_hf
 
@@ -310,6 +314,43 @@ def get_rigol_addresses(rm=None):
             names = names + [device_name]
 
     return rigols, names
+
+
+
+'''Saves the dictionary containing test info to a specified path, formatted as a results summary'''
+
+def create_test_results_summary_file(test_data:dict, path):
+    f = open(path, "w")
+
+    f.write(test_data["serial_number"] + '-' + test_data["test_date_time"] + '\n')
+    f.write("Test operator\t" + test_data['operator_name'] + '\n')
+    f.write("Comment\t" + test_data['test_comment'] + '\n')
+    f.write("Software Version\t" + test_data['software_version'] + '\n')
+    f.write("Script\t" + test_data['script_name'] + '\n')
+    if test_data["write_result"]:
+        f.write("UA Write\tOK\n")
+    else:
+        f.write("UA Write\tFAIL\n")
+    f.write("UA hardware code\t" + test_data['hardware_code'] + '\n')
+    f.write('\n')  # empty line
+    f.write(
+        "\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\t"
+        "LF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\t"
+        "Failure description\n")
+
+    element_data_list = test_data['results_summary']
+    for x in range(len(element_data_list)):
+        if 0 <= x <= 10:  # for all the element lines and the UA Common line
+            if x == 10:
+                f.write('\n')  # there are empty lines around "UA Common" row
+            f.write('\t'.join(element_data_list[x]))
+            f.write('\n')
+        if x == 11:  # for the elements with manual LF...
+            f.write('\n')
+            f.write('Elements with manual LF\t' + ','.join(element_data_list[x]))
+            f.write('\n')
+        if x == 12:  # for the elements with manual HF...
+            f.write('Elements with manual HF\t' + ','.join(element_data_list[x]))
 
 
 def log_msg(self, root_logger, message: str, level: str = None) -> None:

@@ -80,7 +80,6 @@ class Scan(QWidget, Ui_scan_tab_widget):
     def update_profile_plot(self, x, y, axis_label):
         # Cancel if this widget is not plot ready
         if not self.profile_plot_ready:
-            print("not plot_ready")
             return
 
         # Cancel if the current tab is not visible
