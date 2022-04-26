@@ -1,11 +1,8 @@
-import os
-
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QIcon
 
 from Widget_Library.tank_filling import Ui_Dialog
-from definitions import ROOT_DIR
-from ui_elements.my_qdialog import MyQDialog
+from definitions import WaterLevel
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class FillingDialog(MyQDialog, Ui_Dialog):
@@ -15,9 +12,9 @@ class FillingDialog(MyQDialog, Ui_Dialog):
         self.setupUi(self)
         self.granted = False
 
-    @pyqtSlot(str)
+    @pyqtSlot(WaterLevel)
     def water_level_slot(self, water_level):
-        if water_level == 'level' or water_level == 'above_level':
+        if water_level == WaterLevel.level or water_level == WaterLevel.above_level:
             # Set dialog resolved to true so the script does not abort upon closing
             self.dialog_resolved = True
             self.close()

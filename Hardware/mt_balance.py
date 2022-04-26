@@ -1,4 +1,4 @@
-from Hardware.Simulated.simulated_balance import AbstractBalance
+from Hardware.Abstract.abstract_balance import AbstractBalance
 import serial
 from PyQt5.QtCore import pyqtSignal
 import time as t
@@ -6,11 +6,12 @@ import time as t
 from Utilities.useful_methods import is_number
 from Utilities.load_config import load_configuration
 
+
 class MT_balance(AbstractBalance):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
-    def __init__(self, config, device_key = "MT_Balance", parent = None):
+    def __init__(self, config, device_key="MT_Balance", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
         self.ser = None
@@ -27,17 +28,18 @@ class MT_balance(AbstractBalance):
         self.port = self.config[self.device_key]['port']
 
     """Zeroes the scale with the next stale weight reading"""
+
     def zero_balance_stable(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
-        if self.ser is None or self.connected == False:
+        if self.ser is None or self.connected is False:
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance, Please wait")
         self.ser.write(b"\nZ\n")
 
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 if item == b'Z A':
@@ -56,21 +58,22 @@ class MT_balance(AbstractBalance):
         self.log(level='error', message=f'{self.device_key} timed out')
 
     """Zeroes the scale immediately"""
+
     def zero_balance_instantly(self):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
-        if self.ser is None or self.connected == False:
+        if self.ser is None or self.connected is False:
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
         print("written")
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 print(item)
-                #For some reason when debugging these can also appear as b'ES'. that is normal.
+                # For some reason when debugging these can also appear as b'ES'. that is normal.
                 if item == b'ZI D' or b'ZI S':
                     self.log(level='info', message='Balance Zeroed')
                     return
@@ -87,6 +90,7 @@ class MT_balance(AbstractBalance):
         self.log(level='error', message=f'{self.device_key} timed out')
 
     def connect_hardware(self):
+        feedback = ''
         try:
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
@@ -101,14 +105,15 @@ class MT_balance(AbstractBalance):
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "Access is denied" in str(e):
-                self.log(level='error', message=
-                f"{self.device_key} is in use by another program, close it and restart (also check the com ports in "
-                f"the config file): \n{e}")
+                feedback = f"{self.device_key} is in use by another program, close it and restart (also check the " \
+                           f"com ports in the config file): \n{e}"
             else:
-                self.log(level='error', message=
-                f"{self.device_key} not connected. Check that it is plugged in and look at Device manager to "
-                f"determine which COM port to use and enter it into local.yaml: \n{e}")
+                feedback = f"{self.device_key} not connected. Check that it is plugged in and look at Device manager " \
+                           f"to determine which COM port to use and enter it into local.yaml: \n{e}"
+        if not self.connected:
+            self.log(level='error', message=feedback)
         self.connected_signal.emit(self.connected)
+        return self.connected, feedback
 
     def disconnect_hardware(self):
         if self.ser is None:
@@ -124,8 +129,8 @@ class MT_balance(AbstractBalance):
     #         self.log(level='error', message=f'{self.device_key} not connected')
     #         return
     #
-    #     starttime = t.time()
-    #     while t.time() - starttime < self.timeout_s:
+    #     start_time = t.time()
+    #     while t.time() - start_time < self.timeout_s:
     #         y = self.ser.readline().split(b"\r\n")
     #         print(y)
     #         for item in y:
@@ -156,8 +161,8 @@ class MT_balance(AbstractBalance):
             return
 
         # self.ser.write(b"\nSI\n")
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 if b'S S' in item:
@@ -171,13 +176,13 @@ class MT_balance(AbstractBalance):
                             return val
                 else:
                     if item == b'I':
-                        self.log(level = 'error', message='Weight unstable or balance busy')
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b'+':
-                        self.log(level = 'error', message='Balance overloaded')
+                        self.log(level='error', message='Balance overloaded')
                         return
                     elif item == b'-':
-                        self.log(level = 'error', message='Balance underloaded')
+                        self.log(level='error', message='Balance underloaded')
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
@@ -188,8 +193,8 @@ class MT_balance(AbstractBalance):
 
         self.ser.write(b"\n@\n")
 
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 if not item == b'':
@@ -201,13 +206,13 @@ class MT_balance(AbstractBalance):
         if self.ser is None:
             self.log(level='error', message=f'{self.device_key} not connected')
             return
-        #Command: I2 Inquiry of balance data.
-        #Response: I2 A Balance data as "text_item".
+        # Command: I2 Inquiry of balance data.
+        # Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
         self.log("Getting stable reading, please wait")
 
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 if b'S S' in item:
@@ -221,15 +226,16 @@ class MT_balance(AbstractBalance):
                             return
                 else:
                     if item == b'I':
-                        self.log(level = 'error', message='Weight unstable or balance busy')
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b'+':
-                        self.log(level = 'error', message='Balance overloaded')
+                        self.log(level='error', message='Balance overloaded')
                         return
                     elif item == b'-':
-                        self.log(level = 'error', message='Balance underloaded')
+                        self.log(level='error', message='Balance underloaded')
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
+
 
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())
@@ -239,4 +245,3 @@ if __name__ == '__main__':
     # print(balance.connected)
     # input('press enter when weight is on scale')
     # print(balance.get_reading())
-

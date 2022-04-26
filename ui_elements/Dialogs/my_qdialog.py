@@ -38,7 +38,7 @@ class MyQDialog(QDialog):
 
     # Set the icon to the 8Fold logo
     def set_icon(self):
-        path = os.path.join(ROOT_DIR, '8foldlogo.ico')
+        path = os.path.join(ROOT_DIR, 'resources', '8foldlogo.ico')
         self.setWindowIcon(QIcon(path))
 
     # Ability to log messages

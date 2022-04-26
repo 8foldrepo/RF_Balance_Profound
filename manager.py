@@ -5,7 +5,12 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from collections import OrderedDict
 import distutils.util
-
+from Hardware.Abstract.abstract_awg import AbstractAWG
+from Hardware.Abstract.abstract_io_board import AbstractIOBoard
+from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+from Hardware.Abstract.abstract_sensor import AbstractSensor
+from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
@@ -15,7 +20,7 @@ from scipy import integrate
 from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, blank_test_data, \
     generate_calibration_data, check_directory
 from Utilities.formulas import calculate_power_from_balance_reading
-from definitions import ROOT_DIR
+from definitions import ROOT_DIR, WaterLevel
 import os
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -31,7 +36,20 @@ tank_status = ""
 
 
 # todo: continue adding prebuilt methods for all of the actions in script editor
+
+
 class Manager(QThread):
+    # Devices
+    AWG: AbstractAWG
+    Balance: AbstractSensor
+    IO_Board: AbstractIOBoard
+    Forward_Power_Meter: AbstractSensor
+    Reflected_Power_Meter: AbstractSensor
+    thermocouple: AbstractSensor
+    Oscilloscope: AbstractOscilloscope
+    Motors: AbstractMotorController
+    UAInterface: AbstractUAInterface
+
     sensor_refresh_interval_s: float
     last_sensor_update_time: float
     # Dialog signals
@@ -59,7 +77,7 @@ class Manager(QThread):
     script_info_signal = pyqtSignal(list)
 
     logger_signal = pyqtSignal(str)
-    enable_ui_signal = pyqtSignal()
+    enable_ui_signal = pyqtSignal(bool)
 
     # Tab signal
     profile_plot_signal = pyqtSignal(list, list, str)
@@ -70,7 +88,7 @@ class Manager(QThread):
     show_results_signal = pyqtSignal(dict)
     # contains
 
-    #sets the current tab of the main window
+    # sets the current tab of the main window
     set_tab_signal = pyqtSignal(int)
 
     Motors = None
@@ -126,16 +144,20 @@ class Manager(QThread):
 
         self.element = 1
 
-        # Script control vars
+        # Tracks whether a script is being executed
         self.scripting = False
+        # Flags for the wait_for_cont method, when a dialog is waiting for user action
         self.continue_var = True
-        self.retry_var = False  # keep track of whether user wants to try script iteration, default false
+        self.retry_var = False
+        self.abort_var = False
 
         # Keeps track of script step in progress
         self.step_complete = True
 
-        # step_index = -1 if no script is being run. It is also the way to check if the script has been aborted
-        self.step_index = -1
+        # step_index = -2 at the beginning and -1 if no script is being run.
+        # step_index = -1 t is also the way to check if the script
+        # has been aborted
+        self.step_index = -2
 
         # ResourceManager for the oscilloscope and function generators
         self.rm = None
@@ -196,14 +218,20 @@ class Manager(QThread):
 
         self.measure_element_efficiency_rfb(var_dict=var_dict)
 
+    '''
+    Import and instantiate device classes, and append them to a list. If the config says to simulate hardware,
+    use the simulated class instead.
+    '''
+
     def add_devices(self):
-        # -> check if we are simulating hardware
+
+        # Check if w
         if self.config['Debugging']['simulate_motors']:
             from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
             self.Motors = SimulatedMotorController(config=self.config)
         else:
-            from Hardware.VIX_Motor_Controller import VIX_Motor_Controller
-            self.Motors = VIX_Motor_Controller(config=self.config, lock=self.motor_control_lock)
+            from Hardware.parker_motor_controller import ParkerMotorController
+            self.Motors = ParkerMotorController(config=self.config, lock=self.motor_control_lock)
 
         if self.config['Debugging']['simulate_oscilloscope']:
             from Hardware.Simulated.simulated_oscilloscope import SimulatedOscilloscope
@@ -214,42 +242,50 @@ class Manager(QThread):
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.config['Debugging']['simulate_ua_interface']:
-            from Hardware.Simulated.simulated_interface_box import UAInterfaceBox
-            self.UAInterface = UAInterfaceBox(config=self.config)
+            from Hardware.Simulated.simulated_ua_interface import SimulatedUAInterface
+            self.UAInterface = SimulatedUAInterface(config=self.config)
         else:
-            from Hardware.ua_interface_box import UAInterfaceBox
-            self.UAInterface = UAInterfaceBox(config=self.config)
+            from Hardware.ua_interface import UAInterface
+            self.UAInterface = UAInterface(config=self.config)
 
-        if self.config['Debugging']['simulate_hw']:
+        if self.config['Debugging']['simulate_awg']:
             from Hardware.Simulated.simulated_awg import SimulatedAWG
-            from Hardware.Simulated.simulated_balance import SimulatedBalance
-            from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
-            from Hardware.Simulated.simulated_power_meter import PowerMeter
-            from Hardware.Simulated.simulated_io_board import IO_Board
-
-            from Hardware.Simulated.simulated_sensor import SimulatedSensor
-            self.thermocouple = SimulatedSensor(config=self.config)
             self.AWG = SimulatedAWG(config=self.config)
-            self.Balance = SimulatedBalance(config=self.config)
-            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
-            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
-            self.IO_Board = IO_Board(config=self.config)
-
         else:
-            from Hardware.mini_circuits_power_meter import PowerMeter
-            from Hardware.MT_balance import MT_balance
-            from Hardware.ni_daq_board import NI_DAQ
-            from Hardware.mini_circuits_power_meter import PowerMeter
-            from Hardware.NI_thermocouple import Thermocouple
             from Hardware.keysight_awg import KeysightAWG
             if self.rm is None:
                 self.rm = pyvisa.ResourceManager()
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
+
+        if self.config['Debugging']['simulate_balance']:
+            from Hardware.Simulated.simulated_balance import SimulatedBalance
+            self.Balance = SimulatedBalance(config=self.config)
+        else:
+            from Hardware.mt_balance import MT_balance
             self.Balance = MT_balance(config=self.config)
-            self.IO_Board = NI_DAQ(config=self.config, simulate_sensors=self.config['Debugging']['simulate_sensors'])
+
+        if self.config['Debugging']['simulate_power_meters']:
+            from Hardware.Simulated.simulated_power_meter import PowerMeter
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
-            self.thermocouple = Thermocouple(config=self.config)
+        else:
+            from Hardware.mini_circuits_power_meter import PowerMeter
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
+
+        if self.config['Debugging']['simulate_io_board']:
+            from Hardware.Simulated.simulated_io_board import SimulatedIOBoard
+            self.IO_Board = SimulatedIOBoard(config=self.config)
+        else:
+            from Hardware.dio_board import DIOBoard
+            self.IO_Board = DIOBoard(config=self.config, simulate_sensors=self.config['Debugging']['simulate_sensors'])
+
+        if self.config['Debugging']['simulate_thermocouple']:
+            from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
+            self.thermocouple = SimulatedThermocouple(config=self.config)
+        else:
+            from Hardware.ni_thermocouple import NIThermocouple
+            self.thermocouple = NIThermocouple(config=self.config)
 
         self.devices.append(self.Forward_Power_Meter)
         self.devices.append(self.Reflected_Power_Meter)
@@ -261,16 +297,35 @@ class Manager(QThread):
         self.devices.append(self.Balance)
         self.devices.append(self.AWG)
 
+    @pyqtSlot()
     def connect_hardware(self):
-        for device in self.devices:
-            device.connect_hardware()
-        t.sleep(2)
-        # For testing purposes
-        # self.findRMS(search_mode="coarse", frequency_mode="LF")
+        i = 0
+        while i < len(self.devices):
+            device = self.devices[i]
+            connected, feedback = device.connect_hardware()
+            if not connected:
+                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}")
+                try:
+                    self.wait_for_cont()
+                except RetryException:
+                    i = i-1
+                except AbortException:
+                    self.app.exit(-1)
+            i = i + 1
 
+        self.enable_ui_signal.emit(True)
+
+    @pyqtSlot()
     def disconnect_hardware(self):
+        self.enable_ui_signal.emit(False)
+        self.abort()
         for device in self.devices:
             device.disconnect_hardware()
+
+    '''
+    Core event loop of the manager thread. For any other methods to be executed in the manager thread
+    They must be called from this method.
+    '''
 
     def run(self) -> None:
         """
@@ -278,7 +333,7 @@ class Manager(QThread):
         function.
         """
         self.mutex.lock()
-        self.starttime = t.time()
+        self.start_time = t.time()
 
         self.stay_alive = True
 
@@ -294,11 +349,11 @@ class Manager(QThread):
                 self.wrap_up()
             elif cmd_ray[0] == 'CONNECT':
                 self.connect_hardware()
-            elif cmd_ray[0] == 'MOTOR':
-                self.Motors.exec_command(self.cmd)
             # Todo: For testing purposes, remove later
             elif cmd_ray[0] == 'TEST':
                 self.test_code()
+            elif cmd_ray[0] == 'ABORT':
+                self.abort()
             # What to do when there is no command
             else:
                 if self.scripting:
@@ -337,10 +392,10 @@ class Manager(QThread):
         if t.time() - self.last_sensor_update_time > self.sensor_refresh_interval_s:
             self.last_sensor_update_time = t.time()
 
-            if self.IO_Board.is_connected():
+            if self.IO_Board.connected:
                 self.IO_Board.get_water_level()
 
-            if self.IO_Board.is_connected():
+            if self.IO_Board.connected:
                 self.IO_Board.get_ua_pump_reading()
 
             if self.thermocouple.connected:
@@ -354,7 +409,7 @@ class Manager(QThread):
                     self.Motors.get_position(mutex_locked=True)
                     self.motor_control_lock.unlock()
 
-    def capture_scope(self, plot=True, channel=1):
+    def capture_scope(self, channel=1, plot=True):
         try:
             time, voltage = self.Oscilloscope.capture(channel=channel)
             if plot:
@@ -365,7 +420,7 @@ class Manager(QThread):
         return [], []
 
     def plot_scope(self, time, voltage):
-        time_elapsed = t.time() - self.starttime
+        time_elapsed = t.time() - self.start_time
         if time_elapsed != 0:
             self.refresh_rate = (round(1 / (time_elapsed), 1))
 
@@ -390,7 +445,7 @@ class Manager(QThread):
 
         self.plot_scope(time, voltage)
 
-        self.starttime = t.time()
+        self.start_time = t.time()
 
     # noinspection PyUnresolvedReferences
     def load_script(self, path):
@@ -552,7 +607,7 @@ class Manager(QThread):
                         inside_iteration = False
 
         if not self.scripting:
-            self.enable_ui_signal.emit()
+            self.enable_ui_signal.emit(True)
 
     '''Executes script step with given step index in taskNames/taskArgs'''
 
@@ -601,18 +656,30 @@ class Manager(QThread):
         self.step_index = -1
         self.step_complete = True
         self.continue_var = True
+        self.abort_var = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.enable_ui_signal.emit()
+        self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
-    '''Sets continue variable to False and waits for it to be true, disabling scripting if abort_var is true'''
+    '''
+    Sets continue variable to False and waits for it to be true, raising exceptions if the user 
+    wants to abort or retry. Always handle these exceptions.
+    '''
 
     def wait_for_cont(self):
         self.continue_var = False
+        self.retry_var = False
+        self.abort_var = False
+
         while not self.continue_var:
             # check if script has been aborted
-            if self.step_index == -1:
+            if self.retry_var == True:
+                self.retry_var = False
+                # Always handle this exception
+                raise RetryException
+            if self.abort_var == True:
+                self.abort_var = False
                 # Always handle this exception
                 raise AbortException
 
@@ -636,8 +703,8 @@ class Manager(QThread):
 
     def script_complete(self):
         # Fetch pass list and description list from testdata
-        pass_list = [None] * 11
-        description_list = [None] * 11
+        pass_list = list([None] * 11)
+        description_list = list([None] * 11)
         for i in range(10):
             pass_list[i] = self.test_data['results_summary'][i][15]
             description_list[i] = self.test_data['results_summary'][i][16]
@@ -648,7 +715,7 @@ class Manager(QThread):
 
         self.script_complete_signal.emit(pass_list, description_list)
         self.scripting = False
-        self.enable_ui_signal.emit()
+        self.enable_ui_signal.emit(True)
 
         self.test_data["script_log"].append(['Script complete', '', '', ''])
 
@@ -761,7 +828,7 @@ class Manager(QThread):
 
         while True:
             water_level = self.IO_Board.get_water_level()
-            if water_level == 'below_level':  # if the water level is not level
+            if water_level == WaterLevel.below_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 try:
@@ -770,7 +837,7 @@ class Manager(QThread):
                 except AbortException:
                     self.test_data["script_log"].append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
                     return self.abort()
-            elif water_level == 'above_level':  # if the water level is not level
+            elif water_level == WaterLevel.above_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 try:
@@ -825,7 +892,7 @@ class Manager(QThread):
         self.test_data["script_log"].append(['Find element "n"', 'OK', '', ''])
 
         try:  # at this point in the script, the checks have been performed already in pretest_initialization so no
-              # need to wrap in if statements
+            # need to wrap in if statements
             self.test_data["script_log"].append(['', 'PreChecks',
                                                  f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
                                                  f'{self.IO_Board.get_ua_pump_reading()}', ''])
@@ -846,17 +913,18 @@ class Manager(QThread):
         self.AWG.SetOutput(True)
         self.test_data["script_log"].append(['', "Config UA and FGen", "FGen output enabled", ''])
 
-        #todo: populate var_dict and make sure method is implemented
+        # todo: populate var_dict and make sure method is implemented
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)  # script log updated in this method
 
         self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
-                       go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,averages=averages)
+                       go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
 
         self.home_system({'Axis to home': 'Theta'})
         self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                        ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                       go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,averages=averages)
+                       go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
+                       averages=averages)
 
         # Todo: check
         self.home_system({'Axis to home': 'Theta'})
@@ -868,7 +936,7 @@ class Manager(QThread):
         self.step_complete = True
 
     def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
-                  acquisition_type ='N Averaged Waveform', averages=1):
+                  acquisition_type='N Averaged Waveform', averages=1):
         if axis == 'X':
             axis_letter = 'X'
         elif axis == 'Theta':
@@ -903,10 +971,11 @@ class Manager(QThread):
             self.Motors.go_to_position([axis_letter], [position])
             position = position + abs(increment)
 
-            times_s, voltages_v = self.capture_scope(scope_channel)
+            times_s, voltages_v = self.capture_scope(channel=scope_channel)
 
             if data_storage.upper() == 'Store entire waveform'.upper():
-                self.save_find_element_waveform(axis=axis, waveform_number=i + 1, times_s=times_s, voltages_v=voltages_v)
+                self.save_find_element_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
+                                                voltages_v=voltages_v)
 
             rms = self.find_rms(times_s=times_s, voltages_v=voltages_v)
 
@@ -940,8 +1009,7 @@ class Manager(QThread):
             status = self.Motors.go_to_position([axis_letter], [max_position])
             status_str = status_str + f' moved to {axis} = {max_position} {units_str}'
 
-        self.test_data["script_log"].append(['', f'Scan{axis} Find Peak {axis}:',status_str,''])
-
+        self.test_data["script_log"].append(['', f'Scan{axis} Find Peak {axis}:', status_str, ''])
 
     def save_find_element_waveform(self, axis, waveform_number, times_s, voltages_v):
         metadata = dict()
@@ -1145,7 +1213,7 @@ class Manager(QThread):
                 path = data_directory + "\\" + self.test_data["serial_number"] + "-" + \
                        self.test_data["test_date_time"] + "-frequency_sweep_data.csv"  # retrieve path
 
-            #todo: implement
+            # todo: implement
             self.results_saver.save_frequency_sweep()
 
             if not os.path.exists(os.path.dirname(path)):
@@ -1203,7 +1271,7 @@ class Manager(QThread):
     '''Measure the efficiency of an element'''
 
     def measure_element_efficiency_rfb(self, var_dict):
-        #Set the tab to the rfb tab
+        # Set the tab to the rfb tab
         self.set_tab_signal.emit(3)
 
         self.test_data["script_log"].append(['Measure element efficiency (RFB)', 'OK', '', ''])
@@ -1249,7 +1317,7 @@ class Manager(QThread):
         self.test_data['script_log'].append(
             ['', 'Configure FGen+PwrMeters', f"Frequency set to {frequency_Hz / 1000000} MHz", ''])
 
-        self.Balance.zero_balance_instantly() #todo:see if we need this
+        self.Balance.zero_balance_instantly()  # todo:see if we need this
 
         forward_powers_w = list()
         forward_powers_time_s = list()
@@ -1274,9 +1342,9 @@ class Manager(QThread):
                 if self.step_index == -1:
                     return
 
-                #Todo: replace this data capture routine with a Data_Logger QThread objecect, and move the balance
-                #and power meters to this QThread. Have it handle capturing from all three sensors at once,
-                #And emit the signals to the rfb tab
+                # Todo: replace this data capture routine with a Data_Logger QThread objecect, and move the balance
+                # and power meters to this QThread. Have it handle capturing from all three sensors at once,
+                # And emit the signals to the rfb tab
 
                 forward_power_w = self.Forward_Power_Meter.get_reading()
                 forward_powers_w.append(forward_power_w)
@@ -1348,7 +1416,6 @@ class Manager(QThread):
 
             current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
 
-        print(f"Final time: {t.time() - startTime}")
         self.test_data["script_log"].append(['', 'Run on/off sequence', 'RFB Acquisition complete', ''])
         self.test_data["script_log"].append(['', 'Stop RFB Acquisition', "RFB Stopped, data saved", ''])
 
@@ -1425,15 +1492,6 @@ class Manager(QThread):
 
     @pyqtSlot(str)
     def exec_command(self, command):
-        if 'CLOSE' in command.upper():
-            self.log('Wrapping up')
-            self.wrap_up()
-            self.cmd = ''
-            return
-        if 'ABORT' in command.upper():
-            self.abort()
-            self.cmd = ''
-            return
         self.cmd = command
         self.condition.wakeAll()
 
@@ -1447,4 +1505,8 @@ class Manager(QThread):
 
 
 class AbortException(Exception):
+    pass
+
+
+class RetryException(Exception):
     pass

@@ -6,16 +6,18 @@
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown
 import random
-from Hardware.Simulated.simulated_sensor import SimulatedSensor
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from Hardware.Abstract.abstract_sensor import AbstractSensor
+from PyQt5.QtCore import pyqtSignal
 import time as t
 
-class PowerMeter(SimulatedSensor):
+
+class PowerMeter(AbstractSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
+    serial_number: str
 
-    def __init__(self, config, parent=None, device_key = "Forward_Power_Meter"):
-        super().__init__(parent=parent,config=config,  device_key = device_key)
+    def __init__(self, config, parent=None, device_key="Forward_Power_Meter"):
+        super().__init__(parent=parent, config=config, device_key=device_key)
         self.connected = False
         self.fields_setup()
 
@@ -25,6 +27,7 @@ class PowerMeter(SimulatedSensor):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
+        return self.connected, ''
 
     def disconnect_hardware(self):
         self.connected = False
@@ -35,6 +38,7 @@ class PowerMeter(SimulatedSensor):
         reading = random.random()
         self.reading_signal.emit(reading)
         return reading
+
 
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
@@ -47,4 +51,3 @@ if __name__ == '__main__':
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()
-

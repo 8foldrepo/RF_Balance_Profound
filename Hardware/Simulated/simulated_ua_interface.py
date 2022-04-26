@@ -1,11 +1,10 @@
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.useful_methods import log_msg
-from Hardware.Simulated.simulated_device import SimulatedDevice
 
 
-class UAInterfaceBox(SimulatedDevice):
+class SimulatedUAInterface(AbstractUAInterface):
     connected_signal = pyqtSignal(bool)
-    dummy_command_signal = pyqtSignal(str)
 
     cal_data_signal = pyqtSignal(list, int)
 
@@ -60,13 +59,14 @@ class UAInterfaceBox(SimulatedDevice):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
+        return self.connected, ''
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def is_connected(self):
-        return self.connected
+    def check_connected(self):
+        return self.connected, ''
 
     def wrap_up(self):
         self.disconnect_hardware()
@@ -92,5 +92,5 @@ class UAInterfaceBox(SimulatedDevice):
 
 
 if __name__ == "__main__":
-    wtf = UAInterfaceBox(config=None)
+    wtf = SimulatedUAInterface(config=None)
     print(wtf.read_data())

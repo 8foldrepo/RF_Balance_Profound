@@ -6,6 +6,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
+        self.tabWidget = None
         self.manager = None
         self.config = None
 
@@ -33,8 +34,8 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
 
-    def set_mainwindow(self, mainwindow):
-        self.mainwindow = mainwindow
+    def set_tabWidget(self, tabWidget):
+        self.tabWidget = tabWidget
 
     def style_ui(self):
         self.scan_tabs.setCurrentIndex(0)
@@ -79,13 +80,11 @@ class Scan(QWidget, Ui_scan_tab_widget):
     @pyqtSlot(list,list, str)
     def update_profile_plot(self, x, y, axis_label):
         # Cancel if this widget is not plot ready
-        self.profile_plot_ready = True #todo: remove
-
         if not self.profile_plot_ready:
             return
 
         # Cancel if the current tab is not visible
-        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
+        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == 'Scan':
             return
 
         tabs = self.scan_tabs

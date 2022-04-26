@@ -1,4 +1,6 @@
 from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtCore
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 import logging
 from Utilities.useful_methods import log_msg
@@ -16,6 +18,8 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 # Features common to all custom widgets in this project
 class MyQWidget(QWidget):
+    set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
+
     def __init__(self, parent=None, ):
         super().__init__(parent=parent)
 

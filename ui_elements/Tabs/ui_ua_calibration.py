@@ -1,8 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QTableWidgetItem
 from PyQt5.QtCore import *
-
-from Hardware.ua_interface_box import UAInterfaceBox
+from Hardware.ua_interface import UAInterface
 from Widget_Library.widget_ua_calibration import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
     ui = UACalibration()
-    ua_interface = UAInterfaceBox(config=None)
+    ua_interface = UAInterface(config=None)
     ui.set_ua_interface(ua_interface)
     ui.show()
     sys.exit(app.exec_())

@@ -1,20 +1,23 @@
 import random
-
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from Hardware.relay_board import Relay_Board
-from Hardware.Simulated.simulated_device import SimulatedDevice
+from Hardware.Abstract.abstract_io_board import AbstractIOBoard
+from definitions import WaterLevel
+from PyQt5.QtCore import pyqtSignal
+from Hardware.relay_board import RelayBoard
 import time as t
 
-class IO_Board(SimulatedDevice):
+'''Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware'''
+
+
+class SimulatedIOBoard(AbstractIOBoard):
     pump_reading_signal = pyqtSignal(bool)
-    water_level_reading_signal = pyqtSignal(str)
+    water_level_reading_signal = pyqtSignal(WaterLevel)
     filling_signal = pyqtSignal()
-    #the str is the target water level, either 'level' or 'below_level'
-    draining_signal = pyqtSignal(str)
+
+    draining_signal = pyqtSignal(WaterLevel)
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
-        self.power_relay = Relay_Board(device_key="Daq_Power_Relay")
+        self.power_relay = RelayBoard(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.ua_pump_on = False
@@ -24,46 +27,44 @@ class IO_Board(SimulatedDevice):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-    def set_pump_on(self, on) -> bool:
+    def set_pump_on(self, on):
         self.pump_on = on
 
     def get_ua_pump_reading(self) -> bool:
-        self.ua_pump_on = random.choice([True,False])
+        self.ua_pump_on = random.choice([True, False])
         return self.ua_pump_on
-
-    '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
 
     def fill_tank(self):
         self.filling_signal.emit()
         t.sleep(2)
-        starttime= t.time()
-        while t.time()-starttime<20:
-            if self.get_water_level() == 'level' or self.get_water_level() == 'above_level':
+        start_time = t.time()
+        while t.time() - start_time < 20:
+            if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
                 return True
         return False
 
     def drain_tank(self):
-        self.draining_signal.emit('below_level')
+        self.draining_signal.emit(WaterLevel.below_level)
         t.sleep(2)
-        starttime= t.time()
-        while t.time()-starttime<20:
-            if self.get_water_level() == 'below_level':
+        start_time = t.time()
+        while t.time() - start_time < 20:
+            if self.get_water_level() == WaterLevel.below_level:
                 return True
         return False
 
     def drain_tank_to_level(self):
-        self.draining_signal.emit('level')
+        self.draining_signal.emit(WaterLevel.level)
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:
-            if self.get_water_level() == 'level':
+            if self.get_water_level() == WaterLevel.level:
                 return True
         return False
 
-    def get_water_level(self) -> str:
-        states = ['below_level', 'above_level', 'level']
-        state = random.choice(states)
-        print(f"get_water_level called in simulated_io_board.py, water level is {state}")
+    '''Return the state of the water level sensor as a WaterLevel Enum'''
+
+    def get_water_level(self) -> WaterLevel:
+        state = random.choice(list(WaterLevel))
         self.water_level_reading_signal.emit(state)
         return state
 
@@ -71,9 +72,11 @@ class IO_Board(SimulatedDevice):
         pass
 
     def connect_hardware(self):
-        self.connected_signal.emit(True)
         self.get_water_level()
-        return True
+        self.connected = True
+        self.connected_signal.emit(self.connected)
+        return self.connected, ''
+
 
     def activate_relay_channel(self, channel_number: int):
         pass

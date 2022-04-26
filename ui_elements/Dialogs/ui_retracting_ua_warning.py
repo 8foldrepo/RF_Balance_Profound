@@ -1,6 +1,6 @@
 from Widget_Library import retracting_ua_warning
 from PyQt5.QtCore import pyqtSignal
-from ui_elements.my_qdialog import MyQDialog
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 class UARetractDialog(MyQDialog, retracting_ua_warning.Ui_retracting_ua_warn):
     continue_signal = pyqtSignal()

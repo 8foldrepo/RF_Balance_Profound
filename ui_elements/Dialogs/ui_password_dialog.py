@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from Widget_Library import dialog_password
-from ui_elements.my_qdialog import MyQDialog
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):

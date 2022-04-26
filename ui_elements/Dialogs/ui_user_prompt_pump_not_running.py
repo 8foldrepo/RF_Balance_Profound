@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 from Widget_Library import wtf_user_prompt_pump_not_running
 from PyQt5.QtCore import pyqtSignal
-from ui_elements.my_qdialog import MyQDialog
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class WTFUserPromptPumpNotRunning(MyQDialog, wtf_user_prompt_pump_not_running.Ui_wtf_user_prompt_pump_not_running):

@@ -1,4 +1,4 @@
-from ui_elements.my_qdialog import MyQDialog
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 from Widget_Library import wtf_user_prompt
 from PyQt5.QtCore import pyqtSignal
 
@@ -9,7 +9,6 @@ class WTFUserPrompt (MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
 
     def __init__(self, config = None):
         super().__init__(config=config)
-
         self.setupUi(self)
         self.configure_signals()
 

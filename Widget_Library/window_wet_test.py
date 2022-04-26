@@ -1222,14 +1222,14 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), _translate("MainWindow", "Position"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_9), _translate("MainWindow", "System Config"))
 from ui_elements.switch import Switch
-from ui_elements.ui_position import Position
-from ui_elements.ui_results import Results
-from ui_elements.ui_rfb import RFB
-from ui_elements.ui_scan import Scan
-from ui_elements.ui_script_editor import ScriptEditor
-from ui_elements.ui_system_config import SystemConfig
-from ui_elements.ui_system_info import SystemInfo
-from ui_elements.ui_ua_calibration import UACalibration
+from ui_elements.Tabs.ui_position import Position
+from ui_elements.Tabs.ui_results import Results
+from ui_elements.Tabs.ui_rfb import RFB
+from ui_elements.Tabs.ui_scan import Scan
+from ui_elements.Tabs.ui_script_editor import ScriptEditor
+from ui_elements.Tabs.ui_system_config import SystemConfig
+from ui_elements.Tabs.ui_system_info import SystemInfo
+from ui_elements.Tabs.ui_ua_calibration import UACalibration
 
 
 if __name__ == "__main__":

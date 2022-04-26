@@ -7,7 +7,7 @@
 #            - Right-click on the file, select properties, click "Unblock" (if shown)
 import clr # pythonnet
 from PyQt5.QtCore import pyqtSignal
-from Hardware.Simulated.simulated_sensor import AbstractSensor
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 import ctypes
 import sys
 from definitions import POWER_METER_DLL_PATH
@@ -41,14 +41,20 @@ class PowerMeter(AbstractSensor):
         self.pwr.Open_Sensor(self.serial_number)
         ModelName = self.pwr.GetSensorModelName()
         SerialNo = self.pwr.GetSensorSN()
-        self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial {SerialNo} connected successfully")
-        self.pwr.Freq = 1000  # Set measurement frequency
-        self.pwr.AvgCount = 1  # Set averaging count to 1
-        self.pwr.AVG = 1  # Enable averaging
-        self.pwr.Format_mW = True
+        if len(ModelName) == 20 or len(SerialNo) == 20:
+            self.log(level="error",message=f"{self.device_key} could not connect")
+            self.connected = False
+        else:
+            self.connected = True
+            self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial "
+                                           f"{SerialNo} connected successfully")
+            self.pwr.Freq = 1000  # Set measurement frequency
+            self.pwr.AvgCount = 1  # Set averaging count to 1
+            self.pwr.AVG = 1  # Enable averaging
+            self.pwr.Format_mW = True
 
-        self.connected = True
         self.connected_signal.emit(self.connected)
+        return self.connected, ''
 
     def disconnect_hardware(self):
         self.pwr.Close_Sensor()

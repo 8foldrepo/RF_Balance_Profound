@@ -1,8 +1,8 @@
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
-from Hardware.Simulated.simulated_sensor import AbstractSensor
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 
-class Thermocouple(AbstractSensor):
+class NIThermocouple(AbstractSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
@@ -24,6 +24,7 @@ class Thermocouple(AbstractSensor):
             self.connected = False
 
         self.connected_signal.emit(self.connected)
+        return self.connected, ''
 
     def disconnect_hardware(self):
         self.connected = False
@@ -41,7 +42,7 @@ class Thermocouple(AbstractSensor):
         return reading
 
 if __name__ == '__main__':
-    therm = Thermocouple(config=None)
+    therm = NIThermocouple(config=None)
     therm.connect_hardware()
 
     while True:

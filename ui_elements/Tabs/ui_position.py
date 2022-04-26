@@ -20,7 +20,6 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class Position(MyQWidget, Ui_Form):
     '''Disables buttons of entire UI that may interfere with operations in progress'''
-    set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
     home_1d_signal = QtCore.pyqtSignal(str)
     home_all_signal = QtCore.pyqtSignal()
     setup_signal = QtCore.pyqtSignal(dict)
@@ -39,13 +38,14 @@ class Position(MyQWidget, Ui_Form):
 
     def set_config(self, config):
         self.config = config
-        self.populate_default_ui()
 
     def set_manager(self, manager):
         self.manager = manager
 
     def set_motors(self, motors):
         self.motors = motors
+        self.populate_default_ui()
+
         self.setup_signal.connect(self.motors.setup)
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)

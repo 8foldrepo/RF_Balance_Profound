@@ -3,13 +3,12 @@ import subprocess
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from subprocess import Popen, PIPE
 import time as t
+from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from definitions import ROOT_DIR
-from Hardware.Simulated.simulated_device import SimulatedDevice
 
 
-class UAInterfaceBox(SimulatedDevice):
+class UAInterface(AbstractUAInterface):
     connected_signal = pyqtSignal(bool)
-    dummy_command_signal = pyqtSignal(str)
     cal_data_signal = pyqtSignal(list, int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
@@ -30,22 +29,29 @@ class UAInterfaceBox(SimulatedDevice):
 
         self.log('Attempting to connect to WTFIB... ')
 
+        #Ping the UA interface
         p = Popen(["ping", self.ip_address, "-n","1"], stdout=PIPE)
         output = p.communicate()[0].decode()
+
         if 'timed out' in output:
-            self.log('ping to WTFIB timed out')
+            feedback = 'ping to WTFIB timed out'
             self.connected = False
-            self.connected_signal.emit(self.connected)
-            return
-        self.log('WTFIB connected successfully')
-        self.connected = True
+        else:
+            feedback = 'WTFIB connected successfully'
+            self.connected = True
+
+        if not self.connected:
+            self.log(feedback, level='error')
+        else:
+            self.log(feedback)
         self.connected_signal.emit(self.connected)
+        return self.connected, feedback
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def is_connected(self):
+    def check_connected(self):
         return self.connected
 
     def wrap_up(self):
@@ -147,7 +153,7 @@ class UAInterfaceBox(SimulatedDevice):
         return None
 
 if __name__ == '__main__':
-    wtf = UAInterfaceBox(config=None)
+    wtf = UAInterface(config=None)
     print(wtf.write_data(['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5', '66.8', '65.2',
                     '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6', '46.0', '45.5',
                     '45.0', '40.8', '39.7']))

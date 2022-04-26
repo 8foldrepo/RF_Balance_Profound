@@ -1,17 +1,15 @@
 import serial
-from PyQt5.QtCore import pyqtSignal
-
 from Utilities.load_config import load_configuration
-from Hardware.Simulated.simulated_relay import SimulatedRelay
+from Hardware.Abstract.abstract_relay import AbstractRelay
 import time as t
 from PyQt5.QtCore import pyqtSignal
 
 
-class Relay_Board(SimulatedRelay):
+class RelayBoard(AbstractRelay):
     reading_signal = pyqtSignal(bool)
 
-    def __init__(self, config = None, device_key = 'Pump', parent = None):
-        super().__init__(config=config,device_key=device_key, parent = None)
+    def __init__(self, config=None, device_key='Pump', parent=None):
+        super().__init__(config=config, device_key=device_key, parent=None)
         self.ser = None
         self.fields_setup()
         self.on = False
@@ -25,6 +23,7 @@ class Relay_Board(SimulatedRelay):
         self.port = self.config[self.device_key]['port']
 
     def connect_hardware(self):
+        feedback = ''
         try:
             self.ser = serial.Serial(
                 port=self.port,  # May vary depending on computer
@@ -36,13 +35,15 @@ class Relay_Board(SimulatedRelay):
             self.ser.write(b"ON\r")
             self.connected = True
             self.log(f"{self.device_key} connected successfully")
+            self.relay_write(self.on_by_default)
         except serial.serialutil.SerialException:
             self.connected = False
-            self.log( level='error', message=
-            f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
-            "to determine which COM port to use. It is currently hard coded")
+            feedback = f"{self.device_key} not connected. Check that it is plugged in and look at Device manager " \
+                       f"to determine which COM port to use. Make sure it matches the config file"
+            self.log(level='error', message=feedback)
+
         self.connected_signal.emit(self.connected)
-        self.relay_write(self.on_by_default)
+        return self.connected, feedback
 
     def disconnect_hardware(self):
         if self.ser is None:
@@ -57,17 +58,17 @@ class Relay_Board(SimulatedRelay):
             self.log(level='error', message=f'{self.device_key} not connected')
             return
 
-        self.ser.write(b"\xFF\x01\x03\n") #Check state command
+        self.ser.write(b"\xFF\x01\x03\n")  # Check state command
 
-        starttime = t.time()
-        while t.time() - starttime < self.timeout_s:
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
             reply = self.ser.readline()
-            if reply == b'\xff\x01\x01': #On reply
+            if reply == b'\xff\x01\x01':  # On reply
                 self.on = True
                 self.log(f"{self.device_key} is ON")
                 self.reading_signal.emit(True)
                 return True
-            elif reply == b'\xff\x01\x00': #Off reply
+            elif reply == b'\xff\x01\x00':  # Off reply
                 self.on = False
                 self.log(f"{self.device_key} is OFF")
                 self.reading_signal.emit(False)
@@ -80,17 +81,16 @@ class Relay_Board(SimulatedRelay):
             return
 
         if on:
-            self.ser.write(b"\xFF\x01\x01\n") #On command
+            self.ser.write(b"\xFF\x01\x01\n")  # On command
             self.get_reading()
         else:
-            self.ser.write(b"\xFF\x01\x00\n") #Off command
+            self.ser.write(b"\xFF\x01\x00\n")  # Off command
             self.get_reading()
 
-        #self.on = on
+        # self.on = on
 
 
 if __name__ == '__main__':
-    switch = Relay_Board()
+    switch = RelayBoard()
     switch.connect_hardware()
     switch.relay_write(True)
-

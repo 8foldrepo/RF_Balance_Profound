@@ -1,7 +1,7 @@
-from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtWidgets import QTableWidgetItem, QDialog, QApplication
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QTableWidgetItem, QApplication
 from Widget_Library import  dialog_script_complete
-from ui_elements.my_qdialog import MyQDialog
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class ScriptCompleteDialog(MyQDialog, dialog_script_complete.Ui_Dialog):

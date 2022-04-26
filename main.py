@@ -29,8 +29,14 @@ def main(args):
 
     window = MainWindow()
     window.show()
+    app.processEvents()
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
+    window.begin_manager_thread()
+    #window.connect_hardware_signal.emit()
+
+
+
     #window.prompt_for_password()
     # Todo: For testing purposes, remove later
     #window.manager.test_code()

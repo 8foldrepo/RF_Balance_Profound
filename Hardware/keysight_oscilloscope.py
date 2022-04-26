@@ -1,9 +1,13 @@
 import pyvisa
 import time as t
-from Hardware.Simulated.simulated_oscilloscope import AbstractOscilloscope
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
 class KeysightOscilloscope(AbstractOscilloscope):
+    max_time_of_flight: float
+    min_time_of_flight: float
+    timeout_s: float
+
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
@@ -15,13 +19,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def connect_hardware(self):
         self.log("Attempting to connect to oscilloscope...")
+        feedback = ''
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
-                retry = True
-                while retry:
-                    retry = False
+
+                retries = 1
+                while retries <= self.config[self.device_key]['retries']:
                     try:
                         self.inst = self.rm.open_resource(resource)
                         self.connected = True
@@ -33,25 +38,31 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     except pyvisa.errors.VisaIOError as e:
                         self.connected = False
                         self.connected_signal.emit(False)
-                        if 'Device reported an input protocol error during transfer.' in str(e):
-                            self.log(level='error',
-                                     message=f"Input protocol error, retrying: {e}")
-                            retry = True
-                        elif 'VI_ERROR_RSRC_NFOUND' in str(e):
-                            self.log(level='error',
-                                     message=f"Oscilloscope not connected, connect and restart program: {e}")
-                            retry = False
-                        elif 'Unknown system error' in str(e):
-                            self.log(level='error',
-                                     message=f"Unknown oscilloscope system error, restart program: {e}")
-                            retry = False
-                        else:
-                            self.log(level='error',
-                                     message=f"Could not connect to oscilloscope, retrying, otherwise try restarting it: {e}")
-                            retry = True
 
-        if self.inst == None:
-            self.log("Keysight oscilloscope not found", level='error')
+                        if 'VI_ERROR_RSRC_NFOUND' in str(e):
+                            feedback = f'Oscilloscope not connected, connect and retry: {e}'
+                            # Do not retry
+                            break
+                        elif 'Unknown system error' in str(e):
+                            feedback = f"Unknown oscilloscope system error, connect and retry"
+                            # Do not retry
+                            break
+                        elif 'Device reported an input protocol error during transfer.' in str(e):
+                            feedback = f"retry:{retries} Input protocol error, retrying"
+                            # Retry
+                        elif 'not currently the controller in charge' in str(e):
+                            feedback = f"retry:{retries} Oscilloscope appears to be disconnected, " \
+                                       f"retrying, otherwise check connection and restart it"
+                            # Retry
+                        else:
+                            feedback = f"retry:{retries} Unknown error: {e}"
+                            # Retry
+                        retries = retries + 1
+
+        if not self.connected:
+            self.log(level='error', message=feedback)
+        self.connected_signal.emit(self.connected)
+        return self.connected, feedback
 
     def clear(self):
         self.inst.clear()
@@ -63,7 +74,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         try:
             self.inst.close()
             self.rm.close()
-        except:
+        except pyvisa.errors.VisaIOError:
             pass
         self.connected = False
         self.connected_signal.emit(False)
@@ -174,8 +185,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             # self.command(f"WAV:SOUR:CHAN{channel}")
 
             preamble = None
-            starttime = t.time()
-            while t.time() - starttime < self.timeout_s:
+            start_time = t.time()
+            while t.time() - start_time < self.timeout_s:
                 try:
                     preamble = self.ask("WAV:PRE?").split(",")
                 except pyvisa.errors.VisaIOError as e:
@@ -202,6 +213,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 mode = "average"
             else:
                 mode = "HRESolution"
+
             num_points = int(preamble[2])
             average_num = preamble[3]
             sample_interval_s = float(preamble[4])
@@ -213,8 +225,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
             # Capture data
             voltages_v_strings = None
-            starttime = t.time()
-            while t.time() - starttime < self.timeout_s:
+            start_time_2 = t.time()
+            while t.time() - start_time_2 < self.timeout_s:
                 try:
                     voltages_v_strings = self.ask("WAV:DATA?").split(',')
                 except pyvisa.errors.VisaIOError as e:
@@ -246,15 +258,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.log(f"Could not capture, {self.device_key} is not connected")
             return [0], [0]
 
-    def SetPeriod_s(self, channel, period):
-        self.Period = period
-        Peri = "C" + channel + ":BTWV PRD,{}".format(self.Period)
-        self.command(Peri)
-
-    def SetCycles(self, channel, cycle):
-        self.Cycle = cycle
-        Cycl = "C" + channel + ":BTWV TIME," + self.Cycle
-        self.command(Cycl)
+    # Waveform generator methods, unused, untested
+    # def SetPeriod_s(self, channel, period_s):
+    #     self.period_s = period_s
+    #     Peri = "C" + channel + ":BTWV PRD,{}".format(self.period_s)
+    #     self.command(Peri)
+    #
+    # def SetCycles(self, channel, cycle):
+    #     self.cycles = cycle
+    #     Cycl = "C" + channel + ":BTWV TIME," + self.cycles
+    #     self.command(Cycl)
 
     def command(self, command):
         try:
@@ -280,9 +293,9 @@ if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
 
-    starttime = t.time()
-    print(osc.capture())
-    print(t.time()-starttime)
+    start_time = t.time()
+    print(osc.capture(1))
+    print(t.time() - start_time)
 
     # may not be run if script is terminated early
     osc.disconnect_hardware()
