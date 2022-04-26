@@ -88,22 +88,21 @@ class SimulatedAWG(SimulatedDevice):
     """Sets the frequency of the signal"""
     @abstractmethod
     def SetFrequency_Hz(self, frequency):
-        pass
+        self.state["frequency_Hz"] = frequency
 
     @abstractmethod
     def GetFrequency_Hz(self):
-        pass
+        return self.state["frequency_Hz"]
 
 
     """Sets the peak to peak amplitude of the waveform in volts"""
     @abstractmethod
     def SetAmplitude_V(self, amplitude):
-        pass
+        self.state["amplitude_V"] = amplitude
 
     @abstractmethod
     def GetAmplitude_V(self):
-        return 1  # place holder mock value
-        pass
+        return self.state["amplitude_V"]
 
     """Sets the dc offset of the waveform in volts"""
     @abstractmethod
@@ -134,12 +133,13 @@ class SimulatedAWG(SimulatedDevice):
 
     @abstractmethod
     def SetBurst(self, on = True):
-        self.state["burst"] = on
+        self.state["burst_on"] = on
+
 
     """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
     @abstractmethod
     def GetBurst(self):
-        return self.state["burst"], ""
+        return self.state["burst_on"], self.state["burst_cycles"]
 
     @abstractmethod
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):

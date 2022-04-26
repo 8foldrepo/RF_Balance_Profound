@@ -103,7 +103,7 @@ class FileSaver:
             f.write('\t'.join(log_table[x]))
             f.write('\n')
 
-    def store_find_element_waveform(self, metadata, times, voltages):  # assume single array every time
+    def store_waveform(self, metadata, times, voltages):  # assume single array every time
 
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
                                             f"E{metadata['element_number']:02}"))
@@ -272,7 +272,7 @@ def test_store_find_element_waveform(file_saver):
 
     path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
 
-    file_saver.store_find_element_waveform(metadata, times, voltages, path)
+    file_saver.store_waveform(metadata, times, voltages, path)
 
 def test_store_measure_rfb_waveform(file_saver):
     metadata = dict()

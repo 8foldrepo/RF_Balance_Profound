@@ -21,7 +21,6 @@ class Plot(pg.PlotWidget):
     def refresh(self, time, volts, pen="k", clear="True"):
         self.plot(time, volts, pen=pen, clear=clear)
         self.app.processEvents()
-        pass
 
     def set_text(self, text, x, y):
         self.text = text

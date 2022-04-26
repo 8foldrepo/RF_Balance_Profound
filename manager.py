@@ -13,7 +13,7 @@ import time as t
 import numpy as np
 from scipy import integrate
 from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, blank_test_data, \
-    generate_calibration_data
+    generate_calibration_data, check_directory
 from Utilities.formulas import calculate_power_from_balance_reading
 from definitions import ROOT_DIR
 import os
@@ -37,8 +37,8 @@ class Manager(QThread):
     # Dialog signals
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
-    user_prompt_signal_water_too_low_signal = pyqtSignal(str)  # str is water level
-    user_prompt_signal_water_too_high_signal = pyqtSignal(str)
+    user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
+    user_prompt_signal_water_too_high_signal = pyqtSignal()
     write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
     script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
@@ -733,11 +733,10 @@ class Manager(QThread):
 
         # todo: create data directories here
         try:
-            list_of_paths = self.config["Paths"]
-            for x in range(len(list_of_paths)):
-                directory_to_check = list_of_paths[x][1]
-                if not os.path.exists(directory_to_check):
-                    os.makedirs(directory_to_check)
+            paths_dict = self.config["Paths"]
+            for key in paths_dict.keys():
+                directory_to_check = paths_dict[key]
+                path = check_directory(directory_to_check)
             self.test_data["script_log"].append(['', 'CreateDataDirectories', 'OK', ''])
         except Exception as e:
             self.test_data["script_log"].append(['', 'CreateDataDirectories', f'FAIL {e}', ''])
@@ -817,7 +816,6 @@ class Manager(QThread):
         scope_channel = int(var_dict['Scope channel'][8:])
         acquisition_type = var_dict['Acquisition type']
         averages = int(re.search(r'\d+', str(var_dict['Averages'])).group())
-        # todo: add data storage
         data_storage = var_dict['Data storage']
         storage_location = var_dict['Storage location']
         data_directory = var_dict["Data directory"]
@@ -826,10 +824,11 @@ class Manager(QThread):
 
         self.test_data["script_log"].append(['Find element "n"', 'OK', '', ''])
 
-        try:  # at this point in the script, the checks have been performed already in pretest_initialization so no need to wrap in if statements
+        try:  # at this point in the script, the checks have been performed already in pretest_initialization so no
+              # need to wrap in if statements
             self.test_data["script_log"].append(['', 'PreChecks',
                                                  f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
-                                                 f'{self.IO_Board.get_pump_reading()}', ''])
+                                                 f'{self.IO_Board.get_ua_pump_reading()}', ''])
         except Exception as e:
             self.test_data["script_log"].append(['', 'PreChecks', f'FAIL {e}', ''])
 
@@ -841,9 +840,47 @@ class Manager(QThread):
         print(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
+
         frequency_Hz = self.test_data['low_frequency_MHz'] * 1000000
         self.AWG.SetFrequency_Hz(frequency_Hz)
         self.AWG.SetOutput(True)
+        self.test_data["script_log"].append(['', "Config UA and FGen", "FGen output enabled", ''])
+
+        #todo: populate var_dict and make sure method is implemented
+        autoset_var_dict = dict()
+        self.autoset_timebase(autoset_var_dict)  # script log updated in this method
+
+        self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
+                       go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,averages=averages)
+
+        self.home_system({'Axis to home': 'Theta'})
+        self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+                       ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                       go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,averages=averages)
+
+        # Todo: check
+        self.home_system({'Axis to home': 'Theta'})
+
+        self.AWG.SetOutput(False)
+        self.test_data["script_log"].append(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
+        self.test_data["script_log"].append(['', 'End', 'OK', ''])
+
+        self.step_complete = True
+
+    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
+                  acquisition_type ='N Averaged Waveform', averages=1):
+        if axis == 'X':
+            axis_letter = 'X'
+        elif axis == 'Theta':
+            axis_letter = 'R'
+        else:
+            raise Exception
+        if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
+            units_str = 'deg'
+            axis_label = 'Angle (deg)'
+        else:
+            units_str = 'mm'
+            axis_label = 'Distance (mm)'
 
         if acquisition_type.upper() == 'N Averaged Waveform'.upper():
             self.Oscilloscope.SetAveraging(averages)
@@ -851,151 +888,79 @@ class Manager(QThread):
             self.Oscilloscope.SetAveraging(1)
 
         # Loop over x through a given range, move to the position where maximal RMS voltage was measured
-        x_sweep_waveforms = list()
-        x_positions = list()
-        x_rms_values = list()
+        positions = list()
+        rms_values = list()
 
         # sweep from the expected element position minus the max error to the expected element position plus max error
-        position = -1 * (XPts * x_increment_MM) / 2 + element_x_coordinate
+        position = -1 * (num_points * increment) / 2 + ref_position
 
         # begin with arbitrarily low values
-        x_max_rms = -1 * sys.float_info.max
-        x_max_position = -1 * sys.float_info.max
-        for i in range(XPts):
+        max_rms = -1 * sys.float_info.max
+        max_position = -1 * sys.float_info.max
+        for i in range(num_points):
             if self.step_index == -1:
                 return
-            self.Motors.go_to_position(['X'], [position])
-            position = position + abs(x_increment_MM)
+            self.Motors.go_to_position([axis_letter], [position])
+            position = position + abs(increment)
 
-            time, voltage = self.capture_scope(scope_channel)
+            times_s, voltages_v = self.capture_scope(scope_channel)
 
-            if not data_storage.upper() == 'Do not store'.upper():
-                metadata = dict()
-                metadata['element_number'] = self.element
-                metadata['axis'] = "X"
-                metadata['waveform_number'] = f"X{i+1:03}"
-                metadata['serial_number'] = 'GH1214'
-                metadata['version'] = 1.0
-                metadata['X'] = 0.750
-                metadata['Theta'] = -171.198
-                metadata['calibration_frequency_(MHz)'] = '4'
-                metadata['source_signal_amplitude_(mVpp)'] = '50'
-                metadata['source_signal_type'] = 'Toneburst'
-                metadata['number_of_cycles'] = 0
+            if data_storage.upper() == 'Store entire waveform'.upper():
+                self.save_find_element_waveform(axis=axis, waveform_number=i + 1, times_s=times_s, voltages_v=voltages_v)
 
-                self.results_saver.store_find_element_waveform(metadata=metadata, times=time, voltages=voltage)
+            rms = self.find_rms(times_s=times_s, voltages_v=voltages_v)
 
-            rms = self.find_rms(time_s=time, voltage_v=voltage)
+            if rms > max_rms:
+                max_rms = rms
+                max_position = position
 
-            if rms > x_max_rms:
-                x_max_rms = rms
-                x_max_position = position
-
-            x_positions.append(position)
-            x_rms_values.append(rms)
-            self.profile_plot_signal.emit(x_positions, x_rms_values, 'Distance (mm)')
+            positions.append(position)
+            rms_values.append(rms)
+            self.profile_plot_signal.emit(positions, rms_values, axis_label)
 
         self.test_data["script_log"].append(
-            ['', 'Move to element', f"Moved to X={position}, Th={self.Motors.coords_mm[1]}", ''])
+            ['', 'Move to element', f"Moved to X={self.Motors.coords_mm[0]}, Th={self.Motors.coords_mm[1]}", ''])
 
-        self.AWG.SetOutput(True)
-        self.test_data["script_log"].append(['', "Config UA and FGen", "FGen output enabled", ''])
+        self.log(f"Maximum of {max_rms} @ {axis} = {max_position} {units_str}")
 
-        self.log(f"Maximum of {x_max_rms} @ x = {x_max_position} mm. Going there.")
+        # update element position
+        if axis == 'X':
+            self.element_x_coordinates[self.element] = max_position
+            self.test_data['results_summary'][self.element - 1][1] = "%.2f" % max_position
 
-        # update element x position
-        self.element_x_coordinates[self.element] = x_max_position
+        else:
+            self.element_r_coordinates[self.element] = max_position
+            self.test_data['results_summary'][self.element - 1][2] = "%.2f" % max_position
 
-        status = self.Motors.go_to_position(['X'], [x_max_position])
+        status_str = f'Start {axis} {self.element_x_coordinates[self.element]} mm; Incr {axis} ' \
+                     f'{increment} {units_str}; #Points {num_points}; Peak {axis} = ' \
+                     f'{max_position} 'f'mm;'
 
-        self.autoset_timebase(var_dict)  # script log updated in this method
+        if go_to_peak:
+            status = self.Motors.go_to_position([axis_letter], [max_position])
+            status_str = status_str + f' moved to {axis} = {max_position} {units_str}'
 
-        self.test_data["script_log"].append(['', 'ScanX Find Peak X:',
-                                             f'Start X {self.element_x_coordinates[self.element]} mm; Incr X '
-                                             f'{x_increment_MM} mm; #Points {XPts}; Peak X = {x_max_position} '
-                                             f'mm; moved to X = {x_max_position} mm'])
+        self.test_data["script_log"].append(['', f'Scan{axis} Find Peak {axis}:',status_str,''])
 
-        # todo: test this to make sure it triggers if and only if the movement fails
-        if not status:
-            self.log(level="error", message="Motor movement not successful")
-            if self.config["Debugging"]["end_script_on_errors"]:
-                self.abort()
-                return
 
-        self.test_data["X sweep waveforms"] = x_sweep_waveforms
+    def save_find_element_waveform(self, axis, waveform_number, times_s, voltages_v):
+        metadata = dict()
+        metadata['element_number'] = self.element
+        metadata['axis'] = f"{axis}"
+        metadata['waveform_number'] = f"{axis}{waveform_number:03}"
+        metadata['serial_number'] = self.test_data['serial_number']
+        metadata['version'] = self.config['Software_Version']
+        metadata['X'] = self.Motors.coords_mm[0]
+        metadata['Theta'] = self.Motors.coords_mm[1]
+        metadata['calibration_frequency_(MHz)'] = self.AWG.state['frequency_Hz']
+        metadata['source_signal_amplitude_(mVpp)'] = self.AWG.state['amplitude_V']
+        if self.AWG.state['burst_on']:
+            metadata['source_signal_type'] = 'Toneburst'
+        else:
+            metadata['source_signal_type'] = 'Continuous'
+        metadata['number_of_cycles'] = self.AWG.state['burst_cycles']
 
-        # Loop over r through a given range, move to the position where maximal RMS voltage was measured
-        r_sweep_waveforms = list()
-        position = -1 * (thetaPts * thetaIncrDeg) / 2 + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
-
-        # begin with arbitrarily low values
-        r_max_rms = -1 * sys.float_info.max
-        r_max_position = -1 * sys.float_info.max
-
-        r_positions = list()
-        r_rms_values = list()
-
-        for i in range(thetaPts):
-            # check if the script has been aborted
-            if self.step_index == -1:
-                return
-
-            self.Motors.go_to_position(['R'], [position])
-            position = position + thetaIncrDeg
-
-            voltage, time = self.capture_scope(channel=scope_channel)
-
-            #todo: fill in metadata
-            if not data_storage.upper() == 'Do not store'.upper():
-                metadata = dict()
-                metadata['element_number'] = self.element
-                metadata['axis'] = "Th"
-                metadata['waveform_number'] = f"Theta{i+1:03}"
-                metadata['serial_number'] = 'GH1214'
-                metadata['version'] = 1.0
-                metadata['X'] = 0.750
-                metadata['Theta'] = -171.198
-                metadata['calibration_frequency_(MHz)'] = '4'
-                metadata['source_signal_amplitude_(mVpp)'] = '50'
-                metadata['source_signal_type'] = 'Toneburst'
-                metadata['number_of_cycles'] = 0
-
-                self.results_saver.store_find_element_waveform(metadata=metadata, times=time, voltages=voltage)
-
-            rms = self.find_rms(time_s=time, voltage_v=voltage)
-
-            if rms > r_max_rms:
-                r_max_rms = rms
-                r_max_position = position
-
-            r_positions.append(position)
-            r_rms_values.append(rms)
-            self.profile_plot_signal.emit(r_positions, r_rms_values, 'Angle (deg)')
-
-        self.test_data["script_log"].append(['', 'Home theta', 'Home Theta', ''])
-
-        self.Motors.go_to_position(['R'], [r_max_position])
-        self.test_data["Theta sweep waveforms"] = r_sweep_waveforms
-
-        self.log(f"Maximum of {r_max_rms} @ theta = {r_max_position} degrees. Going there.")
-        self.test_data["script_log"].append(['', 'Scan theta',
-                                             f'Start {self.element_r_coordinates[self.element]} deg; Incr {x_increment_MM} deg; #Points {thetaPts}; Peak theta = {r_max_position} deg',
-                                             ''])
-        self.test_data["script_log"].append(['', 'Home theta', 'Home Theta', ''])
-        self.test_data["script_log"].append(
-            ['', 'Move to theta max', f'Move to peak: {x_max_position}_{r_max_position}', ''])
-
-        # update element r position
-        self.element_r_coordinates[self.element] = r_max_position
-
-        # update results summary
-        self.test_data['results_summary'][self.element - 1][1] = "%.2f" % x_max_position
-        self.test_data['results_summary'][self.element - 1][2] = "%.2f" % r_max_position
-        self.AWG.SetOutput(False)
-        self.test_data["script_log"].append(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
-        self.test_data["script_log"].append(['', 'End', 'OK', ''])
-
-        self.step_complete = True
+        self.results_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
     '''Save scan results to a file'''
 
@@ -1094,6 +1059,8 @@ class Manager(QThread):
         elif axis_to_home == 'Theta':
             self.Motors.go_home_1d('R')
 
+        self.test_data["script_log"].append(['', f'Home {axis_to_home}', f'Home {axis_to_home}', ''])
+
         self.step_complete = True
         # self.test_data["script_log"].append(['', "Home all", f"X={X}; Theta={theta}", ''])
 
@@ -1168,7 +1135,8 @@ class Manager(QThread):
         # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
         #                                                             burst_count, scope_channel = scope_channel)
 
-        if not data_storage == "Do not store":
+        if data_storage == "Store entire waveform":
+            # todo: move to results_saver object
             if storage_location == "UA results directory":
                 path = self.config['Paths']['UA results root directory'] + "\\" + self.test_data[
                     "serial_number"] + "-" + \
@@ -1217,14 +1185,14 @@ class Manager(QThread):
 
     '''Returns the voltage squared integral of a oscilloscope waveform'''
 
-    def find_rms(self, time_s, voltage_v):
+    def find_rms(self, times_s, voltages_v):
         dx = 0
-        for i in range(1, len(time_s)):
-            dx = time_s[i] - time_s[i - 1]
+        for i in range(1, len(times_s)):
+            dx = times_s[i] - times_s[i - 1]
             if not dx == 0:
                 break
 
-        voltages_v_squared = np.square(voltage_v)
+        voltages_v_squared = np.square(voltages_v)
 
         if dx == 0:
             self.log(level='Error', message='Error in find_rms. No delta x found, cannot integrate')
@@ -1247,7 +1215,7 @@ class Manager(QThread):
             # need to wrap in if statements
             self.test_data["script_log"].append(['', 'PreChecks',
                                                  f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
-                                                 f'{self.IO_Board.get_pump_reading()}',
+                                                 f'{self.IO_Board.get_ua_pump_reading()}',
                                                  ''])
         except Exception as e:
             self.test_data["script_log"].append(['', 'PreChecks', f'FAIL {e}', ''])

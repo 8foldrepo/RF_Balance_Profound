@@ -28,7 +28,7 @@ class MyQDialog(QDialog):
             self.config = config
         else:
             self.config = load_configuration()
-        self.style_ui()
+        self.set_icon()
 
     # Abort the script if dialogs are closed without being addressed
     def closeEvent(self,event):
@@ -37,7 +37,7 @@ class MyQDialog(QDialog):
         event.accept()
 
     # Set the icon to the 8Fold logo
-    def style_ui(self):
+    def set_icon(self):
         path = os.path.join(ROOT_DIR, '8foldlogo.ico')
         self.setWindowIcon(QIcon(path))
 

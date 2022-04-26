@@ -117,7 +117,13 @@ class KeysightAWG(AbstractAWG):
 
     """Sets the frequency of the signal"""
     def SetFrequency_Hz(self, frequency):
+        self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
+
+        if not self.GetFrequency_Hz() == frequency:
+            self.log(level='error',message='frequency not set')
+            return False
+        return True
 
     def GetFrequency_Hz(self):
         self.command(f"FREQ?")
@@ -127,6 +133,10 @@ class KeysightAWG(AbstractAWG):
     """Sets the peak to peak amplitude of the waveform in volts"""
     def SetAmplitude_V(self, amplitude):
         self.command(f"VOLT {amplitude}")
+        if not self.GetAmplitude_V() == amplitude:
+            self.log(level='error',message='frequency not set')
+            return False
+        return True
 
     def GetAmplitude_V(self):
         self.command(f"VOLT?")
@@ -191,8 +201,8 @@ class KeysightAWG(AbstractAWG):
         self.command(f"BURS?")
         self.state['burst_on'] = "1" in self.read()
         self.command(f"BURS:NCYC?")
-        self.state['burst_ncyc'] = int(float(self.read()))
-        return self.state['burst_on'], self.state['burst_ncyc']
+        self.state['burst_cycles'] = int(float(self.read()))
+        return self.state['burst_on'], self.state['burst_cycles']
 
     def SetOutputImpedence(self, impedence_ohms = 50, HiZ = False):
         if HiZ:
@@ -205,9 +215,9 @@ class KeysightAWG(AbstractAWG):
         return float(self.read())
 
     def SetPhaseDegrees(self, phase_degrees=0):
-        self.phase_degrees = phase_degrees
         self.command(f"UNIT:ANGL DEG")
-        self.command(f"SOUR:PHASE{self.phase_degrees}")
+        self.command(f"SOUR:PHASE{phase_degrees}")
+        return self.GetPhaseDegrees() == phase_degrees
 
     def GetPhaseDegrees(self):
         self.command(f"UNIT:ANGL DEG")
@@ -216,7 +226,8 @@ class KeysightAWG(AbstractAWG):
         return self.state["phase degrees"]
 
     def SetCycles(self, cycles):
-        self.command(f"BURS:NCYC {cycles}")
+        self.state["burst_cycles"] = cycles
+        return self.GetCycles == cycles
 
     def GetCycles(self):
         self.command(f"BURS:NCYC?")

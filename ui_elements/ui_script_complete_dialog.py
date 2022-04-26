@@ -9,9 +9,9 @@ class ScriptCompleteDialog(MyQDialog, dialog_script_complete.Ui_Dialog):
     abort_signal = pyqtSignal()
 
     def __init__(self, config, passed_ray, description_ray = None, parent=None):
-        super().__init__(parent=parent)
-        self.config = config
+        super().__init__(config=config, parent=parent)
         self.setupUi(self)
+        self.config = config
         self.style_ui()
         self.configure_signals()
         self.fill_table(passed_ray=passed_ray,description_ray=description_ray)

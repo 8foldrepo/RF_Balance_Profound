@@ -14,7 +14,6 @@ class FillingDialog(MyQDialog, Ui_Dialog):
         self.config = config
         self.setupUi(self)
         self.granted = False
-        self.style_ui()
 
     @pyqtSlot(str)
     def water_level_slot(self, water_level):

@@ -90,15 +90,19 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     """Delete the step at the given index"""
     def delete_step(self):
+        if len(self.list_of_arg_dicts) == 0:
+            return
+
+        # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         index = self.treeWidget.currentIndex().row()
         self.treeWidget.takeTopLevelItem(index)
         self.list_of_arg_dicts.pop(index + 1) #account for header
-        pass
 
     """Clear the ui script visual and clear the internal arg_dicts variable"""
     def delete_all(self):
+        # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         self.treeWidget.clear()
@@ -111,17 +115,44 @@ class ScriptEditor(MyQWidget, Ui_Form):
             return
         #Click is in the variable column
         item = self.treeWidget.currentItem()
+        parameter_key = item.text(0)
         value = item.text(1)
 
         is_task = item.parent() is self.treeWidget.invisibleRootItem() or item.parent() is None
         if is_task:
             return
 
+
+
         #Clicked cell contains a variable value
         #Prompt user to edit value
         value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
         if value is not None and value != '':
+            # Prevent user from running the script until it is saved and reloaded
+            self.script_changed_signal.emit()
+
+            # Update the parameter in the treewidget
             item.setText(1, value)
+
+            #  Get the task index
+            task_index = self.get_parent_item_index(item) + 1
+
+            # Update the parameter in the dictionary
+            self.list_of_arg_dicts[task_index][parameter_key] = value
+
+    def get_parent_item_index(self, item):
+        try:
+            parent = item.parent()
+        except Exception:
+            return -1
+
+        # Temporarily switch to the parent item, get the index row, and switch back
+        self.treeWidget.setCurrentItem(parent)
+        parent_index = self.treeWidget.currentIndex()
+        parent_row = parent_index.row()
+        self.treeWidget.setCurrentItem(item)
+
+        return parent_row
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, arg_dicts: list):
@@ -228,6 +259,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return OrderedDict([('Task type', 'Autoset timebase')])
 
     def dict_to_tree_item(self, task_dict):
+        # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         item = QTreeWidgetItem([task_dict["Task type"]])
@@ -245,6 +277,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return  item
 
     def updateTree(self):
+        # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         arg_dict_copy = list(self.list_of_arg_dicts)

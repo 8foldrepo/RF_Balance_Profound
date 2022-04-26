@@ -652,7 +652,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot(str)
+    @pyqtSlot()
     def show_user_prompt_water_too_low(self):
         dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
@@ -660,7 +660,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot(str)
+    @pyqtSlot()
     def show_user_prompt_water_too_high(self):
         dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
