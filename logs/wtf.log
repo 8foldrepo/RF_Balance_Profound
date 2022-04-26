@@ -1,10 +1,25 @@
-2022-04-26 18:06:29,340 [ERROR] [PowerMeter] [] : Forward_Power_Meter could not connect
-2022-04-26 18:06:32,380 [ERROR] [PowerMeter] [] : Reflected_Power_Meter could not connect
-2022-04-26 18:06:34,799 [INFO] [DIOBoard] [] : Connecting to DIO board... 
-2022-04-26 18:06:34,871 [ERROR] [DIOBoard] [] : Device not found, check connection and device name in config
-2022-04-26 18:06:34,871 [INFO] [DIOBoard] [] : WTF_DIO failed to connect
-2022-04-26 18:06:37,055 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
-2022-04-26 18:06:40,588 [ERROR] [UAInterface] [] : ping to WTFIB timed out
-8:06:34,871 [INFO] [DIOBoard] [] : WTF_DIO failed to connect
-2022-04-26 18:06:37,055 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
-2022-04-26 18:06:40,588 [ERROR] [UAInterface] [] : ping to WTFIB timed out
+2022-04-26 18:13:48,985 [ERROR] [PowerMeter] [] : Forward_Power_Meter could not connect
+2022-04-26 18:13:51,705 [ERROR] [PowerMeter] [] : Reflected_Power_Meter could not connect
+2022-04-26 18:13:54,160 [INFO] [DIOBoard] [] : Connecting to DIO board... 
+2022-04-26 18:13:54,236 [ERROR] [DIOBoard] [] : Device not found, check connection and device name in config
+2022-04-26 18:13:54,237 [INFO] [DIOBoard] [] : WTF_DIO failed to connect
+2022-04-26 18:13:56,620 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
+2022-04-26 18:14:00,581 [ERROR] [UAInterface] [] : ping to WTFIB timed out
+2022-04-26 18:14:02,778 [INFO] [ParkerMotorController] [] : Connecting to motor controller...
+2022-04-26 18:14:02,780 [ERROR] [ParkerMotorController] [] : VIX_Motors not connected because the COM port was not found. Check that it is plugged in and look at Device manager to determine which COM port to use. enter it into Local.yaml: 
+
+ could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2022-04-26 18:14:05,748 [ERROR] [NIThermocouple] [] : Error connecting to thermocouple: Device identifier is invalid.
+Device Specified: TankTemp
+
+Task Name: _unnamedTask<1>
+
+Status Code: -200220
+2022-04-26 18:14:08,376 [INFO] [KeysightOscilloscope] [] : Attempting to connect to oscilloscope...
+2022-04-26 18:14:08,528 [ERROR] [KeysightOscilloscope] [] : retry:5 Oscilloscope appears to be disconnected, retrying, otherwise check connection and restart it
+2022-04-26 18:14:11,160 [ERROR] [MT_balance] [] : MT_Balance not connected. Check that it is plugged in and look at Device manager to determine which COM port to use and enter it into local.yaml: 
+could not open port 'COM4': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2022-04-26 18:14:13,584 [ERROR] [KeysightAWG] [] : ('Keysight 33509B Series function generator not found: VI_ERROR_NCIC (-1073807264): The interface associated with this session is not currently the controller in charge.',)
+2022-04-26 18:14:13,585 [ERROR] [KeysightAWG] [] : Keysight 33509B Series function generator not found
+ VI_ERROR_NCIC (-1073807264): The interface associated with this session is not currently the controller in charge.',)
+2022-04-26 18:14:13,585 [ERROR] [KeysightAWG] [] : Keysight 33509B Series function generator not found
