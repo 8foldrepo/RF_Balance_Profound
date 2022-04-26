@@ -550,8 +550,10 @@ class Manager(QThread):
                 self.taskExecOrder[i] = toReplace
 
         self.taskNames = list()
+        print(tasks)
         for i in range(len(self.taskExecOrder)):
-            self.taskNames.append(tasks[self.taskExecOrder[i][0] + 1]['Task type'])
+            if 'Task type' in tasks[self.taskExecOrder[i][0] + 1].keys():
+                self.taskNames.append(tasks[self.taskExecOrder[i][0] + 1]['Task type'])
 
         self.taskArgs = list()
         for i in range(len(self.taskExecOrder)):
@@ -1067,10 +1069,23 @@ class Manager(QThread):
     '''Prompt user for action'''
 
     def prompt_user_for_action(self, var_dict):
-        # todo: test
         prompt_type = var_dict["Prompt type"]
-        self.user_prompt_signal.emit(prompt_type)
-        self.wait_for_cont()
+        if prompt_type.upper == 'Other'.upper():
+            try:
+                prompt_type = var_dict["Prompt Message"]
+            except KeyError:
+                prompt_type = 'Blank Prompt'
+
+            self.user_prompt_signal.emit(prompt_type)
+        else:
+            self.user_prompt_signal.emit(prompt_type)
+        try:
+            self.wait_for_cont()
+        except AbortException:
+            return self.abort()
+        except RetryException:
+            self.step_index = self.step_index - 2
+
         self.step_complete = True
 
     '''Set function generator to desired settings'''

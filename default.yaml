@@ -3,17 +3,17 @@ Autoset timebase:
   Min time of flight (us): 42
   Horizontal scale (us): 5
 Debugging:
-  simulate_hw: false
-  simulate_ua_interface: false
-  simulate_sensors: false
-  simulate_motors: false
-  simulate_oscilloscope: false
-  simulate_awg: false
-  simulate_balance: false
-  simulate_power_meters: false
+  simulate_hw: true
+  simulate_ua_interface: true
+  simulate_sensors: true
+  simulate_motors: true
+  simulate_oscilloscope: true
+  simulate_awg: true
+  simulate_balance: true
+  simulate_power_meters: true
+  simulate_io_board: true
+  simulate_thermocouple: true
   end_script_on_errors: false
-  simulate_io_board: false
-  simulate_thermocouple: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:

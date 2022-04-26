@@ -37,10 +37,10 @@ class Ui_Form(object):
         self.label = QtWidgets.QLabel(self.frame)
         self.label.setGeometry(QtCore.QRect(10, 60, 91, 16))
         self.label.setObjectName("label")
-        self.prompt_message_box = QtWidgets.QTextEdit(self.frame)
-        self.prompt_message_box.setEnabled(False)
-        self.prompt_message_box.setGeometry(QtCore.QRect(10, 80, 211, 171))
-        self.prompt_message_box.setObjectName("prompt_message_box")
+        self.prompt_message_field = QtWidgets.QTextEdit(self.frame)
+        self.prompt_message_field.setEnabled(True)
+        self.prompt_message_field.setGeometry(QtCore.QRect(10, 80, 211, 171))
+        self.prompt_message_field.setObjectName("prompt_message_field")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -48,7 +48,7 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Prompt User For Action"))
-        self.label_8.setText(_translate("Form", "Select Prompt"))
+        self.label_8.setText(_translate("Form", "Prompt type"))
         self.prompt_field.setItemText(0, _translate("Form", "Fill measurement tank"))
         self.prompt_field.setItemText(1, _translate("Form", "Drain measurement tank"))
         self.prompt_field.setItemText(2, _translate("Form", "Enable UA pump"))
@@ -56,7 +56,7 @@ class Ui_Form(object):
         self.prompt_field.setItemText(4, _translate("Form", "Enable Power Amplifier"))
         self.prompt_field.setItemText(5, _translate("Form", "Testing sequence complete"))
         self.prompt_field.setItemText(6, _translate("Form", "Other"))
-        self.label.setText(_translate("Form", "Prompt Message"))
+        self.label.setText(_translate("Form", "Prompt message"))
 
 
 if __name__ == "__main__":

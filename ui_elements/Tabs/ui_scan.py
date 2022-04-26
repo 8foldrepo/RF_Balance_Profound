@@ -16,7 +16,6 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.configure_signals()
         self.style_ui()
-        self.mainwindow = None
 
     def configure_signals(self):
         self.file_browser_button.clicked.connect(self.browse_clicked)
@@ -59,7 +58,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
             return
 
         # Cancel if the current tab is not visible
-        if not self.mainwindow.tabWidget.tabText(self.mainwindow.tabWidget.currentIndex()) == 'Scan':
+        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == 'Scan':
             return
 
         tabs = self.scan_tabs

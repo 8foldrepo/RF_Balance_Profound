@@ -44,7 +44,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Select Prompt</string>
+     <string>Prompt type</string>
     </property>
    </widget>
    <widget class="QComboBox" name="prompt_field">
@@ -102,12 +102,12 @@
      </rect>
     </property>
     <property name="text">
-     <string>Prompt Message</string>
+     <string>Prompt message</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="prompt_message_box">
+   <widget class="QTextEdit" name="prompt_message_field">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>

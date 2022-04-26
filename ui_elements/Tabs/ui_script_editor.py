@@ -3,18 +3,18 @@ from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog, QWidget
 from PyQt5.QtCore import pyqtSignal
 from Widget_Library.widget_script_editor import Ui_Form
 from collections import OrderedDict
-from ui_elements.script_editor.ui_find_element import FindElement
-from ui_elements.script_editor.ui_home_system import HomeSystem
-from ui_elements.script_editor.ui_prompt_user_for_action import PromptUserForAction
-from ui_elements.script_editor.ui_loop_over_elements import LoopOverElements
-from ui_elements.script_editor.ui_measure_element_efficiency import MeasureElementEfficiency
-from ui_elements.script_editor.ui_save_results import SaveResults
-from ui_elements.script_editor.ui_frequency_sweep import FrequencySweep
-from ui_elements.script_editor.ui_oscilloscope_channel import OscilloscopeChannels
-from ui_elements.script_editor.ui_oscilloscope_timebase import OscilloscopeTimebase
-from ui_elements.script_editor.ui_move_system import MoveSystem
-from ui_elements.script_editor.ui_function_generator import FunctionGenerator
-from ui_elements.script_editor.ui_select_ua_channel import SelectUAChannel
+from ui_elements.script_editor_menus.ui_find_element import FindElement
+from ui_elements.script_editor_menus.ui_home_system import HomeSystem
+from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
+from ui_elements.script_editor_menus.ui_loop_over_elements import LoopOverElements
+from ui_elements.script_editor_menus.ui_measure_element_efficiency import MeasureElementEfficiency
+from ui_elements.script_editor_menus.ui_save_results import SaveResults
+from ui_elements.script_editor_menus.ui_frequency_sweep import FrequencySweep
+from ui_elements.script_editor_menus.ui_oscilloscope_channel import OscilloscopeChannels
+from ui_elements.script_editor_menus.ui_oscilloscope_timebase import OscilloscopeTimebase
+from ui_elements.script_editor_menus.ui_move_system import MoveSystem
+from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
+from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
 from datetime import date
 #from ui_elements.script_editor. import
 #from ui_elements.script_editor. import
@@ -107,7 +107,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.treeWidget.clear()
         self.list_of_arg_dicts = list()
-        pass
+
+        tree_items = []
+        #Add invisible item to allow inserting at the end
+        tree_items.append(QTreeWidgetItem([]))
+        self.treeWidget.invisibleRootItem().addChildren(tree_items)
 
     def on_item_clicked(self):
         index = self.treeWidget.currentIndex()
@@ -390,19 +394,24 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def save_script(self):
         path = QFileDialog.getSaveFileName(parent=self,caption='Save script',filter='Script files (*.wtf)')[0]
 
+        #remove existing header(s) if there is one
+        for i in range(len(self.list_of_arg_dicts)):
+            try:
+                if "# of Tasks" in self.list_of_arg_dicts[i].keys():
+                    self.list_of_arg_dicts.pop(i)
+            except IndexError:
+                pass
+
         with open(path, 'w') as f:
-            #If there is not a header add a header
-            if not "# of Tasks" in self.list_of_arg_dicts[0].keys():
-                #customize header dictionary
-                num_tasks = len(self.list_of_arg_dicts)
-                self.list_of_arg_dicts.insert(0, self.header_dict())
-                self.list_of_arg_dicts[0]["# of Tasks"] = num_tasks
-                today = date.today()
-                self.list_of_arg_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
-                Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
-                self.list_of_arg_dicts[0]["Createdby"] = Createdby
-                Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
-                self.list_of_arg_dicts[0]["Description"] = Description
+            num_tasks = len(self.list_of_arg_dicts)
+            self.list_of_arg_dicts.insert(0, self.header_dict())
+            self.list_of_arg_dicts[0]["# of Tasks"] = num_tasks
+            today = date.today()
+            self.list_of_arg_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
+            Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
+            self.list_of_arg_dicts[0]["Createdby"] = Createdby
+            Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
+            self.list_of_arg_dicts[0]["Description"] = Description
 
             #Write header info
             f.write('[Top Level]\n')
