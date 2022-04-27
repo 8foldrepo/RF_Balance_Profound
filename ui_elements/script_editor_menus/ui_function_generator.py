@@ -11,7 +11,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
         self.configure_signals()
         self.orderedDict_to_ui(
             OrderedDict(
-                [('Task type', 'Function Generator'), ('Frequency', '1')
+                [('Task type', 'Function Generator'), ('Frequency (MHz)', '1')
                     , ('Output on', 'True'), ('Amplitude (mVpp)', '1'), ('Mode', 'N Cycle')
                     , ('Cycles', '1'), ('Frequency Options', 'From config cluster')]))
         # Left the string value blank because 'False' caused true, BUG

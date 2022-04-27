@@ -309,7 +309,7 @@ class Manager(QThread):
                 try:
                     self.wait_for_cont()
                 except RetryException:
-                    i = i-1
+                    i = i - 1
                 except AbortException:
                     self.app.exit(-1)
             i = i + 1
@@ -889,7 +889,22 @@ class Manager(QThread):
         data_storage = var_dict['Data storage']
         storage_location = var_dict['Storage location']
         data_directory = var_dict["Data directory"]
-        maxPosErrMM = float(var_dict["Max. position error (+/- mm)"])
+        frequency_preset = var_dict['Frequency settings']
+        beam_angle_test = var_dict['BeamAngleTest']
+        auto_set_timebase = var_dict['Auto set timebase']
+        frequency_MHz = var_dict['Frequency (MHz)']
+        burst_count = int(var_dict['Burst count'])
+        amplitude_mV = float(var_dict['Amplitude (mV)'])
+        max_angle_variation = float(var_dict['Max angle variation (deg)'])
+        number_of_cycles = float(var_dict['#Cycles.Capture'])
+
+
+
+
+        try:
+            maxPosErrMM = float(var_dict["Max. position error (+/- mm)"])
+        except KeyError as e:
+            maxPosErrMM = float(var_dict["Max position error (+/- mm)"])
         elemPosTest = bool(var_dict["ElementPositionTest"])
 
         self.test_data["script_log"].append(['Find element "n"', 'OK', '', ''])
@@ -916,9 +931,7 @@ class Manager(QThread):
         self.AWG.SetOutput(True)
         self.test_data["script_log"].append(['', "Config UA and FGen", "FGen output enabled", ''])
 
-        # todo: populate var_dict and make sure method is implemented
-        autoset_var_dict = dict()
-        self.autoset_timebase(autoset_var_dict)  # script log updated in this method
+        self.autoset_timebase(auto_set_timebase)  # script log updated in this method
 
         self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                        go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
@@ -1072,10 +1085,10 @@ class Manager(QThread):
     '''Prompt user for action'''
 
     def prompt_user_for_action(self, var_dict):
-        prompt_type = var_dict["Prompt type"]
+        prompt_type = var_dict["Prompt type"]  # checked, names match
         if prompt_type.upper == 'Other'.upper():
             try:
-                prompt_type = var_dict["Prompt Message"]
+                message = var_dict["Message"]
             except KeyError:
                 prompt_type = 'Blank Prompt'
 
@@ -1098,11 +1111,9 @@ class Manager(QThread):
         mVpp = int(var_dict["Amplitude (mVpp)"])
         fMHz = float(var_dict["Frequency (MHz)"])
         mode = var_dict["Mode"]
-        output = bool(var_dict["Enable output"])
-        cycles = int(var_dict["#Cycles"])
-        frequency_options = var_dict["Set frequency options"]
-
-
+        output = bool(var_dict["Output on"])
+        cycles = int(var_dict["Cycles"])
+        frequency_options = var_dict["Frequency Options"]
 
         self.AWG.SetOutput(output)
         self.AWG.SetFrequency_Hz(int(fMHz * 1000000))
@@ -1117,16 +1128,25 @@ class Manager(QThread):
         self.test_data['script_log'].append(['', 'Config FGen', f'{mVpp}mVpp;{fMHz}MHz,{mode}'])
 
     def configure_oscilloscope_channels(self, var_dict):
+        channel_1_enabled = bool(var_dict['Channel 1 Enabled'])
+        channel_2_enabled = bool(var_dict['Channel 2 Enabled'])
+        gain_1 = int(var_dict['Gain 1'])
+        gain_2 = int(var_dict['Gain 2'])
+        offset_1 = int(var_dict['Offset 1'])
+        offset_2 = int(var_dict['offset_2'])
+
         # todo: implement and test
+
         pass
 
     def configure_oscilloscope_timebase(self, var_dict):
+        timebase = int(var_dict['Timebase'])
+        delay = int(var_dict['Delay'])
         # todo: implement and test
         pass
 
-
     def select_ua_channel(self, var_dict):
-        #todo: implement and test
+        # todo: implement and test
         mVpp = int(var_dict["Channel"])
         self.IO_Board.activate_relay_channel()
 
@@ -1167,7 +1187,12 @@ class Manager(QThread):
 
     def move_system(self, var_dict):
         self.element = self.element_str_to_int(var_dict['Element'])
-        target = var_dict["Orientation/target"]
+        target = var_dict["Target"]
+        move_type = var_dict["Move Type"]
+        x_pos = int(var_dict['X POS'])
+        move_x = bool(var_dict['Move X'])
+        theta_pos = int(var_dict['Theta POS'])
+        move_theta = bool(var_dict['Move Theta'])
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_x_coordinates[self.element]
@@ -1189,7 +1214,7 @@ class Manager(QThread):
 
     '''Activate the relay for and move to a specified element'''
 
-    #todo: test
+    # todo: test
     def select_ua_channel(self, var_dict):
         self.element = self.element_str_to_int(var_dict['Channel'])
         self.IO_Board.activate_relay_channel(channel_number=self.element)

@@ -48,7 +48,7 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         self.FREQANG_BURST_FIELD.setValue(int(arg_dict["Burst count"]))
         self.FREQANG_VOLT_FIELD.setValue(float(arg_dict["Amplitude (mV)"]))
         self.FREQANG_ANG_FIELD.setValue(float(arg_dict["Max angle variation (deg)"]))
-        self.FREQANG_POS_FIELD.setValue(float(arg_dict["Max. position error (+/- mm)"]))
+        self.FREQANG_POS_FIELD.setValue(float(arg_dict["Max position error (+/- mm)"]))
         self.OSCOPE_CYCLES_FIELD.setValue(float(arg_dict["#Cycles.Capture"]))
         self.OSCOPE_DELAYCYCLE_FIELD.setValue(float(arg_dict["#Cycles.Delay"]))
         self.X_PNT_FIELD.setValue(int(arg_dict["X #Pts."]))
