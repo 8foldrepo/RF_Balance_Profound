@@ -20,7 +20,8 @@ class SimulatedIOBoard(AbstractIOBoard):
         self.power_relay = RelayBoard(device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
-        self.ua_pump_on = False
+        self.ua_pump_on = True
+        self.water_level = WaterLevel.below_level
         self.active_channel = 0  # 0 means all channels are off
         self.get_water_level()
 
@@ -31,17 +32,15 @@ class SimulatedIOBoard(AbstractIOBoard):
         self.pump_on = on
 
     def get_ua_pump_reading(self) -> bool:
-        self.ua_pump_on = random.choice([True, False])
+        self.pump_reading_signal.emit(self.ua_pump_on)
         return self.ua_pump_on
 
     def fill_tank(self):
         self.filling_signal.emit()
         t.sleep(2)
-        start_time = t.time()
-        while t.time() - start_time < 20:
-            if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
-                return True
-        return False
+        self.water_level = WaterLevel.level
+        self.get_water_level()
+        return True
 
     def drain_tank(self):
         self.draining_signal.emit(WaterLevel.below_level)
@@ -64,9 +63,8 @@ class SimulatedIOBoard(AbstractIOBoard):
     '''Return the state of the water level sensor as a WaterLevel Enum'''
 
     def get_water_level(self) -> WaterLevel:
-        state = random.choice(list(WaterLevel))
-        self.water_level_reading_signal.emit(state)
-        return state
+        self.water_level_reading_signal.emit(self.water_level)
+        return self.water_level
 
     def fields_setup(self):
         pass

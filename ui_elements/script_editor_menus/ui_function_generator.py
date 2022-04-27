@@ -12,7 +12,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
         self.orderedDict_to_ui(
             OrderedDict(
                 [('Task type', 'Function Generator'), ('Frequency', '1')
-                    , ('Output on', 'True'), ('Amplitude', '1'), ('Mode', 'N Cycle')
+                    , ('Output on', 'True'), ('Amplitude (mVpp)', '1'), ('Mode', 'N Cycle')
                     , ('Cycles', '1'), ('Frequency Options', 'From config cluster')]))
         # Left the string value blank because 'False' caused true, BUG
 
@@ -25,7 +25,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
         self.freq_doublespin.setValue(float(arg_dict["Frequency"]))
         self.enable_output_switch.setChecked(bool(arg_dict["Output on"]))
-        self.ampl_doublespin.setValue(int(arg_dict["Amplitude"]))
+        self.ampl_doublespin.setValue(int(arg_dict["Amplitude (mVpp)"]))
         self.mode_combo.setCurrentText(arg_dict["Mode"])
         self.no_cycles_spin.setValue(int(arg_dict["Cycles"]))
         self.set_freq_opt_combo.setCurrentText(arg_dict["Frequency Options"])
