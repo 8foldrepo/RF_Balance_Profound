@@ -26,7 +26,7 @@ class Results(MyQWidget, Ui_Form):
         self.configure_signals()
         self.log_2d_list = list()
 
-    # load log file, put it into a 2d list, store it in self.test_data['script_log'], and also return it
+    # load log file, put it into a 2d list, store it in self.test_data.script_log, and also return it
     def load_log_data(self, path=None):
         if path is None:
             path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
@@ -36,14 +36,14 @@ class Results(MyQWidget, Ui_Form):
             line_ray = line.split('\t')
             log_2d_list.append(line_ray)  # populates class' internal 2d log list
 
-        self.test_data['script_log'] = log_2d_list
+        self.test_data.script_log = log_2d_list
         self.populate_log_table()  # populate the log table since we're done loading it
-        return self.test_data['script_log']
+        return self.test_data.script_log
 
     # populates the ui given a 2d list
     def populate_log_table(self, log_table=None):
         if log_table is None:
-            log_table = self.test_data["script_log"]
+            log_table = self.test_data.script_log
 
         for line_counter in range(len(log_table)):
             line_ray = log_table[line_counter]
@@ -56,9 +56,9 @@ class Results(MyQWidget, Ui_Form):
     @pyqtSlot()
     def populate_results_table(self, results_summary=None):
         if results_summary is not None:
-            self.test_data["results_summary"] = results_summary
+            self.test_data.results_summary = results_summary
 
-        results_summary = self.test_data["results_summary"]
+        results_summary = self.test_data.results_summary
 
         for i in range(11):  # covers range of all elements and "UA Common"
             for x in range(15):  # covers all the data units in each element
@@ -134,10 +134,10 @@ class Results(MyQWidget, Ui_Form):
 
                 if line_counter == 0:  # the first line of the test results summary file will have the serial no. and date
                     delimited_line = line.split("-")  # separates the serial number from the date
-                    self.test_data['serial_number'] = delimited_line[0]
+                    self.test_data.serial_number = delimited_line[0]
                     removed_new_line = delimited_line[2].replace('\n', '')
                     date_time_pre = delimited_line[1] + "-" + removed_new_line
-                    self.test_data['test_date_time'] = date_time_pre
+                    self.test_data.test_date_time = date_time_pre
 
                 if 0 < line_counter < 7:  # do not include the first line in the header and stop this form of dict importing after the header block
                     if '\n' in line_ray[1]:
@@ -170,10 +170,10 @@ class Results(MyQWidget, Ui_Form):
 
             line_counter = line_counter + 1  # increments our line counter, so we know where we are; count blank lines
 
-        self.test_data['operator_name'] = test_contents[0][1]
-        self.test_data['comment'] = test_contents[1][1]
-        self.test_data['software_version'] = test_contents[2][1]
-        self.test_data["script_name"] = test_contents[3][1]
+        self.test_data.operator_name = test_contents[0][1]
+        self.test_data.comment = test_contents[1][1]
+        self.test_data.software_version = test_contents[2][1]
+        self.test_data.script_name = test_contents[3][1]
         self.test_data["write_result"] = test_contents[4][1]
         self.test_data["hardware_code"] = test_contents[5][1]
         self.test_data['results_summary'] = test_contents[6:][:]

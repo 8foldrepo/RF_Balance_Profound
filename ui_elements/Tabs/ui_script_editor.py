@@ -115,7 +115,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def on_item_clicked(self):
         index = self.treeWidget.currentIndex()
-        if not index.column() == 1:
+        if 1 != index.column():
             return
         #Click is in the variable column
         item = self.treeWidget.currentItem()
