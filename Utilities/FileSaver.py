@@ -1,7 +1,7 @@
 from random import random
 
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
-from definitions import  ROOT_DIR
+from definitions import ROOT_DIR
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 import logging
 import shutil
@@ -15,6 +15,7 @@ wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 log_formatter = logging.Formatter(LOGGER_FORMAT)
+
 
 class FileSaver:
     folder_name = None
@@ -34,16 +35,14 @@ class FileSaver:
         self.create_subfolders()
         self.copy_system_info()
 
-
     def create_results_folder(self):
         self.folder_name = self.test_data["serial_number"] + "-" + self.test_data["test_date_time"]
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)
-        #Retrieve the path of the results directory from the yaml file and create it if it does not exist
+        # Retrieve the path of the results directory from the yaml file and create it if it does not exist
         self.results_dir = check_directory(results_path)
 
-
     def create_subfolders(self):
-        log_files_path = os.path.join(self.results_dir,'Log files')
+        log_files_path = os.path.join(self.results_dir, 'Log files')
         self.log_files_dir = check_directory(log_files_path)
 
         power_data_path = os.path.join(self.results_dir, 'Power data')
@@ -52,27 +51,28 @@ class FileSaver:
         waveform_data_path = os.path.join(self.results_dir, 'Waveform data')
         self.waveform_data_path = check_directory(waveform_data_path)
 
-
     '''Copies the system info file into the results directory'''
+
     def copy_system_info(self):
-        system_info_file = os.path.join(ROOT_DIR,'systeminfo.ini')
+        system_info_file = os.path.join(ROOT_DIR, 'systeminfo.ini')
         if not os.path.exists(system_info_file):
             self.log(level='Error', message='Could not store system info to results folder')
             self.log(level='Error', message=f'systeminfo.ini was not found in {ROOT_DIR}')
             return
 
-        destination_path = os.path.join(self.log_files_dir,'SystemHardware.log')
-        shutil.copyfile(src=system_info_file,dst=destination_path)
+        destination_path = os.path.join(self.log_files_dir, 'SystemHardware.log')
+        shutil.copyfile(src=system_info_file, dst=destination_path)
 
     '''Save the test data (shared with the manager) to the results folder in the form of a  results summary'''
+
     def save_test_results_summary_and_log(self, test_data):
         if not test_data:  # if dictionary is empty return
-            self.log(level='error',message='No results to save')
+            self.log(level='error', message='No results to save')
             return
 
         self.test_data = test_data
 
-        path = os.path.join(self.results_dir,"Results Summary.txt")
+        path = os.path.join(self.results_dir, "Results Summary.txt")
 
         self.log(f"Saving results summary to: {path}")
 
@@ -90,7 +90,8 @@ class FileSaver:
         try:
             path = os.path.join(self.log_files_dir, "ScriptResults.log")
         except TypeError:
-            self.log("config has not been loaded and therefore the log path cannot be pulled from there, defaulting log path")
+            self.log("config has not been loaded and therefore the log path cannot be pulled from there, defaulting "
+                     "log path")
             path = "../logs2/ScriptResults.log"
 
         self.log(f"Saving results summary to: {path}")
@@ -239,7 +240,7 @@ class FileSaver:
                 formatted_voltage = "{:.6e}".format(vms[x])
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
-    #todo
+    # todo
     def save_frequency_sweep(self):
         pass
 
@@ -273,6 +274,7 @@ def test_store_find_element_waveform(file_saver):
     path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
 
     file_saver.store_waveform(metadata, times, voltages, path)
+
 
 def test_store_measure_rfb_waveform(file_saver):
     metadata = dict()
@@ -328,6 +330,7 @@ def test_store_measure_rfb_waveform(file_saver):
     path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
 
     file_saver.store_measure_rfb_waveform(metadata, forward_power, reflected_power, acoustic_power, path)
+
 
 if __name__ == '__main__':
     test_data = dict()

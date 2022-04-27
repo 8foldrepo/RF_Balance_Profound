@@ -6,6 +6,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from collections import OrderedDict
 import distutils.util
 from Hardware.Abstract.abstract_awg import AbstractAWG
+from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
@@ -41,7 +42,7 @@ tank_status = ""
 class Manager(QThread):
     # Devices
     AWG: AbstractAWG
-    Balance: AbstractSensor
+    Balance: AbstractBalance
     IO_Board: AbstractIOBoard
     Forward_Power_Meter: AbstractSensor
     Reflected_Power_Meter: AbstractSensor
@@ -937,6 +938,8 @@ class Manager(QThread):
 
         self.step_complete = True
 
+    # Referemce position is the center of the scan range
+
     def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
                   acquisition_type='N Averaged Waveform', averages=1):
         if axis == 'X':
@@ -1099,6 +1102,8 @@ class Manager(QThread):
         cycles = int(var_dict["#Cycles"])
         frequency_options = var_dict["Set frequency options"]
 
+
+
         self.AWG.SetOutput(output)
         self.AWG.SetFrequency_Hz(int(fMHz * 1000000))
         self.AWG.SetAmplitude_V(mVpp / 1000)
@@ -1118,6 +1123,12 @@ class Manager(QThread):
     def configure_oscilloscope_timebase(self, var_dict):
         # todo: implement and test
         pass
+
+
+    def select_ua_channel(self, var_dict):
+        #todo: implement and test
+        mVpp = int(var_dict["Channel"])
+        self.IO_Board.activate_relay_channel()
 
     def autoset_timebase(self, var_dict):
         usdiv = 0
@@ -1178,8 +1189,9 @@ class Manager(QThread):
 
     '''Activate the relay for and move to a specified element'''
 
+    #todo: test
     def select_ua_channel(self, var_dict):
-        self.element = self.element_str_to_int(var_dict['Channel (0=All off)'])
+        self.element = self.element_str_to_int(var_dict['Channel'])
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict):
