@@ -23,11 +23,11 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
 
     def orderedDict_to_ui(self, arg_dict: OrderedDict):
         # todo, fill UI according to dictionary
-        self.ELEMENT_SELECTION_FIELD.setCurrentText(arg_dict["Element"])
-        self.FREQUENCY_SELECTION_FIELD.setCurrentText(arg_dict["Frequency range"])
-        self.RFB_CYCLES_FIELD.setValue(int(arg_dict["RFB.#on/off cycles"]))
-        self.RFB_ON_FIELD.setValue(float(arg_dict["RFB.On time (s)"]))
-        self.RFB_OFF_FIELD.setValue(float(arg_dict["RFB.Off time (s)"]))
+        self.ELEMENT_SELECTION_FIELD.setCurrentText(arg_dict["Element"])  # matched
+        self.FREQUENCY_SELECTION_FIELD.setCurrentText(arg_dict["Frequency range"])  # matched
+        self.RFB_CYCLES_FIELD.setValue(int(arg_dict["RFB.#on/off cycles"]))  # matched
+        self.RFB_ON_FIELD.setValue(float(arg_dict["RFB.On time (s)"]))  # matched
+        self.RFB_OFF_FIELD.setValue(float(arg_dict["RFB.Off time (s)"]))  # matched
         self.RFB_THRESHOLD_FIELD.setValue(float(arg_dict["RFB.Threshold"]))
         self.RFB_OFFSET_FIELD.setValue(float(arg_dict["RFB.Offset"]))
         self.OPTIONS_SELECTION_FIELD.setCurrentText(arg_dict["Set frequency options"])
@@ -39,7 +39,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         self.RFB_ANGLE_FIELD.setValue(float(arg_dict["RFB target angle"]))
         self.POWER_TEST_CHECKBOX.setChecked(bool(arg_dict["EfficiencyTest"]))
         self.POWER_TARGET_FIELD.setValue(float(arg_dict["Pa max (target, W)"]))
-        self.POWER_MAX_FIELD.setValue(float(arg_dict["Pf max (limit, W)"]))
+        self.POWER_MAX_FIELD.setValue(float(arg_dict["Pf max (limit, W)"])) # matched
         self.REFLECTION_LIMIT_FIELD.setValue(float(arg_dict["Reflection limit (%)"]))
 
         # example lines

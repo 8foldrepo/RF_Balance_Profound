@@ -890,16 +890,13 @@ class Manager(QThread):
         storage_location = var_dict['Storage location']
         data_directory = var_dict["Data directory"]
         frequency_preset = var_dict['Frequency settings']
-        beam_angle_test = var_dict['BeamAngleTest']
-        auto_set_timebase = var_dict['Auto set timebase']
-        frequency_MHz = var_dict['Frequency (MHz)']
+        beam_angle_test = bool(var_dict['BeamAngleTest'])
+        auto_set_timebase = bool(var_dict['Auto set timebase'])
+        frequency_MHz = float(var_dict['Frequency (MHz)'])
         burst_count = int(var_dict['Burst count'])
         amplitude_mV = float(var_dict['Amplitude (mV)'])
         max_angle_variation = float(var_dict['Max angle variation (deg)'])
         number_of_cycles = float(var_dict['#Cycles.Capture'])
-
-
-
 
         try:
             maxPosErrMM = float(var_dict["Max. position error (+/- mm)"])
@@ -1223,21 +1220,21 @@ class Manager(QThread):
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
         frequency_range = var_dict["Frequency range"]
-        start_freq_MHz = var_dict["Start frequency (MHz)"]
-        end_freq_MHz = var_dict["Start frequency (MHz)"]
-        coarse_incr_MHz = var_dict["Coarse increment (MHz)"]
-        fine_incr_MHz = var_dict["Fine increment (MHz)"]
-        burst_count = var_dict["Burst count"]
-        amplitude_mVpp = var_dict["Amplitude (mVpp)"]
+        start_freq_MHz = float(var_dict["Start frequency"])
+        end_freq_MHz = float(var_dict["End frequency"])
+        coarse_incr_MHz = float(var_dict["Coarse increment"])
+        fine_incr_MHz = float(var_dict["Fine increment"])
+        burst_count = int(var_dict["Burst count"])
+        amplitude_mVpp = int(var_dict["Amplitude"])
         scope_channel = var_dict["Scope channel"]
         acquisition_type = var_dict["Acquisition type"]
-        averages = var_dict["Averages"]
+        averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
         # todo: implement these settings
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        peak_VSI_threshold = var_dict["Peak VSI threshold"]
-        include_test = var_dict["Include test"]
+        peak_VSI_threshold = float(var_dict["Peak VSI threshold"])
+        include_test = bool(var_dict["Include test"])
 
         self.AWG.SetOutput(True)
         self.AWG.SetAmplitude_V(amplitude_mVpp / 1000)
@@ -1325,6 +1322,19 @@ class Manager(QThread):
     def measure_element_efficiency_rfb(self, var_dict):
         # Set the tab to the rfb tab
         self.set_tab_signal.emit(3)
+        rfb_threshold = float(var_dict['rfb_threshold'])
+        rfb_offset = float(var_dict['RFB.Offset'])
+        frequency_options = var_dict['Set frequency_options']
+        frequency = float(var_dict['Frequency (MHz)'])
+        amplitude = float(var_dict['Amplitude (mVpp)'])
+        storage_location = var_dict['Storage location']
+        data_directory = var_dict['Data directory']
+        rfb_target_position = var_dict['RFB target position']
+        rfb_target_angle = float(var_dict['RFB target angle'])
+        efficiency_test = bool(var_dict['EfficiencyTest'])
+        pa_max_target = float(var_dict['Pa max (target, W)'])
+        reflection_limit = float(var_dict['Reflection limit (%)'])
+
 
         self.test_data["script_log"].append(['Measure element efficiency (RFB)', 'OK', '', ''])
 
@@ -1342,7 +1352,7 @@ class Manager(QThread):
 
         # Todo: implement zeroing such that balance reading subtracts the averaging reading when the balance is off
         try:
-            self.element = int(re.search(r'\d+', str(var_dict['Element'])).group())
+            self.element = int(re.search(r'\d+', str(var_dict['Element'])).group())  #  matched
         except:
             self.log(f"Element number not given, using current element: {self.element}")
 
@@ -1351,11 +1361,11 @@ class Manager(QThread):
         self.select_ua_channel(var_dict={"Channel (0=All off)": var_dict['Element']})
         self.move_system(var_dict={"Element": var_dict['Element'], "Orientation/target": 'RFB'})
 
-        frequency_range = var_dict['Frequency range']
+        frequency_range = var_dict['Frequency range']  # matched
         self.test_data["script_log"].append(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
-        on_off_cycles = int(var_dict['RFB.#on/off cycles'])
-        rfb_on_time = float(var_dict['RFB.On time (s)'])
-        rfb_off_time = float(var_dict['RFB.Off time (s)'])
+        on_off_cycles = int(var_dict['RFB.#on/off cycles'])  # matched
+        rfb_on_time = float(var_dict['RFB.On time (s)'])  # matched`
+        rfb_off_time = float(var_dict['RFB.Off time (s)'])  # matched
 
         if frequency_range == "High frequency":
             frequency_Hz = self.test_data['high_frequency_MHz'] * 1000000
@@ -1520,7 +1530,7 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
         self.step_complete = True
 
-        temp_var_for_next_command = var_dict["Pf max (limit, W)"]
+        temp_var_for_next_command = var_dict["Pf max (limit, W)"]  # matched
         self.test_data["script_log"].append(['', "Pass/Fail test",
                                              f"Element_{self.element};Pf (W)={forward_power_on_mean};Pr (W)="
                                              f"{reflected_power_on_mean};Pa (W)={acoustic_power_on_mean};Efficiency (%)"
