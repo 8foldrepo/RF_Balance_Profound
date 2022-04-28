@@ -1,17 +1,22 @@
-2022-04-28 13:56:28,922 [INFO] [Manager] [manager_thread] : Running script
-2022-04-28 13:56:31,581 [INFO] [Manager] [] : Checking ability to log
-2022-04-28 13:56:36,003 [INFO] [Manager] [] : Maximum of 1182.591432198941 @ X = -0.125 mm
-2022-04-28 13:56:36,023 [INFO] [Manager] [] : Maximum of 1177.0867126083556 @ Theta = -160.99999999999986 deg
-2022-04-28 13:56:36,265 [INFO] [Manager] [] : Maximum of 1164.608003587259 @ X = -1.0250000000000001 mm
-2022-04-28 13:56:54,257 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-28 13:56:54,370 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-28 13:57:08,056 [INFO] [Manager] [manager_thread] : Running script
-2022-04-28 13:57:09,902 [INFO] [Manager] [] : Checking ability to log
-2022-04-28 13:57:09,965 [INFO] [Manager] [] : Maximum of 1153.6213747388779 @ X = 1.5999999999999996 mm
-2022-04-28 13:57:09,981 [INFO] [Manager] [] : Maximum of 1171.584698572864 @ Theta = -169.79999999999998 deg
-2022-04-28 13:57:10,031 [INFO] [Manager] [] : Maximum of 1175.109384776825 @ X = 1.2999999999999996 mm
-2022-04-28 13:57:24,410 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-28 13:57:24,552 [INFO] [Manager] [manager_thread] : Aborting script
-nager] [] : Maximum of 1175.109384776825 @ X = 1.2999999999999996 mm
-2022-04-28 13:57:24,410 [INFO] [Manager] [manager_thread] : Aborting script
-2022-04-28 13:57:24,552 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-28 17:50:12,090 [INFO] [Manager] [manager_thread] : Running script
+2022-04-28 17:50:19,652 [INFO] [Manager] [] : Maximum of 1184.9330454127503 @ X = -1.875 mm
+2022-04-28 17:50:19,901 [INFO] [Manager] [] : Maximum of 1177.7037359647773 @ Theta = -180.0 deg
+2022-04-28 17:50:21,821 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-04-28 17:50:21,823 [INFO] [Manager] [] : Element number not given, using current element: 1
+2022-04-28 17:50:21,824 [INFO] [Manager] [] : Moved to 1, at coordinate x=-1.88, r=-1.9
+2022-04-28 17:50:21,825 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-04-28 17:50:21,826 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-04-28 17:50:21,837 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-04-28 17:50:21,845 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-04-28 17:50:21,846 [INFO] [Manager] [] : Turning off AWG
+2022-04-28 17:50:21,947 [INFO] [Manager] [] : Turning on AWG
+2022-04-28 17:50:22,046 [INFO] [Manager] [] : Turning off AWG
+2022-04-28 17:50:22,147 [INFO] [Manager] [] : Turning on AWG
+2022-04-28 17:50:22,249 [INFO] [Manager] [] : Turning off AWG
+2022-04-28 17:50:22,350 [INFO] [Manager] [] : Turning on AWG
+2022-04-28 17:50:22,452 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.28-17.50\Power data\EfficiencyTest\E01\MeasureRFB_E01.txt
+2022-04-28 17:50:24,173 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.28-17.50\Results Summary.txt
+2022-04-28 17:50:26,418 [INFO] [FileSaver] [] : Saving log file to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.28-17.50\Log files\ScriptResults.log
+2022-04-28 17:50:26,419 [INFO] [Results] [manager_thread] : Showing test results
+:26,418 [INFO] [FileSaver] [] : Saving log file to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.28-17.50\Log files\ScriptResults.log
+2022-04-28 17:50:26,419 [INFO] [Results] [manager_thread] : Showing test results

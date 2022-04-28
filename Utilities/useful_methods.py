@@ -190,8 +190,8 @@ def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
-        if child.widget():
-            child.widget().setParent(None)
+        if child.edit_menu():
+            child.edit_menu().setParent(None)
 
 
 def listToRay(xCoords, yCoords, zCoords, Intensity):

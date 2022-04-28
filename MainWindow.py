@@ -76,7 +76,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Load default.yaml file to self.config as a python dictionary
         super(MainWindow, self).__init__()
         self.thread_list = list()
-        self.list_of_arg_dicts = list()
+        self.list_of_var_dicts = list()
         self.app = QApplication.instance()
         self.config = load_configuration()
 
@@ -162,21 +162,21 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.scan_tab_widget.set_manager(self.manager)
 
     # Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script(self, arg_dicts: list):
+    def visualize_script(self, var_dicts: list):
         self.upon_script_reloaded()
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
-        self.list_of_arg_dicts = arg_dicts
+        self.list_of_var_dicts = var_dicts
 
         task_dict = {}
-        for i in range(len(self.list_of_arg_dicts)):
-            if not '# of Tasks' in self.list_of_arg_dicts[i].keys():
+        for i in range(len(self.list_of_var_dicts)):
+            if not '# of Tasks' in self.list_of_var_dicts[i].keys():
                 arg_list = list()
-                for key in self.list_of_arg_dicts[i]:
+                for key in self.list_of_var_dicts[i]:
                     if not key == "Task type":
-                        arg_list.append([key, self.list_of_arg_dicts[i][key]])
+                        arg_list.append([key, self.list_of_var_dicts[i][key]])
 
-                task_dict[self.list_of_arg_dicts[i]["Task type"]] = arg_list
+                task_dict[self.list_of_var_dicts[i]["Task type"]] = arg_list
 
         tree_items = []
         for key, values in task_dict.items():

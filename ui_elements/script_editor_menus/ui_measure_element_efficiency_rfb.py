@@ -12,25 +12,25 @@ class MeasureElementefficiency(MyQWidget, Ui_Form_2):
         #fill in with default parameters in name-argument pairs
         self.orderedDict_to_ui(OrderedDict([('', ''), ('', 0)]))
 
-    def orderedDict_to_ui(self, arg_dict: OrderedDict):
+    def orderedDict_to_ui(self, var_dict: OrderedDict):
         # todo, fill UI according to dictionary
         #example lines
-        #self..setText(arg_dict[""])
-        #self..setChecked(arg_dict[""])
-        #self..setValue(arg_dict[""])
+        #self..setText(var_dict[""])
+        #self..setChecked(var_dict[""])
+        #self..setValue(var_dict[""])
         pass
 
-    # todo: populate arg_dict, arrange the arguments in the order of the example script
+    # todo: populate var_dict, arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:
-        arg_dict = OrderedDict()
+        var_dict = OrderedDict()
 
         #example lines, insert the name of the argument on the left as it appears in the example script.
         #the name of the ui element goes between the dots
-        #self.arg_dict[""] = self..currentText()
-        #self.arg_dict[""] = self..isChecked()
-        #self.arg_dict[""] = round(self..value(),2)
+        #self.var_dict[""] = self..currentText()
+        #self.var_dict[""] = self..isChecked()
+        #self.var_dict[""] = round(self..value(),2)
 
-        return arg_dict
+        return var_dict
 
 if __name__ == "__main__":
     import sys

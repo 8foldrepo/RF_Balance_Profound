@@ -1,41 +1,46 @@
-#todo: change this import to the Qtdesigner file for this task type
+# todo: change this import to the Qtdesigner file for this task type
+from abc import abstractmethod, ABCMeta
 from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
 from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
-#todo: change class name to one matching the task type
-class EditTemplate(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
+
+# todo: change class name to one matching the task type
+class AbstractEditMenu(MyQWidget):
+    # todo: remove this metaclass when implementing
+    __metaclass__ = ABCMeta
     def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
-        self.setupUi(self)
-        #fill in with default parameters in name-argument pairs
-        self.orderedDict_to_ui(OrderedDict([('', ''), ('', 0)]))
+        #self.setupUi(self)
+        # fill in with default parameters in name-argument pairs
+        #self.orderedDict_to_ui(OrderedDict([('', ''), ('', 0)]))
 
-    def orderedDict_to_ui(self, arg_dict: OrderedDict):
+    @abstractmethod
+    def orderedDict_to_ui(self, var_dict: OrderedDict):
+        ...
         # todo, fill UI according to dictionary
-        #example lines
-        #self..setText(arg_dict[""])
-        #self..setChecked(arg_dict[""])
-        #self..setValue(arg_dict[""])
-        pass
+        # example lines
+        # self..setText(var_dict[""])
+        # self..setChecked(var_dict[""])
+        # self..setValue(var_dict[""])
 
-    # todo: populate arg_dict, arrange the arguments in the order of the example script
+    # todo: populate var_dict, arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:
-        arg_dict = OrderedDict()
+        ...
+        # var_dict = OrderedDict()
+        # example lines, insert the name of the argument on the left as it appears in the example script.
+        # the name of the ui element goes between the dots
+        # self.var_dict[""] = self..currentText()
+        # self.var_dict[""] = self..isChecked()
+        # self.var_dict[""] = round(self..value(),2)
+        # return var_dict
 
-        #example lines, insert the name of the argument on the left as it appears in the example script.
-        #the name of the ui element goes between the dots
-        #self.arg_dict[""] = self..currentText()
-        #self.arg_dict[""] = self..isChecked()
-        #self.arg_dict[""] = round(self..value(),2)
-
-        return arg_dict
 
 if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    ui = EditTemplate()
+    ui = AbstractEditMenu()
     ui.show()
     sys.exit(app.exec_())

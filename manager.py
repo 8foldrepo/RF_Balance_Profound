@@ -155,8 +155,6 @@ class Manager(QThread):
         self.abort_var = False
 
         # Keeps track of script step in progress
-        self.step_complete = True
-
         # step_index = -2 at the beginning and -1 if no script is being run.
         # step_index = -1 t is also the way to check if the script
         # has been aborted
@@ -576,12 +574,11 @@ class Manager(QThread):
 
         if self.retry_var is True:
             self.step_index = self.step_index - 1
-            self.step_complete = True
+            
             self.retry_var = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
-        if self.step_complete:
-            self.step_index = self.step_index + 1
+        self.step_index = self.step_index + 1
 
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
@@ -599,17 +596,17 @@ class Manager(QThread):
                            self.step_index]) == 3:  # elements that are a part of a loop will have a third sub element
                     # notating which loop it's from
                     self.test_data.script_log.append([
-                        f"Iteration {self.taskExecOrder[self.step_index][1]} of {len(self.loops[self.taskExecOrder[self.step_index][2]][0])}",
+                        f"Iteration {self.taskExecOrder[self.step_index][1]} of "
+                        f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}",
                         '', '', ''])
                     inside_iteration = True
                     iteration_number = self.taskExecOrder[self.step_index][1]
 
-                if self.step_complete:
-                    self.step_complete = False
-                    self.run_script_step()
-                    if inside_iteration:
-                        self.test_data.script_log.append([f"Iteration {iteration_number} complete", '', '', ''])
-                        inside_iteration = False
+
+                self.run_script_step()
+                if inside_iteration:
+                    self.test_data.script_log.append([f"Iteration {iteration_number} complete", '', '', ''])
+                    inside_iteration = False
 
         if not self.scripting:
             self.enable_ui_signal.emit(True)
@@ -660,7 +657,7 @@ class Manager(QThread):
         # Reset script control variables
         self.scripting = False
         self.step_index = -1
-        self.step_complete = True
+        
         self.continue_var = True
         self.abort_var = True
         self.task_number_signal.emit(0)
@@ -673,7 +670,7 @@ class Manager(QThread):
     Call this method after showing a dialog, and return if the result is false.
     '''
 
-    def cont_if_cont_pressed(self) -> bool:
+    def cont_if_cont_clicked(self) -> bool:
         try:
             self.wait_for_cont()
             return True
@@ -682,7 +679,7 @@ class Manager(QThread):
             return False
         except RetryException:
             self.step_index = self.step_index - 2
-            self.step_complete = True
+            
             return False
 
     '''
@@ -764,14 +761,9 @@ class Manager(QThread):
             if not self.IO_Board.get_ua_pump_reading():  # if the pump is not running
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
-                try:
-                    self.wait_for_cont()
-                except AbortException:
+                cont = self.cont_if_cont_clicked()
+                if not cont:
                     self.test_data.script_log.append(['', 'Check/prompt UA Pump', 'FAIL', 'Closed by user'])
-                    return self.abort()
-                except RetryException:
-                    self.step_index = self.step_index - 2
-                    self.step_complete = True
                     return
             else:
                 self.test_data.script_log.append(['', 'Check/prompt UA Pump', 'OK', ''])
@@ -816,14 +808,10 @@ class Manager(QThread):
         # Prompt user to turn on power amp
         while True:
             self.user_prompt_signal.emit("Please ensure that the power amplifier is on")
-            try:
-                self.wait_for_cont()
-            except AbortException as e:
+
+            cont = self.cont_if_cont_clicked()
+            if not cont:
                 self.test_data.script_log.append(['', 'Prompt PowerAmp', 'FAIL', 'Closed by user'])
-                return self.abort()
-            except RetryException:
-                self.step_index = self.step_index - 2
-                self.step_complete = True
                 return
 
             self.test_data.script_log.append(['', 'Prompt PowerAmp', 'OK', ''])
@@ -859,37 +847,26 @@ class Manager(QThread):
 
         while True:
             water_level = self.IO_Board.get_water_level()
+
             if water_level == WaterLevel.below_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
-                try:
-                    self.wait_for_cont()
-                    filled_successfully = self.IO_Board.fill_tank()
-                except AbortException:
-                    self.test_data.script_log.append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
-                    return self.abort()
-                except RetryException:
-                    self.step_index = self.step_index - 2
-                    self.step_complete = True
+                cont = self.cont_if_cont_clicked()
+                if not cont:
                     return
+                self.IO_Board.fill_tank()
             elif water_level == WaterLevel.above_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
-                try:
-                    self.wait_for_cont()
-                    drained_successfully = self.IO_Board.fill_tank()
-                except AbortException:
-                    self.test_data.script_log.append(['', 'Check/prompt water level', 'FAIL', 'Closed by user'])
-                    return self.abort()
-                except RetryException:
-                    self.step_index = self.step_index - 2
-                    self.step_complete = True
+                cont = self.cont_if_cont_clicked()
+                if not cont:
                     return
+                self.IO_Board.fill_tank()
             else:
                 self.test_data.script_log.append(['', 'Check/prompt water level', 'OK', ''])
                 break
 
-        self.step_complete = True
+        
 
     '''Retrieve metadata from mainwindow and trigger the script to run'''
 
@@ -971,7 +948,7 @@ class Manager(QThread):
         self.test_data.script_log.append(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.script_log.append(['', 'End', 'OK', ''])
 
-        self.step_complete = True
+        
 
     # Referemce position is the center of the scan range
 
@@ -1065,8 +1042,8 @@ class Manager(QThread):
         metadata.serial_number = self.test_data.serial_number
         metadata.X = self.Motors.coords_mm[0]
         metadata.Theta = self.Motors.coords_mm[1]
-        metadata.frequency_MHz = self.AWG.state['frequency_Hz']/1000000
-        metadata.amplitude_mVpp = self.AWG.state['amplitude_V']*1000
+        metadata.frequency_MHz = self.AWG.state['frequency_Hz'] / 1000000
+        metadata.amplitude_mVpp = self.AWG.state['amplitude_V'] * 1000
         if self.AWG.state['burst_on']:
             metadata.source_signal_type = 'Toneburst'
         else:
@@ -1084,8 +1061,8 @@ class Manager(QThread):
         metadata.serial_number = self.test_data.serial_number
         metadata.X = self.Motors.coords_mm[0]
         metadata.Theta = self.Motors.coords_mm[1]
-        metadata.frequency_MHz = self.AWG.state['frequency_Hz']/1000000
-        metadata.amplitude_mVpp = self.AWG.state['amplitude_V']*1000
+        metadata.frequency_MHz = self.AWG.state['frequency_Hz'] / 1000000
+        metadata.amplitude_mVpp = self.AWG.state['amplitude_V'] * 1000
         if self.AWG.state['burst_on']:
             metadata.source_signal_type = 'Toneburst'
         else:
@@ -1102,8 +1079,8 @@ class Manager(QThread):
         metadata.serial_number = self.test_data.serial_number
         metadata.X = self.Motors.coords_mm[0]
         metadata.Theta = self.Motors.coords_mm[1]
-        metadata.frequency_MHz = self.AWG.state['frequency_Hz']/1000000
-        metadata.amplitude_mVpp = self.AWG.state['amplitude_V']*1000
+        metadata.frequency_MHz = self.AWG.state['frequency_Hz'] / 1000000
+        metadata.amplitude_mVpp = self.AWG.state['amplitude_V'] * 1000
         if self.AWG.state['burst_on']:
             metadata.source_signal_type = 'Toneburst'
         else:
@@ -1124,7 +1101,7 @@ class Manager(QThread):
         # Todo: test
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA")
-            cont = self.cont_if_cont_pressed()
+            cont = self.cont_if_cont_clicked()
             if not cont:
                 return
 
@@ -1149,29 +1126,27 @@ class Manager(QThread):
         # Show results summary in UI
         self.show_results_signal.emit(self.test_data)
 
-        self.step_complete = True
+        
 
     '''Prompt user for action'''
 
     def prompt_user_for_action(self, var_dict):
         prompt_type = var_dict["Prompt type"]
-        if prompt_type.upper == 'Other'.upper():
+        if 'Other'.upper() in prompt_type.upper():
             try:
-                prompt_type = var_dict["Prompt Message"]
+                prompt_type = var_dict["Prompt message"]
             except KeyError:
                 prompt_type = 'Blank Prompt'
 
             self.user_prompt_signal.emit(prompt_type)
         else:
             self.user_prompt_signal.emit(prompt_type)
-        try:
-            self.wait_for_cont()
-        except AbortException:
-            return self.abort()
-        except RetryException:
-            self.step_index = self.step_index - 2
 
-        self.step_complete = True
+        cont = self.cont_if_cont_clicked()
+        if not cont:
+            return
+
+        
 
     '''Set function generator to desired settings'''
 
@@ -1197,12 +1172,27 @@ class Manager(QThread):
         self.test_data.script_log.append(['', 'Config FGen', f'{mVpp}mVpp;{fMHz}MHz,{mode}'])
 
     def configure_oscilloscope_channels(self, var_dict):
-        # todo: implement and test
-        pass
+        # todo: test
+        c1_enabled = bool(var_dict['Channel 1 Enabled'])
+        # todo: implement capture from channel 2 (stretch), must also enable the menu options in qtdesigner
+        c2_enabled = bool(var_dict['Channel 2 Enabled'])
+        g1_mV_div = float(var_dict['Gain 1'])
+        g2_mV_div = float(var_dict['Gain 2'])
+        o1_mV = float(var_dict['Offset 1'])
+        o2_mV = float(var_dict['Offset 2'])
+        if c1_enabled:
+            self.Oscilloscope.setVertScale_V(g1_mV_div / 1000, 1)
+            self.Oscilloscope.setVertOffset_V(1, o1_mV / 1000)
+        if c2_enabled:
+            self.Oscilloscope.setVertScale_V(g2_mV_div / 1000, 2)
+            self.Oscilloscope.setVertOffset_V(2, o2_mV / 1000)
 
     def configure_oscilloscope_timebase(self, var_dict):
-        # todo: implement and test
-        pass
+        # todo: test
+        timebase_us = float(var_dict['Timebase'])
+        delay_us = float(var_dict['Delay'])
+        self.Oscilloscope.setHorzScale_sec(timebase_us / 1000000)
+        self.Oscilloscope.setHorzOffset_sec(delay_us / 1000000)
 
     def autoset_timebase(self, var_dict):
         usdiv = 0
@@ -1214,27 +1204,24 @@ class Manager(QThread):
     def home_system(self, var_dict):
         # TODO: have this be called in pretest_initialization and have it add to script log
         axis_to_home = var_dict['Axis to home']
-        if axis_to_home == 'X':
+        
+        if axis_to_home == 'All Axes':
+            self.Motors.go_home()
+            self.test_data.script_log.append(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
+                                                              f"Theta={self.Motors.coords_mm[1]}", ''])
+        elif axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             self.Motors.go_home_1d('X')
-            try:
-                self.wait_for_cont()
-            except AbortException:
-                self.test_data.script_log.append(['', f'HOME {axis_to_home}', 'FAIL', 'Warning closed by user'])
-                return self.abort()
-            except RetryException:
-                self.step_index = self.step_index - 2
-                self.step_complete = True
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                self.test_data.script_log.append(['', f'HOME X', 'FAIL', 'Warning closed by user'])
                 return
-        elif axis_to_home == 'All Axes':
-            self.Motors.go_home()
+            self.test_data.script_log.append(['', f'Home  X', f'Home X', ''])
         elif axis_to_home == 'Theta':
             self.Motors.go_home_1d('R')
-
-        self.test_data.script_log.append(['', f'Home {axis_to_home}', f'Home {axis_to_home}', ''])
-
-        self.step_complete = True
-        # self.test_data.script_log.append(['', "Home all", f"X={X}; Theta={theta}", ''])
+            self.test_data.script_log.append(['', f'Home Theta', f'Home Theta', ''])
+        else:
+            self.test_data.script_log.append(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])
 
     '''Warn the user that the UA is being retracted in x'''
 
@@ -1244,26 +1231,43 @@ class Manager(QThread):
     '''Move motors to the specified coordinates'''
 
     def move_system(self, var_dict):
-        self.element = self.element_str_to_int(var_dict['Element'])
-        target = var_dict["Orientation/target"]
+        move_type = var_dict["Move Type"]
 
-        element_x_coordinate = self.element_x_coordinates[self.element]
-        element_r_coordinate = self.element_x_coordinates[self.element]
+        if 'Go To'.upper() in move_type.upper():
+            x_pos = float(var_dict["X POS"])
+            move_x = bool(var_dict["Move X"])
+            theta_pos = float(var_dict["Theta POS"])
+            move_theta = bool(var_dict["Move Theta"])
+            axes = []
+            coords = []
+            if move_x:
+                axes.append('X')
+                coords.append(x_pos)
+            if move_theta:
+                axes.append('R')
+                coords.append(theta_pos)
+            self.Motors.go_to_position(axes, coords)
+        else:
+            self.element = self.element_str_to_int(var_dict['Element'])
+            target = var_dict["Target"]
+            element_x_coordinate = self.element_x_coordinates[self.element]
+            element_r_coordinate = self.element_x_coordinates[self.element]
 
-        # todo: make sure these names match theirs
-        # todo: make sure these home coordinates work as expected
-        if "Hydrophone" in target:
-            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, 0])
-        elif "RFB" in target:
-            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
-        elif "Down" in target:
-            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, -90])
+            # todo: make sure these names match theirs
+            # todo: make sure these home coordinates work as expected
+            if "Hydrophone" in target:
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, 0])
+            elif "RFB" in target:
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
+            elif "Down" in target:
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, -90])
 
-        x_coord_str = "%.2f" % element_x_coordinate
-        r_coord_str = "%.1f" % element_r_coordinate
-        self.log(f"Moved to {self.element}, at coordinate x={x_coord_str}, r={r_coord_str}")
+            x_coord_str = "%.2f" % element_x_coordinate
+            r_coord_str = "%.1f" % element_r_coordinate
+            self.log(f"Moved to {self.element}, at coordinate x={x_coord_str}, r={r_coord_str}")
 
-        self.test_data.script_log.append(["", "Move to element", f"moved to X={x_coord_str}, Th={r_coord_str}", ''])
+            self.test_data.script_log.append(["", "Move to element", f"moved to X={x_coord_str}, Th={r_coord_str}", ''])
+
 
     '''Activate the relay for and move to a specified element'''
 
@@ -1302,7 +1306,7 @@ class Manager(QThread):
             self.Oscilloscope.SetAveraging(averages)
 
         coarse_freq_MHz_list, coarse_VSI_list = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz, coarse_incr_MHz,
-                                                                         burst_count, scope_channel=scope_channel)
+                                                                         burst_count, channel=scope_channel)
 
         # todo: enable this in a way that makes sense and add it to the output file
         # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
@@ -1330,7 +1334,7 @@ class Manager(QThread):
             for i in range(len(coarse_freq_MHz_list)):
                 f.write(f"{coarse_freq_MHz_list[i]},{coarse_VSI_list[i]}")
 
-    def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, scope_channel=1):
+    def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, channel=1):
         list_of_VSIs = list()
         list_of_frequencies_MHz = list()
 
@@ -1352,6 +1356,7 @@ class Manager(QThread):
         assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
 
         self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
+
         # frequencies will be on the x-axis
         return (list_of_frequencies_MHz, list_of_VSIs)
 
@@ -1421,7 +1426,7 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
 
         self.select_ua_channel(var_dict={"Element": self.element})
-        self.move_system(var_dict={"Element": self.element, "Orientation/target": 'RFB'})
+        self.move_system(var_dict={"Element": self.element, "Move Type": "Move to element", "Target": 'RFB'})
 
         self.test_data.script_log.append(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
 
@@ -1586,7 +1591,6 @@ class Manager(QThread):
             self.test_data.results_summary[self.element - 1][10] = "%.1f" % water_temperature
 
         self.element_number_signal.emit(str(self.element))
-        self.step_complete = True
 
         temp_var_for_next_command = var_dict["Pf max (limit, W)"]
         self.test_data.script_log.append(['', "Pass/Fail test",
@@ -1613,11 +1617,6 @@ class Manager(QThread):
     def printList2(self, list2):
         print(str(list2)[1:-1])
 
-    @pyqtSlot(str)
-    def exec_command(self, command):
-        self.cmd = command
-        self.condition.wakeAll()
-
     def wrap_up(self):
         for device in self.devices:
             device.wrap_up()
@@ -1625,6 +1624,11 @@ class Manager(QThread):
 
     def log(self, message, level='info'):
         log_msg(self, root_logger=root_logger, message=message, level=level)
+
+    @pyqtSlot(str)
+    def exec_command(self, command):
+        self.cmd = command
+        self.condition.wakeAll()
 
 
 class AbortException(Exception):

@@ -1,8 +1,8 @@
+from typing import List
 from ui_elements.my_qwidget import MyQWidget
-from PyQt5.QtWidgets import QInputDialog, QTreeWidgetItem, QFileDialog, QWidget
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from PyQt5.QtCore import pyqtSignal
 from Widget_Library.widget_script_editor import Ui_Form
-from collections import OrderedDict
 from ui_elements.script_editor_menus.ui_find_element import FindElement
 from ui_elements.script_editor_menus.ui_home_system import HomeSystem
 from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
@@ -14,22 +14,23 @@ from ui_elements.script_editor_menus.ui_oscilloscope_channel import Oscilloscope
 from ui_elements.script_editor_menus.ui_oscilloscope_timebase import OscilloscopeTimebase
 from ui_elements.script_editor_menus.ui_move_system import MoveSystem
 from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
+from ui_elements.script_editor_menus.ui_script_edit_template import AbstractEditMenu
 from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
+from ui_elements.script_editor_menus.no_menu_dicts import *
 from datetime import date
-#from ui_elements.script_editor. import
-#from ui_elements.script_editor. import
 
-#Todo: add the rest of the methods to the dropdown
+
 class ScriptEditor(MyQWidget, Ui_Form):
+    # This will be the menu for changing parameters of the current task type
+    edit_menu: AbstractEditMenu
     script_changed_signal = pyqtSignal()
+    treeWidget: QTreeWidget
+    list_of_var_dicts: List[dict]
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.list_of_arg_dicts = list()
-
-        #This will be the menu for changing parameters of the current task type
-        self.widget = None
-
+        self.edit_menu = AbstractEditMenu()
+        self.list_of_var_dicts = list()
         self.setupUi(self)
         self.configure_signals()
 
@@ -48,76 +49,79 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.delete_all_button.clicked.connect(self.delete_all)
 
     def show_task_type_widget(self):
-        #clear layout
+        # clear layout
         for i in reversed(range(self.action_widget_layout.count())):
             self.action_widget_layout.itemAt(i).widget().setParent(None)
 
         task_type = self.script_cmd_dropdown.currentText()
 
-        widget = None
         if task_type == "Find element \"n\"":
-            self.widget = FindElement()
+            self.edit_menu = FindElement()
         elif task_type == "Loop over elements":
-            self.widget = LoopOverElements()
+            self.edit_menu = LoopOverElements()
         elif task_type == "Measure element efficiency (RFB)":
-            self.widget = MeasureElementEfficiency()
+            self.edit_menu = MeasureElementEfficiency()
         elif task_type == "Save results":
-            self.widget = SaveResults()
+            self.edit_menu = SaveResults()
         elif task_type == "Prompt user for action":
-            self.widget = PromptUserForAction()
+            self.edit_menu = PromptUserForAction()
         elif task_type == "Home system":
-            self.widget = HomeSystem()
+            self.edit_menu = HomeSystem()
         elif task_type == "Frequency sweep":
-            self.widget = FrequencySweep()
+            self.edit_menu = FrequencySweep()
         elif task_type == "Configure oscilloscope channels":
-            self.widget = OscilloscopeChannels()
+            self.edit_menu = OscilloscopeChannels()
         elif task_type == "Configure oscilloscope timebase":
-            self.widget = OscilloscopeTimebase()
+            self.edit_menu = OscilloscopeTimebase()
         elif task_type == "Move system":
-            self.widget = MoveSystem()
+            self.edit_menu = MoveSystem()
         elif task_type == "Configure function generator":
-            self.widget = FunctionGenerator()
+            self.edit_menu = FunctionGenerator()
         elif task_type == "Select UA channel":
-            self.widget = SelectUAChannel()
-        #elif task_type == ""
-        #elif task_type == ""
-        #elif task_type == ""
-        #elif task_type == ""
+            self.edit_menu = SelectUAChannel()
+        # elif task_type == ""
+        # elif task_type == ""
+        # elif task_type == ""
+        # elif task_type == ""
         else:
-            self.widget = QWidget()
+            self.edit_menu = AbstractEditMenu()
 
-        self.action_widget_layout.addWidget(self.widget, 0, 0)
+        self.action_widget_layout.addWidget(self.edit_menu, 0, 0)
 
     """Delete the step at the given index"""
+
     def delete_step(self):
-        if len(self.list_of_arg_dicts) == 0:
+        if len(self.list_of_var_dicts) == 0:
             return
 
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         index = self.treeWidget.currentIndex().row()
-        self.treeWidget.takeTopLevelItem(index)
-        self.list_of_arg_dicts.pop(index + 1) #account for header
+        if not self.treeWidget.currentItem().text(1) == 0:
+            self.treeWidget.takeTopLevelItem(index)
 
-    """Clear the ui script visual and clear the internal arg_dicts variable"""
+        if not index+1 > len(self.list_of_var_dicts):
+            self.list_of_var_dicts.pop(index + 1)  # account for header
+
+    """Clear the ui script visual and clear the internal var_dicts variable"""
+
     def delete_all(self):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
         self.treeWidget.clear()
-        self.list_of_arg_dicts = list()
+        self.list_of_var_dicts = list()
 
-        tree_items = []
-        #Add invisible item to allow inserting at the end
-        tree_items.append(QTreeWidgetItem([]))
+        tree_items = [QTreeWidgetItem([])]
+        # Add invisible item to allow inserting at the end
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
 
     def on_item_clicked(self):
         index = self.treeWidget.currentIndex()
         if 1 != index.column():
             return
-        #Click is in the variable column
+        # Click is in the variable column
         item = self.treeWidget.currentItem()
         parameter_key = item.text(0)
         value = item.text(1)
@@ -126,10 +130,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if is_task:
             return
 
-
-
-        #Clicked cell contains a variable value
-        #Prompt user to edit value
+        # Clicked cell contains a variable value
+        # Prompt user to edit value
         value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
         if value is not None and value != '':
             # Prevent user from running the script until it is saved and reloaded
@@ -142,7 +144,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
             task_index = self.get_parent_item_index(item) + 1
 
             # Update the parameter in the dictionary
-            self.list_of_arg_dicts[task_index][parameter_key] = value
+            self.list_of_var_dicts[task_index][parameter_key] = value
 
     def get_parent_item_index(self, item):
         try:
@@ -159,22 +161,22 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return parent_row
 
     # Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script(self, arg_dicts: list):
-        self.list_of_arg_dicts = arg_dicts
+    def visualize_script(self, var_dicts: list):
+        self.list_of_var_dicts = var_dicts
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.treeWidget.clear()
 
         task_dict = {}
-        for i in range(len(self.list_of_arg_dicts)):
-            if not '# of Tasks' in self.list_of_arg_dicts[i].keys():
+        for i in range(len(self.list_of_var_dicts)):
+            if '# of Tasks' not in self.list_of_var_dicts[i].keys():
                 arg_list = list()
-                for key in self.list_of_arg_dicts[i]:
+                for key in self.list_of_var_dicts[i]:
                     if not key == "Task type":
-                        arg_list.append([key, self.list_of_arg_dicts[i][key]])
+                        arg_list.append([key, self.list_of_var_dicts[i][key]])
 
-                task_dict[self.list_of_arg_dicts[i]["Task type"]] = arg_list
+                task_dict[self.list_of_var_dicts[i]["Task type"]] = arg_list
 
-        #Add an item for each task and child items for all of its variables
+        # Add an item for each task and child items for all of its variables
         tree_items = []
         for key, values in task_dict.items():
             item = QTreeWidgetItem([key])
@@ -184,83 +186,12 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
             tree_items.append(item)
 
-        #Add invisible item to allow inserting at the end
+        # Add invisible item to allow inserting at the end
         tree_items.append(QTreeWidgetItem([]))
 
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
 
         # self.script_editor.treeWidget.insertTopLevelItems(0, tre)
-
-    def header_dict(self):
-        return OrderedDict([('# of Tasks', '14'), ('Createdon', '25/08/2016'), ('Createdby', 'PSM'),
-                            ('Description', 'Script runs through finding elements (Beam angle test), '
-                                    'HF and LF efficiency only. Manual setting of frequency at start of test.')])
-
-    def measure_efficiency_dict(self):
-        return OrderedDict([('Task type', 'Measure element efficiency (RFB)'), ('Element', 'Current'),
-                            ('Frequency range', 'Low frequency'), ('RFB.#on/off cycles', '3'),
-                            ('RFB.On time (s)', '10.000000'), ('RFB.Off time (s)', '10.000000'),
-                            ('RFB.Threshold', '0.050000'), ('RFB.Offset', '0.500000'),
-                            ('Set frequency options', 'Common peak frequency'), ('Frequency (MHz)', '4.200000'),
-                            ('Amplitude (mVpp)', '100.000000'), ('Storage location', 'UA results directory'),
-                            ('Data directory', ''), ('RFB target position', 'Average UA RFB position'),
-                            ('RFB target angle', '-90.000000'), ('EfficiencyTest', 'TRUE'),
-                            ('Pa max (target, W)', '4.000000'), ('Pf max (limit, W)', '12.000000'),
-                            ('Reflection limit (%)', '70.000000')])
-
-    def pre_test_dict(self):
-        return  OrderedDict([('Task type', 'Pre-test initialisation')])
-
-    def end_loop_dict(self):
-        return  OrderedDict([('Task type', 'End loop')])
-
-    def find_element_dict(self):
-        return OrderedDict([('Task type', 'Find element n'), ('Element', 'Element 1'), ('X Incr. (mm)', '0.250000'),
-                            ('X #Pts.', '21'), ('Theta Incr. (deg)', '-0.400000'), ('Theta #Pts.', '41'),
-                            ('Scope channel', 'Channel 1'), ('Acquisition type', 'N Averaged Waveform'),
-                            ('Averages', '16'), ('Data storage', 'Do not store'),
-                            ('Storage location', 'UA results directory'), ('Data directory', ''),
-                            ('Max. position error (+/- mm)', '0.200000'), ('ElementPositionTest', 'FALSE'),
-                            ('Max angle variation (deg)', '2.000000'), ('BeamAngleTest', 'FALSE'),
-                            ('Frequency settings', 'Avg. Low frequency'), ('Auto set timebase', 'TRUE'),
-                            ('#Cycles.Capture', '10'), ('#Cycles.Delay', '0'), ('Frequency (MHz)', '4.400000'),
-                            ('Amplitude (mV)', '50.000000'), ('Burst count', '50')])
-
-    def loop_over_elements_dict(self):
-        return OrderedDict([('Task type', 'Loop over elements'), ('Element 1', 'TRUE'), ('Element 2', 'TRUE'),
-                            ('Element 3', 'TRUE'), ('Element 4', 'TRUE'), ('Element 5', 'TRUE'), ('Element 6', 'TRUE'),
-                            ('Element 7', 'TRUE'), ('Element 8', 'TRUE'), ('Element 9', 'TRUE'),
-                            ('Element 10', 'TRUE')])
-
-    def home_system_dict(self):
-        return OrderedDict([('Task type', 'Home system')])
-
-    def end_loop_dict(self):
-        return OrderedDict([('Task type', 'End loop_1')])
-
-    def frequency_sweep_dict(self):
-        return OrderedDict([('Task type', 'Frequency sweep')])
-
-    def oscilloscope_channel_dict(self):
-        return OrderedDict([('Task type', 'Configure oscilloscope channels')])
-
-    def oscilloscope_timebase_dict(self):
-        return OrderedDict([('Task type', 'Configure oscilloscope timebase')])
-
-    def move_system_dict(self):
-        return OrderedDict([('Task type', 'Move system')])
-
-    def function_generator_dict(self):
-        return OrderedDict([('Task type', 'Configure function generator')])
-
-    def select_UA_channel_dict(self):
-        return OrderedDict([('Task type', 'Select UA channel')])
-
-    def auto_gain_control_dict(self):
-        return OrderedDict([('Task type', 'Run "Auto Gain Control"')])
-
-    def autoset_timebase_dict(self):
-        return OrderedDict([('Task type', 'Autoset timebase')])
 
     def dict_to_tree_item(self, task_dict):
         # Prevent user from running the script until it is saved and reloaded
@@ -273,38 +204,39 @@ class ScriptEditor(MyQWidget, Ui_Form):
             if not key == "Task type":
                 arg_list.append([key, task_dict[key]])
 
-        #Add parameters as child items
+        # Add parameters as child items
         for parameter in arg_list:
             child = QTreeWidgetItem(parameter)
             item.addChild(child)
 
-        return  item
+        return item
 
     def updateTree(self):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
-        arg_dict_copy = list(self.list_of_arg_dicts)
+        var_dict_copy = list(self.list_of_var_dicts)
 
-        #remove quotes
-        task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in range(self.script_cmd_dropdown.count())]
+        # remove quotes
+        task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in
+                      range(self.script_cmd_dropdown.count())]
 
-        #For each task name,
+        # For each task name,
         for task_name in task_names:
-            #Count the occurrences of that task name,
+            # Count the occurrences of that task name,
             counter = 0
-            for i in range(len(arg_dict_copy)):
-                if "Task type" in arg_dict_copy[i].keys():
-                    if task_name in arg_dict_copy[i]["Task type"]:
+            for i in range(len(var_dict_copy)):
+                if "Task type" in var_dict_copy[i].keys():
+                    if task_name in var_dict_copy[i]["Task type"]:
                         if counter == 0:
-                            arg_dict_copy[i]["Task type"] = f"{task_name}"
+                            var_dict_copy[i]["Task type"] = f"{task_name}"
                         else:
-                            #And number each one after the first one
-                            arg_dict_copy[i]["Task type"] = f"{task_name}_{counter}"
+                            # And number each one after the first one
+                            var_dict_copy[i]["Task type"] = f"{task_name}_{counter}"
                         counter = counter + 1
 
-        #Refresh the visualizer
-        self.visualize_script(arg_dict_copy)
+        # Refresh the visualizer
+        self.visualize_script(var_dict_copy)
 
     def move_selection_down(self):
         # If there is no selection, try to set selection to the first item
@@ -317,13 +249,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 return
 
         index = self.treeWidget.currentIndex()
-        self.treeWidget.setCurrentIndex(index.sibling(index.row()+1, index.column()))
+        self.treeWidget.setCurrentIndex(index.sibling(index.row() + 1, index.column()))
 
     def move_selection_up(self):
         # If there is no selection, try to set selection to the last item
         if self.treeWidget.currentItem() is None:
             child_count = self.treeWidget.invisibleRootItem().childCount()
-            last_item = self.treeWidget.invisibleRootItem().child(child_count-1)
+            last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)
             if last_item is not None:
                 self.treeWidget.setCurrentItem(last_item)
                 return
@@ -331,7 +263,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 return
 
         index = self.treeWidget.currentIndex()
-        self.treeWidget.setCurrentIndex(index.sibling(index.row()-1, index.column()))
+        self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))
 
     def add_cmd_to_script_clicked(self):
         self.script_changed_signal.emit()
@@ -342,91 +274,91 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # no selection
         if row == -1:
             index = 0
-            #Insert at beginning
+            # Insert at beginning
         else:
             index = row
             # Insert @ selection, shifting items down
 
-        #if the widget has a ui_to_orderedDict method
-        if callable(getattr(self.widget, "ui_to_orderedDict", None)):
-            new_arg_dict = self.widget.ui_to_orderedDict()
-        #if not, this class creates a prebuilt dictionary
+        # if the widget has a ui_to_orderedDict method
+        new_var_dict = self.edit_menu.ui_to_orderedDict()
+
+        if new_var_dict is not None:
+            pass
+        elif task_name == 'Measure element efficiency (RFB)':
+            new_var_dict = self.measure_efficiency_dict()
+        elif task_name == 'Pre-test initialisation':
+            new_var_dict = pre_test_dict()
+        elif task_name == 'Find element \"n\"':
+            new_var_dict = self.find_element_dict()
+        elif task_name == 'Loop over elements':
+            new_var_dict = self.loop_over_elements_dict()
+        elif task_name == 'End loop':
+            new_var_dict = end_loop_dict()
+        elif task_name == 'Frequency sweep':
+            new_var_dict = frequency_sweep_dict()
+        elif task_name == 'Configure oscilloscope channels':
+            new_var_dict = oscilloscope_channel_dict()
+        elif task_name == 'Configure oscilloscope timebase':
+            new_var_dict = oscilloscope_timebase_dict()
+        elif task_name == 'Move system':
+            new_var_dict = move_system_dict()
+        elif task_name == 'Configure function generator':
+            new_var_dict = function_generator_dict()
+        elif task_name == 'Select UA channel':
+            new_var_dict = select_UA_channel_dict()
+        elif task_name == 'Run "Auto Gain Control"':
+            new_var_dict = auto_gain_control_dict()
+        elif task_name == 'Autoset timebase':
+            new_var_dict = autoset_timebase_dict()
+        # todo: add more methods
         else:
-            if task_name == 'Measure element efficiency (RFB)':
-                new_arg_dict = self.measure_efficiency_dict()
-            elif task_name == 'Pre-test initialisation':
-                new_arg_dict = self.pre_test_dict()
-            elif task_name == 'Find element \"n\"':
-                new_arg_dict = self.find_element_dict()
-            elif task_name == 'Loop over elements':
-                new_arg_dict = self.loop_over_elements_dict()
-            elif task_name == 'End loop':
-                new_arg_dict = self.end_loop_dict()
-            elif task_name == 'Frequency sweep':
-                new_arg_dict = self.frequency_sweep_dict()
-            elif task_name == 'Configure oscilloscope channels':
-                new_arg_dict = self.oscilloscope_channel_dict()
-            elif task_name == 'Configure oscilloscope timebase':
-                new_arg_dict = self.oscilloscope_timebase_dict()
-            elif task_name == 'Move system':
-                new_arg_dict = self.move_system_dict()
-            elif task_name == 'Configure function generator':
-                new_arg_dict = self.function_generator_dict()
-            elif task_name == 'Select UA channel':
-                new_arg_dict = self.select_UA_channel_dict()
-            elif task_name == 'Run "Auto Gain Control"':
-                new_arg_dict = self.auto_gain_control_dict()
-            elif task_name == 'Autoset timebase':
-                new_arg_dict = self.autoset_timebase_dict()
-            #todo: add more methods
-            else:
-                new_arg_dict = OrderedDict()
+            new_var_dict = OrderedDict()
 
-        #add the new dictionary to arg_dicts at the correct index
-        self.list_of_arg_dicts.insert(row + 1, new_arg_dict)
-
-        item = self.dict_to_tree_item(new_arg_dict)
-
+        # add the new dictionary to var_dicts at the correct index
+        self.list_of_var_dicts.insert(row + 1, new_var_dict)
+        item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
-
         self.treeWidget.setCurrentItem(item)
+        self.move_selection_down()
 
     def save_script(self):
-        path = QFileDialog.getSaveFileName(parent=self,caption='Save script',filter='Script files (*.wtf)')[0]
+        path = QFileDialog.getSaveFileName(parent=self, caption='Save script', filter='Script files (*.wtf)')[0]
 
-        #remove existing header(s) if there is one
-        for i in range(len(self.list_of_arg_dicts)):
+        # remove existing header(s) if there is one
+        for i in range(len(self.list_of_var_dicts)):
             try:
-                if "# of Tasks" in self.list_of_arg_dicts[i].keys():
-                    self.list_of_arg_dicts.pop(i)
+                if "# of Tasks" in self.list_of_var_dicts[i].keys():
+                    self.list_of_var_dicts.pop(i)
             except IndexError:
                 pass
 
         with open(path, 'w') as f:
-            num_tasks = len(self.list_of_arg_dicts)
-            self.list_of_arg_dicts.insert(0, self.header_dict())
-            self.list_of_arg_dicts[0]["# of Tasks"] = num_tasks
+            num_tasks = len(self.list_of_var_dicts)
+            # Customize header dict
+            self.list_of_var_dicts.insert(0, header_dict())
+            self.list_of_var_dicts[0]["# of Tasks"] = num_tasks
             today = date.today()
-            self.list_of_arg_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
+            self.list_of_var_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
             Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
-            self.list_of_arg_dicts[0]["Createdby"] = Createdby
+            self.list_of_var_dicts[0]["Createdby"] = Createdby
             Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
-            self.list_of_arg_dicts[0]["Description"] = Description
+            self.list_of_var_dicts[0]["Description"] = Description
 
-            #Write header info
+            # Write header info
             f.write('[Top Level]\n')
 
-            for arg in self.list_of_arg_dicts[0].keys():
-                f.write(f"{arg} = \"{self.list_of_arg_dicts[0][arg]}\"\n")
+            for arg in self.list_of_var_dicts[0].keys():
+                f.write(f"{arg} = \"{self.list_of_var_dicts[0][arg]}\"\n")
             f.write("\n")
 
-            #Write arguments of each step
-            for i in range(len(self.list_of_arg_dicts) - 1):
+            # Write arguments of each step
+            for i in range(len(self.list_of_var_dicts) - 1):
                 f.write(f'[Task{i}]\n')
-                task_args = self.list_of_arg_dicts[i + 1]
+                task_args = self.list_of_var_dicts[i + 1]
                 for arg in task_args.keys():
                     f.write(f"{arg} = \"{task_args[arg]}\"\n")
                 f.write("\n")
+
 
 if __name__ == '__main__':
     import sys
@@ -437,5 +369,3 @@ if __name__ == '__main__':
 
     edit_widget.show()
     sys.exit(app.exec_())
-
-

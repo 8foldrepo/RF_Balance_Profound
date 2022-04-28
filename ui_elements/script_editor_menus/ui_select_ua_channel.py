@@ -12,14 +12,14 @@ class SelectUAChannel(MyQWidget, Ui_select_ua_channel):
             OrderedDict(
                 [('Task type', 'Select UA Channel'), ('Channel', '1')]))
 
-    def orderedDict_to_ui(self, arg_dict: OrderedDict):
-        self.sel_ua_channel_spin.setValue(int(arg_dict["Channel"]))
+    def orderedDict_to_ui(self, var_dict: OrderedDict):
+        self.sel_ua_channel_spin.setValue(int(var_dict["Channel"]))
 
     def ui_to_orderedDict(self) -> OrderedDict:
-        arg_dict = OrderedDict()
-        arg_dict["Task type"] = 'Select UA Channel'
-        arg_dict["Channel"] = str(self.sel_ua_channel_spin.value())
-        return arg_dict
+        var_dict = OrderedDict()
+        var_dict["Task type"] = 'Select UA Channel'
+        var_dict["Channel"] = str(self.sel_ua_channel_spin.value())
+        return var_dict
 
 
 if __name__ == "__main__":

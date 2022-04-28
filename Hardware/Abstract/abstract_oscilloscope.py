@@ -28,7 +28,8 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
+    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
+              ext_trigger: bool, average_count: int):
         ...
 
     """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
@@ -42,23 +43,39 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def getVertRange_V(self, channel, volts):
+    def getVertRange_V(self, channel: int, volts: float):
         ...
 
     @abstractmethod
-    def setVertRange_V(self, channel, volts):
+    def setVertRange_V(self, channel: int, volts: float):
         ...
 
     @abstractmethod
-    def getVertOffset(self, channel):
+    def getHorzScale_V(self):
         ...
 
     @abstractmethod
-    def setVertOffset_V(self, channel, offset):
+    def setHorzScale_sec(self, seconds: float):
         ...
 
     @abstractmethod
-    def setHorzRange_sec(self, seconds):
+    def getVertScale_V(self, channel: int):
+        ...
+
+    @abstractmethod
+    def setVertScale_V(self, volts_per_div: float, channel: int):
+        ...
+
+    @abstractmethod
+    def getVertOffset(self, channel: int):
+        ...
+
+    @abstractmethod
+    def setVertOffset_V(self, channel: int, offset: float):
+        ...
+
+    @abstractmethod
+    def setHorzRange_sec(self, seconds: float):
         ...
 
     @abstractmethod
@@ -66,7 +83,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def setHorzOffset_sec(self, offset):
+    def setHorzOffset_sec(self, offset: float):
         ...
 
     '''Autoscales the oscilloscope's voltage range to fit the waveform'''

@@ -26,6 +26,9 @@
    <string>Form</string>
   </property>
   <widget class="QFrame" name="frame_2">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -120,6 +123,12 @@ p, li { white-space: pre-wrap; }
        <height>20</height>
       </rect>
      </property>
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>50000</number>
+     </property>
     </widget>
     <widget class="QLabel" name="label_5">
      <property name="geometry">
@@ -134,7 +143,7 @@ p, li { white-space: pre-wrap; }
       <string>Offset (mV)</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="offset_spin">
+    <widget class="QDoubleSpinBox" name="offset_spin">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -142,6 +151,12 @@ p, li { white-space: pre-wrap; }
        <width>85</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="minimum">
+      <double>-500.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>500.000000000000000</double>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -157,7 +172,10 @@ p, li { white-space: pre-wrap; }
       <string>Offset (mV)</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="offset_right_spin">
+    <widget class="QDoubleSpinBox" name="offset_right_spin">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -166,8 +184,17 @@ p, li { white-space: pre-wrap; }
        <height>20</height>
       </rect>
      </property>
+     <property name="minimum">
+      <double>-500.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>500.000000000000000</double>
+     </property>
     </widget>
     <widget class="QSpinBox" name="gain_right_spin">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -175,6 +202,12 @@ p, li { white-space: pre-wrap; }
        <width>85</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>50000</number>
      </property>
     </widget>
     <widget class="QLabel" name="label_10">
@@ -191,6 +224,9 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
     <widget class="QCheckBox" name="channel_1_checkbox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -211,8 +247,14 @@ p, li { white-space: pre-wrap; }
      <property name="text">
       <string>Channel 1</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
     </widget>
     <widget class="QCheckBox" name="channel_2_checkbox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>150</x>

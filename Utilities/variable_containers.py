@@ -28,37 +28,37 @@ class TestData:
         # Default values, will be updated during test
         table[0] = ['Element_01', '0', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[1] = ['Element_02', '5', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[2] = ['Element_03', '10', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[3] = ['Element_04', '15', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[4] = ['Element_05', '20', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[5] = ['Element_06', '25', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[6] = ['Element_07', '30', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[7] = ['Element_08', '35', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[8] = ['Element_09', '40', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
         table[9] = ['Element_10', '45', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
                     'NaN',
-                    'Pass', '']
+                    'DNF', '']
 
         table[10] = ['UA Common', 'NaN', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN',
-                     'NaN', 'Pass', '']
+                     'NaN', 'DNF', '']
 
         elements_with_manual_lf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
         elements_with_manual_hf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
