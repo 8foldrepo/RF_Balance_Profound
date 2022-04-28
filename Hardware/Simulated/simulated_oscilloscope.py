@@ -6,7 +6,7 @@ import numpy as np
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):
-    def __init__(self, device_key='Keysight_Oscilloscope', config: dict = None, parent=None):
+    def __init__(self, config: dict, device_key='Keysight_Oscilloscope', parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
         self.fields_setup()

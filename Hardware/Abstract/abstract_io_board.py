@@ -1,11 +1,7 @@
-import random
 from abc import abstractmethod, ABCMeta
-
 from definitions import WaterLevel
 from PyQt5.QtCore import pyqtSignal
 from Hardware.Abstract.abstract_device import AbstractDevice
-from Hardware.relay_board import RelayBoard
-import time as t
 
 
 class AbstractIOBoard(AbstractDevice):

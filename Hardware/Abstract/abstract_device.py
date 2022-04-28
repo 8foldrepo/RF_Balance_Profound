@@ -14,6 +14,7 @@ class AbstractDevice(QObject):
     __metaclass__ = ABCMeta
 
     connected_signal = pyqtSignal(bool)
+    connected: bool
 
     '''Load config if one was not given and set up the logger'''
 
@@ -36,7 +37,6 @@ class AbstractDevice(QObject):
             self.config = load_configuration()
         self.device_key = device_key
         self.connected = False
-        pass
 
     '''
     Establish a connection and emit the connected signal (should emit and return True if successful)

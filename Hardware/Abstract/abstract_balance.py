@@ -1,6 +1,5 @@
 from abc import abstractmethod, ABCMeta
 from Hardware.Abstract.abstract_sensor import AbstractSensor
-from PyQt5.QtCore import pyqtSignal
 
 
 class AbstractBalance(AbstractSensor):

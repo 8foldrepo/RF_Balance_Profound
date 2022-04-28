@@ -15,9 +15,9 @@ class SimulatedIOBoard(AbstractIOBoard):
 
     draining_signal = pyqtSignal(WaterLevel)
 
-    def __init__(self, config=None, device_key="NI_DAQ", parent=None):
+    def __init__(self, config, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
-        self.power_relay = RelayBoard(device_key="Daq_Power_Relay")
+        self.power_relay = RelayBoard(config=config,device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.ua_pump_on = True

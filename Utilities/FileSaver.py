@@ -1,4 +1,5 @@
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
+from Utilities.variable_containers import FileMetadata, TestData
 from definitions import ROOT_DIR
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 import logging
@@ -22,7 +23,7 @@ class FileSaver:
     power_data_path = None
     waveform_data_path = None
 
-    def __init__(self, test_data, config):
+    def __init__(self, test_data:TestData, config):
         if config is not None:
             self.config = config
         else:
@@ -34,7 +35,7 @@ class FileSaver:
         self.copy_system_info()
 
     def create_results_folder(self):
-        self.folder_name = self.test_data["serial_number"] + "-" + self.test_data["test_date_time"]
+        self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)
         # Retrieve the path of the results directory from the yaml file and create it if it does not exist
         self.results_dir = check_directory(results_path)
@@ -63,7 +64,7 @@ class FileSaver:
 
     '''Save the test data (shared with the manager) to the results folder in the form of a  results summary'''
 
-    def save_test_results_summary_and_log(self, test_data):
+    def save_test_results_summary_and_log(self, test_data: TestData):
         if not test_data:  # if dictionary is empty return
             self.log(level='error', message='No results to save')
             return
@@ -75,14 +76,14 @@ class FileSaver:
         self.log(f"Saving results summary to: {path}")
 
         create_test_results_summary_file(self.test_data, path)
-        self.save_log_file(self.script_log)
+        self.save_log_file(self.test_data.script_log)
 
     # turn a 2d list into a .log file (a text file with a different extension
     '''saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided'''
 
     def save_log_file(self, log_table=None):
         if log_table is None:
-            log_table = self.test_data["script_log"]
+            log_table = self.test_data.script_log
 
         try:
             path = os.path.join(self.log_files_dir, "ScriptResults.log")
@@ -101,29 +102,26 @@ class FileSaver:
             f.write('\t'.join(log_table[x]))
             f.write('\n')
 
-    def store_waveform(self, metadata, times, voltages):  # assume single array every time
+    def store_waveform(self, metadata:FileMetadata, times, voltages):  # assume single array every time
 
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
-                                            f"E{metadata['element_number']:02}"))
+                                            f"E{metadata.element_number:02}"))
 
         file = open(
-            os.path.join(path, f"FindElement{metadata['element_number']:02}_{metadata['axis']}_"
-                               f"{metadata['waveform_number']}.txt"), 'w+')
+            os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}_"
+                               f"{metadata.waveform_number}.txt"), 'w+')
 
-
-
-        file.write(f"UASerialNumber={metadata['serial_number']}\n")
+        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
         file.write("[File Format]\n")
-        file.write(f"Version={metadata['version']}\n")  # comes from config file, will come from metadata for now
-        # file.write(f"Version={config['Software_Version']}\n")
+        file.write(f"Version={self.config['Software_Version']}\n")
         file.write(f"# Arrays=1\n")
         file.write("[Position]\n")
-        file.write(f"X={metadata['X']}\n")
-        file.write(f"Theta={metadata['Theta']}\n")
-        file.write(f"Calibration Frequency={metadata['calibration_frequency_(MHz)']}MHz\n")
-        file.write(f"Source Signal Amplitude={metadata['source_signal_amplitude_(mVpp)']}mVpp\n")
-        file.write(f"Source Signal Type={metadata['source_signal_type']}\n")
-        file.write(f"# Cycles={metadata['number_of_cycles']}\n")
+        file.write(f"X={metadata.X}\n")
+        file.write(f"Theta={metadata.Theta}\n")
+        file.write(f"Calibration Frequency={metadata.frequency_MHz}MHz\n")
+        file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
+        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+        file.write(f"# Cycles={metadata.num_cycles}\n")
         file.write("[Array 0]\n")
         file.write("Label=\"\"\n")
         file.write("X Data Type=\"Time (s)\"\n")
@@ -149,23 +147,22 @@ class FileSaver:
 
     def store_measure_rfb_waveform(self, metadata, forward_power, reflected_power, acoustic_power):
         path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
-                                            f"E{metadata['element_number']:02}"))
-        file_path = os.path.join(path, f"MeasureRFB{metadata['element_number']:02}_{metadata['axis']}_"
-                                       f"{metadata['waveform_number']}.txt")
+                                            f"E{metadata.element_number:02}"))
+        file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.txt")
 
-        self.log(f"Saving effeciency test data to: {file_path}")
-        file = open(file_path,'w+')
-        file.write(f"UASerialNumber={metadata['serial_number']}\n")
+        self.log(f"Saving efficiency test data to: {file_path}")
+        file = open(file_path, 'w+')
+        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
         file.write("[File Format]\n")
         file.write(f"Version={self.config['Software_Version']}\n")
         file.write(f"# Arrays=3\n")
         file.write("[Position]\n")
-        file.write(f"X={metadata['X']}\n")
-        file.write(f"Theta={metadata['Theta']}\n")
-        file.write(f"Calibration Frequency={metadata['calibration_frequency_(MHz)']}MHz\n")
-        file.write(f"Source Signal Amplitude={metadata['source_signal_amplitude_(mVpp)']}mVpp\n")
-        file.write(f"Source Signal Type={metadata['source_signal_type']}\n")
-        file.write(f"# Cycles={metadata['number_of_cycles']}\n")
+        file.write(f"X={f'%.2f' % metadata.X}\n")
+        file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
+        file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
+        file.write(f"Source Signal Amplitude={f'%.2f' % metadata.amplitude_mVpp}mVpp\n")
+        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+        file.write(f"# Cycles={metadata.num_cycles}\n")
         file.write("[Array 1]\n")
         file.write("Label=\"Forward Power (W)\"\n")
         file.write("X Data Type=\"Time (s)\"\n")
@@ -174,7 +171,7 @@ class FileSaver:
         file.write("Label=\"Reflected Power (W)\"\n")
         file.write("X Data Type=\"Time (s)\"\n")
         file.write("Y Data Type=\"Wattage (W)\"\n")
-        file.write("[Array 1]\n")
+        file.write("[Array 3]\n")
         file.write("Label=\"Acoustic Power (W)\"\n")
         file.write("X Data Type=\"Time (s)\"\n")
         file.write("Y Data Type=\"Wattage (W)\"\n")
@@ -224,42 +221,44 @@ class FileSaver:
                         f"{forward_formatted_time}\t{forward_formatted_wattage}\t{reflected_formatted_time}\t"
                         f"{reflected_formatted_wattage}\t{acoustic_formatted_time}\t{acoustic_formatted_wattage}\n")
 
-    def save_find_element_profile(self, metadata, distances, vms):
+    def save_find_element_profile(self, metadata, positions, vsi_values):
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
-                                            f"E{metadata['element_number']:02}"))
+                                            f"E{metadata.element_number:02}"))
 
-        file = open(path + f"FindElement{metadata['element_number']:02}_{metadata['axis']}__UMSProfile.txt", 'w+')
-        file.write(f"UASerialNumber={metadata['serial_number']}\n")
+        file = open(os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt"), 'w+')
+        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
         file.write("[File Format]\n")
-        file.write(f"Version={metadata['version']}\n")  # comes from config file, will come from metadata for now
-        # file.write(f"Version={config['Software_Version']}\n")
+        file.write(f"Version={self.config['Software_Version']}\n")
         file.write(f"# Arrays=1\n")
         file.write("[Position]\n")
-        file.write(f"X={metadata['X']}\n")
-        file.write(f"Theta={metadata['Theta']}\n")
-        file.write(f"Calibration Frequency={metadata['calibration_frequency_(MHz)']}MHz\n")
-        file.write(f"Source Signal Amplitude={metadata['source_signal_amplitude_(mVpp)']}mVpp\n")
-        file.write(f"Source Signal Type={metadata['source_signal_type']}\n")
-        file.write(f"# Cycles={metadata['number_of_cycles']}\n")
+        file.write(f"X={f'%.2f' % metadata.X}\n")
+        file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
+        file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
+        file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
+        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+        file.write(f"# Cycles={metadata.num_cycles}\n")
         file.write("[Array 0]\n")
         file.write("Label=\"\"\n")
-        file.write("X Data Type=\"Distance (mm)\"\n")
+        if metadata.axis == "R" or metadata.axis == 'Theta':
+            file.write("X Data Type=\"Position (deg)\"\n")
+        else:
+            file.write("X Data Type=\"Distance (mm)\"\n")
         file.write("Y Data Type=\"Voltage Squared Integral\"\n")
         file.write("[Data]\n")
         file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
         file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
 
-        if len(distances) != len(vms):
-            # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vms = {len(vms)}
+        if len(positions) != len(vsi_values):
+            # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vsi = {len(vsi)}
             # mismatch in store_find_element_waveform()")
             print(
-                f"length of distances = {len(distances)} ; length of vms = {len(vms)} size mismatch in "
+                f"length of distances = {len(positions)} ; length of vsi = {len(vsi_values)} size mismatch in "
                 f"store_find_element_waveform()")
             return
         else:
-            for x in range(len(distances)):
-                formatted_time = "{:.6e}".format(distances[x])
-                formatted_voltage = "{:.6e}".format(vms[x])
+            for x in range(len(positions)):
+                formatted_time = "{:.6e}".format(positions[x])
+                formatted_voltage = "{:.6e}".format(vsi_values[x])
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
     # todo
@@ -269,123 +268,122 @@ class FileSaver:
     def log(self, message, level='info'):
         log_msg(self, root_logger, message=message, level=level)
 
-
-def test_store_find_element_waveform(file_saver):
-    from numpy.random import uniform
-    metadata = dict()
-    metadata['element_number'] = 1
-    metadata['axis'] = "Th"
-    metadata['waveform_number'] = "Theta000"
-    metadata['serial_number'] = 'GH1214'
-    metadata['version'] = 1.0
-    metadata['X'] = 0.750
-    metadata['Theta'] = -171.198
-    metadata['calibration_frequency_(MHz)'] = '4'
-    metadata['source_signal_amplitude_(mVpp)'] = '50'
-    metadata['source_signal_type'] = 'Toneburst'
-    metadata['number_of_cycles'] = 0
-
-    times = list()
-    voltages = list()
-
-    for x in range(100):
-        times.append(uniform(4.14, 4.64))
-        voltages.append(uniform(-9, 7))
-
-    times.sort()
-
-    file_saver.store_waveform(metadata, times, voltages)
-
-
-def test_store_measure_rfb_waveform(file_saver):
-    from numpy.random import uniform
-    metadata = dict()
-    metadata['element_number'] = 1
-    metadata['axis'] = "Th"
-    metadata['waveform_number'] = "Theta000"
-    metadata['serial_number'] = 'GH1214'
-    metadata['version'] = 1.0
-    metadata['X'] = 0.750
-    metadata['Theta'] = -171.198
-    metadata['calibration_frequency_(MHz)'] = '4'
-    metadata['source_signal_amplitude_(mVpp)'] = '50'
-    metadata['source_signal_type'] = 'Toneburst'
-    metadata['number_of_cycles'] = 0
-
-    forward_power = list()
-    reflected_power = list()
-    acoustic_power = list()
-
-    times = list()
-    voltages = list()
-
-    for x in range(20):
-        times.append(uniform(4.14, 4.64))
-        voltages.append(uniform(-9, 7))
-
-    times.sort()
-    forward_power.append(times)
-    forward_power.append(voltages)
-
-    times.clear()
-    voltages.clear()
-
-    for x in range(20):
-        times.append(uniform(4.14, 4.64))
-        voltages.append(uniform(-9, 7))
-
-    times.sort()
-    reflected_power.append(times)
-    reflected_power.append(voltages)
-
-    times.clear()
-    voltages.clear()
-
-    for x in range(20):
-        times.append(uniform(4.14, 4.64))
-        voltages.append(uniform(-9, 7))
-
-    times.sort()
-    acoustic_power.append(times)
-    acoustic_power.append(voltages)
-
-    file_saver.store_measure_rfb_waveform(metadata, forward_power, reflected_power, acoustic_power)
-
-
-def main():
-    from Utilities.useful_methods import blank_test_data
-
-    test_data = blank_test_data()
-    test_data.serial_number = 'GH1214'
-    test_data.script_log = []
-    test_data.script_log.append(["", "test", "log", ""])
-
-    metadata = dict()
-    metadata['element_number'] = 1
-    metadata['axis'] = "Th"
-    metadata['waveform_number'] = "Theta000"
-    metadata['serial_number'] = 'GH1214'
-    metadata['version'] = 1.0
-    metadata['X'] = 0.750
-    metadata['Theta'] = -171.198
-    metadata['calibration_frequency_(MHz)'] = '4'
-    metadata['source_signal_amplitude_(mVpp)'] = '50'
-    metadata['source_signal_type'] = 'Toneburst'
-    metadata['number_of_cycles'] = 0
-
-    results_saver = FileSaver(config=None, test_data=test_data)
-    results_saver.copy_system_info()
-    test_store_find_element_waveform(file_saver=results_saver)
-    distances = range(100)
-    vrms = range(100)
-    results_saver.save_find_element_profile(metadata=metadata, distances=distances, vms=vrms)
-    results_saver.save_frequency_sweep()
-    fw_power = [range(100), range(1, 101)]
-    ref_power = [range(100, 200), range(101, 201)]
-    acou_power = [range(200, 300), range(301, 401)]
-    results_saver.store_measure_rfb_waveform(metadata=metadata, forward_power=fw_power, reflected_power=ref_power,
-                                             acoustic_power=acou_power)
-    results_saver.save_test_results_summary_and_log(test_data=test_data)
-
-if __name__ == '__main__':
-    main()
+# def test_store_find_element_waveform(file_saver):
+#     from numpy.random import uniform
+#     metadata = dict()
+#     metadata['element_number'] = 1
+#     metadata['axis'] = "Th"
+#     metadata['waveform_number'] = "Theta000"
+#     metadata['serial_number'] = 'GH1214'
+#     metadata['version'] = 1.0
+#     metadata['X'] = 0.750
+#     metadata['Theta'] = -171.198
+#     metadata['calibration_frequency_(MHz)'] = '4'
+#     metadata['source_signal_amplitude_(mVpp)'] = '50'
+#     metadata['source_signal_type'] = 'Toneburst'
+#     metadata['num_cycles'] = 0
+# 
+#     times = list()
+#     voltages = list()
+# 
+#     for x in range(100):
+#         times.append(uniform(4.14, 4.64))
+#         voltages.append(uniform(-9, 7))
+# 
+#     times.sort()
+# 
+#     file_saver.store_waveform(metadata, times, voltages)
+# 
+# 
+# def test_store_measure_rfb_waveform(file_saver):
+#     from numpy.random import uniform
+#     metadata = dict()
+#     metadata['element_number'] = 1
+#     metadata['axis'] = "Th"
+#     metadata['waveform_number'] = "Theta000"
+#     metadata['serial_number'] = 'GH1214'
+#     metadata['version'] = 1.0
+#     metadata['X'] = 0.750
+#     metadata['Theta'] = -171.198
+#     metadata['calibration_frequency_(MHz)'] = '4'
+#     metadata['source_signal_amplitude_(mVpp)'] = '50'
+#     metadata['source_signal_type'] = 'Toneburst'
+#     metadata['num_cycles'] = 0
+# 
+#     forward_power = list()
+#     reflected_power = list()
+#     acoustic_power = list()
+# 
+#     times = list()
+#     voltages = list()
+# 
+#     for x in range(20):
+#         times.append(uniform(4.14, 4.64))
+#         voltages.append(uniform(-9, 7))
+# 
+#     times.sort()
+#     forward_power.append(times)
+#     forward_power.append(voltages)
+# 
+#     times.clear()
+#     voltages.clear()
+# 
+#     for x in range(20):
+#         times.append(uniform(4.14, 4.64))
+#         voltages.append(uniform(-9, 7))
+# 
+#     times.sort()
+#     reflected_power.append(times)
+#     reflected_power.append(voltages)
+# 
+#     times.clear()
+#     voltages.clear()
+# 
+#     for x in range(20):
+#         times.append(uniform(4.14, 4.64))
+#         voltages.append(uniform(-9, 7))
+# 
+#     times.sort()
+#     acoustic_power.append(times)
+#     acoustic_power.append(voltages)
+# 
+#     file_saver.store_measure_rfb_waveform(metadata, forward_power, reflected_power, acoustic_power)
+# 
+# 
+# def main():
+#     from Utilities.data_structures import TestData
+# 
+#     test_data = TestData()
+#     test_data.serial_number = 'GH1214'
+#     test_data.script_log = []
+#     test_data.script_log.append(["", "test", "log", ""])
+# 
+#     metadata = dict()
+#     metadata['element_number'] = 1
+#     metadata['axis'] = "Th"
+#     metadata['waveform_number'] = "Theta000"
+#     metadata['serial_number'] = 'GH1214'
+#     metadata['version'] = 1.0
+#     metadata['X'] = 0.750
+#     metadata['Theta'] = -171.198
+#     metadata['calibration_frequency_(MHz)'] = '4'
+#     metadata['source_signal_amplitude_(mVpp)'] = '50'
+#     metadata['source_signal_type'] = 'Toneburst'
+#     metadata['num_cycles'] = 0
+# 
+#     file_saver = FileSaver(config=None, test_data=test_data)
+#     file_saver.copy_system_info()
+#     test_store_find_element_waveform(file_saver=file_saver)
+#     distances = range(100)
+#     vsi = range(100)
+#     file_saver.save_find_element_profile(metadata=metadata, distances=distances, vsi=vsi)
+#     file_saver.save_frequency_sweep()
+#     fw_power = [range(100), range(1, 101)]
+#     ref_power = [range(100, 200), range(101, 201)]
+#     acou_power = [range(200, 300), range(301, 401)]
+#     file_saver.store_measure_rfb_waveform(metadata=metadata, forward_power=fw_power, reflected_power=ref_power,
+#                                              acoustic_power=acou_power)
+#     file_saver.save_test_results_summary_and_log(test_data=test_data)
+# 
+# if __name__ == '__main__':
+#     main()

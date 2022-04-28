@@ -1,6 +1,17 @@
-2022-04-27 13:27:21,858 [INFO] [Manager] [manager_thread] : Running script
-2022-04-27 13:27:21,900 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Results Summary.txt
-2022-04-27 13:27:21,902 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Log files\ScriptResults.log
-2022-04-27 13:27:21,903 [INFO] [Results] [manager_thread] : Showing test results
- [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Log files\ScriptResults.log
-2022-04-27 13:27:21,903 [INFO] [Results] [manager_thread] : Showing test results
+2022-04-28 13:56:28,922 [INFO] [Manager] [manager_thread] : Running script
+2022-04-28 13:56:31,581 [INFO] [Manager] [] : Checking ability to log
+2022-04-28 13:56:36,003 [INFO] [Manager] [] : Maximum of 1182.591432198941 @ X = -0.125 mm
+2022-04-28 13:56:36,023 [INFO] [Manager] [] : Maximum of 1177.0867126083556 @ Theta = -160.99999999999986 deg
+2022-04-28 13:56:36,265 [INFO] [Manager] [] : Maximum of 1164.608003587259 @ X = -1.0250000000000001 mm
+2022-04-28 13:56:54,257 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-28 13:56:54,370 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-28 13:57:08,056 [INFO] [Manager] [manager_thread] : Running script
+2022-04-28 13:57:09,902 [INFO] [Manager] [] : Checking ability to log
+2022-04-28 13:57:09,965 [INFO] [Manager] [] : Maximum of 1153.6213747388779 @ X = 1.5999999999999996 mm
+2022-04-28 13:57:09,981 [INFO] [Manager] [] : Maximum of 1171.584698572864 @ Theta = -169.79999999999998 deg
+2022-04-28 13:57:10,031 [INFO] [Manager] [] : Maximum of 1175.109384776825 @ X = 1.2999999999999996 mm
+2022-04-28 13:57:24,410 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-28 13:57:24,552 [INFO] [Manager] [manager_thread] : Aborting script
+nager] [] : Maximum of 1175.109384776825 @ X = 1.2999999999999996 mm
+2022-04-28 13:57:24,410 [INFO] [Manager] [manager_thread] : Aborting script
+2022-04-28 13:57:24,552 [INFO] [Manager] [manager_thread] : Aborting script

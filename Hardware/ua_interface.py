@@ -14,8 +14,8 @@ class UAInterface(AbstractUAInterface):
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.ip_address = '192.168.3.3'
-        self.UA_Read_Result = False
-        self.UA_Write_Result = False
+        self.read_result = False
+        self.write_result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
 
         self.ua_calibration_data = None
@@ -120,21 +120,21 @@ class UAInterface(AbstractUAInterface):
 
         if "status=0" in output:
             self.log('UA write successful')
-            self.UA_Write_Result = True
+            self.write_result = True
             return 0
 
         if "status=-2" in output:
             self.log(level='error', message='wtfib is not connected (check power and ethernet connection)')
-            self.UA_Write_Result = False
+            self.write_result = False
             return -2
 
         if "status=2" in output:
             self.log(level='error', message='No UA connected, write failed')
-            self.UA_Write_Result = False
+            self.write_result = False
             return 2
 
         self.log(level='error', message=f'Unrecognized write code: \n{output}')
-        self.UA_Write_Result = False
+        self.write_result = False
         return -3
 
     def get_command_output(self):
@@ -149,7 +149,7 @@ class UAInterface(AbstractUAInterface):
             except UnicodeDecodeError as e:
                 self.log(level='error', message=str(e))
                 if str(e) == "\'utf-8\' codec can't decode byte 0xb8 in position 150: invalid start byte":
-                    print("Getting output failed, retrying...")
+                    self.log("Getting output failed, retrying...")
         return None
 
 if __name__ == '__main__':

@@ -1,5 +1,3 @@
-# placeholder formula
-# todo: fill in with  the correct formula
 def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c: float = 20):
     balance_reading_kg = balance_reading_g / 1000
     g_m_per_s_per_s = 9.80665  # Source: [1] in the documentation

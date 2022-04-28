@@ -1,10 +1,7 @@
 import os
-import random
-
 import numpy as np
 import collections.abc
-
-from PyQt5.QtWidgets import QFileDialog
+from Utilities.variable_containers import TestData
 
 '''
 Inputs:
@@ -44,7 +41,7 @@ def get_element_distances(element_1_index, element_pitch):
 '''Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class'''
 
 
-def generate_calibration_data(test_data):
+def generate_calibration_data(test_data: TestData):
     # Todo: populate this array according to the test_data
     calibration_data = {
         'cal_data_array': {
@@ -233,7 +230,8 @@ def search_for(filename):
 
 '''Saves the dictionary containing test info to a specified path, formatted as a results summary'''
 
-def create_test_results_summary_file(test_data:dict, path):
+
+def create_test_results_summary_file(test_data: TestData, path):
     f = open(path, "w")
 
     f.write(test_data.serial_number + '-' + test_data.test_date_time + '\n')
@@ -292,6 +290,7 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
     else:
         root_logger.info(log_entry)
     print(f'[{level}] {log_entry}')
+
 
 if __name__ == '__main__':
     pass

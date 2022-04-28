@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 from typing import Tuple, List
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -38,7 +38,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def SetAveraging(self, averages:int):
+    def SetAveraging(self, averages: int):
         ...
 
     @abstractmethod

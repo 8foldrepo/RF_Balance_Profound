@@ -78,8 +78,8 @@ class DIOBoard(AbstractIOBoard):
             self.log("Filling tank, please wait...")
             self.set_tank_pump_on(on=True, clockwise=True)
             self.filling_signal.emit()
-            start_time = t.time()
 
+            start_time = t.time()
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level

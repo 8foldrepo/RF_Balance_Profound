@@ -19,8 +19,8 @@ class TestData:
         self.script_name = ''
         self.low_frequency_MHz = float('nan')
         self.high_frequency_MHz = float('nan')
-        hf = self.low_frequency_MHz
-        lf = self.low_frequency_MHz
+        hf = str(self.low_frequency_MHz)
+        lf = str(self.low_frequency_MHz)
 
         # Create reults_summary table
         table = list([None] * 13)
@@ -68,3 +68,15 @@ class TestData:
         table[12] = elements_with_manual_hf
 
         self.results_summary = table
+
+
+class FileMetadata:
+    element_number: int
+    X: float
+    Theta: float
+    frequency_MHz: float
+    amplitude_mVpp: float
+    source_signal_type: str
+    num_cycles: int
+    axis: str
+    waveform_number: int

@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 from PyQt5.QtCore import pyqtSignal
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -11,7 +11,6 @@ class AbstractSensor(AbstractDevice):
     @abstractmethod
     def __init__(self, config, parent=None, device_key=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
-        self.connected = True
 
     '''Get the sensor reading as a float'''
 

@@ -43,9 +43,8 @@ class SimulatedMotorController(AbstractMotorController):
 
     @pyqtSlot(dict)
     def setup(self, settings):
-        for i in range(len(self.ax_letters)):
-            self.setup_1d(axis=self.ax_letters[i], settings=settings)
-        self.get_position()
+        t.sleep(.1)
+        self.ready_signal.emit()
 
     '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
 

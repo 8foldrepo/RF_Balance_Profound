@@ -1,3 +1,4 @@
+from Utilities.variable_containers import TestData
 from Widget_Library import dialog_pretest
 from PyQt5.QtCore import pyqtSignal
 from ui_elements.Dialogs.my_qdialog import MyQDialog
@@ -5,21 +6,22 @@ from definitions import ROOT_DIR
 from Utilities.useful_methods import is_number
 from datetime import datetime
 
+
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
-    pretest_metadata_signal = pyqtSignal(dict)  # signal from MainWindow to manager; operator, serial no., comment
+    pretest_metadata_signal = pyqtSignal(TestData)  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
-    def __init__(self, serial_no = None, parent=None, config=None):
+    def __init__(self, serial_no=None, parent=None, config=None):
         super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
-        self.metadata_dict = dict()
+        self.test_data = TestData()
 
         # add formatted date
         now = datetime.now()
         formatted_date = now.strftime("%Y.%m.%d-%H.%M")
 
-        #Get the current date, save it to the metadata dictionary, and show it in the UI
+        # Get the current date, save it to the metadata dictionary, and show it in the UI
         self.ua_serial_no_inputline.setText(serial_no)
         self.lookup_clicked()
         self.date_output.setText(formatted_date)
@@ -67,7 +69,6 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if self.hardware_code_field.text() == '':
             self.hardware_code_field.setText("Not found")
 
-
     def ok_clicked(self):
         if self.ua_serial_no_inputline.text() == '' or self.test_operator_inputline.text() == '':
             self.feedback_label.setText("Fill all required fields")
@@ -76,16 +77,15 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if not is_number(self.lf_MHz_field.text()) or not is_number(self.hf_MHz_field.text()):
             self.feedback_label.setText("Frequencies must be numeric")
             return
+        self.test_data.test_comment = self.comment_inputbox.toPlainText()
+        self.test_data.serial_number = self.ua_serial_no_inputline.text()
+        self.test_data.operator_name = self.test_operator_inputline.text()
+        self.test_data.low_frequency_MHz = float(self.lf_MHz_field.text())
+        self.test_data.high_frequency_MHz = float(self.hf_MHz_field.text())
+        self.test_data.hardware_code = self.hardware_code_field.text()
+        self.test_data.test_date_time = self.date_output.text()
 
-        self.metadata_dict['test_comment'] = self.comment_inputbox.toPlainText()
-        self.metadata_dict['serial_number'] = self.ua_serial_no_inputline.text()
-        self.metadata_dict['operator_name'] = self.test_operator_inputline.text()
-        self.metadata_dict['low_frequency_MHz'] = float(self.lf_MHz_field.text())
-        self.metadata_dict['high_frequency_MHz'] = float(self.hf_MHz_field.text())
-        self.metadata_dict['hardware_code'] = self.hardware_code_field.text()
-        self.metadata_dict['test_date_time'] = self.date_output.text()
-
-        self.pretest_metadata_signal.emit(self.metadata_dict)
+        self.pretest_metadata_signal.emit(self.test_data)
         self.dialog_resolved = True
 
         self.close()
@@ -93,8 +93,10 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     def cancel_clicked(self):
         self.close()
 
+
 def print_info(dict):
     print(f"metadate {dict}")
+
 
 if __name__ == "__main__":
     import sys

@@ -1,7 +1,6 @@
 import time as t
 import webbrowser
 from typing import List
-
 from ui_elements.Dialogs.ui_password_dialog import PasswordDialog
 from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
 from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
@@ -16,7 +15,7 @@ from ui_elements.Dialogs.draining_dialog import DrainingDialog
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
 from PyQt5.QtGui import QColor, QBrush
 from Widget_Library import window_wet_test
 from manager import Manager

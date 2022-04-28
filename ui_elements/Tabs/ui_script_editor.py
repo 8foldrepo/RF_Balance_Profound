@@ -196,7 +196,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                             ('Description', 'Script runs through finding elements (Beam angle test), '
                                     'HF and LF efficiency only. Manual setting of frequency at start of test.')])
 
-    def measure_effeciency_dict(self):
+    def measure_efficiency_dict(self):
         return OrderedDict([('Task type', 'Measure element efficiency (RFB)'), ('Element', 'Current'),
                             ('Frequency range', 'Low frequency'), ('RFB.#on/off cycles', '3'),
                             ('RFB.On time (s)', '10.000000'), ('RFB.Off time (s)', '10.000000'),
@@ -353,7 +353,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         #if not, this class creates a prebuilt dictionary
         else:
             if task_name == 'Measure element efficiency (RFB)':
-                new_arg_dict = self.measure_effeciency_dict()
+                new_arg_dict = self.measure_efficiency_dict()
             elif task_name == 'Pre-test initialisation':
                 new_arg_dict = self.pre_test_dict()
             elif task_name == 'Find element \"n\"':

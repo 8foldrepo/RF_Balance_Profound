@@ -168,7 +168,6 @@ class MT_balance(AbstractBalance):
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
-                        print(chunk)
                         if is_number(chunk):
                             val = float(chunk)
                             self.latest_weight = val

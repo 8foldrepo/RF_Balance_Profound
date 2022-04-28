@@ -5,7 +5,7 @@ from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
 #todo: change class name to one matching the task type
-class MeasureElementEffeciency(MyQWidget, Ui_Form_2):
+class MeasureElementefficiency(MyQWidget, Ui_Form_2):
     def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
