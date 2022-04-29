@@ -323,7 +323,7 @@ class Ui_Form(object):
         self.label_122.setText(_translate("Form", "RF Electrical Power"))
         self.label_115.setText(_translate("Form", "Pf (W)"))
         self.label_116.setText(_translate("Form", "Pr (W)"))
-from ui_elements.Tabs.ui_oscilloscope_plot import Plot
+from ui_elements.tabs.ui_oscilloscope_plot import Plot
 
 
 if __name__ == "__main__":

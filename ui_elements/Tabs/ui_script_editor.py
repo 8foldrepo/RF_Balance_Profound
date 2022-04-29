@@ -37,6 +37,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def set_tree_widget(self, treeWidget):
         self.treeWidget = treeWidget
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
+        self.delete_all()
 
     def configure_signals(self):
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)
@@ -94,6 +95,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if len(self.list_of_var_dicts) == 0:
             return
 
+        if self.treeWidget.currentItem().text(0) == '':
+            return
+
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -101,7 +105,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if not self.treeWidget.currentItem().text(1) == 0:
             self.treeWidget.takeTopLevelItem(index)
 
-        if not index+1 > len(self.list_of_var_dicts):
+        if not index+1 >= len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
     """Clear the ui script visual and clear the internal var_dicts variable"""
@@ -113,9 +117,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.clear()
         self.list_of_var_dicts = list()
 
-        tree_items = [QTreeWidgetItem([])]
-        # Add invisible item to allow inserting at the end
-        self.treeWidget.invisibleRootItem().addChildren(tree_items)
+        self.add_empty_item_at_end()
 
     def on_item_clicked(self):
         index = self.treeWidget.currentIndex()
@@ -185,13 +187,14 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 item.addChild(child)
 
             tree_items.append(item)
-
-        # Add invisible item to allow inserting at the end
-        tree_items.append(QTreeWidgetItem([]))
-
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
+        self.add_empty_item_at_end()
 
-        # self.script_editor.treeWidget.insertTopLevelItems(0, tre)
+    def add_empty_item_at_end(self):
+        # Add invisible item to allow inserting at the end
+        empty_item = QTreeWidgetItem([])
+        self.treeWidget.invisibleRootItem().addChild(empty_item)
+        self.treeWidget.setCurrentItem(empty_item)
 
     def dict_to_tree_item(self, task_dict):
         # Prevent user from running the script until it is saved and reloaded
@@ -267,7 +270,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def add_cmd_to_script_clicked(self):
         self.script_changed_signal.emit()
-
         row = self.treeWidget.currentIndex().row()
         task_name = self.script_cmd_dropdown.currentText()
 
@@ -320,6 +322,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
         self.move_selection_down()
+
+        #If the item we added was the first item
+        if self.treeWidget.invisibleRootItem().childCount() == 1:
+            self.add_empty_item_at_end()
 
     def save_script(self):
         path = QFileDialog.getSaveFileName(parent=self, caption='Save script', filter='Script files (*.wtf)')[0]

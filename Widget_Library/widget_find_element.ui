@@ -609,12 +609,7 @@
     </item>
     <item>
      <property name="text">
-      <string>Results 2</string>
-     </property>
-    </item>
-    <item>
-     <property name="text">
-      <string>Results 3</string>
+      <string>Other Directory</string>
      </property>
     </item>
    </widget>

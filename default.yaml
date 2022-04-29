@@ -55,7 +55,6 @@ Keysight_AWG:
   frequency_Hz: 4290000
   identifier: '0x2507'
   offset_V: 0
-  output: true
   output_Impedance: 50
   set_on_startup: true
 Keysight_Oscilloscope:

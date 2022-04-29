@@ -23,7 +23,7 @@ class SimulatedAWG(AbstractAWG):
                    ext_trig=self.config[self.device_key]['ext_trig'],
                    burst_period_s=self.config[self.device_key]['burst_period_s'],
                    offset_V=self.config[self.device_key]['offset_V'],
-                   output=self.config[self.device_key]['output'],
+                   output=False,
                    output_Impedance=self.config[self.device_key]['output_Impedance'])
 
     def connect_hardware(self):
@@ -74,14 +74,17 @@ class SimulatedAWG(AbstractAWG):
 
     def SetOutput(self, on: bool):
         self.state["on"] = on
+        self.output_signal.emit(on)
 
     def Get_Output(self):
+        self.output_signal.emit(self.state["on"])
         return self.state["on"]
 
     """Sets the frequency of the signal"""
 
-    def SetFrequency_Hz(self, frequency):
-        self.state["frequency_Hz"] = frequency
+    def SetFrequency_Hz(self, frequency_Hz):
+        self.state["frequency_Hz"] = frequency_Hz
+        self.frequency_signal.emit(frequency_Hz/1000000)
 
     def GetFrequency_Hz(self):
         return self.state["frequency_Hz"]

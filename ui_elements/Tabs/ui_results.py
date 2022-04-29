@@ -11,11 +11,11 @@ from ui_elements.my_qwidget import MyQWidget
 
 class Results(MyQWidget, Ui_Form):
     test_data: TestData
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.config = None
-        self.manager = None
         self.style_ui()
         self.configure_signals()
         self.log_2d_list = list()
@@ -34,8 +34,10 @@ class Results(MyQWidget, Ui_Form):
         self.populate_log_table()  # populate the log table since we're done loading it
         return self.test_data.script_log
 
-    # populates the ui given a 2d list
-    def populate_log_table(self, log_table=None):
+    '''Displays a script log (2d list) to the UI'''
+
+    @pyqtSlot(list)
+    def populate_log_table(self, log_table: list):
         if log_table is None:
             log_table = self.test_data.script_log
 
@@ -47,12 +49,12 @@ class Results(MyQWidget, Ui_Form):
                 item.setText(line_ray[x].strip())
                 self.script_log_table.setItem(line_counter, x, item)
 
-    @pyqtSlot()
-    def populate_results_table(self, results_summary=None):
-        if results_summary is not None:
-            self.test_data.results_summary = results_summary
+    '''Displays the results summary (2d list) to the UI'''
 
-        results_summary = self.test_data.results_summary
+    @pyqtSlot(list)
+    def populate_results_table(self, results_summary: list):
+        if results_summary is None:
+            results_summary = self.test_data.results_summary
 
         for i in range(11):  # covers range of all elements and "UA Common"
             for x in range(15):  # covers all the data units in each element
@@ -91,21 +93,8 @@ class Results(MyQWidget, Ui_Form):
 
         create_test_results_summary_file(self.test_data, path)
 
-    def set_manager(self, manager):
-        self.manager = manager
-        self.manager.show_results_signal.connect(self.retrieve_data_from_manager)
-
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
-
-    """Recieve the test_data dictionary from manager, visualize the summary and the scriptlog, and save both to disk"""
-
-    @pyqtSlot(TestData)
-    def retrieve_data_from_manager(self, TestData):
-        self.log("Showing test results")
-        self.test_data = TestData
-        self.populate_results_table()
-        self.populate_log_table()
 
     def set_config(self, config):
         self.config = config
@@ -218,6 +207,7 @@ def print_indent_dict(a):
 if __name__ == '__main__':
     import sys
     from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
     res_widget = Results()
 

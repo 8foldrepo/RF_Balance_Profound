@@ -61,11 +61,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     thread_list: List[QThread]
 
     command_signal = QtCore.pyqtSignal(str)
-    run_step_signal = QtCore.pyqtSignal()
-    abort_signal = QtCore.pyqtSignal()
+    abort_instantly_signal = QtCore.pyqtSignal()
     load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
-    connect_hardware_signal = QtCore.pyqtSignal()
-    disconnect_hardware_signal = QtCore.pyqtSignal()
     num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
     progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
     script_changed = False  # prevents user from running a script if it has been modified and not reloaded
@@ -156,7 +153,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.rfb.set_balance(self.manager.Balance)
         self.position_tab.set_manager(self.manager)
         self.position_tab.set_motors(self.manager.Motors)
-        self.results_tab.set_manager(self.manager)
         self.ua_calibration_tab.set_manager(self.manager)
         self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
         self.scan_tab_widget.set_manager(self.manager)
@@ -250,7 +246,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_editor.script_changed_signal.connect(self.upon_script_changed)
         self.load_button.clicked.connect(self.load_script_clicked)
         self.run_button.clicked.connect(self.run_button_clicked)
-        self.abort_button.clicked.connect(self.abort_button_clicked)
+
         self.run_step_button.clicked.connect(self.run_step_clicked)
 
         # Hardware control signals
@@ -262,12 +258,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_calibration_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
 
     def configure_manager_signals(self):
+        self.abort_button.clicked.connect(self.manager.abort)
         self.command_signal.connect(self.manager.exec_command)
         self.manager.enable_ui_signal.connect(self.set_buttons_enabled)
-
-        # Connect/disconnect hardware signals
-        self.connect_hardware_signal.connect(self.manager.connect_hardware)
-        self.disconnect_hardware_signal.connect(self.manager.disconnect_hardware)
 
         # Script metadata signals
         self.manager.script_name_signal.connect(self.script_name_field.setText)
@@ -285,11 +278,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.script_info_signal.connect(self.visualize_script)
         self.manager.script_info_signal.connect(self.script_editor.visualize_script)
         self.manager.script_info_signal.connect(self.update_script_indicator)
-
+        self.manager.test_data.show_results_summary.connect(self.results_tab.populate_results_table)
+        self.manager.test_data.show_script_log.connect(self.results_tab.populate_log_table)
         self.manager.element_number_signal.connect(self.live_element_field.setText)
         self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware indicator signals
+        self.manager.AWG.frequency_signal.connect(self.update_frequency_field)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
         self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
@@ -317,10 +312,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
 
         # Manager communication signals
-        self.abort_signal.connect(self.manager.abort)
+        self.abort_instantly_signal.connect(self.manager.abort)
         self.load_script_signal.connect(self.manager.load_script)
-        self.run_step_signal.connect(self.manager.advance_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
+
+    @pyqtSlot(float)
+    def update_frequency_field(self, frequency_MHz):
+        self.frequency_field.setText('%.2f' % frequency_MHz)
 
     @pyqtSlot(float)
     def update_x_pos_field(self, position_mm):
@@ -330,16 +328,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def update_theta_pos_field(self, position_mm):
         self.theta_pos_field.setText('%.2f' % position_mm)
 
-    def abort_button_clicked(self):
-        self.abort_signal.emit()
-
     def run_button_clicked(self):
         self.set_buttons_enabled(False)
         self.show_pretest_dialog()
 
     def run_step_clicked(self):
         self.set_buttons_enabled(False)
-        self.run_step_signal.emit()
+        self.command_signal.emit("STEP")
 
     def upon_script_changed(self):
         self.script_changed = True
@@ -545,7 +540,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         if qReply == QMessageBox.Yes:
             bQuit = True
-            self.abort_signal.emit()
+            self.abort_instantly_signal.emit()
             t.sleep(.1)
             self.manager.exit()
         if bQuit:
@@ -575,7 +570,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if status != 0:
             if self.access_level_combo.currentText() == "Operator":
                 self.dialog_critical("UA Read failed, aborting test")
-                self.abort_signal.emit()
+                self.abort_instantly_signal.emit()
                 return
             elif self.config["Debugging"]["end_script_on_errors"]:
                 self.dialog_critical("UA Read failed, aborting test. Disable end_script_on_errors in the "

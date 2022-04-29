@@ -17,22 +17,26 @@ log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 
 class FileSaver:
+    test_data: TestData
     folder_name = None
     results_dir = None
     log_files_dir = None
     power_data_path = None
     waveform_data_path = None
+    directories_created = False
 
-    def __init__(self, test_data:TestData, config):
+    def __init__(self, config):
         if config is not None:
             self.config = config
         else:
             self.config = load_configuration()
 
+    def create_folders(self, test_data):
         self.test_data = test_data
         self.create_results_folder()
         self.create_subfolders()
         self.copy_system_info()
+
 
     def create_results_folder(self):
         self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
@@ -41,6 +45,10 @@ class FileSaver:
         self.results_dir = check_directory(results_path)
 
     def create_subfolders(self):
+        if self.results_dir is None:
+            self.log(level='error', message='Could not create subfolders before results folder, check function call')
+            return
+
         log_files_path = os.path.join(self.results_dir, 'Log files')
         self.log_files_dir = check_directory(log_files_path)
 
@@ -49,10 +57,14 @@ class FileSaver:
 
         waveform_data_path = os.path.join(self.results_dir, 'Waveform data')
         self.waveform_data_path = check_directory(waveform_data_path)
+        self.directories_created = True
 
     '''Copies the system info file into the results directory'''
 
     def copy_system_info(self):
+        if self.log_files_dir is None:
+            self.log(level='error', message='Could save config, log_files_dir does not exist')
+
         system_info_file = os.path.join(ROOT_DIR, 'systeminfo.ini')
         if not os.path.exists(system_info_file):
             self.log(level='Error', message='Could not store system info to results folder')

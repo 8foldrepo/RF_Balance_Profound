@@ -270,9 +270,9 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.label_17)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.lineEdit_4 = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit_4.setEnabled(False)
-        self.lineEdit_4.setMaximumSize(QtCore.QSize(80, 16777215))
+        self.frequency_field = QtWidgets.QLineEdit(self.widget)
+        self.frequency_field.setEnabled(False)
+        self.frequency_field.setMaximumSize(QtCore.QSize(80, 16777215))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(240, 240, 240))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -337,9 +337,9 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
-        self.lineEdit_4.setPalette(palette)
-        self.lineEdit_4.setObjectName("lineEdit_4")
-        self.horizontalLayout.addWidget(self.lineEdit_4)
+        self.frequency_field.setPalette(palette)
+        self.frequency_field.setObjectName("frequency_field")
+        self.horizontalLayout.addWidget(self.frequency_field)
         self.label_19 = QtWidgets.QLabel(self.widget)
         self.label_19.setMaximumSize(QtCore.QSize(30, 16777215))
         self.label_19.setObjectName("label_19")
@@ -1147,7 +1147,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1169,7 +1169,7 @@ class Ui_MainWindow(object):
         self.label_21.setText(_translate("MainWindow", "Element"))
         self.label_20.setText(_translate("MainWindow", "Live Element"))
         self.label_17.setText(_translate("MainWindow", "Frequency"))
-        self.lineEdit_4.setText(_translate("MainWindow", "0.000"))
+        self.frequency_field.setText(_translate("MainWindow", "0.000"))
         self.label_19.setText(_translate("MainWindow", "(MHz)"))
         self.water_temp_label.setText(_translate("MainWindow", "Position"))
         self.label_16.setText(_translate("MainWindow", "Theta"))
@@ -1221,15 +1221,15 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "Scan"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), _translate("MainWindow", "Position"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_9), _translate("MainWindow", "System Config"))
+from ui_elements.tabs.ui_position import Position
+from ui_elements.tabs.ui_results import Results
+from ui_elements.tabs.ui_rfb import RFB
+from ui_elements.tabs.ui_scan import Scan
+from ui_elements.tabs.ui_script_editor import ScriptEditor
+from ui_elements.tabs.ui_system_config import SystemConfig
+from ui_elements.tabs.ui_system_info import SystemInfo
+from ui_elements.tabs.ui_ua_calibration import UACalibration
 from ui_elements.switch import Switch
-from ui_elements.Tabs.ui_position import Position
-from ui_elements.Tabs.ui_results import Results
-from ui_elements.Tabs.ui_rfb import RFB
-from ui_elements.Tabs.ui_scan import Scan
-from ui_elements.Tabs.ui_script_editor import ScriptEditor
-from ui_elements.Tabs.ui_system_config import SystemConfig
-from ui_elements.Tabs.ui_system_info import SystemInfo
-from ui_elements.Tabs.ui_ua_calibration import UACalibration
 
 
 if __name__ == "__main__":

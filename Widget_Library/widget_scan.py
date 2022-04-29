@@ -411,7 +411,7 @@ class Ui_scan_tab_widget(object):
         self.window_combo_box_2.setItemText(0, _translate("scan_tab_widget", "Blackman-Harris"))
         self.label_58.setText(_translate("scan_tab_widget", "Averages"))
         self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.scan_setup_tab), _translate("scan_tab_widget", "Scan Setup"))
-from ui_elements.Tabs.ui_oscilloscope_plot import Plot
+from ui_elements.tabs.ui_oscilloscope_plot import Plot
 
 
 if __name__ == "__main__":

@@ -1,14 +1,16 @@
+from PyQt5.QtCore import pyqtSlot
 from Widget_Library.widget_measure_element_efficiency import Ui_Form_2
-from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
 
 
 class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, config, parent=None):
+        super().__init__(config=config, parent=parent)
         self.setupUi(self)
         self.DATA_DIRECTORY_BUTTON.clicked.connect(self.filebrowser)
+        self.configure_signals()
         self.orderedDict_to_ui(
             OrderedDict(
                 [('Task type', 'Measure element efficiency (RFB)'), ('Element', 'Current')
@@ -20,6 +22,9 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
                     , ('RFB target position', 'Average UA RFB position')
                     , ('RFB target angle', '-90.000000'), ('EfficiencyTest', 'TRUE'), ('Pa max (target, W)', '4.000000')
                     , ('Pf max (limit, W)', '12.000000'), ('Reflection limit (%)', '70.000000')]))
+
+    def configure_signals(self):
+        self.DATALOC_FIELD.currentIndexChanged.connect(self.storage_loc_combo_changed)
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         # todo, fill UI according to dictionary
@@ -34,6 +39,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         self.FREQUENCY_FIELD.setValue(float(var_dict["Frequency (MHz)"]))
         self.AMPLITUDE_FIELD.setValue(float(var_dict["Amplitude (mVpp)"]))
         self.DATALOC_FIELD.setCurrentText(var_dict["Storage location"])
+        self.storage_loc_combo_changed()
         self.DATA_DIRECTORY_FIELD.setText(var_dict["Data directory"])
         self.RFB_TARGET_POSITION_FIELD.setCurrentText(var_dict["RFB target position"])
         self.RFB_ANGLE_FIELD.setValue(float(var_dict["RFB target angle"]))
@@ -42,13 +48,16 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         self.POWER_MAX_FIELD.setValue(float(var_dict["Pf max (limit, W)"]))
         self.REFLECTION_LIMIT_FIELD.setValue(float(var_dict["Reflection limit (%)"]))
 
-        # example lines
-        # self..setText(var_dict[""])
-        # self..setChecked(var_dict[""])
-        # self..setValue(var_dict[""])
-        # pass
-
         # todo: populate var_dict, arrange the arguments in the order of the example script
+
+    @pyqtSlot()
+    def storage_loc_combo_changed(self):
+        if 'Results Directory'.upper() in self.DATALOC_FIELD.currentText().upper():
+            self.DATA_DIRECTORY_FIELD.setEnabled(False)
+            self.DATA_DIRECTORY_BUTTON.setEnabled(False)
+        else:
+            self.DATA_DIRECTORY_FIELD.setEnabled(True)
+            self.DATA_DIRECTORY_BUTTON.setEnabled(True)
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
@@ -80,8 +89,8 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         return var_dict
 
     def filebrowser(self):
-        filename = QFileDialog.getOpenFileName(self, 'Select File', 'Desktop')
-        self.DATA_DIRECTORY_FIELD.setText(filename[0])
+        filename, _ = QFileDialog.getExistingDirectory(self, 'Select Directory')
+        self.DATA_DIRECTORY_FIELD.setText(filename)
 
 
 if __name__ == "__main__":

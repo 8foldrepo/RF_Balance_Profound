@@ -7,6 +7,7 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractAWG(AbstractDevice):
     output_signal = pyqtSignal(bool)
+    frequency_signal = pyqtSignal(float)
     state: dict
 
     def __init__(self, config=None, device_key='Keysight_AWG', parent=None):

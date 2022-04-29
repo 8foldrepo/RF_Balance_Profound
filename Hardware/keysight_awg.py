@@ -33,7 +33,7 @@ class KeysightAWG(AbstractAWG):
                    ext_trig=self.config[self.device_key]['trig_in'],
                    burst_period_s=self.config[self.device_key]['burst_period_s'],
                    offset_V=self.config[self.device_key]['offset_V'],
-                   output=self.config[self.device_key]['output'],
+                   output=False,
                    output_Impedance=self.config[self.device_key]['output_Impedance'],
                    trigger_out=self.config[self.device_key]['trig_out'])
 
@@ -137,6 +137,7 @@ class KeysightAWG(AbstractAWG):
     def GetFrequency_Hz(self):
         self.command(f"FREQ?")
         self.state["frequency_Hz"] = float(self.read())
+        self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)
         return self.state["frequency_Hz"]
 
     """Sets the peak to peak amplitude of the waveform in volts"""
