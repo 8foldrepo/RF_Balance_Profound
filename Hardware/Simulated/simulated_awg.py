@@ -36,10 +36,9 @@ class SimulatedAWG(AbstractAWG):
         self.connected = False
         self.connected_signal.emit(False)
 
-    """Sets all settings of the awg with one command and wait until it is done configuring"""
-
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50):
+        """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
@@ -51,9 +50,8 @@ class SimulatedAWG(AbstractAWG):
 
         self.wait_til_complete()
 
-    """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
-
     def get_state(self):
+        """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
         self.Get_Output()
         self.GetFrequency_Hz()
         self.GetAmplitude_V()
@@ -70,9 +68,8 @@ class SimulatedAWG(AbstractAWG):
     def wait_til_complete(self):
         pass
 
-    """Turns the output on or off"""
-
     def SetOutput(self, on: bool):
+        """Turns the output on or off"""
         self.state["on"] = on
         self.output_signal.emit(on)
 
@@ -80,26 +77,23 @@ class SimulatedAWG(AbstractAWG):
         self.output_signal.emit(self.state["on"])
         return self.state["on"]
 
-    """Sets the frequency of the signal"""
-
     def SetFrequency_Hz(self, frequency_Hz):
+        """Sets the frequency of the signal"""
         self.state["frequency_Hz"] = frequency_Hz
-        self.frequency_signal.emit(frequency_Hz/1000000)
+        self.frequency_signal.emit(frequency_Hz / 1000000)
 
     def GetFrequency_Hz(self):
         return self.state["frequency_Hz"]
 
-    """Sets the peak to peak amplitude of the waveform in volts"""
-
     def SetAmplitude_V(self, amplitude):
+        """Sets the peak to peak amplitude of the waveform in volts"""
         self.state["amplitude_V"] = amplitude
 
     def GetAmplitude_V(self):
         return self.state["amplitude_V"]
 
-    """Sets the dc offset of the waveform in volts"""
-
     def SetOffset_V(self, offset):
+        """Sets the dc offset of the waveform in volts"""
         pass
 
     def GetOffset_V(self):
@@ -111,22 +105,21 @@ class SimulatedAWG(AbstractAWG):
     def GetFunction(self):
         pass
 
-    """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-
     def SetTriggerInput(self, external: bool, period_s=.000010, delay_s=0):
+        """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
         pass
 
-    """Returns info about the trigger: source, delay_s, period_s"""
-
     def GetTriggerInput(self):
+        """Returns info about the trigger: source, delay_s, period_s"""
+
         pass
 
     def SetBurst(self, on=True):
         self.state["burst_on"] = on
 
-    """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
-
     def GetBurst(self):
+        """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
+
         return self.state["burst_on"], self.state["burst_cycles"]
 
     def SetOutputImpedance(self, impedance_ohms=50, HiZ=False):
@@ -150,13 +143,17 @@ class SimulatedAWG(AbstractAWG):
     def GetCycles(self):
         return self.state["burst_cycles"]
 
-    """Returns the last known state of the device. Use getstate to inquire the state before calling"""
-
     def SetTriggerOutput(self, trigger_out: bool):
+        """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+
         pass
 
     def get_serial_number(self) -> str:
         return '\"Simulated\"'
+
+    def wrap_up(self):
+        self.SetOutput(False)
+        self.disconnect_hardware()
 
     def __str__(self):
         self.get_state()

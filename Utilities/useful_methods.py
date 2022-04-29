@@ -3,17 +3,16 @@ import numpy as np
 import collections.abc
 from Utilities.variable_containers import TestData
 
-'''
-Inputs:
-A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
-A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
-Output:
-A list containing the axis letters of the coordinates provided, and a list of equal length containing the coordinates.
-With the given inputs the output should be axes: [Z,R] coords [3,2]
-'''
-
 
 def create_coord_rays(coords: str, ax_letters: list):
+    """
+    Inputs:
+    A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+    A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+    Output:
+    A list containing the axis letters of the coordinates provided, and a list of equal length containing the
+    coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
+    """
     axes = list()
     coords = coords.split(',')
     for i in range(len(coords)):
@@ -25,10 +24,8 @@ def create_coord_rays(coords: str, ax_letters: list):
     return axes, coords
 
 
-'''Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager'''
-
-
 def get_element_distances(element_1_index, element_pitch):
+    """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coords = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
@@ -38,10 +35,8 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coords
 
 
-'''Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class'''
-
-
 def generate_calibration_data(test_data: TestData):
+    """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
     # Todo: populate this array according to the test_data
     calibration_data = {
         'cal_data_array': {
@@ -228,7 +223,7 @@ def search_for(filename):
     return file_path
 
 
-'''Saves the dictionary containing test info to a specified path, formatted as a results summary'''
+"""Saves the dictionary containing test info to a specified path, formatted as a results summary"""
 
 
 def create_test_results_summary_file(test_data: TestData, path):

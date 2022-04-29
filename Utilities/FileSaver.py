@@ -59,7 +59,7 @@ class FileSaver:
         self.waveform_data_path = check_directory(waveform_data_path)
         self.directories_created = True
 
-    '''Copies the system info file into the results directory'''
+    """Copies the system info file into the results directory"""
 
     def copy_system_info(self):
         if self.log_files_dir is None:
@@ -74,7 +74,7 @@ class FileSaver:
         destination_path = os.path.join(self.log_files_dir, 'SystemHardware.log')
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
-    '''Save the test data (shared with the manager) to the results folder in the form of a  results summary'''
+    """Save the test data (shared with the manager) to the results folder in the form of a  results summary"""
 
     def save_test_results_summary_and_log(self, test_data: TestData):
         if not test_data:  # if dictionary is empty return
@@ -91,7 +91,7 @@ class FileSaver:
         self.save_log_file(self.test_data.script_log)
 
     # turn a 2d list into a .log file (a text file with a different extension
-    '''saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided'''
+    """saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided"""
 
     def save_log_file(self, log_table=None):
         if log_table is None:

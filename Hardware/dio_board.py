@@ -7,7 +7,7 @@ from Hardware.relay_board import RelayBoard
 import time as t
 from definitions import WaterLevel
 
-'''Class for interfacing with an National instruments usb-6009 digital IO board'''
+"""Class for interfacing with an National instruments usb-6009 digital IO board"""
 
 
 class DIOBoard(AbstractIOBoard):
@@ -196,9 +196,10 @@ class DIOBoard(AbstractIOBoard):
         self.connected = False
         self.connected_signal.emit(False)
 
-    '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
 
     def get_water_level(self) -> WaterLevel:
+        """Return the state of the water level sensor. possible values are below_level, above_level, and level"""
+
         if self.simulate_sensors: return self.water_level
 
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
@@ -221,6 +222,11 @@ class DIOBoard(AbstractIOBoard):
 
             self.water_level_reading_signal.emit(level)
             return level
+
+    def wrap_up(self):
+        self.power_relay.wrap_up()
+        self.disconnect_hardware()
+        self.disconnect_hardware()
 
     def fields_setup(self):
         self.name = self.config[self.device_key]['DAQ Device name']

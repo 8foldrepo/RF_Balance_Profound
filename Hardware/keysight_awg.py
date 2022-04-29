@@ -48,7 +48,7 @@ class KeysightAWG(AbstractAWG):
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log(level='error',message = feedback)
+                    self.log(level='error', message=feedback)
                     break
 
                 if self.config[self.device_key]['set_on_startup']:
@@ -79,7 +79,7 @@ class KeysightAWG(AbstractAWG):
         self.SetAmplitude_V(amplitude_V)
         self.SetCycles(burst_cycles)
         self.SetBurst(burst)
-        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
+        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
         self.SetTriggerOutput(trigger_out=trigger_out)
         self.SetOffset_V(offset_V)
         self.SetOutputImpedance(output_Impedance)
@@ -274,20 +274,24 @@ class KeysightAWG(AbstractAWG):
     #     self.state['trig_period_s'] = float(self.read())
     #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
 
+    # todo: test
     def wrap_up(self):
-        self.inst.close()
+        self.SetOutput(False)
+        self.disconnect_hardware()
 
-    #Todo: make sure this saves correctly in the systeminfo.ini
+    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None
 
-        str = self.ask("*IDN")
+        self.command("*IDN")
+        str = self.read()
+
         return str.split(',')[2]
 
-    """Returns the last known state of the device. Use getstate to inquire the state before calling"""
-
     def __str__(self):
+        """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+
         self.get_state()
         return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 

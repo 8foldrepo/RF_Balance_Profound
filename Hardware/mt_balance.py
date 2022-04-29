@@ -57,9 +57,12 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
-    """Zeroes the scale immediately"""
+    def wrap_up(self):
+        self.disconnect_hardware()
 
     def zero_balance_instantly(self):
+        """Zeroes the scale immediately"""
+
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected is False:
@@ -263,6 +266,7 @@ class MT_balance(AbstractBalance):
                         self.log(level='error', message='Balance underloaded')
                         return None
         self.log(level='error', message=f'{self.device_key} timed out')
+
 
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())

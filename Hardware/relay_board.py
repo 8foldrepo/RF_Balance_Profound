@@ -1,3 +1,5 @@
+from abc import ABC
+
 import serial
 from Utilities.load_config import load_configuration
 from Hardware.Abstract.abstract_relay import AbstractRelay
@@ -53,7 +55,7 @@ class RelayBoard(AbstractRelay):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def get_reading(self):
+    def relay_read(self):
         if self.ser is None:
             self.log(level='error', message=f'{self.device_key} not connected')
             return
@@ -82,13 +84,16 @@ class RelayBoard(AbstractRelay):
 
         if on:
             self.ser.write(b"\xFF\x01\x01\n")  # On command
-            self.get_reading()
+            self.relay_read()
         else:
             self.ser.write(b"\xFF\x01\x00\n")  # Off command
-            self.get_reading()
+            self.relay_read()
 
         # self.on = on
 
+    def wrap_up(self):
+        self.relay_write(False)
+        self.disconnect_hardware()
 
 if __name__ == '__main__':
     switch = RelayBoard()

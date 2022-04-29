@@ -34,10 +34,9 @@ class Results(MyQWidget, Ui_Form):
         self.populate_log_table()  # populate the log table since we're done loading it
         return self.test_data.script_log
 
-    '''Displays a script log (2d list) to the UI'''
-
     @pyqtSlot(list)
     def populate_log_table(self, log_table: list):
+        """Displays a script log (2d list) to the UI"""
         if log_table is None:
             log_table = self.test_data.script_log
 
@@ -49,10 +48,9 @@ class Results(MyQWidget, Ui_Form):
                 item.setText(line_ray[x].strip())
                 self.script_log_table.setItem(line_counter, x, item)
 
-    '''Displays the results summary (2d list) to the UI'''
-
     @pyqtSlot(list)
     def populate_results_table(self, results_summary: list):
+        """Displays the results summary (2d list) to the UI"""
         if results_summary is None:
             results_summary = self.test_data.results_summary
 
@@ -175,9 +173,9 @@ class Results(MyQWidget, Ui_Form):
         return self.test_data
 
 
-# '''create a new method called loadconfig which turns a txt file into a list of lists; 3 methods lower method returns a
+# """create a new method called loadconfig which turns a txt file into a list of lists; 3 methods lower method returns a
 # list of lists given a txt file, other 2 take a list of lists and either save/display it; for the load method, use
-# QFileDialog.get_open_file_name, will create prompt to find and select file'''
+# QFileDialog.get_open_file_name, will create prompt to find and select file"""
 
 def print_list(a):
     print("*** beginning of list ***")

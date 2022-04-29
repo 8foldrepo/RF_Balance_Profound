@@ -39,13 +39,14 @@ class AbstractIOBoard(AbstractDevice):
     def drain_tank_to_level(self):
         ...
 
-    '''Return the state of the water level sensor as a WaterLevel Enum'''
-
     @abstractmethod
     def get_water_level(self) -> WaterLevel:
+        """Return the state of the water level sensor as a WaterLevel Enum"""
+
         ...
 
-    '''Activates the specified relay channel and deactivates all others. returns whether it was successful'''
     @abstractmethod
     def activate_relay_channel(self, channel_number: int) -> bool:
+        """Activates the specified relay channel and deactivates all others. returns whether it was successful"""
+
         pass

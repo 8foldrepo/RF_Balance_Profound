@@ -2,7 +2,7 @@ from abc import abstractmethod
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 import numpy as np
 
-'''Class providing a crude simulation of an oscilloscope so programs can be tested without one'''
+"""Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):

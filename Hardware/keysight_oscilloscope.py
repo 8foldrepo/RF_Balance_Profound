@@ -111,9 +111,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
         # Set trigger
         self.SetTrigger(ext_trigger)
 
-    """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
-
     def SetTrigger(self, external):
+        """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+
         if external:
             self.command(":TRIG:MODE EDGE")
             self.command(":TRIG:EDGE:SOUR EXT")
@@ -287,11 +287,11 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def ask(self, command):
         return self.inst.query(command)
 
-    #Todo: make sure this saves correctly in the systeminfo.ini
+    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None
-        
+
         str = self.ask("*IDN")
         return str.split(',')[2]
 

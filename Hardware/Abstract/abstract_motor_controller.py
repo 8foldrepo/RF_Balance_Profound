@@ -4,11 +4,13 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
-'''Defines an interface with key functionality for a motor controller'''
+
 
 
 class AbstractMotorController(AbstractDevice):
-    """These lists will all be the same length when populated from the config file"""
+    """Defines an interface with key functionality for a motor controller"""
+
+    #These lists will all be the same length when populated from the config file
     coords_mm = list()
     home_coords = list()
     reverse_ray = List[bool]
@@ -57,40 +59,39 @@ class AbstractMotorController(AbstractDevice):
         self.on_by_default = self.config[self.device_key]['on_by_default']
         self.port = self.config[self.device_key]['port']
 
-    '''
-    # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
-    '''
-
     @abstractmethod
     @pyqtSlot(list, list)
     def go_to_position(self, axes: List[str], coords_mm: List[float]) -> bool:
+        """
+        # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
+        """
         ...
-
-    '''Sets the current position to zero for all axes'''
 
     @abstractmethod
     @pyqtSlot()
     def set_origin_here(self):
-        ...
+        """Sets the current position to zero for all axes"""
 
-    '''Sets the origin to a specified list of coordinates. length must equal the length of self.ax_letters'''
+        ...
 
     @abstractmethod
     @pyqtSlot()
     def set_origin(self, origin_mm: List[float]):
-        ...
+        """Sets the origin to a specified list of coordinates. length must equal the length of self.ax_letters"""
 
-    '''Sets the origin of a specified axis to a specified coordinate'''
+        ...
 
     @abstractmethod
     def set_origin_1d(self, axis: str, coord_mm: float, get_position=True):
-        ...
+        """Sets the origin of a specified axis to a specified coordinate"""
 
-    '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+        ...
 
     @abstractmethod
     @pyqtSlot(dict)
     def setup(self, settings):
+        """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+
         ...
 
     @abstractmethod
@@ -117,30 +118,30 @@ class AbstractMotorController(AbstractDevice):
     def is_moving(self) -> bool:
         ...
 
-    '''Axis is a letter (X,Y,Z, or R). The sign of the int specifies the positive or negative direction'''
-
     @pyqtSlot()
     @pyqtSlot(str, int)
     def begin_motion(self, axis: str, direction: int):
-        ...
+        """Axis is a letter (X,Y,Z, or R). The sign of the int specifies the positive or negative direction"""
 
-    '''Stops the motion of all axes, updates the moving variable and emits the moving signal'''
+        ...
 
     @abstractmethod
     @pyqtSlot()
     def stop_motion(self):
-        ...
+        """Stops the motion of all axes, updates the moving variable and emits the moving signal"""
 
-    '''Tell the motor controller to update its coords_mm variable and emit its current position as a signal'''
+        ...
 
     @abstractmethod
     @pyqtSlot()
     def get_position(self):
+        """Tell the motor controller to update its coords_mm variable and emit its current position as a signal"""
+
         ...
 
-    '''return the motor controller driver number of the axis with the specified letter'''
-
     def get_ax_number(self, axis):
+        """return the motor controller driver number of the axis with the specified letter"""
+
         if axis.upper() in self.ax_letters:
             axis_number = self.ax_letters.index(axis.upper()) + 1
         else:

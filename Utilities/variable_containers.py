@@ -71,10 +71,10 @@ class TestData(QObject):
 
         self.results_summary = table
 
-    '''
+    """
     The list of strings should have length 4, and the number of empty strings at the beginning 
     corresponds to the indentation level
-    '''
+    """
 
     def set_max_position(self, axis: str, element: int, max_position: float):
         # update element position
@@ -84,8 +84,8 @@ class TestData(QObject):
             self.results_summary[element - 1][2] = "%.2f" % max_position
         self.show_results_summary.emit(self.results_summary)
 
-    '''Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the 
-    results tab'''
+    """Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the 
+    results tab"""
 
     def save_efficiency_test_data(self, high_frequency: bool, element: int, frequency_Hz: float,
                                   efficiency_percent: float, reflected_power_percent: float, forward_power_max: float,

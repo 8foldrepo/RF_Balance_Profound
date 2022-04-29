@@ -21,16 +21,18 @@ class AbstractBalance(AbstractSensor):
         self.timeout_s = self.config[self.device_key]['timeout_s']
         self.port = self.config[self.device_key]['port']
 
-    """Zeroes the scale with the next stale weight reading"""
+
 
     @abstractmethod
     def zero_balance_stable(self):
+        """Zeroes the scale with the next stale weight reading"""
         ...
 
-    """Zeroes the scale with the next stale weight reading"""
+
 
     @abstractmethod
     def zero_balance_instantly(self):
+        """Zeroes the scale with the next stale weight reading"""
         ...
 
     @abstractmethod

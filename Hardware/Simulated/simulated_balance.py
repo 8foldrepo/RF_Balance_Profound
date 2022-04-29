@@ -104,6 +104,9 @@ class SimulatedBalance(AbstractBalance):
     def get_serial_number(self) -> str:
         return '\"Simulated\"'
 
+    def wrap_up(self):
+        self.disconnect_hardware()
+
 if __name__ == '__main__':
     balance = SimulatedBalance(config=load_configuration())
     balance.connect_hardware()

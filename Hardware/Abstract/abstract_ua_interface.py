@@ -14,12 +14,12 @@ class AbstractUAInterface(AbstractDevice):
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
 
-    '''Read data from the UA, check status of the operation, return/emit these, and update read_result'''
-
     @pyqtSlot()
     def read_data(self) -> Tuple[List[str], int]:
+        """Read data from the UA, check status of the operation, return/emit these, and update read_result"""
         ...
 
     @abstractmethod
     def write_data(self, data: List[str]):
+        """Write data to ua"""
         ...

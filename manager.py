@@ -1,5 +1,7 @@
 import sys
 import re
+from typing import List
+
 import pyvisa
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
@@ -7,6 +9,7 @@ from collections import OrderedDict
 import distutils.util
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
+from Hardware.Abstract.abstract_device import AbstractDevice
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
@@ -19,8 +22,7 @@ import logging
 import time as t
 import numpy as np
 from scipy import integrate
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data, \
-    check_directory
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data
 from Utilities.formulas import calculate_power_from_balance_reading
 from definitions import ROOT_DIR, WaterLevel
 import os
@@ -42,6 +44,7 @@ tank_status = ""
 
 class Manager(QThread):
     # Devices
+    devices: List[AbstractDevice]
     AWG: AbstractAWG
     Balance: AbstractBalance
     IO_Board: AbstractIOBoard
@@ -51,7 +54,6 @@ class Manager(QThread):
     Oscilloscope: AbstractOscilloscope
     Motors: AbstractMotorController
     UAInterface: AbstractUAInterface
-
     # Output file handler
     file_saver: FileSaver
 
@@ -222,12 +224,13 @@ class Manager(QThread):
 
         self.measure_element_efficiency_rfb(var_dict=var_dict)
 
-    '''
-    Import and instantiate device classes, and append them to a list. If the config says to simulate hardware,
-    use the simulated class instead.
-    '''
+
 
     def add_devices(self):
+        """
+            Import and instantiate device classes, and append them to a list. If the config says to simulate hardware,
+            use the simulated class instead.
+        """
 
         # Check if w
         if self.config['Debugging']['simulate_motors']:
@@ -320,12 +323,11 @@ class Manager(QThread):
         self.update_system_info()
         self.enable_ui_signal.emit(True)
 
-    '''
-    Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
-    with the info it finds
-    '''
-
     def update_system_info(self):
+        """
+            Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
+            with the info it finds
+        """
         # todo: prevent script from running if cannot get serial_number of oscilloscope, fgen, etc
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
@@ -343,15 +345,10 @@ class Manager(QThread):
         for device in self.devices:
             device.disconnect_hardware()
 
-    '''
-    Core event loop of the manager thread. For any other methods to be executed in the manager thread
-    They must be called from this method.
-    '''
-
     def run(self) -> None:
         """
-        Overloaded function from QThread, this is the main scope control thread
-        function.
+        Core event loop of the manager thread. For any other methods to be executed in the manager thread
+        They must be called from this method.
         """
         self.mutex.lock()
         self.start_time = t.time()
@@ -668,10 +665,9 @@ class Manager(QThread):
         #     print(f"looped element {self.taskExecOrder[self.step_index][0]} is in iteration {self.taskExecOrder
         #     [self.step_index][1]} from loop {self.loops[self.taskExecOrder[self.step_index][2]]}")
 
-    '''Aborts script'''
-
     @pyqtSlot()
     def abort(self, log=True):
+        """Aborts script when current step is done running"""
         if log:
             self.log('Aborting script')
         # Reset script control variables
@@ -685,12 +681,11 @@ class Manager(QThread):
         self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
-    '''
-    Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
-    Call this method after showing a dialog, and return if the result is false.
-    '''
-
     def cont_if_cont_clicked(self) -> bool:
+        """
+            Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
+            Call this method after showing a dialog, and return if the result is false.
+        """
         try:
             self.wait_for_cont()
             return True
@@ -739,9 +734,8 @@ class Manager(QThread):
         # Todo: make this method write calibration data to UA
         pass
 
-    '''Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI'''
-
     def script_complete(self):
+        """Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI"""
         # Fetch pass list and description list from testdata
         pass_list = list([None] * 11)
         description_list = list([None] * 11)
@@ -759,9 +753,8 @@ class Manager(QThread):
 
         self.test_data.log_script(['Script complete', '', '', ''])
 
-    '''Collects metadata from user and prompts user until water level is ok'''
-
     def pretest_initialization(self, var_dict):
+        """Collects metadata from user and prompts user until water level is ok"""
         # add first 4 lines of scriptlog
         self.test_data.log_script([f"{self.test_data.serial_number}-{self.test_data.test_date_time}",
                                    '', '', ''])  # this is the first line
@@ -837,7 +830,7 @@ class Manager(QThread):
         if self.file_saver.directories_created:
             self.test_data.log_script(['', 'CreateDataDirectories', 'OK', ''])
         else:
-            self.test_data.log_script(['', 'CreateDataDirectories', f'FAIL {e}', ''])
+            self.test_data.log_script(['', 'CreateDataDirectories', f'FAIL', ''])
 
         try:
             self.log("Checking ability to log")
@@ -898,9 +891,8 @@ class Manager(QThread):
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
-    '''Find UA element with given number'''
-
     def find_element(self, var_dict):
+        """Find UA element with given number"""
         self.element = self.element_str_to_int(var_dict['Element'])
         x_increment_MM = float(var_dict['X Incr. (mm)'])
         XPts = int(var_dict['X #Pts.'])
@@ -1061,9 +1053,8 @@ class Manager(QThread):
 
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
-    '''Saves a voltage squared integral vs distance '''
-
     def save_scan_profile(self, axis, positions, vsi_values):
+        """Saves a voltage squared integral vs distance """
         metadata = FileMetadata()
         metadata.element_number = self.element
         metadata.axis = f"{axis}"
@@ -1080,9 +1071,8 @@ class Manager(QThread):
 
         self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
 
-    '''Saves a voltage squared integral vs distance '''
-
     def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
+        """Saves a voltage squared integral vs distance """
         metadata = FileMetadata()
         metadata.element_number = self.element
         metadata.serial_number = self.test_data.serial_number
@@ -1100,9 +1090,8 @@ class Manager(QThread):
                                                    reflected_power=[r_time_s, r_power_w],
                                                    acoustic_power=[a_time_s, a_power_w])
 
-    '''Save scan results to a file'''
-
     def save_results(self, var_dict):  # calibration_data is the data gathered by the UA test
+        """Save scan results to a file"""
         save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
         prompt_for_calibration_write = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
@@ -1122,9 +1111,8 @@ class Manager(QThread):
         # Save results summary to results folder
         self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
 
-    '''Prompt user for action'''
-
     def prompt_user_for_action(self, var_dict):
+        """Prompt user for action"""
         prompt_type = var_dict["Prompt type"]
         if 'Other'.upper() in prompt_type.upper():
             try:
@@ -1138,9 +1126,8 @@ class Manager(QThread):
 
         cont = self.cont_if_cont_clicked()
 
-    '''Set function generator to desired settings'''
-
     def configure_function_generator(self, var_dict):
+        """Set function generator to desired settings"""
         # todo: test
         mVpp = int(var_dict["Amplitude (mVpp)"])
         fMHz = float(var_dict["Frequency (MHz)"])
@@ -1189,9 +1176,8 @@ class Manager(QThread):
         dt = 0
         self.test_data.log_script(['', 'AutoSetTimebase', f'{usdiv} usdiv;dt={dt} us'])
 
-    '''Return axis to zero coordinate'''
-
     def home_system(self, var_dict):
+        """Return axis to zero coordinate"""
         # TODO: have this be called in pretest_initialization and have it add to script log
         axis_to_home = var_dict['Axis to home']
 
@@ -1256,10 +1242,9 @@ class Manager(QThread):
 
             self.test_data.log_script(["", "Move to element", f"moved to X={x_coord_str}, Th={r_coord_str}", ''])
 
-    '''Activate the relay for and move to a specified element'''
-
     # todo: test
     def select_ua_channel(self, var_dict):
+        """Activate the relay for and move to a specified element"""
         self.element = self.element_str_to_int(var_dict['Element'])
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
@@ -1347,9 +1332,8 @@ class Manager(QThread):
         # frequencies will be on the x-axis
         return (list_of_frequencies_MHz, list_of_VSIs)
 
-    '''Returns the voltage squared integral of a oscilloscope waveform'''
-
     def find_vsi(self, times_s, voltages_v):
+        """Returns the voltage squared integral of a oscilloscope waveform"""
         dx = 0
         for i in range(1, len(times_s)):
             dx = times_s[i] - times_s[i - 1]
@@ -1364,9 +1348,8 @@ class Manager(QThread):
 
         return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
 
-    '''Measure the efficiency of an element'''
-
     def measure_element_efficiency_rfb(self, var_dict):
+        """Measure the efficiency of an element"""
         self.element = self.element_str_to_int(var_dict['Element'])
         frequency_range = var_dict['Frequency range']  # High frequency or Low frequency
         on_off_cycles = int(var_dict['RFB.#on/off cycles'])

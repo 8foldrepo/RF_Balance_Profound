@@ -2,10 +2,8 @@ from abc import abstractmethod
 from typing import Tuple, List
 from Hardware.Abstract.abstract_device import AbstractDevice
 
-'''Defines key functionalities for oscilloscopes'''
-
-
 class AbstractOscilloscope(AbstractDevice):
+    """Defines key functionalities for oscilloscopes"""
     range_mv: float
     channel: int
     averages: int
@@ -32,10 +30,10 @@ class AbstractOscilloscope(AbstractDevice):
               ext_trigger: bool, average_count: int):
         ...
 
-    """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
-
     @abstractmethod
     def SetTrigger(self, external):
+        """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+
         ...
 
     @abstractmethod
@@ -86,14 +84,14 @@ class AbstractOscilloscope(AbstractDevice):
     def setHorzOffset_sec(self, offset: float):
         ...
 
-    '''Autoscales the oscilloscope's voltage range to fit the waveform'''
-
     @abstractmethod
     def autoScale(self):
-        ...
+        """Autoscales the oscilloscope's voltage range to fit the waveform"""
 
-    '''Captures from the specified channel and returns a list of times and a list of voltages of equal length'''
+        ...
 
     @abstractmethod
     def capture(self, channel: int) -> Tuple[List[float], List[float]]:
+        """Captures from the specified channel and returns a list of times and a list of voltages of equal length"""
+
         ...

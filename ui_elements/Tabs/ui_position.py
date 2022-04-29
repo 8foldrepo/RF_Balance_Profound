@@ -19,7 +19,7 @@ balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class Position(MyQWidget, Ui_Form):
-    '''Disables buttons of entire UI that may interfere with operations in progress'''
+    """Disables buttons of entire UI that may interfere with operations in progress"""
     home_1d_signal = QtCore.pyqtSignal(str)
     home_all_signal = QtCore.pyqtSignal()
     setup_signal = QtCore.pyqtSignal(dict)
@@ -133,7 +133,7 @@ class Position(MyQWidget, Ui_Form):
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
-    '''Begin motion in with the specified axis letter is the specified direction. Example text: X+ '''
+    """Begin motion in with the specified axis letter is the specified direction. Example text: X+ """
     @pyqtSlot(str, int)
     def begin_motion(self, axis, direction):
         #Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.

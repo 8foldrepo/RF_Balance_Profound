@@ -31,7 +31,7 @@ class SimulatedRelay(AbstractRelay):
         self.connected_signal.emit(False)
 
     @abstractmethod
-    def get_reading(self):
+    def relay_read(self):
         return self.on
 
     @abstractmethod

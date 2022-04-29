@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 from Hardware.relay_board import RelayBoard
 import time as t
 
-'''Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware'''
+"""Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware"""
 
 
 class SimulatedIOBoard(AbstractIOBoard):
@@ -60,7 +60,7 @@ class SimulatedIOBoard(AbstractIOBoard):
                 return True
         return False
 
-    '''Return the state of the water level sensor as a WaterLevel Enum'''
+    """Return the state of the water level sensor as a WaterLevel Enum"""
 
     def get_water_level(self) -> WaterLevel:
         self.water_level_reading_signal.emit(self.water_level)
@@ -88,3 +88,6 @@ class SimulatedIOBoard(AbstractIOBoard):
 
     def get_serial_number(self) -> str:
         return '\"Simulated\"'
+
+    def wrap_up(self):
+        self.disconnect_hardware()
