@@ -1,23 +1,25 @@
+from datetime import date
 from typing import List
-from ui_elements.my_qwidget import MyQWidget
-from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+
 from Widget_Library.widget_script_editor import Ui_Form
+from ui_elements.my_qwidget import MyQWidget
+from ui_elements.script_editor_menus.no_menu_dicts import *
 from ui_elements.script_editor_menus.ui_find_element import FindElement
+from ui_elements.script_editor_menus.ui_frequency_sweep import FrequencySweep
+from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
 from ui_elements.script_editor_menus.ui_home_system import HomeSystem
-from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
 from ui_elements.script_editor_menus.ui_loop_over_elements import LoopOverElements
 from ui_elements.script_editor_menus.ui_measure_element_efficiency import MeasureElementEfficiency
-from ui_elements.script_editor_menus.ui_save_results import SaveResults
-from ui_elements.script_editor_menus.ui_frequency_sweep import FrequencySweep
+from ui_elements.script_editor_menus.ui_move_system import MoveSystem
 from ui_elements.script_editor_menus.ui_oscilloscope_channel import OscilloscopeChannels
 from ui_elements.script_editor_menus.ui_oscilloscope_timebase import OscilloscopeTimebase
-from ui_elements.script_editor_menus.ui_move_system import MoveSystem
-from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
+from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
+from ui_elements.script_editor_menus.ui_save_results import SaveResults
 from ui_elements.script_editor_menus.ui_script_edit_template import AbstractEditMenu
 from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
-from ui_elements.script_editor_menus.no_menu_dicts import *
-from datetime import date
 
 
 class ScriptEditor(MyQWidget, Ui_Form):
@@ -105,7 +107,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if not self.treeWidget.currentItem().text(1) == 0:
             self.treeWidget.takeTopLevelItem(index)
 
-        if not index+1 >= len(self.list_of_var_dicts):
+        if not index + 1 >= len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
     """Clear the ui script visual and clear the internal var_dicts variable"""
@@ -323,7 +325,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.setCurrentItem(item)
         self.move_selection_down()
 
-        #If the item we added was the first item
+        # If the item we added was the first item
         if self.treeWidget.invisibleRootItem().childCount() == 1:
             self.add_empty_item_at_end()
 

@@ -2,14 +2,12 @@ from PyQt5.QtCore import (
     QObject,
     QSize,
     QPointF,
-    QPropertyAnimation,
-    QEasingCurve,
     pyqtProperty,
     pyqtSlot,
     Qt,
 )
 from PyQt5.QtGui import QPainter, QPalette, QLinearGradient, QGradient, QColor
-from PyQt5.QtWidgets import QAbstractButton, QApplication, QWidget, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QAbstractButton, QApplication
 
 
 class SwitchPrivate(QObject):
@@ -101,7 +99,7 @@ class Switch(QAbstractButton):
         self.setCheckable(True)
         # self.clicked.connect(self.dPtr.animate)
 
-    def setChecked(self, checked:bool):
+    def setChecked(self, checked: bool):
         super().setChecked(checked)
         self.dPtr.animate(checked)
 

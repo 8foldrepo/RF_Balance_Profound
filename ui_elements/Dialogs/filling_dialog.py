@@ -18,4 +18,3 @@ class FillingDialog(MyQDialog, Ui_Dialog):
             # Set dialog resolved to true so the script does not abort upon closing
             self.dialog_resolved = True
             self.close()
-

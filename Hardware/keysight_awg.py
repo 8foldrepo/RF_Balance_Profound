@@ -1,8 +1,8 @@
 import pyvisa
-from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
+from Utilities.load_config import *
 
 
 class KeysightAWG(AbstractAWG):

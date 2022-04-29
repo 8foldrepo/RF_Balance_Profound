@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QDialog
-from Widget_Library import write_cal_data_to_ua
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QDialog
+
+from Widget_Library import write_cal_data_to_ua
 
 
 class WriteCalDataToUA(QDialog, write_cal_data_to_ua.Ui_write_cal_data_to_ua):
@@ -22,4 +23,3 @@ class WriteCalDataToUA(QDialog, write_cal_data_to_ua.Ui_write_cal_data_to_ua):
     def cancel_clicked(self):
         self.abort_signal.emit()
         self.close()
-

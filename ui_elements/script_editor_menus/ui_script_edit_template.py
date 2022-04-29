@@ -1,20 +1,22 @@
 # todo: change this import to the Qtdesigner file for this task type
 from abc import abstractmethod, ABCMeta
-from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
-from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from ui_elements.my_qwidget import MyQWidget
 
 
 # todo: change class name to one matching the task type
 class AbstractEditMenu(MyQWidget):
     # todo: remove this metaclass when implementing
     __metaclass__ = ABCMeta
+
     def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
-        #self.setupUi(self)
+        # self.setupUi(self)
         # fill in with default parameters in name-argument pairs
-        #self.orderedDict_to_ui(OrderedDict([('', ''), ('', 0)]))
+        # self.orderedDict_to_ui(OrderedDict([('', ''), ('', 0)]))
 
     @abstractmethod
     def orderedDict_to_ui(self, var_dict: OrderedDict):

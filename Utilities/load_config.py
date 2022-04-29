@@ -1,11 +1,15 @@
-import yaml
 import os
+
+import yaml
+
 from Utilities import useful_methods
+
 ROOT_LOGGER_NAME = 'wtf_log'
 
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 from definitions import DEFAULT_CONFIG_PATH
-from definitions import  LOCAL_CONFIG_PATH
+from definitions import LOCAL_CONFIG_PATH
+
 
 def load_configuration() -> dict:
     """
@@ -30,7 +34,8 @@ def load_configuration() -> dict:
 
     return configuration
 
-#Searches from current directory to grandparent directory for the specified file
+
+# Searches from current directory to grandparent directory for the specified file
 def search_for(filename):
     # This program configures all rigols to settings from a csv file
     current_directory = os.path.dirname(__file__)

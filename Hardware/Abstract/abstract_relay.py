@@ -1,5 +1,7 @@
 from abc import abstractmethod, ABCMeta
+
 from PyQt5.QtCore import pyqtSignal
+
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 

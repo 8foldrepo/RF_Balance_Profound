@@ -1,7 +1,9 @@
-from Widget_Library.widget_oscilloscope_channels import Ui_config_osc_channels
-from PyQt5.QtWidgets import QWidget, QApplication
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library.widget_oscilloscope_channels import Ui_config_osc_channels
+from ui_elements.my_qwidget import MyQWidget
 
 
 class OscilloscopeChannels(MyQWidget, Ui_config_osc_channels):

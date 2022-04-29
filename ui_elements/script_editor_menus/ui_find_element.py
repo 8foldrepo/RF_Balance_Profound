@@ -1,7 +1,9 @@
-from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
-from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication, QFileDialog
+
+from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
+from ui_elements.my_qwidget import MyQWidget
 
 
 class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
@@ -86,6 +88,7 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         var_dict["Theta Incr. (deg)"] = str(self.THETA_INCREMENT_FIELD.value())
 
         return var_dict
+
 
 if __name__ == "__main__":
     import sys

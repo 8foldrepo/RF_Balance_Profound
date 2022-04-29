@@ -1,6 +1,8 @@
 from abc import abstractmethod
-from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+
 import numpy as np
+
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 """Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
 

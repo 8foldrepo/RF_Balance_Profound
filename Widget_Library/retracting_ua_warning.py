@@ -57,13 +57,15 @@ class Ui_retracting_ua_warn(object):
     def retranslateUi(self, retracting_ua_warn):
         _translate = QtCore.QCoreApplication.translate
         retracting_ua_warn.setWindowTitle(_translate("retracting_ua_warn", "Dialog"))
-        self.label.setText(_translate("retracting_ua_warn", "Warning - Retracting UA from tank. Check water level is below UA seal level"))
+        self.label.setText(_translate("retracting_ua_warn",
+                                      "Warning - Retracting UA from tank. Check water level is below UA seal level"))
         self.continue_button.setText(_translate("retracting_ua_warn", "Continue"))
         self.cancel_button.setText(_translate("retracting_ua_warn", "Cancel"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     retracting_ua_warn = QtWidgets.QDialog()
     ui = Ui_retracting_ua_warn()

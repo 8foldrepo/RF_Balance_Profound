@@ -1,6 +1,7 @@
-from abc import abstractmethod
-from PyQt5.QtCore import *
 import time as t
+from abc import abstractmethod
+
+from PyQt5.QtCore import *
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 

@@ -1,6 +1,7 @@
 from abc import abstractmethod
-from PyQt5.QtCore import pyqtSignal
 from typing import Tuple
+
+from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 

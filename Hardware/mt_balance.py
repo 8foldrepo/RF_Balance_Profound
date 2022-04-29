@@ -1,10 +1,11 @@
-from Hardware.Abstract.abstract_balance import AbstractBalance
-import serial
-from PyQt5.QtCore import pyqtSignal
 import time as t
 
-from Utilities.useful_methods import is_number
+import serial
+from PyQt5.QtCore import pyqtSignal
+
+from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
+from Utilities.useful_methods import is_number
 
 
 class MT_balance(AbstractBalance):

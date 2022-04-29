@@ -1,5 +1,6 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
+
 from Widget_Library.tank_draining import Ui_Dialog
 from definitions import WaterLevel
 from ui_elements.Dialogs.my_qdialog import MyQDialog

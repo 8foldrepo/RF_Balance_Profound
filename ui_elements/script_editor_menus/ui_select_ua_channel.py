@@ -1,7 +1,9 @@
-from Widget_Library.widget_select_ua_channel import Ui_select_ua_channel
-from PyQt5.QtWidgets import QWidget, QApplication
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library.widget_select_ua_channel import Ui_select_ua_channel
+from ui_elements.my_qwidget import MyQWidget
 
 
 class SelectUAChannel(MyQWidget, Ui_select_ua_channel):

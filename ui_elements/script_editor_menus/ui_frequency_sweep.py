@@ -1,7 +1,9 @@
-from Widget_Library.widget_frequency_sweep import Ui_Form
-from PyQt5.QtWidgets import QWidget, QApplication, QFileDialog
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library.widget_frequency_sweep import Ui_Form
+from ui_elements.my_qwidget import MyQWidget
 
 
 class FrequencySweep(MyQWidget, Ui_Form):

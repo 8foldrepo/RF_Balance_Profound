@@ -1,13 +1,15 @@
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
+
 
 class NIThermocouple(AbstractSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
-    def __init__(self, config, parent=None, device_key = "TempMon"):
-        super().__init__(parent=parent,config=config,  device_key = device_key)
+    def __init__(self, config, parent=None, device_key="TempMon"):
+        super().__init__(parent=parent, config=config, device_key=device_key)
         self.connected = False
         self.fields_setup()
 
@@ -41,9 +43,10 @@ class NIThermocouple(AbstractSensor):
         self.reading_signal.emit(reading)
         return reading
 
-    #todo: implement
+    # todo: implement
     def get_serial_number(self) -> str:
         pass
+
 
 if __name__ == '__main__':
     therm = NIThermocouple(config=None)
@@ -51,4 +54,3 @@ if __name__ == '__main__':
 
     while True:
         print(therm.get_reading())
-

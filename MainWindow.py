@@ -1,30 +1,32 @@
+import logging
+import os
 import time as t
 import webbrowser
 from typing import List
-from ui_elements.Dialogs.ui_password_dialog import PasswordDialog
-from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
-from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
-from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
-from ui_elements.Dialogs.ui_retracting_ua_warning import UARetractDialog
-from ui_elements.Dialogs.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
-from ui_elements.Dialogs.ui_write_cal_to_ua import WriteCalDataToUA
-from ui_elements.Dialogs.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
-from ui_elements.Dialogs.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
-from ui_elements.Dialogs.filling_dialog import FillingDialog
-from ui_elements.Dialogs.draining_dialog import DrainingDialog
+
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
-from PyQt5.QtGui import QColor, QBrush
-from Widget_Library import window_wet_test
-from manager import Manager
-from Utilities.load_config import load_configuration
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-import logging
+from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg
-import os
+from Widget_Library import window_wet_test
 from definitions import ROOT_DIR, WaterLevel
+from manager import Manager
+from ui_elements.Dialogs.draining_dialog import DrainingDialog
+from ui_elements.Dialogs.filling_dialog import FillingDialog
+from ui_elements.Dialogs.ui_password_dialog import PasswordDialog
+from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
+from ui_elements.Dialogs.ui_retracting_ua_warning import UARetractDialog
+from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
+from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
+from ui_elements.Dialogs.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
+from ui_elements.Dialogs.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
+from ui_elements.Dialogs.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
+from ui_elements.Dialogs.ui_write_cal_to_ua import WriteCalDataToUA
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger('wtf_log')

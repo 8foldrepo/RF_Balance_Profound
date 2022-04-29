@@ -1,6 +1,9 @@
-from Widget_Library.widget_home_system import Ui_Form
-from PyQt5.QtWidgets import QWidget, QApplication
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QWidget, QApplication
+
+from Widget_Library.widget_home_system import Ui_Form
+
 
 class HomeSystem(QWidget, Ui_Form):
     def __init__(self, parent=None):
@@ -32,7 +35,6 @@ class HomeSystem(QWidget, Ui_Form):
 
 if __name__ == "__main__":
     import sys
-    import time as t
 
     app = QApplication(sys.argv)
     ui = HomeSystem()
@@ -44,30 +46,29 @@ if __name__ == "__main__":
     # Expected behavior, the dialog should open, check the first box after one second, return
     # the corresponding dictionary, then check the second box after another second
 
-    #ui.radioButton.setChecked(True)
-    #print(ui.ui_to_dictionary())
-    #app.processEvents()
-    #t.sleep(5)
-    #app.processEvents()
-    #t.sleep(5)
-    #ui.radioButton_2.setChecked(True)
-    #print(ui.ui_to_dictionary())
+    # ui.radioButton.setChecked(True)
+    # print(ui.ui_to_dictionary())
+    # app.processEvents()
+    # t.sleep(5)
+    # app.processEvents()
+    # t.sleep(5)
+    # ui.radioButton_2.setChecked(True)
+    # print(ui.ui_to_dictionary())
 
-
-    #app.processEvents()
-    #t.sleep(5)
-    #app.processEvents()
-    #t.sleep(5)
-    #ui.radioButton.setChecked(True)
-    #print(ui.ui_to_dictionary())
-    #app.processEvents()
-    #t.sleep(5)
-    #ui.radioButton_3.setChecked(False)
-    #print(ui.ui_to_dictionary())
-    #app.processEvents()
-    #print('Now you select one!')
-    #t.sleep(5)
-    #print(ui.ui_to_dictionary())
+    # app.processEvents()
+    # t.sleep(5)
+    # app.processEvents()
+    # t.sleep(5)
+    # ui.radioButton.setChecked(True)
+    # print(ui.ui_to_dictionary())
+    # app.processEvents()
+    # t.sleep(5)
+    # ui.radioButton_3.setChecked(False)
+    # print(ui.ui_to_dictionary())
+    # app.processEvents()
+    # print('Now you select one!')
+    # t.sleep(5)
+    # print(ui.ui_to_dictionary())
 
     # End of Test.
 

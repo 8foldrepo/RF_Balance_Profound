@@ -1,5 +1,7 @@
-import pyvisa
 import time as t
+
+import pyvisa
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 

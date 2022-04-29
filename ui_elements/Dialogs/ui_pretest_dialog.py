@@ -1,10 +1,12 @@
+from datetime import datetime
+
+from PyQt5.QtCore import pyqtSignal
+
+from Utilities.useful_methods import is_number
 from Utilities.variable_containers import TestData
 from Widget_Library import dialog_pretest
-from PyQt5.QtCore import pyqtSignal
-from ui_elements.Dialogs.my_qdialog import MyQDialog
 from definitions import ROOT_DIR
-from Utilities.useful_methods import is_number
-from datetime import datetime
+from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):

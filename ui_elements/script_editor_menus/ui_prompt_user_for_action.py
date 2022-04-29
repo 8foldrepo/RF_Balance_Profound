@@ -1,7 +1,9 @@
-from Widget_Library.widget_prompt_user_for_action import Ui_Form
-from PyQt5.QtWidgets import QApplication
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library.widget_prompt_user_for_action import Ui_Form
+from ui_elements.my_qwidget import MyQWidget
 
 
 class PromptUserForAction(MyQWidget, Ui_Form):
@@ -9,8 +11,8 @@ class PromptUserForAction(MyQWidget, Ui_Form):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.orderedDict_to_ui(OrderedDict([('Task type', 'Prompt user for action')
-                                            , ('Prompt type', 'Disable UA pump')
-                                            , ('Prompt message', '')]))
+                                               , ('Prompt type', 'Disable UA pump')
+                                               , ('Prompt message', '')]))
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.prompt_field.setCurrentText(var_dict['Prompt type'])
@@ -22,6 +24,7 @@ class PromptUserForAction(MyQWidget, Ui_Form):
         var_dict["Prompt type"] = self.prompt_field.currentText()
         var_dict["Prompt message"] = self.prompt_message_field.toPlainText()
         return var_dict
+
 
 if __name__ == "__main__":
     import sys

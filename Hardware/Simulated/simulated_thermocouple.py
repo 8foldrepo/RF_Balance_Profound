@@ -1,5 +1,6 @@
-from abc import abstractmethod
 import random
+from abc import abstractmethod
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 

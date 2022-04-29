@@ -1,6 +1,7 @@
-from Utilities.load_config import load_configuration
-from Hardware.Abstract.abstract_relay import AbstractRelay
 from abc import abstractmethod
+
+from Hardware.Abstract.abstract_relay import AbstractRelay
+from Utilities.load_config import load_configuration
 
 
 class SimulatedRelay(AbstractRelay):
@@ -40,6 +41,7 @@ class SimulatedRelay(AbstractRelay):
 
     def get_serial_number(self) -> str:
         return '\"Simulated\"'
+
 
 if __name__ == '__main__':
     switch = SimulatedRelay()

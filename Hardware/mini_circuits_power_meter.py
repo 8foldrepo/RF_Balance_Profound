@@ -5,22 +5,26 @@
 #      https://www.minicircuits.com/softwaredownload/mcl_pm64_dll.zip
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown)
-import clr # pythonnet
-from PyQt5.QtCore import pyqtSignal
-from Hardware.Abstract.abstract_sensor import AbstractSensor
 import ctypes
 import sys
+
+import clr  # pythonnet
+from PyQt5.QtCore import pyqtSignal
+
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
+
 sys.path.append(POWER_METER_DLL_PATH)
-clr.AddReference('mcl_pm_NET45')    # Reference the DLL
-from mcl_pm_NET45 import usb_pm #This can still run if this shows a red underline
+clr.AddReference('mcl_pm_NET45')  # Reference the DLL
+from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
+
 
 class PowerMeter(AbstractSensor):
     reading_signal = pyqtSignal(float)
     connected_signal = pyqtSignal(bool)
 
-    def __init__(self, config, parent=None, device_key = "Forward_Power_Meter"):
-        super().__init__(parent=parent,config=config,  device_key = device_key)
+    def __init__(self, config, parent=None, device_key="Forward_Power_Meter"):
+        super().__init__(parent=parent, config=config, device_key=device_key)
         self.pwr = usb_pm()
         self.connected = False
         self.fields_setup()
@@ -42,7 +46,7 @@ class PowerMeter(AbstractSensor):
         ModelName = self.pwr.GetSensorModelName()
         SerialNo = self.pwr.GetSensorSN()
         if len(ModelName) == 20 or len(SerialNo) == 20:
-            self.log(level="error",message=f"{self.device_key} could not connect")
+            self.log(level="error", message=f"{self.device_key} could not connect")
             self.connected = False
         else:
             self.serial_number = SerialNo
@@ -75,6 +79,7 @@ class PowerMeter(AbstractSensor):
 
         return self.serial_number
 
+
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
     forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
@@ -86,4 +91,3 @@ if __name__ == '__main__':
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()
-

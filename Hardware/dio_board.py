@@ -1,10 +1,12 @@
 import random
+import time as t
+
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
 from nidaqmx.constants import LineGrouping
+
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
-import time as t
 from definitions import WaterLevel
 
 """Class for interfacing with an National instruments usb-6009 digital IO board"""
@@ -27,7 +29,7 @@ class DIOBoard(AbstractIOBoard):
 
         self.water_level = None
         self.ua_pump_on = None
-        self.power_relay = RelayBoard(config=config,device_key="Daq_Power_Relay")
+        self.power_relay = RelayBoard(config=config, device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.fields_setup()
@@ -43,7 +45,6 @@ class DIOBoard(AbstractIOBoard):
 
         self.connected_signal.emit(self.connected)
         return self.connected, ''
-
 
     def activate_relay_channel(self, channel_number: int) -> bool:
         with nidaqmx.Task() as task:
@@ -195,7 +196,6 @@ class DIOBoard(AbstractIOBoard):
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(False)
-
 
     def get_water_level(self) -> WaterLevel:
         """Return the state of the water level sensor. possible values are below_level, above_level, and level"""

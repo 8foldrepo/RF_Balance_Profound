@@ -1,7 +1,9 @@
-from Widget_Library.widget_function_generator import Ui_config_func_generator
-from PyQt5.QtWidgets import QWidget, QApplication
-from ui_elements.my_qwidget import MyQWidget
 from collections import OrderedDict
+
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library.widget_function_generator import Ui_config_func_generator
+from ui_elements.my_qwidget import MyQWidget
 
 
 class FunctionGenerator(MyQWidget, Ui_config_func_generator):

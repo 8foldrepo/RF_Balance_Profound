@@ -1,6 +1,8 @@
-import os
-import numpy as np
 import collections.abc
+import os
+
+import numpy as np
+
 from Utilities.variable_containers import TestData
 
 

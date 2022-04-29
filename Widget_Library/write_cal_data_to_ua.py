@@ -280,7 +280,8 @@ class Ui_write_cal_data_to_ua(object):
         self.label_11.setText(_translate("write_cal_data_to_ua", "Cal Data Array"))
         self.label_12.setText(_translate("write_cal_data_to_ua", "Low Freq"))
         self.label_13.setText(_translate("write_cal_data_to_ua", "High Freq"))
-        self.label_14.setText(_translate("write_cal_data_to_ua", "The above results are ready to be written to the UA."))
+        self.label_14.setText(
+            _translate("write_cal_data_to_ua", "The above results are ready to be written to the UA."))
         self.cancel_button.setText(_translate("write_cal_data_to_ua", "Cancel"))
         self.write_ua_button.setText(_translate("write_cal_data_to_ua", "Write UA"))
         self.label.setText(_translate("write_cal_data_to_ua", "Schema"))
@@ -297,6 +298,7 @@ class Ui_write_cal_data_to_ua(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     write_cal_data_to_ua = QtWidgets.QDialog()
     ui = Ui_write_cal_data_to_ua()

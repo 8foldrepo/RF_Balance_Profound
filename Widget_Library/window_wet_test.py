@@ -1208,8 +1208,10 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Script Status"))
         self.label_23.setText(_translate("MainWindow", "Welcome to the Wet Test Fixture Control Program."))
         self.label_24.setText(_translate("MainWindow", "To begin a UA test:"))
-        self.label_25.setText(_translate("MainWindow", "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)"))
-        self.label_26.setText(_translate("MainWindow", "Select a test script by clicking \"Load script\" in the lower left corner of the display."))
+        self.label_25.setText(_translate("MainWindow",
+                                         "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)"))
+        self.label_26.setText(_translate("MainWindow",
+                                         "Select a test script by clicking \"Load script\" in the lower left corner of the display."))
         self.label_27.setText(_translate("MainWindow", "Mount the UA in the fixture."))
         self.label_28.setText(_translate("MainWindow", "Click \"Run script\" when ready to begin."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Welcome"))
@@ -1221,6 +1223,8 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "Scan"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), _translate("MainWindow", "Position"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_9), _translate("MainWindow", "System Config"))
+
+
 from ui_elements.tabs.ui_position import Position
 from ui_elements.tabs.ui_results import Results
 from ui_elements.tabs.ui_rfb import RFB
@@ -1231,9 +1235,9 @@ from ui_elements.tabs.ui_system_info import SystemInfo
 from ui_elements.tabs.ui_ua_calibration import UACalibration
 from ui_elements.switch import Switch
 
-
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

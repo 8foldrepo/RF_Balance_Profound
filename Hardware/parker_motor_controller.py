@@ -1,9 +1,10 @@
+import time as t
+
+import serial
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication
+
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_coord_rays, is_number
-import serial
-import time as t
 
 
 class ParkerMotorController(AbstractMotorController):

@@ -1,12 +1,18 @@
-import sys
+import distutils.util
+import logging
+import os
 import re
+import sys
+import time as t
+from collections import OrderedDict
 from typing import List
 
+import numpy as np
 import pyvisa
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
-from collections import OrderedDict
-import distutils.util
+from PyQt5.QtWidgets import QApplication
+from scipy import integrate
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -16,16 +22,11 @@ from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.FileSaver import FileSaver
-from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-import logging
-import time as t
-import numpy as np
-from scipy import integrate
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data
 from Utilities.formulas import calculate_power_from_balance_reading
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data
+from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel
-import os
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger('wtf_log')
@@ -223,8 +224,6 @@ class Manager(QThread):
         var_dict["Reflection limit (%)"] = "70.000000"
 
         self.measure_element_efficiency_rfb(var_dict=var_dict)
-
-
 
     def add_devices(self):
         """

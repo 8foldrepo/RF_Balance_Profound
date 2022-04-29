@@ -1,6 +1,7 @@
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QTableWidgetItem
-from PyQt5.QtCore import *
+
 from Hardware.ua_interface import UAInterface
 from Widget_Library.widget_ua_calibration import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
@@ -34,13 +35,13 @@ class UACalibration(MyQWidget, Ui_Form):
             self.main_window = self
 
     def get_high_frequecy_Mhz(self) -> float:
-        return float(self.tableWidget.item(5,0).text())
+        return float(self.tableWidget.item(5, 0).text())
 
     def get_low_frequecy_Mhz(self) -> float:
         return float(self.tableWidget.item(4, 0).text())
 
     @pyqtSlot(list, int)
-    def populate_results_table(self, data = None, status = None):
+    def populate_results_table(self, data=None, status=None):
         if status == -1 or status == 2:
             self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
             self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
@@ -79,7 +80,7 @@ class UACalibration(MyQWidget, Ui_Form):
             self.tableWidget.setItem(i, 2, item)
 
         self.High_FrequencyMHz = float(self.tableWidget.item(5, 0).text())
-        self.Low_FrequencyMHz = float(self.tableWidget.item(4,0).text())
+        self.Low_FrequencyMHz = float(self.tableWidget.item(4, 0).text())
 
     def dialog_critical(self, text):
         dlg = QMessageBox(self)
@@ -89,8 +90,10 @@ class UACalibration(MyQWidget, Ui_Form):
         dlg.setIcon(QMessageBox.Critical)
         dlg.exec()
 
+
 if __name__ == '__main__':
     import sys
+
     app = QApplication(sys.argv)
     ui = UACalibration()
     ua_interface = UAInterface(config=None)

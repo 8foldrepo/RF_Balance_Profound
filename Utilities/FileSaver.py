@@ -1,10 +1,11 @@
+import logging
+import os
+import shutil
+
+from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
 from Utilities.variable_containers import FileMetadata, TestData
 from definitions import ROOT_DIR
-from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-import logging
-import shutil
-import os
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger('wtf_log')
@@ -37,7 +38,6 @@ class FileSaver:
         self.create_subfolders()
         self.copy_system_info()
 
-
     def create_results_folder(self):
         self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)
@@ -59,9 +59,8 @@ class FileSaver:
         self.waveform_data_path = check_directory(waveform_data_path)
         self.directories_created = True
 
-    """Copies the system info file into the results directory"""
-
     def copy_system_info(self):
+        """Copies the system info file into the results directory"""
         if self.log_files_dir is None:
             self.log(level='error', message='Could save config, log_files_dir does not exist')
 
@@ -74,9 +73,8 @@ class FileSaver:
         destination_path = os.path.join(self.log_files_dir, 'SystemHardware.log')
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
-    """Save the test data (shared with the manager) to the results folder in the form of a  results summary"""
-
     def save_test_results_summary_and_log(self, test_data: TestData):
+        """Save the test data (shared with the manager) to the results folder in the form of a  results summary"""
         if not test_data:  # if dictionary is empty return
             self.log(level='error', message='No results to save')
             return
@@ -91,9 +89,9 @@ class FileSaver:
         self.save_log_file(self.test_data.script_log)
 
     # turn a 2d list into a .log file (a text file with a different extension
-    """saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided"""
 
     def save_log_file(self, log_table=None):
+        """saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided"""
         if log_table is None:
             log_table = self.test_data.script_log
 
@@ -114,7 +112,7 @@ class FileSaver:
             f.write('\t'.join(log_table[x]))
             f.write('\n')
 
-    def store_waveform(self, metadata:FileMetadata, times, voltages):  # assume single array every time
+    def store_waveform(self, metadata: FileMetadata, times, voltages):  # assume single array every time
 
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
                                             f"E{metadata.element_number:02}"))
@@ -156,7 +154,7 @@ class FileSaver:
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
     # the three lists are 2D, first col in sub list is time second is voltage
-
+    #todo: add a more specific filename and match the format of the example files
     def store_measure_rfb_waveform(self, metadata, forward_power, reflected_power, acoustic_power):
         path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
                                             f"E{metadata.element_number:02}"))
@@ -237,7 +235,8 @@ class FileSaver:
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
                                             f"E{metadata.element_number:02}"))
 
-        file = open(os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt"), 'w+')
+        file = open(os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt"),
+                    'w+')
         file.write(f"UASerialNumber={self.test_data.serial_number}\n")
         file.write("[File Format]\n")
         file.write(f"Version={self.config['Software_Version']}\n")

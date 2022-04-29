@@ -693,7 +693,8 @@ class Ui_Form(object):
         self.label_94.setText(_translate("Form", "UA results root directory"))
         self.label_97.setText(_translate("Form", "UA Serial numbers file"))
         self.ua_results_directory.setText(_translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA results"))
-        self.ua_serial_numbers_path.setText(_translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"))
+        self.ua_serial_numbers_path.setText(
+            _translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"))
         self.interrupt_action.setItemText(0, _translate("Form", "No dialog (abort)"))
         self.interrupt_action.setItemText(1, _translate("Form", "User prompt"))
         self.label_99.setText(_translate("Form", "Retries"))
@@ -746,6 +747,7 @@ class Ui_Form(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

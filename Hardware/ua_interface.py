@@ -1,8 +1,10 @@
 import re
 import subprocess
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from subprocess import Popen, PIPE
 import time as t
+from subprocess import Popen, PIPE
+
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
+
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from definitions import ROOT_DIR
 
@@ -29,8 +31,8 @@ class UAInterface(AbstractUAInterface):
 
         self.log('Attempting to connect to WTFIB... ')
 
-        #Ping the UA interface
-        p = Popen(["ping", self.ip_address, "-n","1"], stdout=PIPE)
+        # Ping the UA interface
+        p = Popen(["ping", self.ip_address, "-n", "1"], stdout=PIPE)
         output = p.communicate()[0].decode()
 
         if 'timed out' in output:
@@ -77,7 +79,7 @@ class UAInterface(AbstractUAInterface):
             self.cal_data_signal.emit([], -3)
             return [], -3
 
-        #Try to extract the status number from the output, otherwise retry
+        # Try to extract the status number from the output, otherwise retry
         calibration_string_pre = output.splitlines()[3]
         calibration_string_pre_list = calibration_string_pre.split(' ')
         # Search for number in the string containing "status = "
@@ -96,7 +98,7 @@ class UAInterface(AbstractUAInterface):
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
         calibration_data_list = calibration_data_quotes_removed.split(',')
 
-        if len(calibration_data_list)<27:
+        if len(calibration_data_list) < 27:
             self.log(level="Error", message=f"Calibration data contained less than 27 items : {calibration_data_list}")
             return [], -5
 
@@ -104,11 +106,11 @@ class UAInterface(AbstractUAInterface):
         self.cal_data_signal.emit(calibration_data_list, status)
         return calibration_data_list, status
 
-    def write_data(self, ua_calibration_data = None):
+    def write_data(self, ua_calibration_data=None):
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
-        first_string = f"{self.path_of_exe} {self.ip_address} "+" ".join(ua_calibration_data[0:7])
+        first_string = f"{self.path_of_exe} {self.ip_address} " + " ".join(ua_calibration_data[0:7])
         low_eff_string = f'\"{" ".join(ua_calibration_data[7:17])}\"'
         high_eff_string = f'\"{" ".join(ua_calibration_data[17:27])}\"'
 
@@ -152,9 +154,11 @@ class UAInterface(AbstractUAInterface):
                     self.log("Getting output failed, retrying...")
         return None
 
+
 if __name__ == '__main__':
     wtf = UAInterface(config=None)
-    print(wtf.write_data(['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5', '66.8', '65.2',
-                    '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6', '46.0', '45.5',
-                    '45.0', '40.8', '39.7']))
+    print(wtf.write_data(
+        ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5', '66.8', '65.2',
+         '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6', '46.0', '45.5',
+         '45.0', '40.8', '39.7']))
     print(wtf.read_data())

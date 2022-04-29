@@ -1,9 +1,11 @@
 import random
+import sys
+import time as t
+
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from test import Ui_MainWindow
-from PyQt5.QtWidgets import QMainWindow, QApplication
-import time as t
-import sys
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
@@ -34,7 +36,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         b = list()
         c = list()
 
-        while t.time()-start_time < 30:
+        while t.time() - start_time < 30:
             a.append(self.capture_a())
             b.append(self.capture_b())
             c.append(self.capture_c())
@@ -42,8 +44,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         finish_time = t.time()
 
-        print(finish_time-start_time)
+        print(finish_time - start_time)
         print(len(c))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

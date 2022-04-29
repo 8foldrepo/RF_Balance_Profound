@@ -1,10 +1,10 @@
-from abc import ABC
+import time as t
 
 import serial
-from Utilities.load_config import load_configuration
-from Hardware.Abstract.abstract_relay import AbstractRelay
-import time as t
 from PyQt5.QtCore import pyqtSignal
+
+from Hardware.Abstract.abstract_relay import AbstractRelay
+from Utilities.load_config import load_configuration
 
 
 class RelayBoard(AbstractRelay):
@@ -94,6 +94,7 @@ class RelayBoard(AbstractRelay):
     def wrap_up(self):
         self.relay_write(False)
         self.disconnect_hardware()
+
 
 if __name__ == '__main__':
     switch = RelayBoard()

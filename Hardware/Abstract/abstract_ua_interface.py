@@ -1,6 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from typing import List, Tuple
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
+
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 

@@ -6,9 +6,10 @@
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown
 import random
-from Hardware.Abstract.abstract_sensor import AbstractSensor
+
 from PyQt5.QtCore import pyqtSignal
-import time as t
+
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
 class PowerMeter(AbstractSensor):
@@ -40,6 +41,7 @@ class PowerMeter(AbstractSensor):
 
     def get_serial_number(self) -> str:
         return '\"Simulated\"'
+
 
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')

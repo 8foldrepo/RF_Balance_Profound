@@ -1,16 +1,15 @@
 from abc import abstractmethod
 from typing import List
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 
-
-
 class AbstractMotorController(AbstractDevice):
     """Defines an interface with key functionality for a motor controller"""
 
-    #These lists will all be the same length when populated from the config file
+    # These lists will all be the same length when populated from the config file
     coords_mm = list()
     home_coords = list()
     reverse_ray = List[bool]

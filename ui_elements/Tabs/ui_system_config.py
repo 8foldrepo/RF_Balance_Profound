@@ -1,14 +1,13 @@
 import os
 
 import yaml
-from PyQt5.QtWidgets import *
 
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
 
 class SystemConfig(MyQWidget, Ui_Form):
-    def __init__(self, parent=None, config = None):
+    def __init__(self, parent=None, config=None):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.configure_signals()

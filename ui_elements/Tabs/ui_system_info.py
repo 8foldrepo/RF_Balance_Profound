@@ -1,15 +1,17 @@
+from configparser import ConfigParser
+
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QApplication
 
 from Utilities.variable_containers import SystemInfo
 from Widget_Library.widget_system_info import Ui_Form
-from PyQt5.QtWidgets import QApplication
-from configparser import ConfigParser
 from definitions import SYSTEM_INFO_INI_PATH
 from ui_elements.my_qwidget import MyQWidget
 
+
 class SystemInfo(MyQWidget, Ui_Form):
-    def __init__(self, parent = None):
-        super().__init__(parent = parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setupUi(self)
 
     def load_system_info(self):
@@ -74,24 +76,26 @@ class SystemInfo(MyQWidget, Ui_Form):
         self.DC_SN_FIELD.setText(self.parser['Hydrophone system']['DC Coupler SN'])
 
     @pyqtSlot(SystemInfo)
-    def system_info_slot(self,system_info: SystemInfo):
+    def system_info_slot(self, system_info: SystemInfo):
         if system_info.oscilloscope_sn is not None:
-            self.parser.set('Oscilloscope','Serial number',system_info.oscilloscope_sn)
+            self.parser.set('Oscilloscope', 'Serial number', system_info.oscilloscope_sn)
         if system_info.awg_sn is not None:
-            self.parser.set('Function generator','Serial number',system_info.awg_sn)
+            self.parser.set('Function generator', 'Serial number', system_info.awg_sn)
         if system_info.forward_power_sn is not None:
             self.parser.set('Forward power meter', 'Serial number', system_info.forward_power_sn)
         if system_info.reflected_power_sn is not None:
             self.parser.set('Reflected power meter', 'Serial number', system_info.reflected_power_sn)
         if system_info.thermocouple_sn is not None:
-            self.parser.set('Thermocouple','Serial number',system_info.thermocouple_sn)
+            self.parser.set('Thermocouple', 'Serial number', system_info.thermocouple_sn)
 
         # Writing our configuration file to 'example.ini'
         with open(SYSTEM_INFO_INI_PATH, 'w') as configfile:
             self.parser.write(configfile)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QApplication(sys.argv)
     ui = SystemInfo()
     ui.load_system_info()

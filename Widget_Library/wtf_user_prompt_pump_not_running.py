@@ -121,19 +121,22 @@ class Ui_wtf_user_prompt_pump_not_running(object):
         wtf_user_prompt_pump_not_running.setWindowTitle(_translate("wtf_user_prompt_pump_not_running", "Dialog"))
         self.continue_button.setText(_translate("wtf_user_prompt_pump_not_running", "Continue"))
         self.abort_button.setText(_translate("wtf_user_prompt_pump_not_running", "Abort"))
-        self.user_prompt_output.setHtml(_translate("wtf_user_prompt_pump_not_running", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:600; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">UA pump not running.</span></p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:400;\"><br /></p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">Please enable the UA pump and click to continue.</span></p></body></html>"))
+        self.user_prompt_output.setHtml(_translate("wtf_user_prompt_pump_not_running",
+                                                   "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                   "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                   "p, li { white-space: pre-wrap; }\n"
+                                                   "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:600; font-style:normal;\">\n"
+                                                   "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">UA pump not running.</span></p>\n"
+                                                   "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:400;\"><br /></p>\n"
+                                                   "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">Please enable the UA pump and click to continue.</span></p></body></html>"))
         self.label.setText(_translate("wtf_user_prompt_pump_not_running", "UA pump status"))
-from ui_elements.switch import Switch
 
+
+from ui_elements.switch import Switch
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     wtf_user_prompt_pump_not_running = QtWidgets.QDialog()
     ui = Ui_wtf_user_prompt_pump_not_running()
