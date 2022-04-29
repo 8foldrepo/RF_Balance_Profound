@@ -277,6 +277,14 @@ class KeysightAWG(AbstractAWG):
     def wrap_up(self):
         self.inst.close()
 
+    #Todo: make sure this saves correctly in the systeminfo.ini
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+
+        str = self.ask("*IDN")
+        return str.split(',')[2]
+
     """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
     def __str__(self):

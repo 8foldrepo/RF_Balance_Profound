@@ -66,3 +66,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         voltage = signal + noise
 
         return list(time), list(voltage)
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

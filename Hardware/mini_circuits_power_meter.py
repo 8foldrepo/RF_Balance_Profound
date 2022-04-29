@@ -45,6 +45,7 @@ class PowerMeter(AbstractSensor):
             self.log(level="error",message=f"{self.device_key} could not connect")
             self.connected = False
         else:
+            self.serial_number = SerialNo
             self.connected = True
             self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial "
                                            f"{SerialNo} connected successfully")
@@ -66,6 +67,13 @@ class PowerMeter(AbstractSensor):
         Power = self.pwr.ReadPower()
         self.reading_signal.emit(Power)
         return Power
+
+    # Todo: make sure this saves correctly in the systeminfo.ini
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+
+        return self.serial_number
 
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')

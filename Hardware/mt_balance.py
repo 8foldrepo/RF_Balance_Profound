@@ -235,6 +235,34 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
+    # Todo: test
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+
+        self.ser.write(b"\nI4\n")
+        self.log("Getting stable reading, please wait")
+
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
+            y = self.ser.readline().split(b"\r\n")
+            for item in y:
+                if b'I4' in item:
+                    chunks = item.split(b" ")
+                    for chunk in chunks:
+                        if len(chunk) > 6:
+                            return chunk
+                else:
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
+                        return None
+                    elif item == b'+':
+                        self.log(level='error', message='Balance overloaded')
+                        return None
+                    elif item == b'-':
+                        self.log(level='error', message='Balance underloaded')
+                        return None
+        self.log(level='error', message=f'{self.device_key} timed out')
 
 if __name__ == '__main__':
     balance = MT_balance(config=load_configuration())

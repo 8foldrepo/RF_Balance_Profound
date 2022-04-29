@@ -310,6 +310,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
         self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
+        self.manager.system_info_signal.connect(self.system_info_tab.system_info_slot)
 
         # Manager communication signals
         self.abort_instantly_signal.connect(self.manager.abort)

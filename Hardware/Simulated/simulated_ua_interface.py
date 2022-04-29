@@ -49,6 +49,8 @@ class SimulatedUAInterface(AbstractUAInterface):
         self.write_result = True
         return True
 
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
 
 if __name__ == "__main__":
     wtf = SimulatedUAInterface(config=None)

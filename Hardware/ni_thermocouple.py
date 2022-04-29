@@ -41,6 +41,10 @@ class NIThermocouple(AbstractSensor):
         self.reading_signal.emit(reading)
         return reading
 
+    #todo: implement
+    def get_serial_number(self) -> str:
+        pass
+
 if __name__ == '__main__':
     therm = NIThermocouple(config=None)
     therm.connect_hardware()

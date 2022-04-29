@@ -38,6 +38,8 @@ class SimulatedRelay(AbstractRelay):
     def relay_write(self, on: bool):
         self.on = on
 
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
 
 if __name__ == '__main__':
     switch = SimulatedRelay()

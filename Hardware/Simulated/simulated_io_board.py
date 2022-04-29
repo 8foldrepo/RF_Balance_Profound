@@ -85,3 +85,6 @@ class SimulatedIOBoard(AbstractIOBoard):
 
     def is_connected(self):
         return self.connected
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

@@ -132,3 +132,6 @@ class SimulatedMotorController(AbstractMotorController):
 
     def wrap_up(self):
         self.disconnect_hardware()
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

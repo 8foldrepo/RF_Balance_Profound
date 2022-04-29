@@ -29,3 +29,6 @@ class SimulatedThermocouple(AbstractSensor):
 
         self.reading_signal.emit(reading)
         return reading
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

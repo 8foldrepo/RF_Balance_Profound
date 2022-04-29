@@ -38,6 +38,8 @@ class PowerMeter(AbstractSensor):
         self.reading_signal.emit(reading)
         return reading
 
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
 
 if __name__ == '__main__':
     reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')

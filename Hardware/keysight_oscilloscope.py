@@ -287,6 +287,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def ask(self, command):
         return self.inst.query(command)
 
+    #Todo: make sure this saves correctly in the systeminfo.ini
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+        
+        str = self.ask("*IDN")
+        return str.split(',')[2]
+
 
 # Script/example code for testing out hardware class
 if __name__ == "__main__":

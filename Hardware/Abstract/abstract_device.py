@@ -53,6 +53,11 @@ class AbstractDevice(QObject):
     def disconnect_hardware(self):
         ...
 
+    '''Retrieves info for the systeminfo.ini file.'''
+    @abstractmethod
+    def get_serial_number(self) -> str:
+        ...
+
     '''Log a message to the WTF.log file (the hardware log)'''
 
     def log(self, message, level='info'):

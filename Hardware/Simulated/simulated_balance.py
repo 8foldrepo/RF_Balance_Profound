@@ -101,6 +101,8 @@ class SimulatedBalance(AbstractBalance):
         self.log("Getting stable weight, please wait")
         return random.random()
 
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
 
 if __name__ == '__main__':
     balance = SimulatedBalance(config=load_configuration())

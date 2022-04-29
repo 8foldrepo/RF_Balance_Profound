@@ -13,7 +13,7 @@ from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.FileSaver import FileSaver
-from Utilities.variable_containers import TestData, FileMetadata
+from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 import logging
 import time as t
@@ -67,6 +67,8 @@ class Manager(QThread):
     write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
     script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
+
+    system_info_signal = pyqtSignal(SystemInfo)
 
     # Script metadata
     description_signal = pyqtSignal(str)
@@ -315,7 +317,24 @@ class Manager(QThread):
                     self.app.exit(-1)
             i = i + 1
 
+        self.update_system_info()
         self.enable_ui_signal.emit(True)
+
+    '''
+    Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
+    with the info it finds
+    '''
+
+    def update_system_info(self):
+        # todo: prevent script from running if cannot get serial_number of oscilloscope, fgen, etc
+        info = SystemInfo()
+        info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
+        info.awg_sn = self.AWG.get_serial_number()
+        info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
+        info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
+        info.thermocouple_sn = self.thermocouple.get_serial_number()
+        info.rf_balance_sn = self.Balance.get_serial_number()
+        self.system_info_signal.emit(info)
 
     @pyqtSlot()
     def disconnect_hardware(self):

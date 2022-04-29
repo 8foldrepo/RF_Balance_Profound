@@ -155,6 +155,9 @@ class SimulatedAWG(AbstractAWG):
     def SetTriggerOutput(self, trigger_out: bool):
         pass
 
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
+
     def __str__(self):
         self.get_state()
         return "Waveform Generator\nSettings:\n" + str(self.state)
