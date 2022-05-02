@@ -140,7 +140,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_editor.set_tree_widget(self.script_step_view)
 
     def begin_manager_thread(self):
-        self.manager = Manager(parent=self, config=self.config)
+        self.manager = Manager(parent=self, config=self.config, system_info=self.system_info_tab.parser)
         self.thread_list.append(self.manager)
         self.configure_manager_signals()
         self.pass_manager_and_hardware_to_tabs()

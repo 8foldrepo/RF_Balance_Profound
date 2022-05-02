@@ -1,11 +1,14 @@
 import logging
 import os
 import shutil
+import datetime
+
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
 from Utilities.variable_containers import FileMetadata, TestData
 from definitions import ROOT_DIR
+from typing import Union
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger('wtf_log')
@@ -154,84 +157,81 @@ class FileSaver:
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
     # the three lists are 2D, first col in sub list is time second is voltage
-    #todo: add a more specific filename and match the format of the example files
-    def store_measure_rfb_waveform_csv(self, metadata:FileMetadata, forward_power, reflected_power, acoustic_power):
+    # todo: add a more specific filename and match the format of the example files
+    def store_measure_rfb_waveform_csv(self, element_number, ua_serial_number, freq_mhz: float, diameter_mm: float, propagation_distance_mm: float,
+                                       T_decC: float, UC_percent: float, power_ratio: float, g_mpersecsqrd: float, cal_fact, points: int, power_on_w: list, power_off_w: list,
+                                       cumulative_results: list, threshold: float, offset_s: float, absorption: list, transducer_size: list, focussing: list, absorb_trans_focus_times: list,
+                                       transition_amp_times: list, raw_data: list):
         path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
-                                            f"E{metadata.element_number:02}"))
-        file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.csv")
+                                            f"E{element_number:02}"))
+        file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
 
         self.log(f"Saving efficiency test data to: {file_path}")
         file = open(file_path, 'w+')
-        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
-        file.write("[File Format]\n")
-        file.write(f"Version={self.config['Software_Version']}\n")
-        file.write(f"# Arrays=3\n")
-        file.write("[Position]\n")
-        file.write(f"X={f'%.2f' % metadata.X}\n")
-        file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
-        file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
-        file.write(f"Source Signal Amplitude={f'%.2f' % metadata.amplitude_mVpp}mVpp\n")
-        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
-        file.write(f"# Cycles={metadata.num_cycles}\n")
-        file.write("[Array 1]\n")
-        file.write("Label=\"Forward Power (W)\"\n")
-        file.write("X Data Type=\"Time (s)\"\n")
-        file.write("Y Data Type=\"Wattage (W)\"\n")
-        file.write("[Array 2]\n")
-        file.write("Label=\"Reflected Power (W)\"\n")
-        file.write("X Data Type=\"Time (s)\"\n")
-        file.write("Y Data Type=\"Wattage (W)\"\n")
-        file.write("[Array 3]\n")
-        file.write("Label=\"Acoustic Power (W)\"\n")
-        file.write("X Data Type=\"Time (s)\"\n")
-        file.write("Y Data Type=\"Wattage (W)\"\n")
-        file.write("[Data]\n")
-        file.write(
-            "Format=\"Cols arranged <FPX0>, <FPY0>, <RPX0>, <RPY0>, <APX0>, <APY0> ... <FPXn>, <FPYn>, <RPXn>, "
-            "<RPYn>, <APXn>, <APYn>\"\n")
-        file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
+        file.write('System Data\n')
+        file.write('Transducer,Freq (MHz),Diameter (mm),Geom Focal Length (mm),Propagation Distance (mm),Date,Time\n')
 
-        if len(forward_power) != len(reflected_power) != len(acoustic_power):
-            # self.log(level="error", message=f"length of forward_power = {len(forward_power)}, reflected_power = {
-            # len(reflected_power)}, and acoustic_power = {len(acoustic_power)} mismatch in
-            # store_measure_rfb_waveform()")
-            print(
-                f"length of forward_power = {len(forward_power)}, reflected_power = {len(reflected_power)}, and "
-                f"acoustic_power = {len(acoustic_power)} mismatch in store_measure_rfb_waveform()")
-            return
+        date = datetime.datetime.now().strftime("%x")
+        time = datetime.datetime.now().strftime("%I:%M %p")
+
+        file.write(f'{ua_serial_number},{"%.6f" % freq_mhz},{"%.6f" % diameter_mm},Inf,{"%.6f" % propagation_distance_mm},{date},{time}\n\n')
+
+        file.write('Calibration Info\n')
+        file.write('T (degC),UC (%),Power Ratio,g (m/s^2),Cal Fact\n')
+        file.write(f'{"%.6f" % T_decC},{"%.6f" % UC_percent},{"%.6f" % power_ratio},{"%.6f" % g_mpersecsqrd} s^-2,{"%.6f" % cal_fact} s^-3 m^2\n\n')
+
+        file.write('Measurements\n')
+        file.write('Points\n')
+        file.write(f'{points}\n')
+        file.write('Power On (W),Power Off (W)\n')
+
+        if len(power_off_w) != len(power_on_w):
+            self.log('error: length of power_off_w and power_on_w unequal in method store_measure_rfb_waveform_csv, skipping over writing these')
         else:
-            if len(forward_power[0]) != len(forward_power[1]):
-                # self.log(level="error", message=f"in forward_power length of times = {forward_power[0]}, wattages =
-                # {forward_power[1]}") mismatch in store_find_element_waveform()")
-                print(
-                    f"length of times = {len(forward_power[0])} ; length of wattages = {len(forward_power[1])} size "
-                    f"mismatch in forward_power in store_find_element_waveform()")
-            elif len(reflected_power[0]) != len(reflected_power[1]):
-                # self.log(level="error", message=f"in reflected_power length of times = {reflected_power[0]},
-                # wattages = {reflected_power[1]}") mismatch in store_find_element_waveform()")
-                print(
-                    f"length of times = {len(reflected_power[0])} ; length of wattages = {len(reflected_power[1])} size"
-                    f" mismatch in reflected_power in store_find_element_waveform()")
-            elif len(acoustic_power[0]) != len(acoustic_power[1]):
-                # self.log(level="error", message=f"in acoustic_power length of times = {acoustic_power[0]}, wattages
-                # = {acoustic_power[1]}") mismatch in store_find_element_waveform()")
-                print(
-                    f"length of times = {len(acoustic_power[0])} ; length of wattages = {len(acoustic_power[1])} size"
-                    f" mismatch in acoustic_power in store_find_element_waveform()")
-            else:
-                for x in range(len(forward_power[0])):
-                    forward_formatted_time = "{:.6e}".format(forward_power[0][x])
-                    forward_formatted_wattage = "{:.6e}".format(forward_power[1][x])
-                    reflected_formatted_time = "{:.6e}".format(reflected_power[0][x])
-                    reflected_formatted_wattage = "{:.6e}".format(reflected_power[1][x])
-                    acoustic_formatted_time = "{:.6e}".format(acoustic_power[0][x])
-                    acoustic_formatted_wattage = "{:.6e}".format(acoustic_power[1][x])
+            for x in range(points):
+                file.write(f'{"%.6f" % power_on_w[x]},{"%.6f" % power_off_w[x]}\n')
 
-                    file.write(
-                        f"{forward_formatted_time}\t{forward_formatted_wattage}\t{reflected_formatted_time}\t"
-                        f"{reflected_formatted_wattage}\t{acoustic_formatted_time}\t{acoustic_formatted_wattage}\n")
+        file.write('Cumulative Results\n')
+        file.write(',Power On (W),Power Off (W),Combined\n')
+        # cumulative_results[0] = Power (W), [1] = Random UC (%), [2] = Total UC (%)
+        # sublist [0] = Power On (W), [1] = Power Off (W), [2] = Combined
+        file.write(f'Power (W),{"%.6f" % cumulative_results[0][0]},{"%.6f" % cumulative_results[0][1]},{"%.6f" % cumulative_results[0][2]}\n')
+        file.write(f'Random UC (%),{"%.6f" % cumulative_results[1][0]},{"%.6f" % cumulative_results[1][1]},{"%.6f" % cumulative_results[1][2]}\n')
+        file.write(f'Total UC (%),{"%.6f" % cumulative_results[2][0]},{"%.6f" % cumulative_results[2][1]},{"%.6f" % cumulative_results[2][2]}\n\n')
 
+        file.write('Data Analysis\n')
+        file.write('Threshold,Offset (s)\n')
+        file.write(f'{"%.6f" % threshold},{"%.6f" % offset_s}\n\n')
 
+        file.write('Absorption,Transducer Size,Focussing\n')
+        file.write(f'{absorption[0]}, {transducer_size[0]}, {focussing[0]}\n')  # should be str of either 'on' or 'off'
+        file.write(f'{"%.6f" % absorption[1]}, {"%.6f" % transducer_size[1]}, {"%.6f" % focussing[1]}\n')  # should be floats
+        file.write('Transition Times (s)\n')
+        file.write('StartOn,EndOn,StartOff,EndOff\n')
+
+        # matches number of points to start on, end on, start off, and end off in absorb_trans_focus_times 2D list
+        # absorb_trans_focus_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
+        if not points == len(absorb_trans_focus_times[0]) == len(absorb_trans_focus_times[1]) == len(absorb_trans_focus_times[2]) == len(absorb_trans_focus_times[3]):
+            self.log('error: length mismatch between points parameter and absorb_trans_focus_times start/end lists in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section')
+        else:
+            for x in range(points):
+                file.write(f'{"%.6f" % absorb_trans_focus_times[0][x]},{"%.6f" % absorb_trans_focus_times[1][x]},{"%.6f" % absorb_trans_focus_times[2][x]},{"%.6f" % absorb_trans_focus_times[3][x]}\n')
+
+        file.write('\nTransition Amp\n')
+        file.write('StartOn,EndOn,StartOff,EndOff\n')
+
+        if not points == len(transition_amp_times[0]) == len(transition_amp_times[1]) == len(transition_amp_times[2]) == len(transition_amp_times[3]):
+            self.log(f'error: length mismatch between points ({points}) parameter and transition_amp_times start/end lists ({len(transition_amp_times[0])}, {len(transition_amp_times[1])}, '
+                     f'{len(transition_amp_times[2])}, {len(transition_amp_times[3])}) in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section')
+        else:
+            for x in range(points):
+                file.write(f'{"%.6f" % transition_amp_times[0][x]},{"%.6f" % transition_amp_times[1][x]},{"%.6f" % transition_amp_times[2][x]},{"%.6f" % transition_amp_times[3][x]}\n')
+
+        file.write('\nRaw Data\n')
+        file.write('Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)\n')
+        for x in range(len(raw_data)):
+            file.write(f'{"%.6f" % raw_data[0][x]},{"%.6f" % raw_data[1][x]},{"%.6f" % raw_data[2][x]},{"%.6f" % raw_data[3][x]},{"%.6f" % raw_data[4][x]}\n')
+        file.close()
 
     def save_find_element_profile(self, metadata, positions, vsi_values):
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',

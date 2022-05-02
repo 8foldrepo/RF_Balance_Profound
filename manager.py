@@ -22,9 +22,9 @@ from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.FileSaver import FileSaver
-from Utilities.formulas import calculate_power_from_balance_reading
+from Utilities.formulas import calculate_power_from_balance_reading, calculate_random_uncertainty_percent, calculate_total_uncertainty_percent
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data, get_awg_off_values
 from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel
 
@@ -104,7 +104,7 @@ class Manager(QThread):
 
     Motors = None
 
-    def __init__(self, config: dict, parent=None):
+    def __init__(self, system_info, config: dict, parent=None):
         super().__init__(parent=parent)
         QThread.currentThread().setObjectName("manager_thread")
         # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
@@ -112,6 +112,7 @@ class Manager(QThread):
         self.last_sensor_update_time = 0.0
 
         self.config = config
+        self.system_info = system_info
 
         self.app = QApplication.instance()
         self.test_data = TestData()
@@ -1493,6 +1494,19 @@ class Manager(QThread):
                     awg_on.append(False)
 
                 # package data to send it to the rfb ui tab
+                acoustic_power_on_data = get_awg_on_values(acoustic_powers_w, awg_on)
+                acoustic_power_off_data = get_awg_off_values(acoustic_powers_w, awg_on)
+                if len(acoustic_power_off_data) != 0:
+                    acoustic_power_off_mean = sum(acoustic_power_off_data) / len(acoustic_power_off_data)
+                else:
+                    acoustic_power_off_mean = float('nan')
+
+                if len(acoustic_power_on_data) != 0:
+                    acoustic_power_on_mean = sum(acoustic_power_on_data) / len(acoustic_power_on_data)
+                else:
+                    acoustic_power_on_mean = float('nan')
+                self.rfb_args['acoustic_power_off_mean'] = acoustic_power_off_mean
+                self.rfb_args['acoustic_power_on_mean'] = acoustic_power_on_mean
                 self.rfb_args['forward_s'] = forward_powers_time_s
                 self.rfb_args['forward_w'] = forward_powers_w
                 self.rfb_args['reflected_s'] = reflected_powers_time_s
@@ -1503,6 +1517,12 @@ class Manager(QThread):
                 self.rfb_args['grams'] = balance_reading
                 self.rfb_args['forward_power_w'] = forward_power_w
                 self.rfb_args['reflected_power_w'] = reflected_power_w
+                self.rfb_args['p_on_rand_unc'] = calculate_random_uncertainty_percent(acoustic_power_on_data)
+                self.rfb_args['p_on_total_unc'] = calculate_total_uncertainty_percent(acoustic_power_on_data)
+                self.rfb_args['p_off_rand_unc'] = calculate_random_uncertainty_percent(acoustic_power_off_data)
+                self.rfb_args['p_off_total_unc'] = calculate_total_uncertainty_percent(acoustic_power_off_data)
+                self.rfb_args['p_com_rand_unc'] = calculate_random_uncertainty_percent(acoustic_powers_w)
+                self.rfb_args['p_com_total_unc'] = calculate_total_uncertainty_percent(acoustic_powers_w)
                 self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
 
@@ -1540,9 +1560,9 @@ class Manager(QThread):
 
         water_temperature = self.thermocouple.get_reading()
 
-        self.test_data.save_efficiency_test_data(frequency_range == "High frequency", self.element, frequency_Hz,
-                                                 efficiency_percent, reflected_power_percent, forward_power_max,
-                                                 water_temperature)
+        self.test_data.update_results_summary_with_efficiency_results(frequency_range == "High frequency", self.element, frequency_Hz,
+                                                                      efficiency_percent, reflected_power_percent, forward_power_max,
+                                                                      water_temperature)
 
         self.element_number_signal.emit(str(self.element))
 
@@ -1555,8 +1575,23 @@ class Manager(QThread):
                                    f"Test result=placeholder;Pf Max limit (W)={temp_var_for_next_command}",
                                    ''])
 
-        self.save_efficiency_test_data(forward_powers_time_s, forward_powers_w, reflected_powers_time_s,
-                                       reflected_powers_w, acoustic_powers_time_s, acoustic_powers_w)
+        # todo: pass correct arrays instead of forward power 3 times
+        raw_data = [forward_powers_time_s, forward_powers_w, forward_powers_w, forward_powers_w, forward_powers_w]  # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
+        power_on_w = [1.366937, 1.357604, 1.357465]  # begin test code
+        power_off_w = [1.359971, 1.357153, 1.363679]
+        cumulative_results = [[1.360669, 1.360268, 1.360468], [2.925537, 1.764390, 0.334969], [12.023259, 11.794621, 11.666714]]
+        absorption = ["Off", 1.000690]
+        transducer_size = ["Off", 1.013496]
+        focussing = ["Off", 1.000000]
+        # absorb_trans_focus_times/transition_amp_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
+        absorb_trans_focus_times = [[9.784287, 30.010603, 50.511028], [11.048080, 31.280091, 51.729069], [20.055610, 40.457604, 60.772845], [21.230248, 41.546669, 62.039609]]
+        transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534], [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
+        # todo: check that p_on_rand_unc is the one we want
+        self.file_saver.store_measure_rfb_waveform_csv(element_number=self.element, ua_serial_number=self.test_data.serial_number, freq_mhz=frequency_MHz,
+                                                       diameter_mm=float(self.system_info['Hydrophone system']['Hydrophone Diameter'].split(" ")[0].replace("\"", '')), propagation_distance_mm=15.000000, T_decC=water_temperature,
+                                                       UC_percent=float(self.rfb_args['p_on_rand_unc']), power_ratio=1.000000, g_mpersecsqrd=9.810000, cal_fact=14600.571062, points=3, power_on_w=power_on_w,
+                                                       power_off_w=power_off_w, cumulative_results=cumulative_results, threshold=threshold, offset_s=offset, absorption=absorption, transducer_size=transducer_size,
+                                                       focussing=focussing, absorb_trans_focus_times=absorb_trans_focus_times, transition_amp_times=transition_amp_times, raw_data=raw_data)
 
         self.test_data.log_script(['', 'End', '', ''])
 

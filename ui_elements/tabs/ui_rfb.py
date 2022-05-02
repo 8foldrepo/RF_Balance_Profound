@@ -1,7 +1,4 @@
 from PyQt5.QtCore import pyqtSlot
-
-from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent
-from Utilities.useful_methods import get_awg_on_values, get_awg_off_values
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -52,6 +49,20 @@ class RFB(MyQWidget, Ui_Form):
         grams = args['grams']
         forward_power_w = args['forward_power_w']
         reflected_power_w = args['reflected_power_w']
+        try:
+            p_on_rand_unc = args['p_on_rand_unc']  # this variable might not be ready for some reason, but it's ready most of the time, presumably when it needs to be
+        except KeyError:
+            self.log("p_on_rand_unc not ready in args dict in update_rfb_tab in ui_rfb.py")
+        try:
+            p_off_rand_unc = args['p_off_rand_unc']
+        except KeyError:
+            self.log("p_off_rand_unc not ready in args dict in update_rfb_tab in ui_rfb.py")
+        p_on_total_unc = args['p_on_total_unc']
+        p_off_total_unc = args['p_off_total_unc']
+        p_com_rand_unc = args['p_com_rand_unc']
+        p_com_total_unc = args['p_com_total_unc']
+        acoustic_power_off_mean = args['acoustic_power_off_mean']
+        acoustic_power_on_mean = args['acoustic_power_on_mean']
 
         if grams is not None:
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
@@ -59,37 +70,24 @@ class RFB(MyQWidget, Ui_Form):
         if not self.plot_ready:
             return
 
-        acoustic_power_on_data = get_awg_on_values(acoustic_w, awg_on)
-        acoustic_power_off_data = get_awg_off_values(acoustic_w, awg_on)
-
-        if len(acoustic_power_off_data) != 0:
-            acoustic_power_off_mean = sum(acoustic_power_off_data) / len(acoustic_power_off_data)
-        else:
-            acoustic_power_off_mean = float('nan')
-
-        if len(acoustic_power_on_data) != 0:
-            acoustic_power_on_mean = sum(acoustic_power_on_data) / len(acoustic_power_on_data)
-        else:
-            acoustic_power_on_mean = float('nan')
-
         if len(acoustic_w) != 0:
             acoustic_power_mean = sum(acoustic_w) / len(acoustic_w)
         else:
             acoustic_power_mean = float('nan')
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
-        self.power_on_rand_uc_field.setText(str(round(calculate_random_uncertainty_percent(acoustic_power_on_data), 2)))
-        self.power_on_total_uc_field.setText(str(round(calculate_total_uncertainty_percent(acoustic_power_on_data), 2)))
+        self.power_on_rand_uc_field.setText(str(round(p_on_rand_unc, 2)))
+        self.power_on_total_uc_field.setText(str(round(p_on_total_unc, 2)))
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean, 2)))
         self.power_off_rand_uc_field.setText(
-            str(round(calculate_random_uncertainty_percent(acoustic_power_off_data), 2)))
+            str(round(p_off_rand_unc, 2)))
         self.power_off_total_uc_field.setText(
-            str(round(calculate_total_uncertainty_percent(acoustic_power_off_data), 2)))
+            str(round(p_off_total_unc, 2)))
 
         self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))
-        self.power_combined_rand_uc_field.setText(str(round(calculate_random_uncertainty_percent(acoustic_w), 2)))
-        self.power_combined_total_uc_field.setText(str(round(calculate_total_uncertainty_percent(acoustic_w), 2)))
+        self.power_combined_rand_uc_field.setText(str(round(p_com_rand_unc, 2)))
+        self.power_combined_total_uc_field.setText(str(round(p_com_total_unc, 2)))
 
         if not len(acoustic_s) == 0:
             self.power_w_field.setText(str(round((acoustic_w[len(acoustic_s) - 1]), 2)))
