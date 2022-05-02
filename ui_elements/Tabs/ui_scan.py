@@ -7,6 +7,7 @@ from Widget_Library.widget_scan import Ui_scan_tab_widget
 class Scan(QWidget, Ui_scan_tab_widget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.app = QApplication.instance()
         self.setupUi(self)
         self.tabWidget = None
         self.manager = None
@@ -53,6 +54,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.waveform_plot.refresh(x, y)
         self.profile_plot.refresh(x, y)
         self.voltage_time_plot.refresh(x, y)
+        self.app.processEvents()
 
     def plot(self, x, y, refresh_rate):
         # Cancel if this widget is not plot ready
@@ -76,6 +78,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.plot_ready = False
         self.waveform_plot.refresh(x, y, pen='k', clear=True)
+        self.app.processEvents()
         self.plot_ready = True
 
     @pyqtSlot(list, list, str)
@@ -103,6 +106,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.profile_plot_ready = False
         try:
             self.profile_plot.refresh(x, y, pen='k', clear=True)
+            self.app.processEvents()
         except Exception:
             self.profile_plot_ready = True
         self.profile_plot_ready = True

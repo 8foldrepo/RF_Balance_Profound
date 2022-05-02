@@ -1,69 +1,91 @@
 from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 import time as t
-
+from Hardware.Abstract.abstract_balance import AbstractBalance
+from Utilities.formulas import calculate_power_from_balance_reading
 from Utilities.sensor_thread import SensorThread
+from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
 class RFBDataLogger(QThread):
-    # Float is time in s, int is the index of the capture
-    capture_time_signal = pyqtSignal(float, int)
+    # Trigger a capture from all sensors at once
+    trigger_capture_signal = pyqtSignal()
 
-    a = list()
-    b = list()
-    c = list()
+    Balance: AbstractBalance
+    Forward_Power_Meter: AbstractSensor
+    Reflected_Power_Meter: AbstractSensor
 
-    a_ready = True
-    b_ready = True
-    c_ready = True
-
-    times_s = list()
-
-    def __init__(self, parent=None):
+    def __init__(self, Balance: AbstractBalance, Forward_Power_Meter: AbstractSensor,
+                 Reflected_Power_Meter: AbstractSensor, parent=None):
         super().__init__(parent=parent)
         # Event loop control vars
         self.mutex = QMutex()
         self.sensor_mutex = QMutex()
-
         self.condition = QWaitCondition()
         # QThread.currentThread().setObjectName("Manager_thread")
         self.sensor_mutex.lock()
         self.sensor_mutex.unlock()
-        self.A = SensorThread(device_key='A')
-        self.B = SensorThread(device_key='B')
-        self.C = SensorThread(device_key='C')
+
+
+
+        # These should all have the same length and the readings should begin being aquired within ~1ms of each other
+        self.awg_on_ray = list()
+        self.times_s = list()
+        self.balance_readings_g = list()
+        self.acoustic_powers_w = list()
+        self.f_meter_readings_w = list()
+        self.r_meter_readings_w = list()
+
+        # Encapsulates all data to be displayed in the RFB tab. Polled by the manager and shared with the
+        # Ui thread by reference
+        self.rfb_args = dict()
+        self.update_ui_data()
+
+        self.awg_on = False
+        self.balance_ready = True
+        self.f_meter_ready = True
+        self.r_meter_ready = True
+
+        self.BalanceThread = SensorThread(sensor=Balance)
+        self.F_Meter_Thread = SensorThread(sensor=Forward_Power_Meter)
+        self.R_Meter_Thread = SensorThread(sensor=Reflected_Power_Meter)
         self.thread_list = list()
-        self.thread_list.append(self.A)
-        self.thread_list.append(self.B)
-        self.thread_list.append(self.C)
+        self.thread_list.append(self.BalanceThread)
+        self.thread_list.append(self.F_Meter_Thread)
+        self.thread_list.append(self.R_Meter_Thread)
 
-        self.capture_time_signal.connect(self.A.capture_slot)
-        self.capture_time_signal.connect(self.B.capture_slot)
-        self.capture_time_signal.connect(self.C.capture_slot)
-        self.A.reading_signal.connect(self.log_a)
-        self.B.reading_signal.connect(self.log_b)
-        self.C.reading_signal.connect(self.log_c)
+        self.trigger_capture_signal.connect(self.BalanceThread.trigger_capture_slot)
+        self.trigger_capture_signal.connect(self.F_Meter_Thread.trigger_capture_slot)
+        self.trigger_capture_signal.connect(self.R_Meter_Thread.trigger_capture_slot)
+        self.BalanceThread.reading_signal.connect(self.log_balance)
+        self.F_Meter_Thread.reading_signal.connect(self.log_f_meter)
+        self.R_Meter_Thread.reading_signal.connect(self.log_r_meter)
 
-        self.A.start(priority=QThread.HighPriority)
-        self.B.start(priority=QThread.HighPriority)
-        self.C.start(priority=QThread.HighPriority)
+        self.BalanceThread.start(priority=QThread.HighPriority)
+        self.F_Meter_Thread.start(priority=QThread.HighPriority)
+        self.R_Meter_Thread.start(priority=QThread.HighPriority)
+
+        print("Beginning thread")
 
     def run(self) -> None:
         print("Running")
+        # Setup event loop
         start_time = t.time()
         self.stay_alive = True
-
         self.mutex.lock()
         while self.stay_alive is True:
             wait_bool = self.condition.wait(self.mutex, 50)
 
-            if t.time() - start_time < 30 and self.sensors_ready():
-                self.a_ready = self.b_ready = self.c_ready = False
-                current_time = t.time()-start_time
+            # Inside event loop
+            if self.sensors_ready():
+                self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
+                current_time = t.time() - start_time
                 print(current_time)
-
-                self.capture_time_signal.emit(current_time, len(self.times_s))
+                self.trigger_capture_signal.emit()
                 self.times_s.append(current_time)
-                print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
+                self.awg_on_ray.append(self.awg_on)
+                print(
+                    f'Items in A: {len(self.balance_readings_g)}, Items in B: {len(self.f_meter_readings_w)}, Items in C: {len(self.r_meter_readings_w)}')
+                self.update_ui_data()
 
             if self.stay_alive is False:
                 break
@@ -72,19 +94,49 @@ class RFBDataLogger(QThread):
         return super().run()
 
     def sensors_ready(self):
-        return self.a_ready and self.b_ready and self.c_ready
+        return self.balance_ready and self.f_meter_ready and self.r_meter_ready
+
+    def update_ui_data(self):
+        # package data to send it to the rfb ui tab
+        self.rfb_args['times_s'] = self.times_s
+        self.rfb_args['forward_w'] = self.f_meter_readings_w
+        self.rfb_args['reflected_w'] = self.r_meter_readings_w
+        self.rfb_args['acoustic_w'] = self.acoustic_powers_w
+        self.rfb_args['awg_on'] = self.awg_on_ray
+        try:
+            self.rfb_args['grams'] = self.balance_readings_g[len(self.balance_readings_g) - 1]
+        except IndexError:
+            self.rfb_args['grams'] = float('nan')
+        try:
+            self.rfb_args['forward_power_w'] = self.f_meter_readings_w[len(self.f_meter_readings_w) - 1]
+        except IndexError:
+            self.rfb_args['forward_power_w'] = float('nan')
+        try:
+            self.rfb_args['reflected_power_w'] = self.r_meter_readings_w[len(self.r_meter_readings_w) - 1]
+        except IndexError:
+            self.rfb_args['reflected_power_w'] = float('nan')
 
     @pyqtSlot(float)
-    def log_a(self, reading):
-        self.a.append(reading)
-        self.a_ready = True
+    def log_balance(self, reading_g):
+        self.balance_readings_g.append(reading_g)
+        self.acoustic_powers_w.append(calculate_power_from_balance_reading(reading_g))
+        self.balance_ready = True
 
     @pyqtSlot(float)
-    def log_b(self, reading):
-        self.b.append(reading)
-        self.b_ready = True
+    def log_f_meter(self, reading_w):
+        self.f_meter_readings_w.append(reading_w)
+        self.f_meter_ready = True
 
     @pyqtSlot(float)
-    def log_c(self, reading):
-        self.c.append(reading)
-        self.c_ready = True
+    def log_r_meter(self, reading_w):
+        self.r_meter_readings_w.append(reading_w)
+        self.r_meter_ready = True
+
+    @pyqtSlot(bool)
+    def update_awg_on(self, on):
+        self.awg_on = on
+
+    def quit(self):
+        print(f"Quitting thread, samples collected: {len(self.times_s)}")
+        self.stay_alive = False
+        super().quit()

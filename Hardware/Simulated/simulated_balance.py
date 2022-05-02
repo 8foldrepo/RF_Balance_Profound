@@ -94,6 +94,7 @@ class SimulatedBalance(AbstractBalance):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
+        t.sleep(.02)
         return random.random()
 
     def reset(self):

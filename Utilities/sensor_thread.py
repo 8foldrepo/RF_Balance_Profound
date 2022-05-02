@@ -1,22 +1,27 @@
 import random
 from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 import time as t
+from Hardware.Abstract.abstract_sensor import AbstractSensor
+
 
 class SensorThread(QThread):
     reading_signal = pyqtSignal(float)
-    capture_command = False
 
-    def __init__(self, device_key, parent=None):
+
+    def __init__(self, sensor: AbstractSensor, parent=None):
         super().__init__(parent=parent)
-        self.name = device_key
+        self.name = sensor.device_key
+        self.sensor = sensor
+
+        self.capture_command = False
         self.ready = False
-        QThread.currentThread().setObjectName(f"{self.name}_thread")
         self.mutex = QMutex()
         self.condition = None
         self.stay_alive = None
         self.start_time = None
 
     def run(self):
+        QThread.currentThread().setObjectName(f"{self.name}_thread")
         self.start_time = t.time()
         self.stay_alive = True
         self.condition = QWaitCondition()
@@ -36,14 +41,16 @@ class SensorThread(QThread):
 
     def capture(self):
         self.ready = False
-        print(f"Beginning capture of {self.name}, time = {t.time()-self.start_time}, index = {self.index}")
-        reading = random.random()
+        #print(f"Beginning capture of {QThread.currentThread().objectName()}, time = {t.time()-self.start_time}, index = {self.index}")
+        reading = None
+        while reading == None:
+            reading = self.sensor.get_reading()
+
         self.reading_signal.emit(reading)
-        print(f"Finishing capture of {self.name}, time = {t.time() - self.start_time}, index = {self.index}")
+        #print(f"Finishing capture of {QThread.currentThread().objectName()}, time = {t.time() - self.start_time}, index = {self.index}")
         self.ready = True
 
-    # Float is time in s, int is the index of the capture
-    @pyqtSlot(float, int)
-    def capture_slot(self, time_s, index):
-        self.index = index
+    # Trigger a capture
+    @pyqtSlot()
+    def trigger_capture_slot(self):
         self.capture_command = True

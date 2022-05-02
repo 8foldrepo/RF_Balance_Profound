@@ -204,7 +204,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def set_tab_slot(self, text):
-        self.tabWidget.setCurrentText(text)
+        """Sets the current tab to the one with matching text"""
+        index = -1
+        for i in range(len(self.tabWidget.children())):
+            if self.tabWidget.tabText(i) == text:
+                index = i
+                break
+        if index == -1:
+            return
+
+        self.tabWidget.setCurrentIndex(index)
 
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
@@ -232,6 +241,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def password_result(self, access_level):
+        self.access_level_combo.setCurrentText(access_level)
+
         if access_level == 'Engineer':
             self.tabWidget.removeTab(7)
         elif access_level == 'Operator':

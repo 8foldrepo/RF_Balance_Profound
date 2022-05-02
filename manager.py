@@ -21,6 +21,7 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
+from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
 from Utilities.formulas import calculate_power_from_balance_reading
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
@@ -57,6 +58,8 @@ class Manager(QThread):
     UAInterface: AbstractUAInterface
     # Output file handler
     file_saver: FileSaver
+    rfb_logger: RFBDataLogger
+    logging.Logger
 
     # Used for polling sensors while software is idle
     sensor_refresh_interval_s: float
@@ -106,6 +109,7 @@ class Manager(QThread):
 
     def __init__(self, config: dict, parent=None):
         super().__init__(parent=parent)
+        self.rfb_logger = None
         QThread.currentThread().setObjectName("manager_thread")
         # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
         self.sensor_refresh_interval_s = .2
@@ -223,7 +227,7 @@ class Manager(QThread):
         var_dict["Pf max (limit, W)"] = "12.000000"
         var_dict["Reflection limit (%)"] = "70.000000"
 
-        self.measure_element_efficiency_rfb(var_dict=var_dict)
+        self.measure_element_efficiency_rfb_multithreaded(var_dict=var_dict)
 
     def add_devices(self):
         """
@@ -645,7 +649,7 @@ class Manager(QThread):
             args['Element'] = self.taskExecOrder[self.step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
-            self.measure_element_efficiency_rfb(args)
+            self.measure_element_efficiency_rfb_multithreaded(args)
         elif name.upper() == "Pre-test initialisation".upper():
             self.pretest_initialization(args)
         elif "Find element n".upper() in name.upper():
@@ -1428,8 +1432,6 @@ class Manager(QThread):
 
         self.test_data.log_script(['', 'Start RFB Acquisition', 'Started RFB Action', ''])
 
-        self.begin_rfb_logger_thread()
-
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
             # Turn on AWG
@@ -1475,9 +1477,6 @@ class Manager(QThread):
             self.AWG.SetOutput(True)
 
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
-                if self.step_index == -1:
-                    return
-
                 forward_power_w = self.Forward_Power_Meter.get_reading() + 0.732  # Todo: remove Demo only
                 forward_powers_w.append(forward_power_w)
                 forward_powers_time_s.append(t.time() - startTime)
@@ -1562,8 +1561,170 @@ class Manager(QThread):
 
         self.test_data.log_script(['', 'End', '', ''])
 
+    def measure_element_efficiency_rfb_multithreaded(self, var_dict):
+        """Measure the efficiency of an element"""
+        self.element = self.element_str_to_int(var_dict['Element'])
+        frequency_range = var_dict['Frequency range']  # High frequency or Low frequency
+        on_off_cycles = int(var_dict['RFB.#on/off cycles'])
+        rfb_on_time = float(var_dict['RFB.On time (s)'])
+        rfb_off_time = float(var_dict['RFB.Off time (s)'])
+        threshold = float(var_dict['RFB.Threshold'])
+        offset = float(var_dict['RFB.Offset'])
+        set_frequency_options = var_dict['Set frequency options']
+        frequency_MHz = float(var_dict['Frequency (MHz)'])
+        amplitude_mVpp = float(var_dict['Amplitude (mVpp)'])
+        storage_location = var_dict['Storage location']
+        data_directory = var_dict['Data directory']
+        target_position = var_dict['RFB target position']
+        target_angle = var_dict['RFB target angle']
+        efficiency_test = var_dict['EfficiencyTest']
+        Pa_max = var_dict['Pa max (target, W)']
+        Pf_max = var_dict['Pf max (limit, W)']
+        reflection_limit = var_dict['Reflection limit (%)']
+
+        # If on the first element, set the tab to the rfb tab
+        if self.element == 1:
+            self.set_tab_signal.emit('RFB')
+
+        # todo: replace this with an insert at the end to check if the step finished successfully
+        self.test_data.log_script(['Measure element efficiency (RFB)', 'OK', '', ''])
+
+        try:
+            # Todo: add those checks anyway just because the script may vary
+            # at this point in the script, the checks have been performed already in pretest_initialization so no
+            # need to wrap in if statements
+            self.test_data.log_script(['', 'PreChecks',
+                                       f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
+                                       f'{self.IO_Board.get_ua_pump_reading()}',
+                                       ''])
+        except Exception as e:
+            self.test_data.log_script(['', 'PreChecks', f'FAIL {e}', ''])
+
+        # Todo: implement zeroing such that balance reading subtracts the averaging reading when the balance is off
+        try:
+            self.element = int(re.search(r'\d+', str(var_dict['Element'])).group())
+        except:
+            self.log(f"Element number not given, using current element: {self.element}")
+
+        self.element_number_signal.emit(str(self.element))
+
+        self.select_ua_channel(var_dict={"Element": self.element})
+        self.move_system(var_dict={"Element": self.element, "Move Type": "Move to element", "Target": 'RFB'})
+
+        self.test_data.log_script(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
+
+        if frequency_range == "High frequency":
+            frequency_Hz = self.test_data.high_frequency_MHz * 1000000
+        elif frequency_range == "Low frequency":
+            frequency_Hz = self.test_data.low_frequency_MHz * 1000000
+        else:
+            self.log("Improper frequency set, defaulting to low frequency")
+            frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
+
+        self.AWG.SetFrequency_Hz(frequency_Hz)
+        self.test_data.log_script(
+            ['', 'Configure FGen+PwrMeters', f"Frequency set to {frequency_Hz / 1000000} MHz", ''])
+
+        self.Balance.zero_balance_instantly()  # todo: see if we need this
+
+        forward_powers_w = list()
+        forward_powers_time_s = list()
+        reflected_powers_w = list()
+        reflected_powers_time_s = list()
+        acoustic_powers_w = list()
+        acoustic_powers_time_s = list()
+
+        awg_on = list()
+
+        startTime = t.time()
+        current_cycle = 1
+
+        self.test_data.log_script(['', 'Start RFB Acquisition', 'Started RFB Action', ''])
+
+        # Run test
+        self.begin_rfb_logger_thread()
+        while current_cycle <= on_off_cycles:
+            cycle_start_time = t.time()
+            # Turn on AWG
+            self.log("Turning off AWG")
+            self.AWG.SetOutput(False)
+            while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
+                self.rfb_args = self.rfb_logger.rfb_args
+                self.update_rfb_tab_signal.emit()
+                self.app.processEvents()
+            #  turn on awg
+            self.log("Turning on AWG")
+            self.AWG.SetOutput(True)
+            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:  # for the duration of rfb on time
+                self.rfb_args = self.rfb_logger.rfb_args
+                self.update_rfb_tab_signal.emit()
+                self.app.processEvents()
+            current_cycle = current_cycle + 1  # we just passed a cycle at this point in the code
+        self.wrap_up_rfb_logger()
+
+        # Test complete
+        self.test_data.log_script(['', 'Run on/off sequence', 'RFB Acquisition complete', ''])
+        self.test_data.log_script(['', 'Stop RFB Acquisition', "RFB Stopped, data saved", ''])
+
+        # List containing all readings while AWG was on
+        acoustic_power_on_data = get_awg_on_values(acoustic_powers_w, awg_on)
+        # Mean acoustic power while on
+        acoustic_power_on_mean = sum(acoustic_power_on_data) / len(acoustic_power_on_data)
+
+        # List containing all readings while AWG was on
+        forward_power_on_data = get_awg_on_values(forward_powers_w, awg_on)
+        # Mean acoustic power while on
+        forward_power_on_mean = sum(forward_power_on_data) / len(forward_power_on_data)
+
+        if forward_power_on_mean != 0:
+            efficiency_percent = acoustic_power_on_mean / forward_power_on_mean
+        else:
+            efficiency_percent = 0
+
+        # List containing all readings while AWG was on
+        reflected_power_on_data = get_awg_on_values(reflected_powers_w, awg_on)
+        # Mean acoustic power while on
+        reflected_power_on_mean = sum(reflected_power_on_data) / len(reflected_power_on_data)
+
+        if forward_power_on_mean != 0:
+            reflected_power_percent = reflected_power_on_mean / forward_power_on_mean
+        else:
+            reflected_power_percent = 1
+
+        forward_power_max = max(forward_power_on_data)
+
+        water_temperature = self.thermocouple.get_reading()
+
+        self.test_data.save_efficiency_test_data(frequency_range == "High frequency", self.element, frequency_Hz,
+                                                 efficiency_percent, reflected_power_percent, forward_power_max,
+                                                 water_temperature)
+
+        self.element_number_signal.emit(str(self.element))
+
+        temp_var_for_next_command = var_dict["Pf max (limit, W)"]
+        self.test_data.log_script(['', "Pass/Fail test",
+                                   f"Element_{self.element};Pf (W)={forward_power_on_mean};Pr (W)="
+                                   f"{reflected_power_on_mean};Pa (W)={acoustic_power_on_mean};Efficiency (%)"
+                                   f"={efficiency_percent};RF_Reflection (%)={reflected_power_percent};"
+                                   f"Pf Max (W)={forward_power_max};WaterTemp (C)={water_temperature};"
+                                   f"Test result=placeholder;Pf Max limit (W)={temp_var_for_next_command}",
+                                   ''])
+
+        self.save_efficiency_test_data(forward_powers_time_s, forward_powers_w, reflected_powers_time_s,
+                                       reflected_powers_w, acoustic_powers_time_s, acoustic_powers_w)
+
+        self.test_data.log_script(['', 'End', '', ''])
+
     def begin_rfb_logger_thread(self):
-        pass
+        self.rfb_logger = RFBDataLogger(self.Balance,self.Forward_Power_Meter,self.Reflected_Power_Meter)
+        self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
+        self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
+        self.rfb_logger.start(priority=QThread.HighPriority)
+
+    def wrap_up_rfb_logger(self):
+        self.rfb_logger.quit()
+        t.sleep(.1)
+        print(self.Balance.get_reading())
 
     # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):
