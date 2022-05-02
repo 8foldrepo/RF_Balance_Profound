@@ -155,10 +155,10 @@ class FileSaver:
 
     # the three lists are 2D, first col in sub list is time second is voltage
     #todo: add a more specific filename and match the format of the example files
-    def store_measure_rfb_waveform(self, metadata, forward_power, reflected_power, acoustic_power):
+    def store_measure_rfb_waveform_csv(self, metadata:FileMetadata, forward_power, reflected_power, acoustic_power):
         path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
                                             f"E{metadata.element_number:02}"))
-        file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.txt")
+        file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.csv")
 
         self.log(f"Saving efficiency test data to: {file_path}")
         file = open(file_path, 'w+')
@@ -231,6 +231,8 @@ class FileSaver:
                         f"{forward_formatted_time}\t{forward_formatted_wattage}\t{reflected_formatted_time}\t"
                         f"{reflected_formatted_wattage}\t{acoustic_formatted_time}\t{acoustic_formatted_wattage}\n")
 
+
+
     def save_find_element_profile(self, metadata, positions, vsi_values):
         path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
                                             f"E{metadata.element_number:02}"))
@@ -274,6 +276,7 @@ class FileSaver:
 
     # todo
     def save_frequency_sweep(self):
+
         pass
 
     def log(self, message, level='info'):
@@ -396,5 +399,5 @@ class FileSaver:
 #                                              acoustic_power=acou_power)
 #     file_saver.save_test_results_summary_and_log(test_data=test_data)
 # 
-# if __name__ == '__main__':
-#     main()
+ if __name__ == '__main__':
+     main()
