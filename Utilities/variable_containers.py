@@ -87,9 +87,9 @@ class TestData(QObject):
     """Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the 
     results tab"""
 
-    def save_efficiency_test_data(self, high_frequency: bool, element: int, frequency_Hz: float,
-                                  efficiency_percent: float, reflected_power_percent: float, forward_power_max: float,
-                                  water_temperature: float):
+    def update_results_summary_with_efficiency_results(self, high_frequency: bool, element: int, frequency_Hz: float,
+                                                       efficiency_percent: float, reflected_power_percent: float, forward_power_max: float,
+                                                       water_temperature: float):
         if high_frequency:
             # High frequency
             self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
