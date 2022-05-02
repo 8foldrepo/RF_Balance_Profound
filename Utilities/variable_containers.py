@@ -8,6 +8,7 @@ class TestData(QObject):
     show_script_log = pyqtSignal(list)
 
     def __init__(self):
+        super().__init__()
         self.set_blank_values()
 
     def set_blank_values(self):
