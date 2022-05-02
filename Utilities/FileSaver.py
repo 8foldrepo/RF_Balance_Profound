@@ -398,6 +398,4 @@ class FileSaver:
 #     file_saver.store_measure_rfb_waveform(metadata=metadata, forward_power=fw_power, reflected_power=ref_power,
 #                                              acoustic_power=acou_power)
 #     file_saver.save_test_results_summary_and_log(test_data=test_data)
-# 
- if __name__ == '__main__':
-     main()
+#
