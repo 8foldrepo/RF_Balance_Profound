@@ -360,7 +360,8 @@ class Ui_scan_tab_widget(object):
         scan_tab_widget.setWindowTitle(_translate("scan_tab_widget", "Form"))
         self.last_aquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last Aquired Waveform"))
         self.label_55.setText(_translate("scan_tab_widget", "Profile"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab), _translate("scan_tab_widget", "1D Scan"))
+        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab),
+                                  _translate("scan_tab_widget", "1D Scan"))
         self.label_31.setText(_translate("scan_tab_widget", "Acquired waveform"))
         self.label_34.setText(_translate("scan_tab_widget", "Acquisition Type"))
         self.label_35.setText(_translate("scan_tab_widget", "Source Channel"))
@@ -368,16 +369,18 @@ class Ui_scan_tab_widget(object):
         self.label_37.setText(_translate("scan_tab_widget", "Averages"))
         self.label_39.setText(_translate("scan_tab_widget", "X Data Type"))
         self.label_40.setText(_translate("scan_tab_widget", "Y Data Type"))
-        self.x_data_type_view.setHtml(_translate("scan_tab_widget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Frequency (MHz)</p></body></html>"))
-        self.y_data_type_view.setHtml(_translate("scan_tab_widget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Hydrophone Sensitivity (mV/MPa)</p></body></html>"))
+        self.x_data_type_view.setHtml(_translate("scan_tab_widget",
+                                                 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                 "p, li { white-space: pre-wrap; }\n"
+                                                 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                                                 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Frequency (MHz)</p></body></html>"))
+        self.y_data_type_view.setHtml(_translate("scan_tab_widget",
+                                                 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                 "p, li { white-space: pre-wrap; }\n"
+                                                 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                                                 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Hydrophone Sensitivity (mV/MPa)</p></body></html>"))
         self.label_38.setText(_translate("scan_tab_widget", "Label"))
         self.label_41.setText(_translate("scan_tab_widget", "X Data"))
         self.label_42.setText(_translate("scan_tab_widget", "Y Data"))
@@ -385,7 +388,8 @@ class Ui_scan_tab_widget(object):
         self.label_32.setText(_translate("scan_tab_widget", "Waveform data out"))
         self.label_33.setText(_translate("scan_tab_widget", "Acquisition Arg."))
         self.acquire_scope_trace_button.setText(_translate("scan_tab_widget", "Aqcuire Scope Trace"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.acquire_waveform_tab), _translate("scan_tab_widget", "Acquire Waveform"))
+        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.acquire_waveform_tab),
+                                  _translate("scan_tab_widget", "Acquire Waveform"))
         self.label_44.setText(_translate("scan_tab_widget", "Scan details"))
         self.label_46.setText(_translate("scan_tab_widget", "Axis"))
         self.axis_combo.setItemText(0, _translate("scan_tab_widget", "X"))
@@ -410,12 +414,15 @@ class Ui_scan_tab_widget(object):
         self.label_57.setText(_translate("scan_tab_widget", "Window (FFT only)"))
         self.window_combo_box_2.setItemText(0, _translate("scan_tab_widget", "Blackman-Harris"))
         self.label_58.setText(_translate("scan_tab_widget", "Averages"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.scan_setup_tab), _translate("scan_tab_widget", "Scan Setup"))
-from ui_elements.Tabs.ui_oscilloscope_plot import Plot
+        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.scan_setup_tab),
+                                  _translate("scan_tab_widget", "Scan Setup"))
 
+
+from ui_elements.tabs.ui_oscilloscope_plot import Plot
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     scan_tab_widget = QtWidgets.QWidget()
     ui = Ui_scan_tab_widget()

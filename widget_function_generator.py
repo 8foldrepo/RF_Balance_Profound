@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'widget_frequency_sweep.ui'
+# Form implementation generated from reading ui file 'widget_function_generator.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
 #

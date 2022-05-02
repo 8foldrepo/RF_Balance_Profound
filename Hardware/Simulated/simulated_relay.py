@@ -1,6 +1,7 @@
-from Utilities.load_config import load_configuration
-from Hardware.Abstract.abstract_relay import AbstractRelay
 from abc import abstractmethod
+
+from Hardware.Abstract.abstract_relay import AbstractRelay
+from Utilities.load_config import load_configuration
 
 
 class SimulatedRelay(AbstractRelay):
@@ -31,12 +32,15 @@ class SimulatedRelay(AbstractRelay):
         self.connected_signal.emit(False)
 
     @abstractmethod
-    def get_reading(self):
+    def relay_read(self):
         return self.on
 
     @abstractmethod
     def relay_write(self, on: bool):
         self.on = on
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
 
 
 if __name__ == '__main__':

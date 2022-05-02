@@ -1,6 +1,7 @@
-from abc import abstractmethod
-from PyQt5.QtCore import *
 import time as t
+from abc import abstractmethod
+
+from PyQt5.QtCore import *
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
@@ -39,15 +40,14 @@ class SimulatedMotorController(AbstractMotorController):
         self.on_by_default = self.config[self.device_key]['on_by_default']
         self.port = self.config[self.device_key]['port']
 
-    '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+    """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
 
     @pyqtSlot(dict)
     def setup(self, settings):
-        for i in range(len(self.ax_letters)):
-            self.setup_1d(axis=self.ax_letters[i], settings=settings)
-        self.get_position()
+        t.sleep(.1)
+        self.ready_signal.emit()
 
-    '''Setup an axis according to a dictionary of settings. R is configured according to rotational settings.'''
+    """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
 
     def setup_1d(self, axis, settings):
         pass
@@ -132,4 +132,11 @@ class SimulatedMotorController(AbstractMotorController):
         self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('R')])
 
     def wrap_up(self):
+        self.disconnect_hardware()
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
+
+    def wrap_up(self):
+        self.stop_motion()
         self.disconnect_hardware()

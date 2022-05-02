@@ -1,12 +1,14 @@
 from abc import abstractmethod
-from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+
 import numpy as np
 
-'''Class providing a crude simulation of an oscilloscope so programs can be tested without one'''
+from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+
+"""Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):
-    def __init__(self, device_key='Keysight_Oscilloscope', config: dict = None, parent=None):
+    def __init__(self, config: dict, device_key='Keysight_Oscilloscope', parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
         self.fields_setup()
@@ -66,3 +68,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         voltage = signal + noise
 
         return list(time), list(voltage)
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

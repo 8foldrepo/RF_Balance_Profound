@@ -18,6 +18,7 @@ class Ui_config_osc_channels(object):
         config_osc_channels.setMinimumSize(QtCore.QSize(570, 200))
         config_osc_channels.setMaximumSize(QtCore.QSize(670, 300))
         self.frame_2 = QtWidgets.QFrame(config_osc_channels)
+        self.frame_2.setEnabled(True)
         self.frame_2.setGeometry(QtCore.QRect(10, 10, 551, 181))
         self.frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -42,34 +43,47 @@ class Ui_config_osc_channels(object):
         self.label_4.setObjectName("label_4")
         self.gain_spin = QtWidgets.QSpinBox(self.frame)
         self.gain_spin.setGeometry(QtCore.QRect(10, 80, 85, 20))
+        self.gain_spin.setMinimum(10)
+        self.gain_spin.setMaximum(50000)
         self.gain_spin.setObjectName("gain_spin")
         self.label_5 = QtWidgets.QLabel(self.frame)
         self.label_5.setGeometry(QtCore.QRect(15, 110, 61, 21))
         self.label_5.setObjectName("label_5")
-        self.offset_spin = QtWidgets.QSpinBox(self.frame)
+        self.offset_spin = QtWidgets.QDoubleSpinBox(self.frame)
         self.offset_spin.setGeometry(QtCore.QRect(10, 130, 85, 20))
+        self.offset_spin.setMinimum(-500.0)
+        self.offset_spin.setMaximum(500.0)
         self.offset_spin.setObjectName("offset_spin")
         self.label_9 = QtWidgets.QLabel(self.frame)
         self.label_9.setGeometry(QtCore.QRect(155, 110, 61, 21))
         self.label_9.setObjectName("label_9")
-        self.offset_right_spin = QtWidgets.QSpinBox(self.frame)
+        self.offset_right_spin = QtWidgets.QDoubleSpinBox(self.frame)
+        self.offset_right_spin.setEnabled(False)
         self.offset_right_spin.setGeometry(QtCore.QRect(150, 130, 85, 20))
+        self.offset_right_spin.setMinimum(-500.0)
+        self.offset_right_spin.setMaximum(500.0)
         self.offset_right_spin.setObjectName("offset_right_spin")
         self.gain_right_spin = QtWidgets.QSpinBox(self.frame)
+        self.gain_right_spin.setEnabled(False)
         self.gain_right_spin.setGeometry(QtCore.QRect(150, 80, 85, 20))
+        self.gain_right_spin.setMinimum(10)
+        self.gain_right_spin.setMaximum(50000)
         self.gain_right_spin.setObjectName("gain_right_spin")
         self.label_10 = QtWidgets.QLabel(self.frame)
         self.label_10.setGeometry(QtCore.QRect(155, 60, 65, 21))
         self.label_10.setObjectName("label_10")
         self.channel_1_checkbox = QtWidgets.QCheckBox(self.frame)
+        self.channel_1_checkbox.setEnabled(False)
         self.channel_1_checkbox.setGeometry(QtCore.QRect(10, 40, 81, 17))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setUnderline(True)
         self.channel_1_checkbox.setFont(font)
         self.channel_1_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.channel_1_checkbox.setChecked(True)
         self.channel_1_checkbox.setObjectName("channel_1_checkbox")
         self.channel_2_checkbox = QtWidgets.QCheckBox(self.frame)
+        self.channel_2_checkbox.setEnabled(False)
         self.channel_2_checkbox.setGeometry(QtCore.QRect(150, 40, 81, 17))
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -84,13 +98,15 @@ class Ui_config_osc_channels(object):
     def retranslateUi(self, config_osc_channels):
         _translate = QtCore.QCoreApplication.translate
         config_osc_channels.setWindowTitle(_translate("config_osc_channels", "Form"))
-        self.config_osc_channel_note.setHtml(_translate("config_osc_channels", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; text-decoration: underline;\">Note:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Enable/Disable the desired oscilloscope channels. In addition, confiugure the corresponding Gain and Offset per channel.</span></p></body></html>"))
-        self.label.setText(_translate("config_osc_channels", "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; text-decoration: underline;\">Channel settings</span></p></body></html>"))
+        self.config_osc_channel_note.setHtml(_translate("config_osc_channels",
+                                                        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                        "p, li { white-space: pre-wrap; }\n"
+                                                        "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; text-decoration: underline;\">Note:</span></p>\n"
+                                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Enable/Disable the desired oscilloscope channels. In addition, confiugure the corresponding Gain and Offset per channel.</span></p></body></html>"))
+        self.label.setText(_translate("config_osc_channels",
+                                      "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; text-decoration: underline;\">Channel settings</span></p></body></html>"))
         self.label_4.setText(_translate("config_osc_channels", "Gain (mV/div)"))
         self.label_5.setText(_translate("config_osc_channels", "Offset (mV)"))
         self.label_9.setText(_translate("config_osc_channels", "Offset (mV)"))
@@ -101,6 +117,7 @@ class Ui_config_osc_channels(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     config_osc_channels = QtWidgets.QWidget()
     ui = Ui_config_osc_channels()

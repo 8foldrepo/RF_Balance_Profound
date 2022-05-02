@@ -1,11 +1,11 @@
 import random
+import sys
+import time as t
 
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QMutex, QWaitCondition
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from test import Ui_MainWindow
-from PyQt5.QtWidgets import QMainWindow, QApplication
-import time as t
-import sys
 
 
 class A(QThread):
@@ -35,13 +35,14 @@ class A(QThread):
         QThread.currentThread().setObjectName("A_thread")
 
     def capture_a(self):
-        #10% of the time
+        # 10% of the time
         if random.random() < .1:
-            #Example of a failed read
+            # Example of a failed read
             return None
 
         t.sleep(random.random())
         self.reading_signal.emit(random.random())
+
 
 class B(QThread):
     reading_signal = pyqtSignal(float)
@@ -70,9 +71,9 @@ class B(QThread):
         QThread.currentThread().setObjectName("A_thread")
 
     def capture_b(self):
-        #10% of the time
+        # 10% of the time
         if random.random() < .1:
-            #Example of a failed read
+            # Example of a failed read
             return None
 
         t.sleep(random.random())
@@ -106,6 +107,7 @@ class C(QThread):
         t.sleep(random.random())
         self.reading_signal.emit(random.random())
 
+
 class Data_Logger(QThread):
     capture_a_signal = pyqtSignal()
     capture_b_signal = pyqtSignal()
@@ -121,7 +123,7 @@ class Data_Logger(QThread):
         self.mutex = QMutex()
         self.condition = QWaitCondition()
 
-        #QThread.currentThread().setObjectName("Manager_thread")
+        # QThread.currentThread().setObjectName("Manager_thread")
 
         self.A = A()
         self.B = B()
@@ -153,7 +155,7 @@ class Data_Logger(QThread):
 
             print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
 
-            if t.time()-start_time > 30:
+            if t.time() - start_time > 30:
                 print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
                 self.stay_alive = False
 
@@ -175,6 +177,7 @@ class Data_Logger(QThread):
     def log_c(self, reading):
         self.c.append(reading)
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -189,6 +192,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def run_routine(self):
         self.logger.start(priority=4)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

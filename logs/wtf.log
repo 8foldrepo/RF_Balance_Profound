@@ -1,6 +1,0 @@
-2022-04-27 13:27:21,858 [INFO] [Manager] [manager_thread] : Running script
-2022-04-27 13:27:21,900 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Results Summary.txt
-2022-04-27 13:27:21,902 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Log files\ScriptResults.log
-2022-04-27 13:27:21,903 [INFO] [Results] [manager_thread] : Showing test results
- [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.04.27-13.27\Log files\ScriptResults.log
-2022-04-27 13:27:21,903 [INFO] [Results] [manager_thread] : Showing test results

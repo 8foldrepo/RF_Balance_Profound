@@ -49,7 +49,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>87</width>
+      <width>95</width>
       <height>86</height>
      </rect>
     </property>
@@ -62,9 +62,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="timebase_spinbox">
+      <widget class="QDoubleSpinBox" name="timebase_spinbox">
        <property name="styleSheet">
         <string notr="true">background:white</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.005000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>2.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -76,9 +88,15 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="delay_spinbox">
+      <widget class="QDoubleSpinBox" name="delay_spinbox">
        <property name="styleSheet">
         <string notr="true">background:white</string>
+       </property>
+       <property name="minimum">
+        <double>-500.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
        </property>
       </widget>
      </item>

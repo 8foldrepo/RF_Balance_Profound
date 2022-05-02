@@ -1,14 +1,14 @@
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QApplication
-from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_coord_rays, is_number
-import serial
 import time as t
 
-'''Class providing functionality for one or more Parker VIX-250 IM drives'''
+import serial
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QApplication
+
+from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
 
 class ParkerMotorController(AbstractMotorController):
+    """Class providing functionality for one or more Parker VIX-250 IM drives"""
     command_history = list()
     echo_history = list()
     response_history = list()
@@ -126,7 +126,7 @@ class ParkerMotorController(AbstractMotorController):
         if get_position:
             self.get_position()
 
-    '''Setup all axes according to a dictionary of settings. R is configured according to rotational settings.'''
+    """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
 
     @pyqtSlot(dict)
     def setup_slot(self, settings=None):
@@ -191,7 +191,7 @@ class ParkerMotorController(AbstractMotorController):
                 stopbits=serial.STOPBITS_ONE,
                 bytesize=serial.EIGHTBITS,
             )
-            #Todo: add setup and query if the motor is responding
+            # Todo: add setup and query if the motor is responding
             #
             # self.setup()
             # startTime = t.time()
@@ -235,7 +235,7 @@ class ParkerMotorController(AbstractMotorController):
     def check_connected(self):
         return self.connected
 
-    '''Attempt to send command until it is faithfully echoed by the controller, or else return false'''
+    """Attempt to send command until it is faithfully echoed by the controller, or else return false"""
 
     def command(self, command, retry=True, time_limit=None, mutex_locked=False, log=True):
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
@@ -294,7 +294,7 @@ class ParkerMotorController(AbstractMotorController):
             self.lock.unlock()
         return False
 
-    '''Print every line of the controller's output until timeout is reached'''
+    """Print every line of the controller's output until timeout is reached"""
 
     def print_response(self, mutex_locked=False):
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
@@ -311,7 +311,7 @@ class ParkerMotorController(AbstractMotorController):
         if self.lock is not None and not mutex_locked:
             self.lock.unlock()
 
-    '''Return the next non-empty line of the controller's response over serial. Assumes echo has already been read'''
+    """Return the next non-empty line of the controller's response over serial. Assumes echo has already been read"""
 
     def get_response(self, retries=2, need_reply=False, mutex_locked=False):
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
@@ -368,7 +368,7 @@ class ParkerMotorController(AbstractMotorController):
                 return response
         return ''
 
-    '''Set all motors on/off depending on boolean on'''
+    """Set all motors on/off depending on boolean on'''
 
     def set_motors_on(self, on):
         self.set_motor_on(axis='All', on=on)
@@ -649,7 +649,7 @@ class ParkerMotorController(AbstractMotorController):
         if cmd_ray[0] == 'MOTOR':
             cmd_ray.pop(0)
             command = command[6:]
-        
+
         if command == 'Stop Motion'.upper():
             self.stop_motion()
         elif command == 'Get Position'.upper():
@@ -660,9 +660,6 @@ class ParkerMotorController(AbstractMotorController):
         elif cmd_ray[0] == 'Origin'.upper():
             if cmd_ray[1] == 'Here'.upper():
                 self.set_origin_here()
-
-    def wrap_up(self):
-        self.disconnect_hardware()
 
     # return the motor controller driver number of the axis with the specified letter
     def get_ax_number(self, axis):
@@ -721,6 +718,10 @@ class ParkerMotorController(AbstractMotorController):
     #     self.command('1W(TL,4000)')  # Tracking limit
     #     # Motor configuration
     #     self.command('1MOTOR(457,1.2,4000,100,100,3.2,5,312.5)')  # Setup
+
+    def wrap_up(self):
+        self.stop_motion()
+        self.disconnect_hardware()
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 import pyvisa
-from Utilities.load_config import *
 from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
+from Utilities.load_config import *
 
 
 class KeysightAWG(AbstractAWG):
@@ -33,7 +33,7 @@ class KeysightAWG(AbstractAWG):
                    ext_trig=self.config[self.device_key]['trig_in'],
                    burst_period_s=self.config[self.device_key]['burst_period_s'],
                    offset_V=self.config[self.device_key]['offset_V'],
-                   output=self.config[self.device_key]['output'],
+                   output=False,
                    output_Impedance=self.config[self.device_key]['output_Impedance'],
                    trigger_out=self.config[self.device_key]['trig_out'])
 
@@ -48,7 +48,7 @@ class KeysightAWG(AbstractAWG):
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log(level='error',message = feedback)
+                    self.log(level='error', message=feedback)
                     break
 
                 if self.config[self.device_key]['set_on_startup']:
@@ -79,7 +79,7 @@ class KeysightAWG(AbstractAWG):
         self.SetAmplitude_V(amplitude_V)
         self.SetCycles(burst_cycles)
         self.SetBurst(burst)
-        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
+        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
         self.SetTriggerOutput(trigger_out=trigger_out)
         self.SetOffset_V(offset_V)
         self.SetOutputImpedance(output_Impedance)
@@ -137,6 +137,7 @@ class KeysightAWG(AbstractAWG):
     def GetFrequency_Hz(self):
         self.command(f"FREQ?")
         self.state["frequency_Hz"] = float(self.read())
+        self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)
         return self.state["frequency_Hz"]
 
     """Sets the peak to peak amplitude of the waveform in volts"""
@@ -273,12 +274,24 @@ class KeysightAWG(AbstractAWG):
     #     self.state['trig_period_s'] = float(self.read())
     #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
 
+    # todo: test
     def wrap_up(self):
-        self.inst.close()
+        self.SetOutput(False)
+        self.disconnect_hardware()
 
-    """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+    # Todo: make sure this saves correctly in the systeminfo.ini
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+
+        self.command("*IDN")
+        str = self.read()
+
+        return str.split(',')[2]
 
     def __str__(self):
+        """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+
         self.get_state()
         return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 

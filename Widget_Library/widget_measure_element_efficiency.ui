@@ -379,6 +379,11 @@
        <string>Average UA RFB Position</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>RFB Position for Each Item</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
@@ -653,6 +658,11 @@
      <item>
       <property name="text">
        <string>Low Frequency</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>High Frequency</string>
       </property>
      </item>
     </widget>
@@ -937,12 +947,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Results 2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Results 3</string>
+       <string>Other directory</string>
       </property>
      </item>
     </widget>

@@ -1,7 +1,9 @@
 import random
-from Hardware.Abstract.abstract_balance import AbstractBalance
-from PyQt5.QtCore import pyqtSignal
 import time as t
+
+from PyQt5.QtCore import pyqtSignal
+
+from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
 
 
@@ -100,6 +102,12 @@ class SimulatedBalance(AbstractBalance):
     def get_stable_reading(self):
         self.log("Getting stable weight, please wait")
         return random.random()
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'
+
+    def wrap_up(self):
+        self.disconnect_hardware()
 
 
 if __name__ == '__main__':

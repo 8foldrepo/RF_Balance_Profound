@@ -1,22 +1,20 @@
+import collections.abc
 import os
-import random
 
 import numpy as np
-import collections.abc
 
-from PyQt5.QtWidgets import QFileDialog
-
-'''
-Inputs:
-A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
-A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
-Output:
-A list containing the axis letters of the coordinates provided, and a list of equal length containing the coordinates.
-With the given inputs the output should be axes: [Z,R] coords [3,2]
-'''
+from Utilities.variable_containers import TestData
 
 
 def create_coord_rays(coords: str, ax_letters: list):
+    """
+    Inputs:
+    A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+    A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+    Output:
+    A list containing the axis letters of the coordinates provided, and a list of equal length containing the
+    coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
+    """
     axes = list()
     coords = coords.split(',')
     for i in range(len(coords)):
@@ -28,10 +26,8 @@ def create_coord_rays(coords: str, ax_letters: list):
     return axes, coords
 
 
-'''Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager'''
-
-
 def get_element_distances(element_1_index, element_pitch):
+    """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coords = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
@@ -41,67 +37,8 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coords
 
 
-'''Create a dictionary containing all the fields available for UA test data, to be filled in by the manager class'''
-
-
-def blank_test_data() -> dict:
-    from datetime import datetime
-
-    test_data = dict()
-
-    # add formatted date
-    now = datetime.now()
-    formatted_date = now.strftime("%Y.%m.%d-%H.%M")
-    test_data['test_date_time'] = formatted_date
-    test_data['software_version'] = ""
-    test_data['test_comment'] = ""
-    test_data['serial_number'] = ""
-    test_data['operator_name'] = ""
-    test_data['script_name'] = ""
-    test_data['script_log'] = list()
-    test_data['low_frequency_MHz'] = float('nan')
-    test_data['high_frequency_MHz'] = float('nan')
-    test_data['hardware_code'] = ""
-    test_data['results_summary'] = list()
-    test_data["write_result"] = False
-    test_data["script_name"] = ""
-    lf = str(test_data['low_frequency_MHz'])
-    hf = str(test_data['high_frequency_MHz'])
-
-    # Create reults_summary table
-    table = [None] * 13
-    
-    # Default values, will be updated during test
-    table[0] = ['Element_01', '0', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[1] = ['Element_02', '5', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[2] = ['Element_03', '10', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[3] = ['Element_04', '15', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[4] = ['Element_05', '20', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[5] = ['Element_06', '25', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[6] = ['Element_07', '30', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[7] = ['Element_08', '35', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[8] = ['Element_09', '40', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-    table[9] = ['Element_10', '45', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-
-    table[10] = ['UA Common', 'NaN', '-90', lf, 'NaN', hf, 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'NaN', 'Pass', '']
-
-    elements_with_manual_lf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
-    elements_with_manual_hf = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
-
-    # Todo: add ability to set manual frequencies per element
-
-    table[11] = elements_with_manual_lf
-    table[12] = elements_with_manual_hf
-
-    test_data['results_summary'] = table
-
-    return test_data
-
-
-'''Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class'''
-
-
-def generate_calibration_data(test_data):
+def generate_calibration_data(test_data: TestData):
+    """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
     # Todo: populate this array according to the test_data
     calibration_data = {
         'cal_data_array': {
@@ -250,8 +187,8 @@ def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
 def clearLayout(layout):
     while layout.count():
         child = layout.takeAt(0)
-        if child.widget():
-            child.widget().setParent(None)
+        if child.edit_menu():
+            child.edit_menu().setParent(None)
 
 
 def listToRay(xCoords, yCoords, zCoords, Intensity):
@@ -288,28 +225,29 @@ def search_for(filename):
     return file_path
 
 
-'''Saves the dictionary containing test info to a specified path, formatted as a results summary'''
+"""Saves the dictionary containing test info to a specified path, formatted as a results summary"""
 
-def create_test_results_summary_file(test_data:dict, path):
+
+def create_test_results_summary_file(test_data: TestData, path):
     f = open(path, "w")
 
-    f.write(test_data["serial_number"] + '-' + test_data["test_date_time"] + '\n')
-    f.write("Test operator\t" + test_data['operator_name'] + '\n')
-    f.write("Comment\t" + test_data['test_comment'] + '\n')
-    f.write("Software Version\t" + test_data['software_version'] + '\n')
-    f.write("Script\t" + test_data['script_name'] + '\n')
-    if test_data["write_result"]:
+    f.write(test_data.serial_number + '-' + test_data.test_date_time + '\n')
+    f.write("Test operator\t" + test_data.operator_name + '\n')
+    f.write("Comment\t" + test_data.test_comment + '\n')
+    f.write("Software Version\t" + test_data.software_version + '\n')
+    f.write("Script\t" + test_data.script_name + '\n')
+    if test_data.write_result:
         f.write("UA Write\tOK\n")
     else:
         f.write("UA Write\tFAIL\n")
-    f.write("UA hardware code\t" + test_data['hardware_code'] + '\n')
+    f.write("UA hardware code\t" + test_data.hardware_code + '\n')
     f.write('\n')  # empty line
     f.write(
         "\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\t"
         "LF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\t"
         "Failure description\n")
 
-    element_data_list = test_data['results_summary']
+    element_data_list = test_data.results_summary
     for x in range(len(element_data_list)):
         if 0 <= x <= 10:  # for all the element lines and the UA Common line
             if x == 10:
@@ -350,27 +288,6 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
         root_logger.info(log_entry)
     print(f'[{level}] {log_entry}')
 
+
 if __name__ == '__main__':
-    metadata = dict()
-    metadata['element_number'] = 1
-    metadata['axis'] = "Th"
-    metadata['waveform_number'] = "Theta000"
-    metadata['serial_number'] = 'GH1214'
-    metadata['version'] = 1.0
-    metadata['X'] = 0.750
-    metadata['Theta'] = -171.198
-    metadata['calibration_frequency_(MHz)'] = '4'
-    metadata['source_signal_amplitude_(mVpp)'] = '50'
-    metadata['source_signal_type'] = 'Toneburst'
-    metadata['number_of_cycles'] = 0
-
-    distances = list()
-    vms = list()
-
-    for x in range(100):
-        distances.append(random.uniform(-8.5, 9.5))
-        vms.append(random.uniform(3.2, 5.1))
-
-    path = "C:\\Users\\RKPC\\Documents\\RF_Test_Directory\\"
-
-    save_find_element_profile(metadata, distances, vms, path)
+    pass

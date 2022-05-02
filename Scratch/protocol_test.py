@@ -1,5 +1,5 @@
-from typing import Protocol
 from abc import ABC, ABCMeta, abstractmethod
+
 from PyQt5.QtCore import QObject
 
 from Utilities.useful_methods import log_msg

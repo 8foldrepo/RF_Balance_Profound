@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QApplication
-from Widget_Library import wtf_user_prompt_pump_not_running
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QApplication
+
+from Widget_Library import wtf_user_prompt_pump_not_running
 from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
@@ -9,8 +10,8 @@ class WTFUserPromptPumpNotRunning(MyQDialog, wtf_user_prompt_pump_not_running.Ui
     abort_signal = pyqtSignal()
     set_pump_signal = pyqtSignal(bool)
 
-    def __init__(self, config = None):
-        super().__init__(config = config)
+    def __init__(self, config=None):
+        super().__init__(config=config)
         self.setupUi(self)
         self.configure_signals()
         self.app = QApplication.instance()

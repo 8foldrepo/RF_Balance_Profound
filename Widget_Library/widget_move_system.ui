@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
+    <width>350</width>
     <height>260</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>290</width>
+    <width>350</width>
     <height>260</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>290</width>
+    <width>350</width>
     <height>260</height>
    </size>
   </property>
@@ -30,7 +30,7 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>261</width>
+     <width>321</width>
      <height>231</height>
     </rect>
    </property>
@@ -59,7 +59,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>211</width>
+       <width>281</width>
        <height>151</height>
       </rect>
      </property>
@@ -106,7 +106,7 @@
      <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
-        <x>120</x>
+        <x>180</x>
         <y>70</y>
         <width>79</width>
         <height>75</height>
@@ -145,7 +145,7 @@
        <rect>
         <x>10</x>
         <y>70</y>
-        <width>101</width>
+        <width>141</width>
         <height>71</height>
        </rect>
       </property>
@@ -176,7 +176,7 @@
            <rect>
             <x>4</x>
             <y>3</y>
-            <width>94</width>
+            <width>125</width>
             <height>48</height>
            </rect>
           </property>
@@ -191,13 +191,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="x_pos_spin">
-             <property name="styleSheet">
-              <string notr="true">background:white</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
@@ -205,10 +198,29 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QSpinBox" name="theta_pos_spin">
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="x_pos_spin">
              <property name="styleSheet">
               <string notr="true">background:white</string>
+             </property>
+             <property name="minimum">
+              <double>-9999999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>99999999.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="theta_pos_spin">
+             <property name="styleSheet">
+              <string notr="true">background:white</string>
+             </property>
+             <property name="minimum">
+              <double>-9999999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>99999999.000000000000000</double>
              </property>
             </widget>
            </item>

@@ -1,13 +1,15 @@
 import random
+import time as t
+
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
 from nidaqmx.constants import LineGrouping
+
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
-import time as t
 from definitions import WaterLevel
 
-'''Class for interfacing with an National instruments usb-6009 digital IO board'''
+"""Class for interfacing with an National instruments usb-6009 digital IO board"""
 
 
 class DIOBoard(AbstractIOBoard):
@@ -27,7 +29,7 @@ class DIOBoard(AbstractIOBoard):
 
         self.water_level = None
         self.ua_pump_on = None
-        self.power_relay = RelayBoard(config=config,device_key="Daq_Power_Relay")
+        self.power_relay = RelayBoard(config=config, device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.fields_setup()
@@ -43,7 +45,6 @@ class DIOBoard(AbstractIOBoard):
 
         self.connected_signal.emit(self.connected)
         return self.connected, ''
-
 
     def activate_relay_channel(self, channel_number: int) -> bool:
         with nidaqmx.Task() as task:
@@ -78,8 +79,8 @@ class DIOBoard(AbstractIOBoard):
             self.log("Filling tank, please wait...")
             self.set_tank_pump_on(on=True, clockwise=True)
             self.filling_signal.emit()
-            start_time = t.time()
 
+            start_time = t.time()
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
@@ -196,9 +197,9 @@ class DIOBoard(AbstractIOBoard):
         self.connected = False
         self.connected_signal.emit(False)
 
-    '''Return the state of the water level sensor. possible values are below_level, above_level, and level'''
-
     def get_water_level(self) -> WaterLevel:
+        """Return the state of the water level sensor. possible values are below_level, above_level, and level"""
+
         if self.simulate_sensors: return self.water_level
 
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
@@ -221,6 +222,11 @@ class DIOBoard(AbstractIOBoard):
 
             self.water_level_reading_signal.emit(level)
             return level
+
+    def wrap_up(self):
+        self.power_relay.wrap_up()
+        self.disconnect_hardware()
+        self.disconnect_hardware()
 
     def fields_setup(self):
         self.name = self.config[self.device_key]['DAQ Device name']

@@ -1,13 +1,15 @@
-from ui_elements.Dialogs.my_qdialog import MyQDialog
-from Widget_Library import wtf_user_prompt
 from PyQt5.QtCore import pyqtSignal
 
-class WTFUserPrompt (MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
+from Widget_Library import wtf_user_prompt
+from ui_elements.Dialogs.my_qdialog import MyQDialog
+
+
+class WTFUserPrompt(MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
     continue_signal = pyqtSignal()
     abort_signal = pyqtSignal()
     retry_signal = pyqtSignal()
 
-    def __init__(self, config = None):
+    def __init__(self, config=None):
         super().__init__(config=config)
         self.setupUi(self)
         self.configure_signals()
@@ -30,9 +32,11 @@ class WTFUserPrompt (MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
         self.retry_signal.emit()
         self.close()
 
+
 if __name__ == "__main__":
     import sys
-    from PyQt5.QtWidgets import  QApplication
+    from PyQt5.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 

@@ -1,5 +1,6 @@
-from abc import abstractmethod
 import random
+from abc import abstractmethod
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
@@ -29,3 +30,6 @@ class SimulatedThermocouple(AbstractSensor):
 
         self.reading_signal.emit(reading)
         return reading
+
+    def get_serial_number(self) -> str:
+        return '\"Simulated\"'

@@ -1,10 +1,11 @@
-from Hardware.Abstract.abstract_balance import AbstractBalance
-import serial
-from PyQt5.QtCore import pyqtSignal
 import time as t
 
-from Utilities.useful_methods import is_number
+import serial
+from PyQt5.QtCore import pyqtSignal
+
+from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
+from Utilities.useful_methods import is_number
 
 
 class MT_balance(AbstractBalance):
@@ -57,9 +58,12 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level='error', message=f'{self.device_key} timed out')
 
-    """Zeroes the scale immediately"""
+    def wrap_up(self):
+        self.disconnect_hardware()
 
     def zero_balance_instantly(self):
+        """Zeroes the scale immediately"""
+
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected is False:
@@ -168,7 +172,6 @@ class MT_balance(AbstractBalance):
                 if b'S S' in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
-                        print(chunk)
                         if is_number(chunk):
                             val = float(chunk)
                             self.latest_weight = val
@@ -234,6 +237,35 @@ class MT_balance(AbstractBalance):
                     elif item == b'-':
                         self.log(level='error', message='Balance underloaded')
                         return
+        self.log(level='error', message=f'{self.device_key} timed out')
+
+    # Todo: test
+    def get_serial_number(self) -> str:
+        if not self.connected:
+            return None
+
+        self.ser.write(b"\nI4\n")
+        self.log("Getting stable reading, please wait")
+
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
+            y = self.ser.readline().split(b"\r\n")
+            for item in y:
+                if b'I4' in item:
+                    chunks = item.split(b" ")
+                    for chunk in chunks:
+                        if len(chunk) > 6:
+                            return chunk
+                else:
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
+                        return None
+                    elif item == b'+':
+                        self.log(level='error', message='Balance overloaded')
+                        return None
+                    elif item == b'-':
+                        self.log(level='error', message='Balance underloaded')
+                        return None
         self.log(level='error', message=f'{self.device_key} timed out')
 
 
