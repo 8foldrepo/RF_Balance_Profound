@@ -155,7 +155,7 @@ class FileSaver:
 
     # the three lists are 2D, first col in sub list is time second is voltage
     #todo: add a more specific filename and match the format of the example files
-    def store_measure_rfb_waveform_csv(self, metadata:FileMetadata, forward_power, reflected_power, acoustic_power):
+    def store_measure_rfb_waveform(self, metadata:FileMetadata, forward_power, reflected_power, acoustic_power):
         path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
                                             f"E{metadata.element_number:02}"))
         file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.csv")
