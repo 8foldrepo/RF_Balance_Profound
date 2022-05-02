@@ -30,13 +30,17 @@ class Ui_Dialog(object):
         self.access_level_combo.addItem("")
         self.access_level_combo.addItem("")
         self.access_level_combo.addItem("")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.access_level_combo)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.access_level_combo
+        )
         self.label_2 = QtWidgets.QLabel(self.horizontalWidget_2)
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.SpanningRole, self.label_2)
         self.password_field = QtWidgets.QLineEdit(self.horizontalWidget_2)
         self.password_field.setObjectName("password_field")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.password_field)
+        self.formLayout.setWidget(
+            3, QtWidgets.QFormLayout.SpanningRole, self.password_field
+        )
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.ok_button = QtWidgets.QPushButton(self.horizontalWidget_2)
@@ -45,16 +49,22 @@ class Ui_Dialog(object):
         self.cancel_button = QtWidgets.QPushButton(self.horizontalWidget_2)
         self.cancel_button.setObjectName("cancel_button")
         self.horizontalLayout_2.addWidget(self.cancel_button)
-        self.formLayout.setLayout(5, QtWidgets.QFormLayout.LabelRole, self.horizontalLayout_2)
+        self.formLayout.setLayout(
+            5, QtWidgets.QFormLayout.LabelRole, self.horizontalLayout_2
+        )
         self.label = QtWidgets.QLabel(self.horizontalWidget_2)
         self.label.setObjectName("label")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.label)
-        spacerItem = QtWidgets.QSpacerItem(20, 200, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 200, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.formLayout.setItem(4, QtWidgets.QFormLayout.LabelRole, spacerItem)
         self.horizontalLayout_3.addLayout(self.formLayout)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
+        )
         self.verticalLayout.addItem(spacerItem1)
         self.label_3 = QtWidgets.QLabel(self.horizontalWidget_2)
         self.label_3.setObjectName("label_3")
@@ -63,7 +73,9 @@ class Ui_Dialog(object):
         self.verified_checkBox.setText("")
         self.verified_checkBox.setObjectName("verified_checkBox")
         self.verticalLayout.addWidget(self.verified_checkBox)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.verticalLayout.addItem(spacerItem2)
         self.horizontalLayout_3.addLayout(self.verticalLayout)
         self.gridLayout.addWidget(self.horizontalWidget_2, 0, 0, 1, 1)

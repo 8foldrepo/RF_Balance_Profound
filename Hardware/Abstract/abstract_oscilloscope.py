@@ -6,6 +6,7 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractOscilloscope(AbstractDevice):
     """Defines key functionalities for oscilloscopes"""
+
     range_mv: float
     channel: int
     averages: int
@@ -16,7 +17,7 @@ class AbstractOscilloscope(AbstractDevice):
     delay_cycles: float
     captures: int
 
-    def __init__(self, device_key='Keysight_Oscilloscope', config=None, parent=None):
+    def __init__(self, device_key="Keysight_Oscilloscope", config=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
 
     @abstractmethod
@@ -28,8 +29,16 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
-              ext_trigger: bool, average_count: int):
+    def setup(
+        self,
+        channel: int,
+        range_s: float,
+        offset_s: float,
+        autorange_v: float,
+        range_v: float,
+        ext_trigger: bool,
+        average_count: int,
+    ):
         ...
 
     @abstractmethod

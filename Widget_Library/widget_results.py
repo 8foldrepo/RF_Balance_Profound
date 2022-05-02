@@ -48,10 +48,14 @@ class Ui_Form(object):
         self.tab_8.setObjectName("tab_8")
         self.results_table = QtWidgets.QTableWidget(self.tab_8)
         self.results_table.setGeometry(QtCore.QRect(0, 160, 1000, 371))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.results_table.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.results_table.sizePolicy().hasHeightForWidth()
+        )
         self.results_table.setSizePolicy(sizePolicy)
         self.results_table.setMaximumSize(QtCore.QSize(1000, 1000))
         font = QtGui.QFont()
@@ -179,7 +183,10 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label_131.setText(_translate("Form", "UA Script Log"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.scriptlog_tab), _translate("Form", "ScriptLog"))
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.scriptlog_tab),
+            _translate("Form", "ScriptLog"),
+        )
         item = self.results_table.verticalHeaderItem(1)
         item.setText(_translate("Form", "Element_01"))
         item = self.results_table.verticalHeaderItem(2)
@@ -269,7 +276,9 @@ class Ui_Form(object):
         self.results_table.setSortingEnabled(__sortingEnabled)
         self.label_130.setText(_translate("Form", "UA Test Results"))
         self.save_button.setText(_translate("Form", "Save Report"))
-        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_8), _translate("Form", "UA Results"))
+        self.tabWidget_2.setTabText(
+            self.tabWidget_2.indexOf(self.tab_8), _translate("Form", "UA Results")
+        )
 
 
 if __name__ == "__main__":

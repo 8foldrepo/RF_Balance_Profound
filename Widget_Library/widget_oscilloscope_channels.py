@@ -25,7 +25,9 @@ class Ui_config_osc_channels(object):
         self.frame_2.setObjectName("frame_2")
         self.config_osc_channel_note = QtWidgets.QTextBrowser(self.frame_2)
         self.config_osc_channel_note.setGeometry(QtCore.QRect(265, 15, 281, 80))
-        self.config_osc_channel_note.setStyleSheet("background-color:rgb(255, 255, 255);")
+        self.config_osc_channel_note.setStyleSheet(
+            "background-color:rgb(255, 255, 255);"
+        )
         self.config_osc_channel_note.setFrameShape(QtWidgets.QFrame.Box)
         self.config_osc_channel_note.setFrameShadow(QtWidgets.QFrame.Plain)
         self.config_osc_channel_note.setLineWidth(2)
@@ -98,15 +100,23 @@ class Ui_config_osc_channels(object):
     def retranslateUi(self, config_osc_channels):
         _translate = QtCore.QCoreApplication.translate
         config_osc_channels.setWindowTitle(_translate("config_osc_channels", "Form"))
-        self.config_osc_channel_note.setHtml(_translate("config_osc_channels",
-                                                        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                                        "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                                        "p, li { white-space: pre-wrap; }\n"
-                                                        "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-                                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; text-decoration: underline;\">Note:</span></p>\n"
-                                                        "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">Enable/Disable the desired oscilloscope channels. In addition, confiugure the corresponding Gain and Offset per channel.</span></p></body></html>"))
-        self.label.setText(_translate("config_osc_channels",
-                                      "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; text-decoration: underline;\">Channel settings</span></p></body></html>"))
+        self.config_osc_channel_note.setHtml(
+            _translate(
+                "config_osc_channels",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:10pt; text-decoration: underline;">Note:</span></p>\n'
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:10pt;">Enable/Disable the desired oscilloscope channels. In addition, confiugure the corresponding Gain and Offset per channel.</span></p></body></html>',
+            )
+        )
+        self.label.setText(
+            _translate(
+                "config_osc_channels",
+                '<html><head/><body><p><span style=" font-size:14pt; font-weight:600; text-decoration: underline;">Channel settings</span></p></body></html>',
+            )
+        )
         self.label_4.setText(_translate("config_osc_channels", "Gain (mV/div)"))
         self.label_5.setText(_translate("config_osc_channels", "Offset (mV)"))
         self.label_9.setText(_translate("config_osc_channels", "Offset (mV)"))

@@ -15,7 +15,7 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
 
 sys.path.append(POWER_METER_DLL_PATH)
-clr.AddReference('mcl_pm_NET45')  # Reference the DLL
+clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
 
 
@@ -38,8 +38,14 @@ class PowerMeter(AbstractSensor):
             ctypes.c_,  # Parameters 1 ...
             ctypes.c_void_p,
             ctypes.c_void_p,
-            ctypes.c_void_p)  # ... thru 4.
-        hllApiParams = (1, "p1", 0), (1, "p2", 0), (1, "p3", 0), (1, "p4", 0),
+            ctypes.c_void_p,
+        )  # ... thru 4.
+        hllApiParams = (
+            (1, "p1", 0),
+            (1, "p2", 0),
+            (1, "p3", 0),
+            (1, "p4", 0),
+        )
 
     def connect_hardware(self):
         self.pwr.Open_Sensor(self.serial_number)
@@ -51,15 +57,18 @@ class PowerMeter(AbstractSensor):
         else:
             self.serial_number = SerialNo
             self.connected = True
-            self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial "
-                                           f"{SerialNo} connected successfully")
+            self.log(
+                level="info",
+                message=f"{self.device_key} (model {ModelName}, serial "
+                f"{SerialNo} connected successfully",
+            )
             self.pwr.Freq = 1000  # Set measurement frequency
             self.pwr.AvgCount = 1  # Set averaging count to 1
             self.pwr.AVG = 1  # Enable averaging
             self.pwr.Format_mW = True
 
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.pwr.Close_Sensor()
@@ -80,14 +89,14 @@ class PowerMeter(AbstractSensor):
         return self.serial_number
 
 
-if __name__ == '__main__':
-    reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
-    forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
+if __name__ == "__main__":
+    reflected_meter = PowerMeter(config=None, device_key="Reflected_Power_Meter")
+    forward_meter = PowerMeter(config=None, device_key="Forward_Power_Meter")
     forward_meter.connect_hardware()
     reflected_meter.connect_hardware()
 
-    print(f'Forward power: {forward_meter.get_reading()} Watts')
-    print(f'Reflected power: {reflected_meter.get_reading()} Watts')
+    print(f"Forward power: {forward_meter.get_reading()} Watts")
+    print(f"Reflected power: {reflected_meter.get_reading()} Watts")
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()

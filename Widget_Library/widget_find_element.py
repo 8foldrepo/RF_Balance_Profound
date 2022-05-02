@@ -282,78 +282,180 @@ class Ui_FIND_ELEMENT_WIDGET(object):
 
     def retranslateUi(self, FIND_ELEMENT_WIDGET):
         _translate = QtCore.QCoreApplication.translate
-        FIND_ELEMENT_WIDGET.setWindowTitle(_translate("FIND_ELEMENT_WIDGET", "Find Element"))
-        self.label.setText(_translate("FIND_ELEMENT_WIDGET",
-                                      "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Element Positioning</span></p></body></html>"))
+        FIND_ELEMENT_WIDGET.setWindowTitle(
+            _translate("FIND_ELEMENT_WIDGET", "Find Element")
+        )
+        self.label.setText(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Element Positioning</span></p></body></html>',
+            )
+        )
         self.label_2.setText(_translate("FIND_ELEMENT_WIDGET", "Element Selected:"))
-        self.ELEMENT_SELECTION_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Element 1"))
-        self.ELEMENT_SELECTION_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Element 2"))
-        self.ELEMENT_SELECTION_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Element 3"))
+        self.ELEMENT_SELECTION_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "Element 1")
+        )
+        self.ELEMENT_SELECTION_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Element 2")
+        )
+        self.ELEMENT_SELECTION_FIELD.setItemText(
+            2, _translate("FIND_ELEMENT_WIDGET", "Element 3")
+        )
         self.X_INCREMENT_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " mm"))
         self.label_3.setText(_translate("FIND_ELEMENT_WIDGET", "X-Axis Increment:"))
-        self.THETA_INCREMENT_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " Degrees"))
+        self.THETA_INCREMENT_FIELD.setSuffix(
+            _translate("FIND_ELEMENT_WIDGET", " Degrees")
+        )
         self.label_22.setText(
-            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta Increment:</p></body></html>"))
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                "<html><head/><body><p>Theta Increment:</p></body></html>",
+            )
+        )
         self.label_5.setText(_translate("FIND_ELEMENT_WIDGET", "X-Axis # of Points:"))
         self.label_6.setText(
-            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta # of Points:</p></body></html>"))
-        self.label_4.setText(_translate("FIND_ELEMENT_WIDGET",
-                                        "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Oscilliscope Parameters</span></p></body></html>"))
-        self.OSCOPE_CHANNEL_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Channel 1"))
-        self.OSCOPE_CHANNEL_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Channel 2"))
-        self.OSCOPE_CHANNEL_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Channel 3"))
-        self.OSCOPE_CHANNEL_FIELD.setItemText(3, _translate("FIND_ELEMENT_WIDGET", "Channel 4"))
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                "<html><head/><body><p>Theta # of Points:</p></body></html>",
+            )
+        )
+        self.label_4.setText(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Oscilliscope Parameters</span></p></body></html>',
+            )
+        )
+        self.OSCOPE_CHANNEL_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "Channel 1")
+        )
+        self.OSCOPE_CHANNEL_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Channel 2")
+        )
+        self.OSCOPE_CHANNEL_FIELD.setItemText(
+            2, _translate("FIND_ELEMENT_WIDGET", "Channel 3")
+        )
+        self.OSCOPE_CHANNEL_FIELD.setItemText(
+            3, _translate("FIND_ELEMENT_WIDGET", "Channel 4")
+        )
         self.label_7.setText(_translate("FIND_ELEMENT_WIDGET", "Scope Channel:"))
-        self.OSCOPE_AQTYPE_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET",
-                                                       "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- Single Waveform </p><p>- N Averaged Waveform</p></body></html>"))
-        self.OSCOPE_AQTYPE_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "N Averaged Waveform"))
-        self.OSCOPE_AQTYPE_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Single Waveform"))
+        self.OSCOPE_AQTYPE_FIELD.setToolTip(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- Single Waveform </p><p>- N Averaged Waveform</p></body></html>',
+            )
+        )
+        self.OSCOPE_AQTYPE_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "N Averaged Waveform")
+        )
+        self.OSCOPE_AQTYPE_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Single Waveform")
+        )
         self.label_8.setText(_translate("FIND_ELEMENT_WIDGET", "Acquisition Type:"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "2 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "4 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "8 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(3, _translate("FIND_ELEMENT_WIDGET", "16 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(4, _translate("FIND_ELEMENT_WIDGET", "32 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(5, _translate("FIND_ELEMENT_WIDGET", "64 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(6, _translate("FIND_ELEMENT_WIDGET", "128 Averages"))
-        self.OSCOPE_SAMPLES_FIELD.setItemText(7, _translate("FIND_ELEMENT_WIDGET", "256 Averages"))
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "2 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "4 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            2, _translate("FIND_ELEMENT_WIDGET", "8 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            3, _translate("FIND_ELEMENT_WIDGET", "16 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            4, _translate("FIND_ELEMENT_WIDGET", "32 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            5, _translate("FIND_ELEMENT_WIDGET", "64 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            6, _translate("FIND_ELEMENT_WIDGET", "128 Averages")
+        )
+        self.OSCOPE_SAMPLES_FIELD.setItemText(
+            7, _translate("FIND_ELEMENT_WIDGET", "256 Averages")
+        )
         self.label_9.setText(_translate("FIND_ELEMENT_WIDGET", "Number of Samples:"))
         self.label_10.setText(_translate("FIND_ELEMENT_WIDGET", "Capture Cycles:"))
         self.label_11.setText(_translate("FIND_ELEMENT_WIDGET", "Delay Cycles:"))
-        self.OSCOPE_AUTO_CHECKBOX.setText(_translate("FIND_ELEMENT_WIDGET", "Auto Timebase"))
+        self.OSCOPE_AUTO_CHECKBOX.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Auto Timebase")
+        )
         self.label_12.setText(_translate("FIND_ELEMENT_WIDGET", "Data Storage:"))
-        self.OSCOPE_DATASTORE_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET",
-                                                          "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- Do not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html> "))
-        self.OSCOPE_DATASTORE_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Do not store"))
-        self.OSCOPE_DATASTORE_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Store profiles only"))
-        self.OSCOPE_DATASTORE_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Store entire waveform"))
+        self.OSCOPE_DATASTORE_FIELD.setToolTip(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- Do not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html> ',
+            )
+        )
+        self.OSCOPE_DATASTORE_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "Do not store")
+        )
+        self.OSCOPE_DATASTORE_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Store profiles only")
+        )
+        self.OSCOPE_DATASTORE_FIELD.setItemText(
+            2, _translate("FIND_ELEMENT_WIDGET", "Store entire waveform")
+        )
         self.label_13.setText(_translate("FIND_ELEMENT_WIDGET", "Storage Location:"))
-        self.OSCOPE_DATALOC_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "UA Results Directory"))
-        self.OSCOPE_DATALOC_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Other Directory"))
+        self.OSCOPE_DATALOC_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "UA Results Directory")
+        )
+        self.OSCOPE_DATALOC_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Other Directory")
+        )
         self.label_14.setText(_translate("FIND_ELEMENT_WIDGET", "Data Directory:"))
-        self.OSCOPE_DATA_DIRECTORY_BUTTON.setText(_translate("FIND_ELEMENT_WIDGET", "Browse"))
-        self.label_15.setText(_translate("FIND_ELEMENT_WIDGET",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Frequency &amp; Angle</span></p></body></html>"))
+        self.OSCOPE_DATA_DIRECTORY_BUTTON.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Browse")
+        )
+        self.label_15.setText(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Frequency &amp; Angle</span></p></body></html>',
+            )
+        )
         self.label_16.setText(_translate("FIND_ELEMENT_WIDGET", "Frequency Preset:"))
-        self.FREQANG_PRESET_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET",
-                                                        "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>"))
-        self.FREQANG_PRESET_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "From config cluster"))
-        self.FREQANG_PRESET_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Element pk low frequency"))
-        self.FREQANG_PRESET_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Element pk high frequency"))
-        self.FREQANG_PRESET_FIELD.setItemText(3, _translate("FIND_ELEMENT_WIDGET", "Common low frequency"))
-        self.FREQANG_PRESET_FIELD.setItemText(4, _translate("FIND_ELEMENT_WIDGET", "Common high frequency"))
+        self.FREQANG_PRESET_FIELD.setToolTip(
+            _translate(
+                "FIND_ELEMENT_WIDGET",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>',
+            )
+        )
+        self.FREQANG_PRESET_FIELD.setItemText(
+            0, _translate("FIND_ELEMENT_WIDGET", "From config cluster")
+        )
+        self.FREQANG_PRESET_FIELD.setItemText(
+            1, _translate("FIND_ELEMENT_WIDGET", "Element pk low frequency")
+        )
+        self.FREQANG_PRESET_FIELD.setItemText(
+            2, _translate("FIND_ELEMENT_WIDGET", "Element pk high frequency")
+        )
+        self.FREQANG_PRESET_FIELD.setItemText(
+            3, _translate("FIND_ELEMENT_WIDGET", "Common low frequency")
+        )
+        self.FREQANG_PRESET_FIELD.setItemText(
+            4, _translate("FIND_ELEMENT_WIDGET", "Common high frequency")
+        )
         self.FREQANG_BURST_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " Bursts"))
         self.label_17.setText(_translate("FIND_ELEMENT_WIDGET", "Burst Count:"))
         self.label_18.setText(_translate("FIND_ELEMENT_WIDGET", "Frequency (MHz):"))
         self.FREQANG_FREQ_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " MHz"))
         self.FREQANG_VOLT_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " mV"))
         self.label_19.setText(_translate("FIND_ELEMENT_WIDGET", "Amplitude (mV):"))
-        self.label_20.setText(_translate("FIND_ELEMENT_WIDGET", "Max Angle Variation (Deg):"))
+        self.label_20.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Max Angle Variation (Deg):")
+        )
         self.FREQANG_ANG_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " Degrees"))
-        self.FREQANG_ANG_TEST_CHECKBOX.setText(_translate("FIND_ELEMENT_WIDGET", "Include Test"))
-        self.FREQANG_POS_TEST_CHECKBOX.setText(_translate("FIND_ELEMENT_WIDGET", "Include Test"))
+        self.FREQANG_ANG_TEST_CHECKBOX.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Include Test")
+        )
+        self.FREQANG_POS_TEST_CHECKBOX.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Include Test")
+        )
         self.FREQANG_POS_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " mm"))
-        self.label_21.setText(_translate("FIND_ELEMENT_WIDGET", "Max Position Error (mm):"))
+        self.label_21.setText(
+            _translate("FIND_ELEMENT_WIDGET", "Max Position Error (mm):")
+        )
 
 
 if __name__ == "__main__":

@@ -10,11 +10,17 @@ from ui_elements.script_editor_menus.ui_frequency_sweep import FrequencySweep
 from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
 from ui_elements.script_editor_menus.ui_home_system import HomeSystem
 from ui_elements.script_editor_menus.ui_loop_over_elements import LoopOverElements
-from ui_elements.script_editor_menus.ui_measure_element_efficiency import MeasureElementEfficiency
+from ui_elements.script_editor_menus.ui_measure_element_efficiency import (
+    MeasureElementEfficiency,
+)
 from ui_elements.script_editor_menus.ui_move_system import MoveSystem
 from ui_elements.script_editor_menus.ui_oscilloscope_channel import OscilloscopeChannels
-from ui_elements.script_editor_menus.ui_oscilloscope_timebase import OscilloscopeTimebase
-from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
+from ui_elements.script_editor_menus.ui_oscilloscope_timebase import (
+    OscilloscopeTimebase,
+)
+from ui_elements.script_editor_menus.ui_prompt_user_for_action import (
+    PromptUserForAction,
+)
 from ui_elements.script_editor_menus.ui_save_results import SaveResults
 from ui_elements.script_editor_menus.ui_script_edit_template import AbstractEditMenu
 from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
@@ -56,7 +62,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         task_type = self.script_cmd_dropdown.currentText()
 
-        if task_type == "Find element \"n\"":
+        if task_type == 'Find element "n"':
             self.edit_menu = FindElement()
         elif task_type == "Loop over elements":
             self.edit_menu = LoopOverElements()
@@ -95,7 +101,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if len(self.list_of_var_dicts) == 0:
             return
 
-        if self.treeWidget.currentItem().text(0) == '':
+        if self.treeWidget.currentItem().text(0) == "":
             return
 
         # Prevent user from running the script until it is saved and reloaded
@@ -128,14 +134,19 @@ class ScriptEditor(MyQWidget, Ui_Form):
         parameter_key = item.text(0)
         value = item.text(1)
 
-        is_task = item.parent() is self.treeWidget.invisibleRootItem() or item.parent() is None
+        is_task = (
+            item.parent() is self.treeWidget.invisibleRootItem()
+            or item.parent() is None
+        )
         if is_task:
             return
 
         # Clicked cell contains a variable value
         # Prompt user to edit value
-        value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
-        if value is not None and value != '':
+        value = QInputDialog.getText(
+            self, "Change Variable", f"Previous value: {value}"
+        )[0]
+        if value is not None and value != "":
             # Prevent user from running the script until it is saved and reloaded
             self.script_changed_signal.emit()
 
@@ -170,7 +181,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         task_dict = {}
         for i in range(len(self.list_of_var_dicts)):
-            if '# of Tasks' not in self.list_of_var_dicts[i].keys():
+            if "# of Tasks" not in self.list_of_var_dicts[i].keys():
                 arg_list = list()
                 for key in self.list_of_var_dicts[i]:
                     if not key == "Task type":
@@ -221,8 +232,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
         var_dict_copy = list(self.list_of_var_dicts)
 
         # remove quotes
-        task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in
-                      range(self.script_cmd_dropdown.count())]
+        task_names = [
+            self.script_cmd_dropdown.itemText(i).replace('"', "")
+            for i in range(self.script_cmd_dropdown.count())
+        ]
 
         # For each task name,
         for task_name in task_names:
@@ -286,29 +299,29 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         if new_var_dict is not None:
             pass
-        elif task_name == 'Pre-test initialisation':
+        elif task_name == "Pre-test initialisation":
             new_var_dict = pre_test_dict()
-        elif task_name == 'Find element \"n\"':
+        elif task_name == 'Find element "n"':
             new_var_dict = self.find_element_dict()
-        elif task_name == 'Loop over elements':
+        elif task_name == "Loop over elements":
             new_var_dict = self.loop_over_elements_dict()
-        elif task_name == 'End loop':
+        elif task_name == "End loop":
             new_var_dict = end_loop_dict()
-        elif task_name == 'Frequency sweep':
+        elif task_name == "Frequency sweep":
             new_var_dict = frequency_sweep_dict()
-        elif task_name == 'Configure oscilloscope channels':
+        elif task_name == "Configure oscilloscope channels":
             new_var_dict = oscilloscope_channel_dict()
-        elif task_name == 'Configure oscilloscope timebase':
+        elif task_name == "Configure oscilloscope timebase":
             new_var_dict = oscilloscope_timebase_dict()
-        elif task_name == 'Move system':
+        elif task_name == "Move system":
             new_var_dict = move_system_dict()
-        elif task_name == 'Configure function generator':
+        elif task_name == "Configure function generator":
             new_var_dict = function_generator_dict()
-        elif task_name == 'Select UA channel':
+        elif task_name == "Select UA channel":
             new_var_dict = select_UA_channel_dict()
         elif task_name == 'Run "Auto Gain Control"':
             new_var_dict = auto_gain_control_dict()
-        elif task_name == 'Autoset timebase':
+        elif task_name == "Autoset timebase":
             new_var_dict = autoset_timebase_dict()
         # todo: add more methods
         else:
@@ -326,7 +339,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.add_empty_item_at_end()
 
     def save_script(self):
-        path = QFileDialog.getSaveFileName(parent=self, caption='Save script', filter='Script files (*.wtf)')[0]
+        path = QFileDialog.getSaveFileName(
+            parent=self, caption="Save script", filter="Script files (*.wtf)"
+        )[0]
 
         # remove existing header(s) if there is one
         for i in range(len(self.list_of_var_dicts)):
@@ -336,35 +351,39 @@ class ScriptEditor(MyQWidget, Ui_Form):
             except IndexError:
                 pass
 
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             num_tasks = len(self.list_of_var_dicts)
             # Customize header dict
             self.list_of_var_dicts.insert(0, header_dict())
             self.list_of_var_dicts[0]["# of Tasks"] = num_tasks
             today = date.today()
             self.list_of_var_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
-            Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
+            Createdby = QInputDialog.getText(
+                self, "Save script metadata", f"Enter operator name:"
+            )[0]
             self.list_of_var_dicts[0]["Createdby"] = Createdby
-            Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
+            Description = QInputDialog.getText(
+                self, "Save script metadata", f"Enter script description:"
+            )[0]
             self.list_of_var_dicts[0]["Description"] = Description
 
             # Write header info
-            f.write('[Top Level]\n')
+            f.write("[Top Level]\n")
 
             for arg in self.list_of_var_dicts[0].keys():
-                f.write(f"{arg} = \"{self.list_of_var_dicts[0][arg]}\"\n")
+                f.write(f'{arg} = "{self.list_of_var_dicts[0][arg]}"\n')
             f.write("\n")
 
             # Write arguments of each step
             for i in range(len(self.list_of_var_dicts) - 1):
-                f.write(f'[Task{i}]\n')
+                f.write(f"[Task{i}]\n")
                 task_args = self.list_of_var_dicts[i + 1]
                 for arg in task_args.keys():
-                    f.write(f"{arg} = \"{task_args[arg]}\"\n")
+                    f.write(f'{arg} = "{task_args[arg]}"\n')
                 f.write("\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     from PyQt5.QtWidgets import QApplication
 

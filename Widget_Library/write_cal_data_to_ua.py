@@ -49,19 +49,27 @@ class Ui_write_cal_data_to_ua(object):
         self.buttons_horz.setSpacing(13)
         self.buttons_horz.setObjectName("buttons_horz")
         self.cancel_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.cancel_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.cancel_button.sizePolicy().hasHeightForWidth()
+        )
         self.cancel_button.setSizePolicy(sizePolicy)
         self.cancel_button.setMinimumSize(QtCore.QSize(70, 30))
         self.cancel_button.setObjectName("cancel_button")
         self.buttons_horz.addWidget(self.cancel_button)
         self.write_ua_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.write_ua_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.write_ua_button.sizePolicy().hasHeightForWidth()
+        )
         self.write_ua_button.setSizePolicy(sizePolicy)
         self.write_ua_button.setObjectName("write_ua_button")
         self.buttons_horz.addWidget(self.write_ua_button)
@@ -276,12 +284,18 @@ class Ui_write_cal_data_to_ua(object):
 
     def retranslateUi(self, write_cal_data_to_ua):
         _translate = QtCore.QCoreApplication.translate
-        write_cal_data_to_ua.setWindowTitle(_translate("write_cal_data_to_ua", "Dialog"))
+        write_cal_data_to_ua.setWindowTitle(
+            _translate("write_cal_data_to_ua", "Dialog")
+        )
         self.label_11.setText(_translate("write_cal_data_to_ua", "Cal Data Array"))
         self.label_12.setText(_translate("write_cal_data_to_ua", "Low Freq"))
         self.label_13.setText(_translate("write_cal_data_to_ua", "High Freq"))
         self.label_14.setText(
-            _translate("write_cal_data_to_ua", "The above results are ready to be written to the UA."))
+            _translate(
+                "write_cal_data_to_ua",
+                "The above results are ready to be written to the UA.",
+            )
+        )
         self.cancel_button.setText(_translate("write_cal_data_to_ua", "Cancel"))
         self.write_ua_button.setText(_translate("write_cal_data_to_ua", "Write UA"))
         self.label.setText(_translate("write_cal_data_to_ua", "Schema"))

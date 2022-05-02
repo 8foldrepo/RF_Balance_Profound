@@ -13,7 +13,10 @@ class DrainingDialog(MyQDialog, Ui_Dialog):
         if target_level == WaterLevel.below_level or target_level == WaterLevel.level:
             self.target_level = target_level
         else:
-            self.log(level='error', message='Invalid target water level in DrainingDialog, defaulting to below_level')
+            self.log(
+                level="error",
+                message="Invalid target water level in DrainingDialog, defaulting to below_level",
+            )
             self.target_level = WaterLevel.below_level
 
         self.config = config

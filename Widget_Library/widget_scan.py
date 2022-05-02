@@ -22,9 +22,13 @@ class Ui_scan_tab_widget(object):
         self.one_dimension_scan_tab.setObjectName("one_dimension_scan_tab")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.one_dimension_scan_tab)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.last_aquired_waveform_plot_label = QtWidgets.QLabel(self.one_dimension_scan_tab)
+        self.last_aquired_waveform_plot_label = QtWidgets.QLabel(
+            self.one_dimension_scan_tab
+        )
         self.last_aquired_waveform_plot_label.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.last_aquired_waveform_plot_label.setObjectName("last_aquired_waveform_plot_label")
+        self.last_aquired_waveform_plot_label.setObjectName(
+            "last_aquired_waveform_plot_label"
+        )
         self.verticalLayout_6.addWidget(self.last_aquired_waveform_plot_label)
         self.waveform_plot = Plot(self.one_dimension_scan_tab)
         self.waveform_plot.setMinimumSize(QtCore.QSize(0, 100))
@@ -184,7 +188,9 @@ class Ui_scan_tab_widget(object):
         self.label_33 = QtWidgets.QLabel(self.acquire_waveform_tab)
         self.label_33.setGeometry(QtCore.QRect(60, 380, 75, 13))
         self.label_33.setObjectName("label_33")
-        self.acquire_scope_trace_button = QtWidgets.QPushButton(self.acquire_waveform_tab)
+        self.acquire_scope_trace_button = QtWidgets.QPushButton(
+            self.acquire_waveform_tab
+        )
         self.acquire_scope_trace_button.setGeometry(QtCore.QRect(710, 540, 171, 41))
         self.acquire_scope_trace_button.setStyleSheet("background:lightgrey")
         self.acquire_scope_trace_button.setObjectName("acquire_scope_trace_button")
@@ -216,28 +222,40 @@ class Ui_scan_tab_widget(object):
         self.axis_pts_inc_form.setObjectName("axis_pts_inc_form")
         self.label_46 = QtWidgets.QLabel(self.layoutWidget_4)
         self.label_46.setObjectName("label_46")
-        self.axis_pts_inc_form.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_46)
+        self.axis_pts_inc_form.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.label_46
+        )
         self.axis_combo = QtWidgets.QComboBox(self.layoutWidget_4)
         self.axis_combo.setStyleSheet("background:white")
         self.axis_combo.setObjectName("axis_combo")
         self.axis_combo.addItem("")
         self.axis_combo.addItem("")
-        self.axis_pts_inc_form.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.axis_combo)
+        self.axis_pts_inc_form.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.axis_combo
+        )
         self.label_47 = QtWidgets.QLabel(self.layoutWidget_4)
         self.label_47.setObjectName("label_47")
-        self.axis_pts_inc_form.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_47)
+        self.axis_pts_inc_form.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.label_47
+        )
         self.pts_spin = QtWidgets.QSpinBox(self.layoutWidget_4)
         self.pts_spin.setStyleSheet("background:white")
         self.pts_spin.setObjectName("pts_spin")
-        self.axis_pts_inc_form.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.pts_spin)
+        self.axis_pts_inc_form.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.pts_spin
+        )
         self.label_48 = QtWidgets.QLabel(self.layoutWidget_4)
         self.label_48.setObjectName("label_48")
-        self.axis_pts_inc_form.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_48)
+        self.axis_pts_inc_form.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.label_48
+        )
         self.increment_spin = QtWidgets.QDoubleSpinBox(self.layoutWidget_4)
         self.increment_spin.setStyleSheet("background:white")
         self.increment_spin.setDecimals(3)
         self.increment_spin.setObjectName("increment_spin")
-        self.axis_pts_inc_form.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.increment_spin)
+        self.axis_pts_inc_form.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.increment_spin
+        )
         self.label_53 = QtWidgets.QLabel(self.scan_details_frame)
         self.label_53.setGeometry(QtCore.QRect(10, 260, 69, 13))
         self.label_53.setObjectName("label_53")
@@ -319,7 +337,9 @@ class Ui_scan_tab_widget(object):
         self.label_54 = QtWidgets.QLabel(self.acquisition_settings_frame)
         self.label_54.setObjectName("label_54")
         self.verticalLayout_5.addWidget(self.label_54)
-        self.acquisition_type_combo = QtWidgets.QComboBox(self.acquisition_settings_frame)
+        self.acquisition_type_combo = QtWidgets.QComboBox(
+            self.acquisition_settings_frame
+        )
         self.acquisition_type_combo.setStyleSheet("background:white")
         self.acquisition_type_combo.setObjectName("acquisition_type_combo")
         self.acquisition_type_combo.addItem("")
@@ -358,10 +378,14 @@ class Ui_scan_tab_widget(object):
     def retranslateUi(self, scan_tab_widget):
         _translate = QtCore.QCoreApplication.translate
         scan_tab_widget.setWindowTitle(_translate("scan_tab_widget", "Form"))
-        self.last_aquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last Aquired Waveform"))
+        self.last_aquired_waveform_plot_label.setText(
+            _translate("scan_tab_widget", "Last Aquired Waveform")
+        )
         self.label_55.setText(_translate("scan_tab_widget", "Profile"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab),
-                                  _translate("scan_tab_widget", "1D Scan"))
+        self.scan_tabs.setTabText(
+            self.scan_tabs.indexOf(self.one_dimension_scan_tab),
+            _translate("scan_tab_widget", "1D Scan"),
+        )
         self.label_31.setText(_translate("scan_tab_widget", "Acquired waveform"))
         self.label_34.setText(_translate("scan_tab_widget", "Acquisition Type"))
         self.label_35.setText(_translate("scan_tab_widget", "Source Channel"))
@@ -369,27 +393,39 @@ class Ui_scan_tab_widget(object):
         self.label_37.setText(_translate("scan_tab_widget", "Averages"))
         self.label_39.setText(_translate("scan_tab_widget", "X Data Type"))
         self.label_40.setText(_translate("scan_tab_widget", "Y Data Type"))
-        self.x_data_type_view.setHtml(_translate("scan_tab_widget",
-                                                 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                                 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                                 "p, li { white-space: pre-wrap; }\n"
-                                                 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-                                                 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Frequency (MHz)</p></body></html>"))
-        self.y_data_type_view.setHtml(_translate("scan_tab_widget",
-                                                 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                                 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                                 "p, li { white-space: pre-wrap; }\n"
-                                                 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-                                                 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Hydrophone Sensitivity (mV/MPa)</p></body></html>"))
+        self.x_data_type_view.setHtml(
+            _translate(
+                "scan_tab_widget",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Frequency (MHz)</p></body></html>',
+            )
+        )
+        self.y_data_type_view.setHtml(
+            _translate(
+                "scan_tab_widget",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+                '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Hydrophone Sensitivity (mV/MPa)</p></body></html>',
+            )
+        )
         self.label_38.setText(_translate("scan_tab_widget", "Label"))
         self.label_41.setText(_translate("scan_tab_widget", "X Data"))
         self.label_42.setText(_translate("scan_tab_widget", "Y Data"))
         self.label_43.setText(_translate("scan_tab_widget", "Y Uncertainty"))
         self.label_32.setText(_translate("scan_tab_widget", "Waveform data out"))
         self.label_33.setText(_translate("scan_tab_widget", "Acquisition Arg."))
-        self.acquire_scope_trace_button.setText(_translate("scan_tab_widget", "Aqcuire Scope Trace"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.acquire_waveform_tab),
-                                  _translate("scan_tab_widget", "Acquire Waveform"))
+        self.acquire_scope_trace_button.setText(
+            _translate("scan_tab_widget", "Aqcuire Scope Trace")
+        )
+        self.scan_tabs.setTabText(
+            self.scan_tabs.indexOf(self.acquire_waveform_tab),
+            _translate("scan_tab_widget", "Acquire Waveform"),
+        )
         self.label_44.setText(_translate("scan_tab_widget", "Scan details"))
         self.label_46.setText(_translate("scan_tab_widget", "Axis"))
         self.axis_combo.setItemText(0, _translate("scan_tab_widget", "X"))
@@ -407,15 +443,25 @@ class Ui_scan_tab_widget(object):
         self.start_scan_button.setText(_translate("scan_tab_widget", "Start Scan"))
         self.label_45.setText(_translate("scan_tab_widget", "Acquisition settings"))
         self.label_54.setText(_translate("scan_tab_widget", "Acquisition type"))
-        self.acquisition_type_combo.setItemText(0, _translate("scan_tab_widget", "N Averaged Waveform"))
+        self.acquisition_type_combo.setItemText(
+            0, _translate("scan_tab_widget", "N Averaged Waveform")
+        )
         self.label_56.setText(_translate("scan_tab_widget", "Source Channel"))
-        self.source_channel_combo.setItemText(0, _translate("scan_tab_widget", "Channel 1"))
-        self.source_channel_combo.setItemText(1, _translate("scan_tab_widget", "Channel 2"))
+        self.source_channel_combo.setItemText(
+            0, _translate("scan_tab_widget", "Channel 1")
+        )
+        self.source_channel_combo.setItemText(
+            1, _translate("scan_tab_widget", "Channel 2")
+        )
         self.label_57.setText(_translate("scan_tab_widget", "Window (FFT only)"))
-        self.window_combo_box_2.setItemText(0, _translate("scan_tab_widget", "Blackman-Harris"))
+        self.window_combo_box_2.setItemText(
+            0, _translate("scan_tab_widget", "Blackman-Harris")
+        )
         self.label_58.setText(_translate("scan_tab_widget", "Averages"))
-        self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.scan_setup_tab),
-                                  _translate("scan_tab_widget", "Scan Setup"))
+        self.scan_tabs.setTabText(
+            self.scan_tabs.indexOf(self.scan_setup_tab),
+            _translate("scan_tab_widget", "Scan Setup"),
+        )
 
 
 from ui_elements.tabs.ui_oscilloscope_plot import Plot

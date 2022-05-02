@@ -74,7 +74,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         self.get_water_level()
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def activate_relay_channel(self, channel_number: int):
         pass
@@ -87,7 +87,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         return self.connected
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
     def wrap_up(self):
         self.disconnect_hardware()

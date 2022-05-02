@@ -15,8 +15,8 @@ log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
 
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+balance_logger = logging.getLogger("wtf_log")
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
@@ -25,6 +25,7 @@ root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 class Position(MyQWidget, Ui_Form):
     """Disables buttons of entire UI that may interfere with operations in progress"""
+
     home_1d_signal = QtCore.pyqtSignal(str)
     home_all_signal = QtCore.pyqtSignal()
     setup_signal = QtCore.pyqtSignal(dict)
@@ -70,33 +71,65 @@ class Position(MyQWidget, Ui_Form):
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
-                                'lin_incr': self.lin_incr_double_sb.value(),
-                                'lin_speed': self.linear_speed_mm_s_sb.value(),
-                                'rot_speed': self.rotational_speed_deg_s_sb.value(),
-                                'steps_per_deg': self.steps_per_degree_sb.value(),
-                                'steps_per_mm': self.steps_per_mm_sb.value(),
-                                'ang_incr': self.ang_inc_double_sb.value(), })
+        self.setup_signal.emit(
+            {
+                "movement_mode": self.movement_mode_comboBox.currentText(),
+                "lin_incr": self.lin_incr_double_sb.value(),
+                "lin_speed": self.linear_speed_mm_s_sb.value(),
+                "rot_speed": self.rotational_speed_deg_s_sb.value(),
+                "steps_per_deg": self.steps_per_degree_sb.value(),
+                "steps_per_mm": self.steps_per_mm_sb.value(),
+                "ang_incr": self.ang_inc_double_sb.value(),
+            }
+        )
 
     def populate_default_ui(self):
-        self.movement_mode_comboBox.setCurrentText(self.config[self.motors.device_key]['movement_mode'])
-        self.steps_per_mm_sb.setValue(self.config[self.motors.device_key]['calibrate_ray'][0])
-        self.steps_per_degree_sb.setValue(self.config[self.motors.device_key]['calibrate_ray'][1])
-        self.lin_incr_double_sb.setValue(self.config[self.motors.device_key]['increment_ray'][0])
-        self.ang_inc_double_sb.setValue(self.config[self.motors.device_key]['increment_ray'][1])
-        self.linear_speed_mm_s_sb.setValue(self.config[self.motors.device_key]['speeds_ray'][0])
-        self.rotational_speed_deg_s_sb.setValue(self.config[self.motors.device_key]['speeds_ray'][1])
+        self.movement_mode_comboBox.setCurrentText(
+            self.config[self.motors.device_key]["movement_mode"]
+        )
+        self.steps_per_mm_sb.setValue(
+            self.config[self.motors.device_key]["calibrate_ray"][0]
+        )
+        self.steps_per_degree_sb.setValue(
+            self.config[self.motors.device_key]["calibrate_ray"][1]
+        )
+        self.lin_incr_double_sb.setValue(
+            self.config[self.motors.device_key]["increment_ray"][0]
+        )
+        self.ang_inc_double_sb.setValue(
+            self.config[self.motors.device_key]["increment_ray"][1]
+        )
+        self.linear_speed_mm_s_sb.setValue(
+            self.config[self.motors.device_key]["speeds_ray"][0]
+        )
+        self.rotational_speed_deg_s_sb.setValue(
+            self.config[self.motors.device_key]["speeds_ray"][1]
+        )
 
     def save_config_ui(self):
-        self.config[self.motors.device_key]['movement_mode'] = self.movement_mode_comboBox.currentText()
-        self.config[self.motors.device_key]['calibrate_ray'][0] = self.steps_per_mm_sb.value()
-        self.config[self.motors.device_key]['calibrate_ray'][1] = self.steps_per_degree_sb.value()
-        self.config[self.motors.device_key]['increment_ray'][0] = self.lin_incr_double_sb.value()
-        self.config[self.motors.device_key]['increment_ray'][1] = self.ang_inc_double_sb.value()
-        self.config[self.motors.device_key]['speeds_ray'][0] = self.linear_speed_mm_s_sb.value()
-        self.config[self.motors.device_key]['speeds_ray'][1] = self.rotational_speed_deg_s_sb.value()
+        self.config[self.motors.device_key][
+            "movement_mode"
+        ] = self.movement_mode_comboBox.currentText()
+        self.config[self.motors.device_key]["calibrate_ray"][
+            0
+        ] = self.steps_per_mm_sb.value()
+        self.config[self.motors.device_key]["calibrate_ray"][
+            1
+        ] = self.steps_per_degree_sb.value()
+        self.config[self.motors.device_key]["increment_ray"][
+            0
+        ] = self.lin_incr_double_sb.value()
+        self.config[self.motors.device_key]["increment_ray"][
+            1
+        ] = self.ang_inc_double_sb.value()
+        self.config[self.motors.device_key]["speeds_ray"][
+            0
+        ] = self.linear_speed_mm_s_sb.value()
+        self.config[self.motors.device_key]["speeds_ray"][
+            1
+        ] = self.rotational_speed_deg_s_sb.value()
 
-        with open('local.yaml', 'w') as f:
+        with open("local.yaml", "w") as f:
             yaml.dump(self.config, f)
 
     @pyqtSlot(bool)
@@ -116,7 +149,9 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_button.setEnabled(enabled)
 
     def configure_signals(self):
-        self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
+        self.stop_button.clicked.connect(
+            lambda: self.set_buttons_enabled_signal.emit(True)
+        )
         # Hardware control signals
         self.x_pos_button.clicked.connect(lambda: self.begin_motion("X", 1))
         self.x_neg_button.clicked.connect(lambda: self.begin_motion("X", -1))
@@ -152,13 +187,13 @@ class Position(MyQWidget, Ui_Form):
     def go_to_x_clicked(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.go_to_signal.emit(['X'], [self.go_x_sb.value()])
+        self.go_to_signal.emit(["X"], [self.go_x_sb.value()])
 
     @pyqtSlot()
     def go_to_theta_clicked(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.go_to_signal.emit(['R'], [self.go_theta_sb.value()])
+        self.go_to_signal.emit(["R"], [self.go_theta_sb.value()])
 
     @pyqtSlot()
     def reset_zero_clicked(self):
@@ -175,7 +210,9 @@ class Position(MyQWidget, Ui_Form):
     def insert_button_clicked(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.go_to_signal.emit(['X'], [int(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])])
+        self.go_to_signal.emit(
+            ["X"], [int(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])]
+        )
 
     @pyqtSlot(float)
     def update_x_postion(self, mm):
@@ -193,13 +230,13 @@ class Position(MyQWidget, Ui_Form):
 
     @pyqtSlot()
     def go_element_button_clicked(self):
-        element_1_pos = self.config['WTF_PositionParameters']['X-Element1']
-        element_pitch = self.config['WTF_PositionParameters']['X-Element pitch (mm)']
+        element_1_pos = self.config["WTF_PositionParameters"]["X-Element1"]
+        element_pitch = self.config["WTF_PositionParameters"]["X-Element pitch (mm)"]
 
         if is_number(self.go_element_combo.currentText()):
             offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
             target_position = element_1_pos + offset
-            self.go_to_signal.emit(['X'], [target_position])
+            self.go_to_signal.emit(["X"], [target_position])
         else:
             # TODO: fill in later to handle "current" element condition
             return
@@ -211,18 +248,18 @@ class Position(MyQWidget, Ui_Form):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         # TODO: fill in later with the code that uses the retraction sensor
-        self.home_1d_signal.emit('X')
+        self.home_1d_signal.emit("X")
 
     """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
 
     @pyqtSlot()
     def manual_home_clicked(self):
         if self.x_home_radio.isChecked():
-            self.home_1d_signal.emit('X')
+            self.home_1d_signal.emit("X")
         elif self.theta_home_radio.isChecked():
-            self.home_1d_signal.emit('R')
+            self.home_1d_signal.emit("R")
         elif self.all_axes_radio.isChecked():
             self.home_all_signal.emit()
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         log_msg(self, root_logger, message=message, level=level)

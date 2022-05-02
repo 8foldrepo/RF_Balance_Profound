@@ -15,16 +15,22 @@ class Ui_retracting_ua_warn(object):
     def setupUi(self, retracting_ua_warn):
         retracting_ua_warn.setObjectName("retracting_ua_warn")
         retracting_ua_warn.resize(515, 133)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(retracting_ua_warn.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            retracting_ua_warn.sizePolicy().hasHeightForWidth()
+        )
         retracting_ua_warn.setSizePolicy(sizePolicy)
         retracting_ua_warn.setMinimumSize(QtCore.QSize(515, 133))
         retracting_ua_warn.setMaximumSize(QtCore.QSize(515, 133))
         self.label = QtWidgets.QLabel(retracting_ua_warn)
         self.label.setGeometry(QtCore.QRect(10, 20, 491, 18))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -57,8 +63,12 @@ class Ui_retracting_ua_warn(object):
     def retranslateUi(self, retracting_ua_warn):
         _translate = QtCore.QCoreApplication.translate
         retracting_ua_warn.setWindowTitle(_translate("retracting_ua_warn", "Dialog"))
-        self.label.setText(_translate("retracting_ua_warn",
-                                      "Warning - Retracting UA from tank. Check water level is below UA seal level"))
+        self.label.setText(
+            _translate(
+                "retracting_ua_warn",
+                "Warning - Retracting UA from tank. Check water level is below UA seal level",
+            )
+        )
         self.continue_button.setText(_translate("retracting_ua_warn", "Continue"))
         self.cancel_button.setText(_translate("retracting_ua_warn", "Cancel"))
 

@@ -10,7 +10,9 @@ from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
-    pretest_metadata_signal = pyqtSignal(TestData)  # signal from MainWindow to manager; operator, serial no., comment
+    pretest_metadata_signal = pyqtSignal(
+        TestData
+    )  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
     def __init__(self, serial_no=None, parent=None, config=None):
@@ -46,17 +48,19 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
 
     def lookup_clicked(self):
         serial_no = self.ua_serial_no_inputline.text().upper()
-        self.lf_MHz_field.setText('')
-        self.hf_MHz_field.setText('')
-        self.hardware_code_field.setText('')
+        self.lf_MHz_field.setText("")
+        self.hf_MHz_field.setText("")
+        self.hardware_code_field.setText("")
 
-        with open(str(ROOT_DIR) + "\\Program_Data\\UA serial number and frequency data.txt") as f:
+        with open(
+            str(ROOT_DIR) + "\\Program_Data\\UA serial number and frequency data.txt"
+        ) as f:
             line = f.readline()
             while line:
                 line = f.readline()
                 if len(serial_no) == 6 and serial_no in line:
-                    chunks = line.replace(' ', '').split('|')
-                    freqs = chunks[2].split(',')
+                    chunks = line.replace(" ", "").split("|")
+                    freqs = chunks[2].split(",")
                     hardware_code = chunks[3]
 
                     self.lf_MHz_field.setText(freqs[0])
@@ -64,19 +68,24 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
                     self.hardware_code_field.setText(hardware_code)
                     break
 
-        if self.lf_MHz_field.text() == '':
+        if self.lf_MHz_field.text() == "":
             self.lf_MHz_field.setText("Not found")
-        if self.hf_MHz_field.text() == '':
+        if self.hf_MHz_field.text() == "":
             self.hf_MHz_field.setText("Not found")
-        if self.hardware_code_field.text() == '':
+        if self.hardware_code_field.text() == "":
             self.hardware_code_field.setText("Not found")
 
     def ok_clicked(self):
-        if self.ua_serial_no_inputline.text() == '' or self.test_operator_inputline.text() == '':
+        if (
+            self.ua_serial_no_inputline.text() == ""
+            or self.test_operator_inputline.text() == ""
+        ):
             self.feedback_label.setText("Fill all required fields")
             return
 
-        if not is_number(self.lf_MHz_field.text()) or not is_number(self.hf_MHz_field.text()):
+        if not is_number(self.lf_MHz_field.text()) or not is_number(
+            self.hf_MHz_field.text()
+        ):
             self.feedback_label.setText("Frequencies must be numeric")
             return
         self.test_data.test_comment = self.comment_inputbox.toPlainText()

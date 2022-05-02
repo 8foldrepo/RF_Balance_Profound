@@ -10,7 +10,13 @@ class KeysightOscilloscope(AbstractOscilloscope):
     min_time_of_flight: float
     timeout_s: float
 
-    def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
+    def __init__(
+        self,
+        device_key="Keysight_Oscilloscope",
+        config=None,
+        resource_manager=None,
+        parent=None,
+    ):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
         if resource_manager is not None:
@@ -21,19 +27,19 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def connect_hardware(self):
         self.log("Attempting to connect to oscilloscope...")
-        feedback = ''
+        feedback = ""
         resources = self.rm.list_resources()
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
 
                 retries = 1
-                while retries <= self.config[self.device_key]['retries']:
+                while retries <= self.config[self.device_key]["retries"]:
                     try:
                         self.inst = self.rm.open_resource(resource)
                         self.connected = True
                         self.connected_signal.emit(True)
-                        if self.config[self.device_key]['set_on_startup']:
+                        if self.config[self.device_key]["set_on_startup"]:
                             self.set_to_defaults()
                         self.log("Oscilloscope connected and set to default settings")
                         break
@@ -41,20 +47,29 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         self.connected = False
                         self.connected_signal.emit(False)
 
-                        if 'VI_ERROR_RSRC_NFOUND' in str(e):
-                            feedback = f'Oscilloscope not connected, connect and retry: {e}'
+                        if "VI_ERROR_RSRC_NFOUND" in str(e):
+                            feedback = (
+                                f"Oscilloscope not connected, connect and retry: {e}"
+                            )
                             # Do not retry
                             break
-                        elif 'Unknown system error' in str(e):
-                            feedback = f"Unknown oscilloscope system error, connect and retry"
+                        elif "Unknown system error" in str(e):
+                            feedback = (
+                                f"Unknown oscilloscope system error, connect and retry"
+                            )
                             # Do not retry
                             break
-                        elif 'Device reported an input protocol error during transfer.' in str(e):
+                        elif (
+                            "Device reported an input protocol error during transfer."
+                            in str(e)
+                        ):
                             feedback = f"retry:{retries} Input protocol error, retrying"
                             # Retry
-                        elif 'not currently the controller in charge' in str(e):
-                            feedback = f"retry:{retries} Oscilloscope appears to be disconnected, " \
-                                       f"retrying, otherwise check connection and restart it"
+                        elif "not currently the controller in charge" in str(e):
+                            feedback = (
+                                f"retry:{retries} Oscilloscope appears to be disconnected, "
+                                f"retrying, otherwise check connection and restart it"
+                            )
                             # Retry
                         else:
                             feedback = f"retry:{retries} Unknown error: {e}"
@@ -62,7 +77,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         retries = retries + 1
 
         if not self.connected:
-            self.log(level='error', message=feedback)
+            self.log(level="error", message=feedback)
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
@@ -84,11 +99,17 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def set_to_defaults(self):
         self.reset()
-        channel = self.config[self.device_key]['channel']
-        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
-        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
-        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
-        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
+        channel = self.config[self.device_key]["channel"]
+        self.max_time_of_flight = self.config["Autoset timebase"][
+            "Max time of flight (us)"
+        ]
+        self.min_time_of_flight = self.config["Autoset timebase"][
+            "Min time of flight (us)"
+        ]
+        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10**-6
+        time_of_flight_window = (
+            self.max_time_of_flight - self.min_time_of_flight
+        ) / 1000000
         offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         autorange_V = self.config[self.device_key]["autorange_v_startup"]
         range_V = self.config[self.device_key]["range_mV"] / 1000
@@ -96,10 +117,26 @@ class KeysightOscilloscope(AbstractOscilloscope):
         external_trigger = self.config[self.device_key]["ext_trigger"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]
 
-        self.setup(channel=channel, range_s=range_s, offset_s=offset_s, autorange_v=autorange_V, range_v=range_V,
-                   ext_trigger=external_trigger, average_count=average_count)
+        self.setup(
+            channel=channel,
+            range_s=range_s,
+            offset_s=offset_s,
+            autorange_v=autorange_V,
+            range_v=range_V,
+            ext_trigger=external_trigger,
+            average_count=average_count,
+        )
 
-    def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
+    def setup(
+        self,
+        channel,
+        range_s,
+        offset_s,
+        autorange_v,
+        range_v,
+        ext_trigger,
+        average_count,
+    ):
         self.setHorzRange_sec(range_s)
         self.setHorzOffset_sec(offset_s)
         if autorange_v:
@@ -195,23 +232,25 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     if "Timeout" in str(e):
                         pass
                     else:
-                        self.log(level="error",
-                                 message=f"Unknown error when asking for waveform preamble, retrying: {e}")
+                        self.log(
+                            level="error",
+                            message=f"Unknown error when asking for waveform preamble, retrying: {e}",
+                        )
                 if preamble is not None:
                     break
 
             if preamble is None:
                 return
 
-            while not preamble[0] == '+4':
+            while not preamble[0] == "+4":
                 self.command(f"WAV:FORM ASC")
 
             # Interpret preamble
-            if preamble[1] == '+0':
+            if preamble[1] == "+0":
                 mode = "normal"
-            elif preamble[1] == '+1':
+            elif preamble[1] == "+1":
                 mode = "peak"
-            elif preamble[1] == '+2':
+            elif preamble[1] == "+2":
                 mode = "average"
             else:
                 mode = "HRESolution"
@@ -230,19 +269,22 @@ class KeysightOscilloscope(AbstractOscilloscope):
             start_time_2 = t.time()
             while t.time() - start_time_2 < self.timeout_s:
                 try:
-                    voltages_v_strings = self.ask("WAV:DATA?").split(',')
+                    voltages_v_strings = self.ask("WAV:DATA?").split(",")
                 except pyvisa.errors.VisaIOError as e:
                     if "Timeout" in str(e):
                         pass
                     else:
-                        self.log(level="error", message="Unknown error when asking for waveform preamble")
+                        self.log(
+                            level="error",
+                            message="Unknown error when asking for waveform preamble",
+                        )
                 if voltages_v_strings is not None:
                     break
 
             # temp = voltages_v[0].split()[-1]
             # voltages_v[0] = temp
             # removes the metadata at the beginning
-            if '#' in voltages_v_strings[0]:
+            if "#" in voltages_v_strings[0]:
                 voltages_v_strings[0] = voltages_v_strings[0][10:]
 
             voltages_v = list()
@@ -253,7 +295,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     voltages_v.append(float(voltages_v_strings[i]))
                     time_s.append((i - x_reference) * sample_interval_s + x_origin)
                 except ValueError:
-                    self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
+                    self.log(
+                        level="Error",
+                        message="An oscilloscope sample was not sent in a float format",
+                    )
 
             return time_s, voltages_v
         else:
@@ -276,14 +321,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.inst.write(command)
             # t.sleep(.03)
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'write\'":
-                self.log(f"Could not send command {command}, {self.device_key} not connected")
+            if str(e) == "'NoneType' object has no attribute 'write'":
+                self.log(
+                    f"Could not send command {command}, {self.device_key} not connected"
+                )
 
     def read(self):
         try:
             return self.inst.read()
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'read\'":
+            if str(e) == "'NoneType' object has no attribute 'read'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
 
     def ask(self, command):
@@ -295,7 +342,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return None
 
         str = self.ask("*IDN")
-        return str.split(',')[2]
+        return str.split(",")[2]
 
 
 # Script/example code for testing out hardware class

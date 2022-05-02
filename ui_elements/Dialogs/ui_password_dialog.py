@@ -15,6 +15,7 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
         access_granted_signal: emit when ok is pressed and the password check is successful
 
     """
+
     access_level_signal = pyqtSignal(str)
 
     def __init__(self, config, parent=None):
@@ -32,18 +33,25 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
         self.cancel_button.clicked.connect(self.cancel_clicked)
 
     def check_password(self):
-        if self.access_level_combo.currentText() == "Operator" and self.password_field.text() == \
-                self.config["User Accounts"]["Operator"]:
+        if (
+            self.access_level_combo.currentText() == "Operator"
+            and self.password_field.text() == self.config["User Accounts"]["Operator"]
+        ):
             self.dialog_resolved = True
             self.access_level_signal.emit("Operator")
             self.close()
-        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == \
-                self.config["User Accounts"]["Engineer"]:
+        elif (
+            self.access_level_combo.currentText() == "Engineer"
+            and self.password_field.text() == self.config["User Accounts"]["Engineer"]
+        ):
             self.dialog_resolved = True
             self.access_level_signal.emit("Engineer")
             self.close()
-        elif self.access_level_combo.currentText() == "Administator" and self.password_field.text() == \
-                self.config["User Accounts"]["Administrator"]:
+        elif (
+            self.access_level_combo.currentText() == "Administator"
+            and self.password_field.text()
+            == self.config["User Accounts"]["Administrator"]
+        ):
             self.dialog_resolved = True
             self.access_level_signal.emit("Administrator")
             self.close()

@@ -9,26 +9,28 @@ class HomeSystem(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
-        self.orderedDict_to_ui(OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'Theta')]))
+        self.orderedDict_to_ui(
+            OrderedDict([("Task type", "Home system_1"), ("Axis to home", "Theta")])
+        )
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
-        if var_dict['Axis to home'] == 'All Axes':
+        if var_dict["Axis to home"] == "All Axes":
             self.radioButton.setChecked(True)
-        elif var_dict['Axis to home'] == 'X':
+        elif var_dict["Axis to home"] == "X":
             self.radioButton_2.setChecked(True)
-        elif var_dict['Axis to home'] == 'Theta':
+        elif var_dict["Axis to home"] == "Theta":
             self.radioButton_3.setChecked(True)
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict['Task type'] = 'Home system'
+        var_dict["Task type"] = "Home system"
 
         if self.radioButton.isChecked():
-            var_dict['Axis to home'] = 'All Axes'
+            var_dict["Axis to home"] = "All Axes"
         elif self.radioButton_2.isChecked():
-            var_dict['Axis to home'] = 'X'
+            var_dict["Axis to home"] = "X"
         elif self.radioButton_3.isChecked():
-            var_dict['Axis to home'] = 'Theta'
+            var_dict["Axis to home"] = "Theta"
 
         return var_dict
 

@@ -7,7 +7,7 @@ from Utilities.load_config import *
 class SimulatedAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
 
-    def __init__(self, config=None, device_key='Keysight_AWG', parent=None):
+    def __init__(self, config=None, device_key="Keysight_AWG", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
         self.state = dict()
         self.fields_setup()
@@ -17,28 +17,40 @@ class SimulatedAWG(AbstractAWG):
             self.config = load_configuration()
 
     def set_to_defaults(self):
-        self.setup(frequency_Hz=self.config[self.device_key]['frequency_Hz'],
-                   amplitude_V=self.config[self.device_key]['amplitude_V'],
-                   burst=self.config[self.device_key]['burst'],
-                   burst_cycles=self.config[self.device_key]['burst_cycles'],
-                   ext_trig=self.config[self.device_key]['ext_trig'],
-                   burst_period_s=self.config[self.device_key]['burst_period_s'],
-                   offset_V=self.config[self.device_key]['offset_V'],
-                   output=False,
-                   output_Impedance=self.config[self.device_key]['output_Impedance'])
+        self.setup(
+            frequency_Hz=self.config[self.device_key]["frequency_Hz"],
+            amplitude_V=self.config[self.device_key]["amplitude_V"],
+            burst=self.config[self.device_key]["burst"],
+            burst_cycles=self.config[self.device_key]["burst_cycles"],
+            ext_trig=self.config[self.device_key]["ext_trig"],
+            burst_period_s=self.config[self.device_key]["burst_period_s"],
+            offset_V=self.config[self.device_key]["offset_V"],
+            output=False,
+            output_Impedance=self.config[self.device_key]["output_Impedance"],
+        )
 
     def connect_hardware(self):
-        self.setup(frequency_Hz=4290000, amplitude_V=.1)
+        self.setup(frequency_Hz=4290000, amplitude_V=0.1)
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(False)
 
-    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
-              offset_V=0, output=False, output_Impedance=50):
+    def setup(
+        self,
+        frequency_Hz,
+        amplitude_V,
+        burst=False,
+        ext_trig=False,
+        burst_period_s=0.00001,
+        burst_cycles=50,
+        offset_V=0,
+        output=False,
+        output_Impedance=50,
+    ):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
@@ -106,7 +118,7 @@ class SimulatedAWG(AbstractAWG):
     def GetFunction(self):
         pass
 
-    def SetTriggerInput(self, external: bool, period_s=.000010, delay_s=0):
+    def SetTriggerInput(self, external: bool, period_s=0.000010, delay_s=0):
         """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
         pass
 
@@ -150,7 +162,7 @@ class SimulatedAWG(AbstractAWG):
         pass
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
     def wrap_up(self):
         self.SetOutput(False)
@@ -166,6 +178,15 @@ if __name__ == "__main__":
     awg.connect_hardware()
     awg.Reset()
     print(awg)
-    awg.setup(frequency_Hz=4290000, amplitude_V=.2, burst=False, burst_cycles=50, ext_trig=False,
-              burst_period_s=.10, offset_V=0, output=True, output_Impedance=50)
+    awg.setup(
+        frequency_Hz=4290000,
+        amplitude_V=0.2,
+        burst=False,
+        burst_cycles=50,
+        ext_trig=False,
+        burst_period_s=0.10,
+        offset_V=0,
+        output=True,
+        output_Impedance=50,
+    )
     print(awg)

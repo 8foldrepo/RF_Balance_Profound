@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import QDialog
 from Widget_Library import wtf_user_prompt_water_too_low
 
 
-class WTFUserPromptWaterTooLow(QDialog, wtf_user_prompt_water_too_low.Ui_wtf_user_prompt_water_too_low):
+class WTFUserPromptWaterTooLow(
+    QDialog, wtf_user_prompt_water_too_low.Ui_wtf_user_prompt_water_too_low
+):
     continue_signal = pyqtSignal()
     abort_signal = pyqtSignal()
 

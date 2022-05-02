@@ -123,23 +123,45 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_13), _translate("Form", "Tab 1"))
-        self.script_cmd_dropdown.setCurrentText(_translate("Form", "Pre-test initialisation"))
-        self.script_cmd_dropdown.setItemText(0, _translate("Form", "Pre-test initialisation"))
-        self.script_cmd_dropdown.setItemText(1, _translate("Form", "Prompt user for action"))
-        self.script_cmd_dropdown.setItemText(2, _translate("Form", "Loop over elements"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tab_13), _translate("Form", "Tab 1")
+        )
+        self.script_cmd_dropdown.setCurrentText(
+            _translate("Form", "Pre-test initialisation")
+        )
+        self.script_cmd_dropdown.setItemText(
+            0, _translate("Form", "Pre-test initialisation")
+        )
+        self.script_cmd_dropdown.setItemText(
+            1, _translate("Form", "Prompt user for action")
+        )
+        self.script_cmd_dropdown.setItemText(
+            2, _translate("Form", "Loop over elements")
+        )
         self.script_cmd_dropdown.setItemText(3, _translate("Form", "End loop"))
-        self.script_cmd_dropdown.setItemText(4, _translate("Form", "Configure function generator"))
-        self.script_cmd_dropdown.setItemText(5, _translate("Form", "Configure oscilloscope channels"))
-        self.script_cmd_dropdown.setItemText(6, _translate("Form", "Configure oscilloscope timebase"))
-        self.script_cmd_dropdown.setItemText(7, _translate("Form", "Run \"Auto Gain Control\""))
+        self.script_cmd_dropdown.setItemText(
+            4, _translate("Form", "Configure function generator")
+        )
+        self.script_cmd_dropdown.setItemText(
+            5, _translate("Form", "Configure oscilloscope channels")
+        )
+        self.script_cmd_dropdown.setItemText(
+            6, _translate("Form", "Configure oscilloscope timebase")
+        )
+        self.script_cmd_dropdown.setItemText(
+            7, _translate("Form", 'Run "Auto Gain Control"')
+        )
         self.script_cmd_dropdown.setItemText(8, _translate("Form", "Autoset timebase"))
         self.script_cmd_dropdown.setItemText(9, _translate("Form", "Home system"))
         self.script_cmd_dropdown.setItemText(10, _translate("Form", "Move system"))
-        self.script_cmd_dropdown.setItemText(11, _translate("Form", "Select UA channel"))
-        self.script_cmd_dropdown.setItemText(12, _translate("Form", "Find element \"n\""))
+        self.script_cmd_dropdown.setItemText(
+            11, _translate("Form", "Select UA channel")
+        )
+        self.script_cmd_dropdown.setItemText(12, _translate("Form", 'Find element "n"'))
         self.script_cmd_dropdown.setItemText(13, _translate("Form", "Frequency sweep"))
-        self.script_cmd_dropdown.setItemText(14, _translate("Form", "Measure element efficiency (RFB)"))
+        self.script_cmd_dropdown.setItemText(
+            14, _translate("Form", "Measure element efficiency (RFB)")
+        )
         self.script_cmd_dropdown.setItemText(15, _translate("Form", "Save results"))
         self.add_cmd_to_script_button.setText(_translate("Form", "Add to Script"))
         self.delete_all_button.setText(_translate("Form", "Delete All"))

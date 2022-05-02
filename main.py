@@ -10,8 +10,8 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+balance_logger = logging.getLogger("wtf_log")
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
@@ -29,17 +29,15 @@ def main(args):
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
     window.access_level_combo.setCurrentText("Administrator")
-    #window.prompt_for_password()
-
+    # window.prompt_for_password()
 
     window.begin_manager_thread()
 
-    # Todo: For testing purposes, remove later
-    # window.manager.test_code()
-
     code = app.exec_()
 
-    root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")
+    root_logger.info(
+        f"[{QThread.currentThread().objectName()}] : app exited with code {code}"
+    )
     sys.exit(code)
 
 

@@ -20,7 +20,9 @@ class DIOBoard(AbstractIOBoard):
     filling_signal = pyqtSignal()
     draining_signal = pyqtSignal(WaterLevel)
 
-    def __init__(self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None):
+    def __init__(
+        self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None
+    ):
         super().__init__(config=config, parent=parent, device_key=device_key)
         self.simulate_sensors = simulate_sensors
         if simulate_sensors:
@@ -36,33 +38,45 @@ class DIOBoard(AbstractIOBoard):
         self.active_channel = 0  # 0 means all channels are off
 
     def connect_hardware(self):
-        self.log('Connecting to DIO board... ')
+        self.log("Connecting to DIO board... ")
         self.connected = self.activate_relay_channel(-1)
         if self.connected:
-            self.log(f'{self.device_key} connected successfully')
+            self.log(f"{self.device_key} connected successfully")
         else:
-            self.log(f'{self.device_key} failed to connect')
+            self.log(f"{self.device_key} failed to connect")
 
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def activate_relay_channel(self, channel_number: int) -> bool:
         with nidaqmx.Task() as task:
             try:
-                task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
-                task.do_channels.add_do_chan(f"{self.name}/port1/line0:1", line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.do_channels.add_do_chan(
+                    f"{self.name}/port0/line0:7",
+                    line_grouping=LineGrouping.CHAN_PER_LINE,
+                )
+                task.do_channels.add_do_chan(
+                    f"{self.name}/port1/line0:1",
+                    line_grouping=LineGrouping.CHAN_PER_LINE,
+                )
                 pin_ray = [False] * 10
                 if 0 < channel_number < 11:
                     pin_ray[channel_number - 1] = True
                 task.write(pin_ray, auto_start=True)
                 return True
             except nidaqmx.errors.DaqError as e:
-                if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
-                    self.log(level='error', message='Channel not found')
-                elif 'Device identifier is invalid' in str(e):
-                    self.log(level='error', message='Device not found, check connection and device name in config')
+                if (
+                    str(e)
+                    == "Specified operation cannot be performed when there are no channels in the task"
+                ):
+                    self.log(level="error", message="Channel not found")
+                elif "Device identifier is invalid" in str(e):
+                    self.log(
+                        level="error",
+                        message="Device not found, check connection and device name in config",
+                    )
                 else:
-                    self.log(level='error', message=f'Unknown error {str(e)}')
+                    self.log(level="error", message=f"Unknown error {str(e)}")
                 return False
 
     def get_active_relay_channel(self) -> int:
@@ -81,7 +95,10 @@ class DIOBoard(AbstractIOBoard):
             self.filling_signal.emit()
 
             start_time = t.time()
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -89,7 +106,10 @@ class DIOBoard(AbstractIOBoard):
                         self.water_level = WaterLevel.level
                         self.water_level_reading_signal.emit(self.water_level)
 
-                if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
+                if (
+                    self.get_water_level() == WaterLevel.level
+                    or self.get_water_level() == WaterLevel.above_level
+                ):
                     self.log("Tank full")
                     return True
         return False
@@ -107,7 +127,10 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=False)
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -133,7 +156,10 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=False)
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -150,7 +176,10 @@ class DIOBoard(AbstractIOBoard):
             self.filling_signal.emit()
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -158,7 +187,10 @@ class DIOBoard(AbstractIOBoard):
                         self.water_level = WaterLevel.level
                         self.water_level_reading_signal.emit(self.water_level)
 
-                if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
+                if (
+                    self.get_water_level() == WaterLevel.level
+                    or self.get_water_level() == WaterLevel.above_level
+                ):
                     self.log("Tank full")
                     return True
         return False
@@ -166,10 +198,14 @@ class DIOBoard(AbstractIOBoard):
     def set_tank_pump_on(self, on, clockwise):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
             # ON/OFF
-            task.do_channels.add_do_chan(f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE)
+            task.do_channels.add_do_chan(
+                f"{self.name}/port1/line4:4", line_grouping=LineGrouping.CHAN_PER_LINE
+            )
 
             # CW/CCW
-            task.do_channels.add_do_chan(f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE)
+            task.do_channels.add_do_chan(
+                f"{self.name}/port1/line6:6", line_grouping=LineGrouping.CHAN_PER_LINE
+            )
 
             task.write([not on, clockwise], auto_start=True)
 
@@ -181,7 +217,9 @@ class DIOBoard(AbstractIOBoard):
 
         # todo: check whether the pump is on or off and return a boolean
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump reading
-            task.di_channels.add_di_chan(f"{self.name}/port1/line3:3", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.3
+            task.di_channels.add_di_chan(
+                f"{self.name}/port1/line3:3", line_grouping=LineGrouping.CHAN_PER_LINE
+            )  # P1.3
 
             P1_3 = task.read()
 
@@ -200,13 +238,18 @@ class DIOBoard(AbstractIOBoard):
     def get_water_level(self) -> WaterLevel:
         """Return the state of the water level sensor. possible values are below_level, above_level, and level"""
 
-        if self.simulate_sensors: return self.water_level
+        if self.simulate_sensors:
+            return self.water_level
 
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
             # task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  #
             # P1.2
-            task.di_channels.add_di_chan(f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
-            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
+            task.di_channels.add_di_chan(
+                f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE
+            )  # P1.5
+            task.di_channels.add_di_chan(
+                f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE
+            )  # P2.2
 
             list_of_values = task.read()
 
@@ -229,4 +272,4 @@ class DIOBoard(AbstractIOBoard):
         self.disconnect_hardware()
 
     def fields_setup(self):
-        self.name = self.config[self.device_key]['DAQ Device name']
+        self.name = self.config[self.device_key]["DAQ Device name"]

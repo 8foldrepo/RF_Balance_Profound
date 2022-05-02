@@ -41,12 +41,22 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     def style_ui(self):
         self.scan_tabs.setCurrentIndex(0)
-        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
+        self.waveform_plot.setLabel(
+            "left", "Voltage Waveform (V)", **self.waveform_plot.styles
+        )
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
-        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
-        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
-        self.voltage_time_plot.setLabel("left", "Voltage Waveform (V)", **self.voltage_time_plot.styles)
-        self.voltage_time_plot.setLabel("bottom", "Time (s)", **self.voltage_time_plot.styles)
+        self.profile_plot.setLabel(
+            "left", "Voltage Squared Integral", **self.profile_plot.styles
+        )
+        self.profile_plot.setLabel(
+            "bottom", "Frequency (MHz)", **self.profile_plot.styles
+        )
+        self.voltage_time_plot.setLabel(
+            "left", "Voltage Waveform (V)", **self.voltage_time_plot.styles
+        )
+        self.voltage_time_plot.setLabel(
+            "bottom", "Time (s)", **self.voltage_time_plot.styles
+        )
 
         #  add default data to plots
         y = range(0, 100)
@@ -62,7 +72,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
             return
 
         # Cancel if the current tab is not visible
-        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == 'Scan':
+        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
             return
 
         tabs = self.scan_tabs
@@ -70,14 +80,16 @@ class Scan(QWidget, Ui_scan_tab_widget):
         if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
             return
 
-        self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
+        self.last_aquired_waveform_plot_label.setText(
+            f"Last Acquired Waveform - refresh rate: {refresh_rate}"
+        )
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):
             return
 
         self.plot_ready = False
-        self.waveform_plot.refresh(x, y, pen='k', clear=True)
+        self.waveform_plot.refresh(x, y, pen="k", clear=True)
         self.app.processEvents()
         self.plot_ready = True
 
@@ -88,7 +100,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
             return
 
         # Cancel if the current tab is not visible
-        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == 'Scan':
+        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
             return
 
         tabs = self.scan_tabs
@@ -105,14 +117,14 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.profile_plot_ready = False
         try:
-            self.profile_plot.refresh(x, y, pen='k', clear=True)
+            self.profile_plot.refresh(x, y, pen="k", clear=True)
             self.app.processEvents()
         except Exception:
             self.profile_plot_ready = True
         self.profile_plot_ready = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)

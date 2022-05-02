@@ -65,7 +65,9 @@ class SwitchPrivate(QObject):
             painter.setBrush(QColor("#30C030"))
 
         painter.drawRoundedRect(
-            r.adjusted(int(margin), int(margin), int(-margin), int(-margin)), int(r.height() / 2), int(r.height() / 2)
+            r.adjusted(int(margin), int(margin), int(-margin), int(-margin)),
+            int(r.height() / 2),
+            int(r.height() / 2),
         )
 
         self.mGradient.setColorAt(0, button.darker(130))

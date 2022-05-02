@@ -16,13 +16,13 @@ def create_coord_rays(coords: str, ax_letters: list):
     coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
     """
     axes = list()
-    coords = coords.split(',')
+    coords = coords.split(",")
     for i in range(len(coords)):
-        if not coords[i] == '':
+        if not coords[i] == "":
             axes.append(ax_letters[i])
 
     # Remove empty elements
-    coords = list(filter(lambda val: val != '', coords))
+    coords = list(filter(lambda val: val != "", coords))
     return axes, coords
 
 
@@ -41,44 +41,44 @@ def generate_calibration_data(test_data: TestData):
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
     # Todo: populate this array according to the test_data
     calibration_data = {
-        'cal_data_array': {
-            'schema': '',
-            'serial_no': '',
-            'production_date': '',
-            'hardware_code': '',
-            'common_lo_freq': '',
-            'common_hi_freq': '',
-            'beam_align': '',
-            'command': '',
-            'status': '',
-            'fwversion': '',
-            'efficiency_low_list': '',
-            'efficiency_high_list': ''
+        "cal_data_array": {
+            "schema": "",
+            "serial_no": "",
+            "production_date": "",
+            "hardware_code": "",
+            "common_lo_freq": "",
+            "common_hi_freq": "",
+            "beam_align": "",
+            "command": "",
+            "status": "",
+            "fwversion": "",
+            "efficiency_low_list": "",
+            "efficiency_high_list": "",
         },
-        'low_freq': {
-            'schema': '',
-            'serial_no': '',
-            'production_date': '',
-            'hardware_code': '',
-            'common_lo_freq': '',
-            'common_hi_freq': '',
-            'beam_align': '',
-            'command': '',
-            'status': '',
-            'fwversion': ''
+        "low_freq": {
+            "schema": "",
+            "serial_no": "",
+            "production_date": "",
+            "hardware_code": "",
+            "common_lo_freq": "",
+            "common_hi_freq": "",
+            "beam_align": "",
+            "command": "",
+            "status": "",
+            "fwversion": "",
         },
-        'high_freq': {
-            'schema': '',
-            'serial_no': '',
-            'production_date': '',
-            'hardware_code': '',
-            'common_lo_freq': '',
-            'common_hi_freq': '',
-            'beam_align': '',
-            'command': '',
-            'status': '',
-            'fwversion': ''
-        }
+        "high_freq": {
+            "schema": "",
+            "serial_no": "",
+            "production_date": "",
+            "hardware_code": "",
+            "common_lo_freq": "",
+            "common_hi_freq": "",
+            "beam_align": "",
+            "command": "",
+            "status": "",
+            "fwversion": "",
+        },
     }
 
 
@@ -135,7 +135,7 @@ def precision_round(number, digits=3):
 
 
 def bound(x):
-    if -.001 < x < .001:
+    if -0.001 < x < 0.001:
         x = 0
     return x
 
@@ -156,9 +156,9 @@ def unique(list):
 # Additional feature: add smart transition detection
 def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
     if len(acoustic_power_trace_w) == 0:
-        return [float('nan')]
+        return [float("nan")]
     if len(acoustic_power_trace_w) != len(awg_on_ray):
-        return [float('nan')]
+        return [float("nan")]
     acoustic_power_on_data = list()
 
     for i in range(len(acoustic_power_trace_w)):
@@ -171,9 +171,9 @@ def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
 # Additional feature: add smart transition detection
 def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
     if len(acoustic_power_trace_w) == 0:
-        return [float('nan')]
+        return [float("nan")]
     if len(acoustic_power_trace_w) != len(awg_on_ray):
-        return [float('nan')]
+        return [float("nan")]
 
     acoustic_power_off_data = list()
 
@@ -231,39 +231,41 @@ def search_for(filename):
 def create_test_results_summary_file(test_data: TestData, path):
     f = open(path, "w")
 
-    f.write(test_data.serial_number + '-' + test_data.test_date_time + '\n')
-    f.write("Test operator\t" + test_data.operator_name + '\n')
-    f.write("Comment\t" + test_data.test_comment + '\n')
-    f.write("Software Version\t" + test_data.software_version + '\n')
-    f.write("Script\t" + test_data.script_name + '\n')
+    f.write(test_data.serial_number + "-" + test_data.test_date_time + "\n")
+    f.write("Test operator\t" + test_data.operator_name + "\n")
+    f.write("Comment\t" + test_data.test_comment + "\n")
+    f.write("Software Version\t" + test_data.software_version + "\n")
+    f.write("Script\t" + test_data.script_name + "\n")
     if test_data.write_result:
         f.write("UA Write\tOK\n")
     else:
         f.write("UA Write\tFAIL\n")
-    f.write("UA hardware code\t" + test_data.hardware_code + '\n')
-    f.write('\n')  # empty line
+    f.write("UA hardware code\t" + test_data.hardware_code + "\n")
+    f.write("\n")  # empty line
     f.write(
         "\tX\tTheta\tLF (MHz)\tLF.VSI (V^2s)\tHF (MHz)\tHF.VSI (V^2s)\tLF.Eff (%)\tLF.Rfl (%)\tLF.Pf(max) (W)\t"
         "LF.WTemp (degC)\tHF.Eff (%)\tHF.Rfl (%)\tHF.Pf(max) (W)\tHF.WTemp (degC)\tElement result\t"
-        "Failure description\n")
+        "Failure description\n"
+    )
 
     element_data_list = test_data.results_summary
     for x in range(len(element_data_list)):
         if 0 <= x <= 10:  # for all the element lines and the UA Common line
             if x == 10:
-                f.write('\n')  # there are empty lines around "UA Common" row
-            f.write('\t'.join(element_data_list[x]))
-            f.write('\n')
+                f.write("\n")  # there are empty lines around "UA Common" row
+            f.write("\t".join(element_data_list[x]))
+            f.write("\n")
         if x == 11:  # for the elements with manual LF...
-            f.write('\n')
-            f.write('Elements with manual LF\t' + ','.join(element_data_list[x]))
-            f.write('\n')
+            f.write("\n")
+            f.write("Elements with manual LF\t" + ",".join(element_data_list[x]))
+            f.write("\n")
         if x == 12:  # for the elements with manual HF...
-            f.write('Elements with manual HF\t' + ','.join(element_data_list[x]))
+            f.write("Elements with manual HF\t" + ",".join(element_data_list[x]))
 
 
 def log_msg(self, root_logger, message: str, level: str = None) -> None:
     from PyQt5.QtCore import QThread
+
     """
     Convenience function to log messages in a compact way with useful info.
 
@@ -278,16 +280,16 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
 
     thread_name = QThread.currentThread().objectName()
     log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
-    if level == 'debug':
+    if level == "debug":
         root_logger.debug(log_entry)
-    elif level == 'error':
+    elif level == "error":
         root_logger.error(log_entry)
-    elif level == 'warning':
+    elif level == "warning":
         root_logger.warning(log_entry)
     else:
         root_logger.info(log_entry)
-    print(f'[{level}] {log_entry}')
+    print(f"[{level}] {log_entry}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

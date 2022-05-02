@@ -8,7 +8,9 @@ from Utilities.load_config import *
 class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
 
-    def __init__(self, resource_manager=None, config=None, device_key='Keysight_AWG', parent=None):
+    def __init__(
+        self, resource_manager=None, config=None, device_key="Keysight_AWG", parent=None
+    ):
         super().__init__(config=config, device_key=device_key, parent=parent)
         if resource_manager is not None:
             self.rm = resource_manager
@@ -26,20 +28,22 @@ class KeysightAWG(AbstractAWG):
             self.config = load_configuration()
 
     def set_to_defaults(self):
-        self.setup(frequency_Hz=self.config[self.device_key]['frequency_Hz'],
-                   amplitude_V=self.config[self.device_key]['amplitude_V'],
-                   burst=self.config[self.device_key]['burst'],
-                   burst_cycles=self.config[self.device_key]['burst_cycles'],
-                   ext_trig=self.config[self.device_key]['trig_in'],
-                   burst_period_s=self.config[self.device_key]['burst_period_s'],
-                   offset_V=self.config[self.device_key]['offset_V'],
-                   output=False,
-                   output_Impedance=self.config[self.device_key]['output_Impedance'],
-                   trigger_out=self.config[self.device_key]['trig_out'])
+        self.setup(
+            frequency_Hz=self.config[self.device_key]["frequency_Hz"],
+            amplitude_V=self.config[self.device_key]["amplitude_V"],
+            burst=self.config[self.device_key]["burst"],
+            burst_cycles=self.config[self.device_key]["burst_cycles"],
+            ext_trig=self.config[self.device_key]["trig_in"],
+            burst_period_s=self.config[self.device_key]["burst_period_s"],
+            offset_V=self.config[self.device_key]["offset_V"],
+            output=False,
+            output_Impedance=self.config[self.device_key]["output_Impedance"],
+            trigger_out=self.config[self.device_key]["trig_out"],
+        )
 
     def connect_hardware(self):
         resources = self.rm.list_resources()
-        feedback = ''
+        feedback = ""
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
@@ -47,11 +51,13 @@ class KeysightAWG(AbstractAWG):
                 try:
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
-                    feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log(level='error', message=feedback)
+                    feedback = (
+                        f"Keysight 33509B Series function generator not found: {e}",
+                    )
+                    self.log(level="error", message=feedback)
                     break
 
-                if self.config[self.device_key]['set_on_startup']:
+                if self.config[self.device_key]["set_on_startup"]:
                     self.set_to_defaults()
                 else:
                     self.get_state()
@@ -60,7 +66,7 @@ class KeysightAWG(AbstractAWG):
                 self.connected_signal.emit(self.connected)
                 return self.connected, feedback
 
-        self.log("Keysight 33509B Series function generator not found", level='error')
+        self.log("Keysight 33509B Series function generator not found", level="error")
         self.connected = False
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
@@ -72,8 +78,19 @@ class KeysightAWG(AbstractAWG):
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
 
-    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
-              offset_V=0, output=False, output_Impedance=50, trigger_out=True):
+    def setup(
+        self,
+        frequency_Hz,
+        amplitude_V,
+        burst=False,
+        ext_trig=False,
+        burst_period_s=0.00001,
+        burst_cycles=50,
+        offset_V=0,
+        output=False,
+        output_Impedance=50,
+        trigger_out=True,
+    ):
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
@@ -110,14 +127,14 @@ class KeysightAWG(AbstractAWG):
 
     def SetOutput(self, on: bool):
         if on:
-            self.command('OUTP ON')
+            self.command("OUTP ON")
             self.output_signal.emit(True)
         else:
-            self.command('OUTP OFF')
+            self.command("OUTP OFF")
             self.output_signal.emit(False)
 
     def Get_Output(self):
-        self.command('OUTP?')
+        self.command("OUTP?")
         reply = self.read()
         self.state["output"] = "1" in reply
         self.output_signal.emit(self.state["output"])
@@ -130,7 +147,7 @@ class KeysightAWG(AbstractAWG):
         self.command(f"FREQ {frequency}")
 
         if not self.GetFrequency_Hz() == frequency:
-            self.log(level='error', message='frequency not set')
+            self.log(level="error", message="frequency not set")
             return False
         return True
 
@@ -145,7 +162,7 @@ class KeysightAWG(AbstractAWG):
     def SetAmplitude_V(self, amplitude):
         self.command(f"VOLT {amplitude}")
         if not self.GetAmplitude_V() == amplitude:
-            self.log(level='error', message='frequency not set')
+            self.log(level="error", message="frequency not set")
             return False
         return True
 
@@ -196,10 +213,10 @@ class KeysightAWG(AbstractAWG):
 
     def GetBurst(self):
         self.command(f"BURS?")
-        self.state['burst_on'] = "1" in self.read()
+        self.state["burst_on"] = "1" in self.read()
         self.command(f"BURS:NCYC?")
-        self.state['burst_cycles'] = int(float(self.read()))
-        return self.state['burst_on'], self.state['burst_cycles']
+        self.state["burst_cycles"] = int(float(self.read()))
+        return self.state["burst_on"], self.state["burst_cycles"]
 
     def SetOutputImpedance(self, impedance_ohms=50, HiZ=False):
         if HiZ:
@@ -235,19 +252,19 @@ class KeysightAWG(AbstractAWG):
         try:
             self.inst.write(command)
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'write\'":
+            if str(e) == "'NoneType' object has no attribute 'write'":
                 self.log(f"{self.device_key} Not connected")
             else:
-                self.log(level='error', message=f'error in command: {e}')
+                self.log(level="error", message=f"error in command: {e}")
 
     def read(self):
         try:
             return self.inst.read()
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'read\'":
+            if str(e) == "'NoneType' object has no attribute 'read'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
             else:
-                self.log(level='error', message=f'error in read: {e}')
+                self.log(level="error", message=f"error in read: {e}")
 
     def check_connected(self):
         return self.inst is not None
@@ -287,13 +304,15 @@ class KeysightAWG(AbstractAWG):
         self.command("*IDN")
         str = self.read()
 
-        return str.split(',')[2]
+        return str.split(",")[2]
 
     def __str__(self):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
         self.get_state()
-        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
+        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(
+            self.state
+        )
 
 
 if __name__ == "__main__":

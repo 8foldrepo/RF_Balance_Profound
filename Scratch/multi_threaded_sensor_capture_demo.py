@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from Utilities.rfb_data_logger import RFBDataLogger
 from test import Ui_MainWindow
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -17,6 +18,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def run_routine(self):
         self.logger.start(priority=4)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

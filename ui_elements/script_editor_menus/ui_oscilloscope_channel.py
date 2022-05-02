@@ -12,9 +12,17 @@ class OscilloscopeChannels(MyQWidget, Ui_config_osc_channels):
         self.setupUi(self)
         self.orderedDict_to_ui(
             OrderedDict(
-                [('Task type', 'Oscilloscope Channel'), ('Channel 1 Enabled', 'True')
-                    , ('Channel 2 Enabled', ''), ('Gain 1', '10')
-                    , ('Gain 2', '10'), ('Offset 1', '0'), ('Offset 2', '0')]))
+                [
+                    ("Task type", "Oscilloscope Channel"),
+                    ("Channel 1 Enabled", "True"),
+                    ("Channel 2 Enabled", ""),
+                    ("Gain 1", "10"),
+                    ("Gain 2", "10"),
+                    ("Offset 1", "0"),
+                    ("Offset 2", "0"),
+                ]
+            )
+        )
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.channel_1_checkbox.setChecked(bool(var_dict["Channel 1 Enabled"]))
@@ -26,7 +34,7 @@ class OscilloscopeChannels(MyQWidget, Ui_config_osc_channels):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Oscilloscope Channel'
+        var_dict["Task type"] = "Oscilloscope Channel"
         var_dict["Channel 1 Enabled"] = str(self.channel_1_checkbox.isChecked())
         var_dict["Channel 2 Enabled"] = str(self.channel_2_checkbox.isChecked())
         var_dict["Gain 1"] = str(self.gain_spin.value())

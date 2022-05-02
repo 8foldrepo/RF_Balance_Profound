@@ -110,24 +110,48 @@ class Ui_config_func_generator(object):
 
     def retranslateUi(self, config_func_generator):
         _translate = QtCore.QCoreApplication.translate
-        config_func_generator.setWindowTitle(_translate("config_func_generator", "Form"))
-        self.label.setText(_translate("config_func_generator", "Function generator configuration"))
+        config_func_generator.setWindowTitle(
+            _translate("config_func_generator", "Form")
+        )
+        self.label.setText(
+            _translate("config_func_generator", "Function generator configuration")
+        )
         self.label_7.setText(_translate("config_func_generator", "Frequency (MHz)"))
         self.label_4.setText(_translate("config_func_generator", "Amplitude (mVpp)"))
         self.label_5.setText(_translate("config_func_generator", "Mode"))
         self.mode_combo.setItemText(0, _translate("config_func_generator", "N Cycle"))
-        self.mode_combo.setItemText(1, _translate("config_func_generator", "Continuous"))
+        self.mode_combo.setItemText(
+            1, _translate("config_func_generator", "Continuous")
+        )
         self.label_3.setText(_translate("config_func_generator", "Enable output"))
-        self.enable_output_switch.setText(_translate("config_func_generator", "PushButton"))
+        self.enable_output_switch.setText(
+            _translate("config_func_generator", "PushButton")
+        )
         self.label_6.setText(_translate("config_func_generator", "#Cycles"))
-        self.label_2.setText(_translate("config_func_generator", "Set frequency options"))
-        self.set_freq_opt_combo.setToolTip(_translate("config_func_generator",
-                                                      "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>"))
-        self.set_freq_opt_combo.setItemText(0, _translate("config_func_generator", "From config cluster"))
-        self.set_freq_opt_combo.setItemText(1, _translate("config_func_generator", "Element pk low frequency"))
-        self.set_freq_opt_combo.setItemText(2, _translate("config_func_generator", "Element pk high frequency"))
-        self.set_freq_opt_combo.setItemText(3, _translate("config_func_generator", "Common low frequency"))
-        self.set_freq_opt_combo.setItemText(4, _translate("config_func_generator", "Common high frequency"))
+        self.label_2.setText(
+            _translate("config_func_generator", "Set frequency options")
+        )
+        self.set_freq_opt_combo.setToolTip(
+            _translate(
+                "config_func_generator",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>',
+            )
+        )
+        self.set_freq_opt_combo.setItemText(
+            0, _translate("config_func_generator", "From config cluster")
+        )
+        self.set_freq_opt_combo.setItemText(
+            1, _translate("config_func_generator", "Element pk low frequency")
+        )
+        self.set_freq_opt_combo.setItemText(
+            2, _translate("config_func_generator", "Element pk high frequency")
+        )
+        self.set_freq_opt_combo.setItemText(
+            3, _translate("config_func_generator", "Common low frequency")
+        )
+        self.set_freq_opt_combo.setItemText(
+            4, _translate("config_func_generator", "Common high frequency")
+        )
 
 
 from ui_elements.switch import Switch

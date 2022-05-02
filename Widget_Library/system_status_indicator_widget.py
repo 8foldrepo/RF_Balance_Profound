@@ -37,7 +37,9 @@ class Ui_Form(object):
         self.sounder_output_function_frame.setGeometry(QtCore.QRect(530, 290, 136, 142))
         self.sounder_output_function_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.sounder_output_function_frame.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.sounder_output_function_frame.setObjectName("sounder_output_function_frame")
+        self.sounder_output_function_frame.setObjectName(
+            "sounder_output_function_frame"
+        )
         self.gridLayout_2 = QtWidgets.QGridLayout(self.sounder_output_function_frame)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
@@ -48,21 +50,31 @@ class Ui_Form(object):
         self.ok_radio.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.ok_radio.setObjectName("ok_radio")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.ok_radio)
-        self.idle_warning_radio = QtWidgets.QRadioButton(self.sounder_output_function_frame)
+        self.idle_warning_radio = QtWidgets.QRadioButton(
+            self.sounder_output_function_frame
+        )
         self.idle_warning_radio.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.idle_warning_radio.setObjectName("idle_warning_radio")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.idle_warning_radio)
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.idle_warning_radio
+        )
         self.critical_radio = QtWidgets.QRadioButton(self.sounder_output_function_frame)
         self.critical_radio.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.critical_radio.setObjectName("critical_radio")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.critical_radio)
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.critical_radio
+        )
         self.verticalLayout_3.addLayout(self.formLayout)
         self.label_14 = QtWidgets.QLabel(self.sounder_output_function_frame)
         self.label_14.setObjectName("label_14")
         self.verticalLayout_3.addWidget(self.label_14)
-        self.attention_required_only_radio = QtWidgets.QRadioButton(self.sounder_output_function_frame)
+        self.attention_required_only_radio = QtWidgets.QRadioButton(
+            self.sounder_output_function_frame
+        )
         self.attention_required_only_radio.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.attention_required_only_radio.setObjectName("attention_required_only_radio")
+        self.attention_required_only_radio.setObjectName(
+            "attention_required_only_radio"
+        )
         self.verticalLayout_3.addWidget(self.attention_required_only_radio)
         self.gridLayout_2.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
         self.frame_2 = QtWidgets.QFrame(Form)
@@ -321,7 +333,9 @@ class Ui_Form(object):
         self.LIP_flash_func_sounder_plug_frame = QtWidgets.QVBoxLayout(self.widget)
         self.LIP_flash_func_sounder_plug_frame.setContentsMargins(0, 0, 0, 0)
         self.LIP_flash_func_sounder_plug_frame.setSpacing(22)
-        self.LIP_flash_func_sounder_plug_frame.setObjectName("LIP_flash_func_sounder_plug_frame")
+        self.LIP_flash_func_sounder_plug_frame.setObjectName(
+            "LIP_flash_func_sounder_plug_frame"
+        )
         self.light_hardware_plugin_vert = QtWidgets.QVBoxLayout()
         self.light_hardware_plugin_vert.setObjectName("light_hardware_plugin_vert")
         self.label_7 = QtWidgets.QLabel(self.widget)
@@ -332,7 +346,9 @@ class Ui_Form(object):
         self.light_hardware_plugin_combo.setObjectName("light_hardware_plugin_combo")
         self.light_hardware_plugin_combo.addItem("")
         self.light_hardware_plugin_vert.addWidget(self.light_hardware_plugin_combo)
-        self.LIP_flash_func_sounder_plug_frame.addLayout(self.light_hardware_plugin_vert)
+        self.LIP_flash_func_sounder_plug_frame.addLayout(
+            self.light_hardware_plugin_vert
+        )
         self.flash_func_vert = QtWidgets.QVBoxLayout()
         self.flash_func_vert.setObjectName("flash_func_vert")
         self.label_8 = QtWidgets.QLabel(self.widget)
@@ -415,8 +431,9 @@ class Ui_Form(object):
         self.idle_warning_radio.setText(_translate("Form", "Idle/Warning       "))
         self.critical_radio.setText(_translate("Form", "Critical                 "))
         self.label_14.setText(_translate("Form", "         --- AND ---"))
-        self.attention_required_only_radio.setText(_translate("Form", "Attention required\n"
-                                                                      "only"))
+        self.attention_required_only_radio.setText(
+            _translate("Form", "Attention required\n" "only")
+        )
         self.label_16.setText(_translate("Form", "On color"))
         self.label_17.setText(_translate("Form", "Off color"))
         self.label_15.setText(_translate("Form", "Function"))
@@ -457,12 +474,18 @@ class Ui_Form(object):
         self.amber_function.setItemText(2, _translate("Form", "OK"))
         self.amber_function.setItemText(3, _translate("Form", "S/W only"))
         self.label_33.setText(_translate("Form", "Enabled"))
-        self.label_34.setText(_translate("Form",
-                                         "<html><head/><body><p align=\"center\"><span style=\" font-size:11pt; font-weight:600; color:#ffffff;\">System status indicator</span></p></body></html>"))
+        self.label_34.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p align="center"><span style=" font-size:11pt; font-weight:600; color:#ffffff;">System status indicator</span></p></body></html>',
+            )
+        )
         self.label_7.setText(_translate("Form", "Light hardware plugin"))
         self.light_hardware_plugin_combo.setItemText(0, _translate("Form", "Patlite"))
         self.label_8.setText(_translate("Form", "Flashing function"))
-        self.flashing_function_combo.setItemText(0, _translate("Form", "Attention required"))
+        self.flashing_function_combo.setItemText(
+            0, _translate("Form", "Attention required")
+        )
         self.label_9.setText(_translate("Form", "Sounder plugin"))
         self.sounder_plugin_combo.setItemText(0, _translate("Form", "Patlite"))
         self.label_12.setText(_translate("Form", "Show UI by default"))

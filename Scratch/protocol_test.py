@@ -10,13 +10,21 @@ class device(QObject):
 
     def __init__(self, config, device_key, parent=None):
         super().__init__(parent=parent)
-        from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+        from Utilities.load_config import (
+            ROOT_LOGGER_NAME,
+            LOGGER_FORMAT,
+            load_configuration,
+        )
         import logging
+
         log_formatter = logging.Formatter(LOGGER_FORMAT)
         import os
         from definitions import ROOT_DIR
-        balance_logger = logging.getLogger('wtf_log')
-        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+
+        balance_logger = logging.getLogger("wtf_log")
+        file_handler = logging.FileHandler(
+            os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w"
+        )
         file_handler.setFormatter(log_formatter)
         balance_logger.addHandler(file_handler)
         balance_logger.setLevel(logging.INFO)
@@ -40,9 +48,9 @@ class AWG(device, ABC):
         self.log("HELLO WORLD")
         self.connect_hardware()
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         log_msg(self, self.root_logger, message=message, level=level)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     awg = AWG(config=None, device_key=None, parent=None)

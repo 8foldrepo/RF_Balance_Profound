@@ -11,7 +11,7 @@ class AbstractAWG(AbstractDevice):
     frequency_signal = pyqtSignal(float)
     state: dict
 
-    def __init__(self, config=None, device_key='Keysight_AWG', parent=None):
+    def __init__(self, config=None, device_key="Keysight_AWG", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
     @abstractmethod
@@ -20,8 +20,18 @@ class AbstractAWG(AbstractDevice):
         ...
 
     @abstractmethod
-    def setup(self, frequency_Hz: float, amplitude_V: float, burst: bool, ext_trig: bool, burst_period_s: float,
-              burst_cycles: int, output: bool, output_Impedance: int, offset_V: float):
+    def setup(
+        self,
+        frequency_Hz: float,
+        amplitude_V: float,
+        burst: bool,
+        ext_trig: bool,
+        burst_period_s: float,
+        burst_cycles: int,
+        output: bool,
+        output_Impedance: int,
+        offset_V: float,
+    ):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)

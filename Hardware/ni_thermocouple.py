@@ -14,7 +14,7 @@ class NIThermocouple(AbstractSensor):
         self.fields_setup()
 
     def fields_setup(self):
-        self.name = self.config[self.device_key]['DeviceName']
+        self.name = self.config[self.device_key]["DeviceName"]
 
     def connect_hardware(self):
         try:
@@ -22,11 +22,11 @@ class NIThermocouple(AbstractSensor):
                 task.ai_channels.add_ai_thrmcpl_chan(f"{self.name}/ai0")
             self.connected = True
         except Exception as e:
-            self.log(level='error', message=f'Error connecting to thermocouple: {e}')
+            self.log(level="error", message=f"Error connecting to thermocouple: {e}")
             self.connected = False
 
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
@@ -48,7 +48,7 @@ class NIThermocouple(AbstractSensor):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     therm = NIThermocouple(config=None)
     therm.connect_hardware()
 

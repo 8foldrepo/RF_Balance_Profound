@@ -22,8 +22,8 @@ class SimulatedBalance(AbstractBalance):
         self.fields_setup()
 
     def fields_setup(self):
-        self.timeout_s = self.config[self.device_key]['timeout_s']
-        self.port = self.config[self.device_key]['port']
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        self.port = self.config[self.device_key]["port"]
 
     """Zeroes the scale with the next stale weight reading"""
 
@@ -39,20 +39,20 @@ class SimulatedBalance(AbstractBalance):
         while t.time() - start_time < self.timeout_s:
             item = random.choice([b"ZA", b"I"])
 
-            if item == b'Z A':
-                self.log(level='info', message='Balance Zeroed')
+            if item == b"Z A":
+                self.log(level="info", message="Balance Zeroed")
                 return
             else:
-                if item == b'I':
-                    self.log(level='error', message='Weight unstable or balance busy')
+                if item == b"I":
+                    self.log(level="error", message="Weight unstable or balance busy")
                     return
-                elif item == b'+':
-                    self.log(level='error', message='Balance overloaded')
+                elif item == b"+":
+                    self.log(level="error", message="Balance overloaded")
                     return
-                elif item == b'-':
-                    self.log(level='error', message='Balance underloaded')
+                elif item == b"-":
+                    self.log(level="error", message="Balance underloaded")
                     return
-        self.log(level='error', message=f'{self.device_key} timed out')
+        self.log(level="error", message=f"{self.device_key} timed out")
 
     """Zeroes the scale with the next stale weight reading"""
 
@@ -69,32 +69,32 @@ class SimulatedBalance(AbstractBalance):
         while t.time() - start_time < self.timeout_s:
             item = random.choice([b"Z S", b"Z D", b"Z I"])
 
-            if item == b'Z S' or b'Z D':
-                self.log(level='info', message='Balance Zeroed')
+            if item == b"Z S" or b"Z D":
+                self.log(level="info", message="Balance Zeroed")
                 return
             else:
-                if item == b'I':
-                    self.log(level='error', message='Weight unstable or balance busy')
+                if item == b"I":
+                    self.log(level="error", message="Weight unstable or balance busy")
                     return
-                elif item == b'+':
-                    self.log(level='error', message='Balance overloaded')
+                elif item == b"+":
+                    self.log(level="error", message="Balance overloaded")
                     return
-                elif item == b'-':
-                    self.log(level='error', message='Balance underloaded')
+                elif item == b"-":
+                    self.log(level="error", message="Balance underloaded")
                     return
-        self.log(level='error', message=f'{self.device_key} timed out')
+        self.log(level="error", message=f"{self.device_key} timed out")
 
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
-        t.sleep(.02)
+        t.sleep(0.02)
         return random.random()
 
     def reset(self):
@@ -105,17 +105,17 @@ class SimulatedBalance(AbstractBalance):
         return random.random()
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
     def wrap_up(self):
         self.disconnect_hardware()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     balance = SimulatedBalance(config=load_configuration())
     balance.connect_hardware()
     balance.reset()
     balance.zero_balance_instantly()
-    input('press enter when weight is on scale')
+    input("press enter when weight is on scale")
     balance.get_reading()
     balance.get_stable_reading()

@@ -13,9 +13,18 @@ class MoveSystem(MyQWidget, Ui_Form):
         self.configure_signals()
         self.orderedDict_to_ui(
             OrderedDict(
-                [('Task type', 'Move System'), ('Move Type', 'Go To')
-                    , ('X POS', '1'), ('Move X', ''), ('Theta POS', '1')
-                    , ('Move Theta', ''), ('Element', 'Element 2'), ('Target', 'RFB')]))
+                [
+                    ("Task type", "Move System"),
+                    ("Move Type", "Go To"),
+                    ("X POS", "1"),
+                    ("Move X", ""),
+                    ("Theta POS", "1"),
+                    ("Move Theta", ""),
+                    ("Element", "Element 2"),
+                    ("Target", "RFB"),
+                ]
+            )
+        )
         # Left the string value blank because 'False' caused true, BUG
 
     def configure_signals(self):
@@ -39,7 +48,7 @@ class MoveSystem(MyQWidget, Ui_Form):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Move System'
+        var_dict["Task type"] = "Move System"
         if self.move_tabs.currentIndex() == 0:
             var_dict["Move Type"] = self.move_type_combo.currentText()
             var_dict["X POS"] = str(self.x_pos_spin.value())
@@ -47,7 +56,7 @@ class MoveSystem(MyQWidget, Ui_Form):
             var_dict["Theta POS"] = str(self.theta_pos_spin.value())
             var_dict["Move Theta"] = str(self.theta_move_switch.isChecked())
         else:
-            var_dict["Move Type"] = 'Go To Element'
+            var_dict["Move Type"] = "Go To Element"
             var_dict["Element"] = self.element_combo.currentText()
             var_dict["Target"] = self.orientation_target_combo.currentText()
         return var_dict

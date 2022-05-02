@@ -13,9 +13,17 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
         self.configure_signals()
         self.orderedDict_to_ui(
             OrderedDict(
-                [('Task type', 'Function Generator'), ('Frequency', '4.2')
-                    , ('Output on', 'True'), ('Amplitude (mVpp)', '50'), ('Mode', 'N Cycle')
-                    , ('Cycles', '15'), ('Frequency Options', 'From config cluster')]))
+                [
+                    ("Task type", "Function Generator"),
+                    ("Frequency", "4.2"),
+                    ("Output on", "True"),
+                    ("Amplitude (mVpp)", "50"),
+                    ("Mode", "N Cycle"),
+                    ("Cycles", "15"),
+                    ("Frequency Options", "From config cluster"),
+                ]
+            )
+        )
         # Left the string value blank because 'False' caused true, BUG
 
     def configure_signals(self):
@@ -34,7 +42,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Function Generator'
+        var_dict["Task type"] = "Function Generator"
         var_dict["Frequency"] = str(self.freq_doublespin.value())
         var_dict["Output on"] = str(self.enable_output_switch.isChecked())
         var_dict["Amplitude"] = str(self.ampl_doublespin.value())

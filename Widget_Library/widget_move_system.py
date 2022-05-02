@@ -86,22 +86,30 @@ class Ui_Form(object):
         self.x_theta_pos_vert.setObjectName("x_theta_pos_vert")
         self.label_6 = QtWidgets.QLabel(self.layoutWidget3)
         self.label_6.setObjectName("label_6")
-        self.x_theta_pos_vert.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_6)
+        self.x_theta_pos_vert.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.label_6
+        )
         self.label_7 = QtWidgets.QLabel(self.layoutWidget3)
         self.label_7.setObjectName("label_7")
-        self.x_theta_pos_vert.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_7)
+        self.x_theta_pos_vert.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.label_7
+        )
         self.x_pos_spin = QtWidgets.QDoubleSpinBox(self.layoutWidget3)
         self.x_pos_spin.setStyleSheet("background:white")
         self.x_pos_spin.setMinimum(-9999999.0)
         self.x_pos_spin.setMaximum(99999999.0)
         self.x_pos_spin.setObjectName("x_pos_spin")
-        self.x_theta_pos_vert.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.x_pos_spin)
+        self.x_theta_pos_vert.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.x_pos_spin
+        )
         self.theta_pos_spin = QtWidgets.QDoubleSpinBox(self.layoutWidget3)
         self.theta_pos_spin.setStyleSheet("background:white")
         self.theta_pos_spin.setMinimum(-9999999.0)
         self.theta_pos_spin.setMaximum(99999999.0)
         self.theta_pos_spin.setObjectName("theta_pos_spin")
-        self.x_theta_pos_vert.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.theta_pos_spin)
+        self.x_theta_pos_vert.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.theta_pos_spin
+        )
         self.mov_pos_vert.addWidget(self.x_theta_mov_frame)
         self.move_tabs.addTab(self.mov_to_pos_tab, "")
         self.mov_to_elem_tab = QtWidgets.QWidget()
@@ -141,8 +149,12 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label_3.setText(_translate("Form",
-                                        "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Script - Move</span></p></body></html>"))
+        self.label_3.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Script - Move</span></p></body></html>',
+            )
+        )
         self.label_4.setText(_translate("Form", "Move type"))
         self.move_type_combo.setItemText(0, _translate("Form", "Go To"))
         self.label_8.setText(_translate("Form", "Move Axis?"))
@@ -151,7 +163,10 @@ class Ui_Form(object):
         self.label_5.setText(_translate("Form", "Position"))
         self.label_6.setText(_translate("Form", "X"))
         self.label_7.setText(_translate("Form", "Theta"))
-        self.move_tabs.setTabText(self.move_tabs.indexOf(self.mov_to_pos_tab), _translate("Form", "Move to position"))
+        self.move_tabs.setTabText(
+            self.move_tabs.indexOf(self.mov_to_pos_tab),
+            _translate("Form", "Move to position"),
+        )
         self.orientation_target_combo.setItemText(0, _translate("Form", "Hydrophone"))
         self.orientation_target_combo.setItemText(1, _translate("Form", "Down"))
         self.orientation_target_combo.setItemText(2, _translate("Form", "RFB"))
@@ -166,11 +181,22 @@ class Ui_Form(object):
         self.element_combo.setItemText(8, _translate("Form", "Element 8"))
         self.element_combo.setItemText(9, _translate("Form", "Element 9"))
         self.element_combo.setItemText(10, _translate("Form", "Element 10"))
-        self.label.setText(_translate("Form",
-                                      "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Element</span></p></body></html>"))
-        self.label_2.setText(_translate("Form",
-                                        "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Orientation/target</span></p></body></html>"))
-        self.move_tabs.setTabText(self.move_tabs.indexOf(self.mov_to_elem_tab), _translate("Form", "Move to element"))
+        self.label.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Element</span></p></body></html>',
+            )
+        )
+        self.label_2.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Orientation/target</span></p></body></html>',
+            )
+        )
+        self.move_tabs.setTabText(
+            self.move_tabs.indexOf(self.mov_to_elem_tab),
+            _translate("Form", "Move to element"),
+        )
 
 
 from ui_elements.switch import Switch

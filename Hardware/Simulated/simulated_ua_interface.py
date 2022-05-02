@@ -13,11 +13,35 @@ class SimulatedUAInterface(AbstractUAInterface):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.write_result = False
         self.read_result = False
-        self.ua_calibration_data = ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5',
-                                    '66.8', '65.2',
-                                    '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6',
-                                    '46.0', '45.5',
-                                    '45.0', '40.8', '39.7']
+        self.ua_calibration_data = [
+            "1",
+            "GG1138",
+            "20201005",
+            "3",
+            "4.29",
+            "13.58",
+            "-89.6",
+            "63.6",
+            "65.4",
+            "67.5",
+            "66.8",
+            "65.2",
+            "62.4",
+            "70.0",
+            "69.8",
+            "71.2",
+            "68.1",
+            "38.7",
+            "38.7",
+            "42.5",
+            "37.3",
+            "44.6",
+            "46.0",
+            "45.5",
+            "45.0",
+            "40.8",
+            "39.7",
+        ]
 
     def fields_setup(self):
         pass
@@ -25,14 +49,14 @@ class SimulatedUAInterface(AbstractUAInterface):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
     def check_connected(self):
-        return self.connected, ''
+        return self.connected, ""
 
     def wrap_up(self):
         self.disconnect_hardware()
@@ -43,7 +67,7 @@ class SimulatedUAInterface(AbstractUAInterface):
         self.cal_data_signal.emit(self.ua_calibration_data, 0)
         return self.ua_calibration_data, 0
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         log_msg(self, self.root_logger, message=message, level=level)
 
     def write_data(self, data):
@@ -51,7 +75,7 @@ class SimulatedUAInterface(AbstractUAInterface):
         return True
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
 
 if __name__ == "__main__":

@@ -12,14 +12,26 @@ class FrequencySweep(MyQWidget, Ui_Form):
         self.setupUi(self)
         self.orderedDict_to_ui(
             OrderedDict(
-                [('Task type', 'Frequency sweep'), ('Frequency Range', 'High frequency')
-                    , ('Start Frequency', '5'), ('End Frequency', '5')
-                    , ('Coarse Increment', '5'), ('Fine Increment', '5'), ('Burst count', '5')
-                    , ('Amplitude', '5'), ('Scope channel', 'Channel 2')
-                    , ('Acquisition Type', 'Single Waveform'), ('Averages', '5')
-                    , ('Data storage', 'Store'), ('Storage location', 'Custom directory')
-                    , ('Data directory', 'Place Holder')
-                    , ('Peak VSI threshold', '5'), ('Include test', 'TRUE')]))
+                [
+                    ("Task type", "Frequency sweep"),
+                    ("Frequency Range", "High frequency"),
+                    ("Start Frequency", "5"),
+                    ("End Frequency", "5"),
+                    ("Coarse Increment", "5"),
+                    ("Fine Increment", "5"),
+                    ("Burst count", "5"),
+                    ("Amplitude", "5"),
+                    ("Scope channel", "Channel 2"),
+                    ("Acquisition Type", "Single Waveform"),
+                    ("Averages", "5"),
+                    ("Data storage", "Store"),
+                    ("Storage location", "Custom directory"),
+                    ("Data directory", "Place Holder"),
+                    ("Peak VSI threshold", "5"),
+                    ("Include test", "TRUE"),
+                ]
+            )
+        )
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.freq_range_combo.setCurrentText(var_dict["Frequency Range"])
@@ -40,7 +52,7 @@ class FrequencySweep(MyQWidget, Ui_Form):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Frequency sweep'
+        var_dict["Task type"] = "Frequency sweep"
         var_dict["Frequency Range"] = self.freq_range_combo.currentText()
         var_dict["Start Frequency"] = str(self.start_freq_spin.value())
         var_dict["End Frequency"] = str(self.end_freq_doublespin.value())

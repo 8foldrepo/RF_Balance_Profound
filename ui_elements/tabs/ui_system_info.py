@@ -15,81 +15,123 @@ class SystemInfo(MyQWidget, Ui_Form):
         self.setupUi(self)
 
     def load_system_info(self):
-        output = ''
+        output = ""
         self.parser = ConfigParser()
         self.parser.read(SYSTEM_INFO_INI_PATH)
 
         # Radio Force Balance Frame (good; checked by Rameen on 4/18)
-        self.RFB_MANUFACTURER_FIELD.setText(self.parser['RFB']['Manufacturer'])
-        self.RFB_MODELNUM_FIELD.setText(self.parser['RFB']['Model'])
-        self.RFB_SN_FIELD.setText(self.parser['RFB']['Serial number'])
-        self.RF_FIRMWARE_V_FIELD.setText(self.parser['RFB']['F/W version'])
-        self.RFB_CAL_FIELD.setText(self.parser['RFB']['Last calibration'])
+        self.RFB_MANUFACTURER_FIELD.setText(self.parser["RFB"]["Manufacturer"])
+        self.RFB_MODELNUM_FIELD.setText(self.parser["RFB"]["Model"])
+        self.RFB_SN_FIELD.setText(self.parser["RFB"]["Serial number"])
+        self.RF_FIRMWARE_V_FIELD.setText(self.parser["RFB"]["F/W version"])
+        self.RFB_CAL_FIELD.setText(self.parser["RFB"]["Last calibration"])
         # Wet Test Fixture Frame (good; checked by Rameen on 4/18)
-        self.WTF_SN_FIELD.setText(self.parser['System info']['WTF Serial number'])
-        self.SW_VERSION_FIELD.setText(self.parser['System info']['Software version'])
-        self.UA_WATER_CIRCUIT_FIELD.setText(self.parser['System info']['UA Water circuit'])
-        self.TANK_WATER_CIRCUIT_FIELD.setText(self.parser['System info']['Tank water circuit'])
+        self.WTF_SN_FIELD.setText(self.parser["System info"]["WTF Serial number"])
+        self.SW_VERSION_FIELD.setText(self.parser["System info"]["Software version"])
+        self.UA_WATER_CIRCUIT_FIELD.setText(
+            self.parser["System info"]["UA Water circuit"]
+        )
+        self.TANK_WATER_CIRCUIT_FIELD.setText(
+            self.parser["System info"]["Tank water circuit"]
+        )
         # Oscilloscope Frame (good; checked by Rameen on 4/18)
-        self.OSCOPE_MANUFACTURER_FIELD.setText(self.parser['Oscilloscope']['Manufacturer'])
-        self.OSCOPE_MODELNUM_FIELD.setText(self.parser['Oscilloscope']['Model'])
-        self.OSCOPE_SN_FIELD.setText(self.parser['Oscilloscope']['Serial number'])
-        self.OSCOPE_FIRMWARE_V_FIELD.setText(self.parser['Oscilloscope']['F/W version'])
+        self.OSCOPE_MANUFACTURER_FIELD.setText(
+            self.parser["Oscilloscope"]["Manufacturer"]
+        )
+        self.OSCOPE_MODELNUM_FIELD.setText(self.parser["Oscilloscope"]["Model"])
+        self.OSCOPE_SN_FIELD.setText(self.parser["Oscilloscope"]["Serial number"])
+        self.OSCOPE_FIRMWARE_V_FIELD.setText(self.parser["Oscilloscope"]["F/W version"])
         # Arbitrary Waveform Generator Frame (done)
-        self.AWG_MANUFACTURER_FIELD.setText(self.parser['Function generator']['Manufacturer'])
-        self.AWG_MODELNUM_FIELD.setText(self.parser['Function generator']['Model'])
-        self.AWG_SN_FIELD.setText(self.parser['Function generator']['Serial number'])
-        self.AWG_FIRMWARE_V_FIELD.setText(self.parser['Function generator']['F/W version'])
+        self.AWG_MANUFACTURER_FIELD.setText(
+            self.parser["Function generator"]["Manufacturer"]
+        )
+        self.AWG_MODELNUM_FIELD.setText(self.parser["Function generator"]["Model"])
+        self.AWG_SN_FIELD.setText(self.parser["Function generator"]["Serial number"])
+        self.AWG_FIRMWARE_V_FIELD.setText(
+            self.parser["Function generator"]["F/W version"]
+        )
         # Forward Power Meter Frame (done)
-        self.FPM_MANUFACTURER_FIELD.setText(self.parser['Forward power meter']['Manufacturer'])
-        self.FPM_MODELNUM_FIELD.setText(self.parser['Forward power meter']['Model'])
-        self.FPM_SN_FIELD.setText(self.parser['Forward power meter']['Serial number'])
-        self.FPM_FIRMWARE_V_FIELD.setText(self.parser['Forward power meter']['F/W version'])
+        self.FPM_MANUFACTURER_FIELD.setText(
+            self.parser["Forward power meter"]["Manufacturer"]
+        )
+        self.FPM_MODELNUM_FIELD.setText(self.parser["Forward power meter"]["Model"])
+        self.FPM_SN_FIELD.setText(self.parser["Forward power meter"]["Serial number"])
+        self.FPM_FIRMWARE_V_FIELD.setText(
+            self.parser["Forward power meter"]["F/W version"]
+        )
         # Reflected Power Meter Frame (done)
-        self.RPM_MANUFACTURER_FIELD.setText(self.parser['Reflected power meter']['Manufacturer'])
-        self.RPM_MODELNUM_FIELD.setText(self.parser['Reflected power meter']['Model'])
-        self.RPM_SN_FIELD.setText(self.parser['Reflected power meter']['Serial number'])
-        self.RPM_FIRMWARE_V_FIELD.setText(self.parser['Reflected power meter']['F/W version'])
+        self.RPM_MANUFACTURER_FIELD.setText(
+            self.parser["Reflected power meter"]["Manufacturer"]
+        )
+        self.RPM_MODELNUM_FIELD.setText(self.parser["Reflected power meter"]["Model"])
+        self.RPM_SN_FIELD.setText(self.parser["Reflected power meter"]["Serial number"])
+        self.RPM_FIRMWARE_V_FIELD.setText(
+            self.parser["Reflected power meter"]["F/W version"]
+        )
         # Power Amplifier Frame (done)
-        self.AMP_MANUFACTURER_FIELD.setText(self.parser['Power Amplifier']['Manufacturer'])
-        self.AMP_MODELNUM_FIELD.setText(self.parser['Power Amplifier']['Model'])
-        self.AMP_SN_FIELD.setText(self.parser['Power Amplifier']['Serial number'])
-        self.AMP_REV_FIELD.setText(self.parser['Power Amplifier']['Rev#'])
+        self.AMP_MANUFACTURER_FIELD.setText(
+            self.parser["Power Amplifier"]["Manufacturer"]
+        )
+        self.AMP_MODELNUM_FIELD.setText(self.parser["Power Amplifier"]["Model"])
+        self.AMP_SN_FIELD.setText(self.parser["Power Amplifier"]["Serial number"])
+        self.AMP_REV_FIELD.setText(self.parser["Power Amplifier"]["Rev#"])
         # Thermocouple Frame (done)
-        self.THERMO_MANUFACTURER_FIELD.setText(self.parser['Thermocouple']['Manufacturer'])
-        self.THERMO_MODELNUM_FIELD.setText(self.parser['Thermocouple']['Model'])
-        self.THERMO_SN_FIELD.setText(self.parser['Thermocouple']['Serial number'])
-        self.THERMO_FIRMWARE_V_FIELD.setText(self.parser['Thermocouple']['F/W version'])
+        self.THERMO_MANUFACTURER_FIELD.setText(
+            self.parser["Thermocouple"]["Manufacturer"]
+        )
+        self.THERMO_MODELNUM_FIELD.setText(self.parser["Thermocouple"]["Model"])
+        self.THERMO_SN_FIELD.setText(self.parser["Thermocouple"]["Serial number"])
+        self.THERMO_FIRMWARE_V_FIELD.setText(self.parser["Thermocouple"]["F/W version"])
         # Power Measurement & Switching Module Frame
-        self.POWERSWITCH_MANUFACTURER_FIELD.setText(self.parser['RF measurement and switching module']['Manufacturer'])
-        self.POWERSWITCH_MODELNUM_FIELD.setText(self.parser['RF measurement and switching module']['Model'])
-        self.POWERSWITCH_SN_FIELD.setText(self.parser['RF measurement and switching module']['Serial number'])
+        self.POWERSWITCH_MANUFACTURER_FIELD.setText(
+            self.parser["RF measurement and switching module"]["Manufacturer"]
+        )
+        self.POWERSWITCH_MODELNUM_FIELD.setText(
+            self.parser["RF measurement and switching module"]["Model"]
+        )
+        self.POWERSWITCH_SN_FIELD.setText(
+            self.parser["RF measurement and switching module"]["Serial number"]
+        )
         # Wet Test Fixture Interface Board Frame
-        self.WTFIB_MODELNUM_FIELD.setText(self.parser['WTFiB']['Model'])
-        self.WTFIB_SN_FIELD.setText(self.parser['WTFiB']['Serial number'])
-        self.WTFIB_FIRMWARE_V_FIELD.setText(self.parser['WTFiB']['F/W version'])
+        self.WTFIB_MODELNUM_FIELD.setText(self.parser["WTFiB"]["Model"])
+        self.WTFIB_SN_FIELD.setText(self.parser["WTFiB"]["Serial number"])
+        self.WTFIB_FIRMWARE_V_FIELD.setText(self.parser["WTFiB"]["F/W version"])
         # Radio Force Balance Frame
-        self.HYDRO_TYPE_FIELD.setText(self.parser['Hydrophone system']['Hydrophone Type'])
-        self.HYDR_DIAM_FIELD.setText(self.parser['Hydrophone system']['Hydrophone Diameter'])
-        self.HYDRO_SN_FIELD.setText(self.parser['Hydrophone system']['Hydrophone SN'])
-        self.PREAMP_SN_FIELD.setText(self.parser['Hydrophone system']['Preamplifier SN'])
-        self.DC_SN_FIELD.setText(self.parser['Hydrophone system']['DC Coupler SN'])
+        self.HYDRO_TYPE_FIELD.setText(
+            self.parser["Hydrophone system"]["Hydrophone Type"]
+        )
+        self.HYDR_DIAM_FIELD.setText(
+            self.parser["Hydrophone system"]["Hydrophone Diameter"]
+        )
+        self.HYDRO_SN_FIELD.setText(self.parser["Hydrophone system"]["Hydrophone SN"])
+        self.PREAMP_SN_FIELD.setText(
+            self.parser["Hydrophone system"]["Preamplifier SN"]
+        )
+        self.DC_SN_FIELD.setText(self.parser["Hydrophone system"]["DC Coupler SN"])
 
     @pyqtSlot(SystemInfo)
     def system_info_slot(self, system_info: SystemInfo):
         if system_info.oscilloscope_sn is not None:
-            self.parser.set('Oscilloscope', 'Serial number', system_info.oscilloscope_sn)
+            self.parser.set(
+                "Oscilloscope", "Serial number", system_info.oscilloscope_sn
+            )
         if system_info.awg_sn is not None:
-            self.parser.set('Function generator', 'Serial number', system_info.awg_sn)
+            self.parser.set("Function generator", "Serial number", system_info.awg_sn)
         if system_info.forward_power_sn is not None:
-            self.parser.set('Forward power meter', 'Serial number', system_info.forward_power_sn)
+            self.parser.set(
+                "Forward power meter", "Serial number", system_info.forward_power_sn
+            )
         if system_info.reflected_power_sn is not None:
-            self.parser.set('Reflected power meter', 'Serial number', system_info.reflected_power_sn)
+            self.parser.set(
+                "Reflected power meter", "Serial number", system_info.reflected_power_sn
+            )
         if system_info.thermocouple_sn is not None:
-            self.parser.set('Thermocouple', 'Serial number', system_info.thermocouple_sn)
+            self.parser.set(
+                "Thermocouple", "Serial number", system_info.thermocouple_sn
+            )
 
         # Writing our configuration file to 'example.ini'
-        with open(SYSTEM_INFO_INI_PATH, 'w') as configfile:
+        with open(SYSTEM_INFO_INI_PATH, "w") as configfile:
             self.parser.write(configfile)
 
 

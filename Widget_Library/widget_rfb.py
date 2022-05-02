@@ -22,7 +22,9 @@ class Ui_Form(object):
         self.gridLayout_23.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_23.setObjectName("gridLayout_23")
         self.widget_4 = QtWidgets.QWidget(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.widget_4.sizePolicy().hasHeightForWidth())
@@ -45,7 +47,9 @@ class Ui_Form(object):
         self.reverse_pwr_img = QtWidgets.QLabel(self.legendsGroup)
         self.reverse_pwr_img.setGeometry(QtCore.QRect(10, 10, 30, 21))
         self.reverse_pwr_img.setText("")
-        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/reverse power.png"))
+        self.reverse_pwr_img.setPixmap(
+            QtGui.QPixmap("ui_elements/images/reverse power.png")
+        )
         self.reverse_pwr_img.setObjectName("reverse_pwr_img")
         self.label_125 = QtWidgets.QLabel(self.legendsGroup)
         self.label_125.setGeometry(QtCore.QRect(440, 10, 73, 21))
@@ -53,7 +57,9 @@ class Ui_Form(object):
         self.xsition_pwr_img = QtWidgets.QLabel(self.legendsGroup)
         self.xsition_pwr_img.setGeometry(QtCore.QRect(400, 10, 30, 21))
         self.xsition_pwr_img.setText("")
-        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/xsition pts.png"))
+        self.xsition_pwr_img.setPixmap(
+            QtGui.QPixmap("ui_elements/images/xsition pts.png")
+        )
         self.xsition_pwr_img.setObjectName("xsition_pwr_img")
         self.label_124 = QtWidgets.QLabel(self.legendsGroup)
         self.label_124.setGeometry(QtCore.QRect(43, 10, 73, 21))
@@ -62,7 +68,9 @@ class Ui_Form(object):
         self.forward_pwr_img.setGeometry(QtCore.QRect(710, 10, 31, 21))
         self.forward_pwr_img.setMinimumSize(QtCore.QSize(20, 20))
         self.forward_pwr_img.setText("")
-        self.forward_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/forward power.png"))
+        self.forward_pwr_img.setPixmap(
+            QtGui.QPixmap("ui_elements/images/forward power.png")
+        )
         self.forward_pwr_img.setObjectName("forward_pwr_img")
         self.label_126 = QtWidgets.QLabel(self.legendsGroup)
         self.label_126.setGeometry(QtCore.QRect(750, 10, 91, 21))
@@ -94,7 +102,9 @@ class Ui_Form(object):
         self.power_w_field.setEnabled(False)
         self.power_w_field.setObjectName("power_w_field")
         self.verticalLayout_7.addWidget(self.power_w_field)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         self.verticalLayout_7.addItem(spacerItem)
         self.gridLayout_23.addWidget(self.verticalWidget_4, 0, 0, 1, 1)
         self.results_layout = QtWidgets.QVBoxLayout()
@@ -121,10 +131,14 @@ class Ui_Form(object):
         self.label_118.setObjectName("label_118")
         self.verticalLayout_15.addWidget(self.label_118)
         self.rfb_results_on = QtWidgets.QFrame(self.horizontalFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.rfb_results_on.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.rfb_results_on.sizePolicy().hasHeightForWidth()
+        )
         self.rfb_results_on.setSizePolicy(sizePolicy)
         self.rfb_results_on.setMinimumSize(QtCore.QSize(100, 0))
         self.rfb_results_on.setMaximumSize(QtCore.QSize(80, 16777215))
@@ -168,10 +182,14 @@ class Ui_Form(object):
         self.label_119.setObjectName("label_119")
         self.verticalLayout_14.addWidget(self.label_119)
         self.rfb_results_off = QtWidgets.QFrame(self.horizontalFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.rfb_results_off.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.rfb_results_off.sizePolicy().hasHeightForWidth()
+        )
         self.rfb_results_off.setSizePolicy(sizePolicy)
         self.rfb_results_off.setMinimumSize(QtCore.QSize(100, 0))
         self.rfb_results_off.setMaximumSize(QtCore.QSize(80, 16777215))
@@ -213,10 +231,14 @@ class Ui_Form(object):
         self.label_120.setObjectName("label_120")
         self.verticalLayout_13.addWidget(self.label_120)
         self.rfb_results_combined = QtWidgets.QFrame(self.horizontalFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.rfb_results_combined.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.rfb_results_combined.sizePolicy().hasHeightForWidth()
+        )
         self.rfb_results_combined.setSizePolicy(sizePolicy)
         self.rfb_results_combined.setMinimumSize(QtCore.QSize(100, 0))
         self.rfb_results_combined.setMaximumSize(QtCore.QSize(80, 16777215))
@@ -237,7 +259,9 @@ class Ui_Form(object):
         self.label_113.setMaximumSize(QtCore.QSize(16777215, 20))
         self.label_113.setObjectName("label_113")
         self.verticalLayout_10.addWidget(self.label_113)
-        self.power_combined_rand_uc_field = QtWidgets.QLineEdit(self.rfb_results_combined)
+        self.power_combined_rand_uc_field = QtWidgets.QLineEdit(
+            self.rfb_results_combined
+        )
         self.power_combined_rand_uc_field.setEnabled(False)
         self.power_combined_rand_uc_field.setObjectName("power_combined_rand_uc_field")
         self.verticalLayout_10.addWidget(self.power_combined_rand_uc_field)
@@ -245,9 +269,13 @@ class Ui_Form(object):
         self.label_114.setMaximumSize(QtCore.QSize(16777215, 20))
         self.label_114.setObjectName("label_114")
         self.verticalLayout_10.addWidget(self.label_114)
-        self.power_combined_total_uc_field = QtWidgets.QLineEdit(self.rfb_results_combined)
+        self.power_combined_total_uc_field = QtWidgets.QLineEdit(
+            self.rfb_results_combined
+        )
         self.power_combined_total_uc_field.setEnabled(False)
-        self.power_combined_total_uc_field.setObjectName("power_combined_total_uc_field")
+        self.power_combined_total_uc_field.setObjectName(
+            "power_combined_total_uc_field"
+        )
         self.verticalLayout_10.addWidget(self.power_combined_total_uc_field)
         self.verticalLayout_13.addWidget(self.rfb_results_combined)
         self.rfb_results_info.addLayout(self.verticalLayout_13)
@@ -258,10 +286,14 @@ class Ui_Form(object):
         self.label_122.setObjectName("label_122")
         self.verticalLayout_17.addWidget(self.label_122)
         self.rfb_results_combined_2 = QtWidgets.QFrame(self.horizontalFrame)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.rfb_results_combined_2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.rfb_results_combined_2.sizePolicy().hasHeightForWidth()
+        )
         self.rfb_results_combined_2.setSizePolicy(sizePolicy)
         self.rfb_results_combined_2.setMinimumSize(QtCore.QSize(100, 0))
         self.rfb_results_combined_2.setMaximumSize(QtCore.QSize(80, 16777215))
@@ -290,7 +322,9 @@ class Ui_Form(object):
         self.rfb_results_info.addLayout(self.verticalLayout_17)
         self.results_layout.addWidget(self.horizontalFrame)
         self.gridLayout_23.addLayout(self.results_layout, 0, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout_23.addItem(spacerItem1, 0, 2, 1, 1)
 
         self.retranslateUi(Form)

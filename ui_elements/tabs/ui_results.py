@@ -23,11 +23,13 @@ class Results(MyQWidget, Ui_Form):
     # load log file, put it into a 2d list, store it in self.test_data.script_log, and also return it
     def load_log_data(self, path=None):
         if path is None:
-            path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Open file", "", "Results files (*.txt)"
+            )
         log_2d_list = list()
-        log_file = open(path, 'r')
+        log_file = open(path, "r")
         for line in log_file:
-            line_ray = line.split('\t')
+            line_ray = line.split("\t")
             log_2d_list.append(line_ray)  # populates class' internal 2d log list
 
         self.test_data.script_log = log_2d_list
@@ -42,7 +44,9 @@ class Results(MyQWidget, Ui_Form):
 
         for line_counter in range(len(log_table)):
             line_ray = log_table[line_counter]
-            self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
+            self.script_log_table.insertRow(
+                self.script_log_table.rowCount()
+            )  # insert a row to the script table
             for x in range(len(line_ray)):
                 item = QTableWidgetItem()
                 item.setText(line_ray[x].strip())
@@ -57,37 +61,53 @@ class Results(MyQWidget, Ui_Form):
         for i in range(11):  # covers range of all elements and "UA Common"
             for x in range(15):  # covers all the data units in each element
                 item = QTableWidgetItem()
-                item.setText(str(results_summary[i][x + 1]))  # skip the header data and ignore name of element
+                item.setText(
+                    str(results_summary[i][x + 1])
+                )  # skip the header data and ignore name of element
                 if i == 10:  # if we're on the "UA Common" line
-                    self.results_table.setItem(i + 2, x, item)  # there is a line break between elements and "UA Common"
+                    self.results_table.setItem(
+                        i + 2, x, item
+                    )  # there is a line break between elements and "UA Common"
                 else:
-                    self.results_table.setItem(i + 1, x, item)  # first row is reserved for units
+                    self.results_table.setItem(
+                        i + 1, x, item
+                    )  # first row is reserved for units
 
         for i in range(11, 13):  # LF and HF are in the last two rows of test_contents
             for x in range(len(results_summary[-2])):
                 item = QTableWidgetItem()
-                item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
+                item.setText(
+                    results_summary[i][x]
+                )  # Elements with manual LF starts at row number 15 in table
                 self.results_table.setItem(i + 2, x, item)  # offset for table alignment
             for x in range(len(results_summary[-1])):
                 item = QTableWidgetItem()
-                item.setText(results_summary[i][x])  # Elements with manual LF starts at row number 15 in table
+                item.setText(
+                    results_summary[i][x]
+                )  # Elements with manual LF starts at row number 15 in table
                 self.results_table.setItem(i + 2, x, item)
 
     def style_ui(self):
         self.results_table.horizontalHeader().resizeSection(15, 362)
-        self.script_log_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.script_log_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch
+        )
         self.script_log_table.horizontalHeader().setStretchLastSection(True)
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
-        self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
+        self.script_log_table.verticalHeader().setDefaultSectionSize(
+            1
+        )  # minimum height
 
     """saves the results as a text file with a path specified in the config file."""
 
     def save_test_results_summary(self):
         if not self.test_data:  # if dictionary is empty return
-            self.log(level='error', message='No test results to save')
+            self.log(level="error", message="No test results to save")
             return
 
-        path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Choose save file location: ", "", "Results files (*.txt)"
+        )
 
         create_test_results_summary_file(self.test_data, path)
 
@@ -99,10 +119,12 @@ class Results(MyQWidget, Ui_Form):
 
     def load_test_results(self, path=None):
         if path is None:
-            path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Open file", "", "Results files (*.txt)"
+            )
 
         """header of the table starts at 0th row so start populating it at row 1 and down"""
-        if path == '':
+        if path == "":
             return
         test_results_file = open(path, "r")
         test_contents = list()
@@ -114,48 +136,61 @@ class Results(MyQWidget, Ui_Form):
 
                 # the first line of the test results summary file will have the serial no. and date
                 if line_counter == 0:
-                    delimited_line = line.split("-")  # separates the serial number from the date
+                    delimited_line = line.split(
+                        "-"
+                    )  # separates the serial number from the date
                     self.test_data.serial_number = delimited_line[0]
-                    removed_new_line = delimited_line[2].replace('\n', '')
+                    removed_new_line = delimited_line[2].replace("\n", "")
                     date_time_pre = delimited_line[1] + "-" + removed_new_line
                     self.test_data.test_date_time = date_time_pre
 
-                if 0 < line_counter < 7:  # do not include the first line in the header and stop this form of dict
+                if (
+                    0 < line_counter < 7
+                ):  # do not include the first line in the header and stop this form of dict
                     # importing after the header block
-                    if '\n' in line_ray[1]:
-                        removed_new_line = line_ray[1].replace('\n',
-                                                               '')  # weird workaround for removing new line in value
+                    if "\n" in line_ray[1]:
+                        removed_new_line = line_ray[1].replace(
+                            "\n", ""
+                        )  # weird workaround for removing new line in value
                         line_ray[1] = removed_new_line
                     test_contents.append([line_ray[0], line_ray[1]])
 
-                elif "Element_" in line_ray[0] or "UA Common" in line_ray[
-                    0]:  # if the line we're on is an element data line
+                elif (
+                    "Element_" in line_ray[0] or "UA Common" in line_ray[0]
+                ):  # if the line we're on is an element data line
                     temp_list_for_element = list()
 
                     for i in range(0, 17):  # there are 14 columns in the data block
                         try:
-                            if '\n' in line_ray[i]:
-                                a = line_ray[i].replace('\n', '')  # remove trailing new lines
+                            if "\n" in line_ray[i]:
+                                a = line_ray[i].replace(
+                                    "\n", ""
+                                )  # remove trailing new lines
                                 temp_list_for_element.append(a)
                             else:
                                 temp_list_for_element.append(line_ray[i])
                         except IndexError:  # sometimes failure description is empty in element data line
-                            temp_list_for_element.append('')
+                            temp_list_for_element.append("")
 
                     test_contents.append(
-                        temp_list_for_element)  # line_ray[0] is element name, value is the data list for that element
+                        temp_list_for_element
+                    )  # line_ray[0] is element name, value is the data list for that element
 
-                elif "Elements with manual LF" in line_ray[
-                    0]:  # if the line is for listing the elements with manual low freq.
+                elif (
+                    "Elements with manual LF" in line_ray[0]
+                ):  # if the line is for listing the elements with manual low freq.
                     list_of_elements = line_ray[1].split(",")
                     test_contents.append(list_of_elements)
 
-                elif "Elements with manual HF" in line_ray[
-                    0]:  # if the line is for listing the elements with manual high freq.
+                elif (
+                    "Elements with manual HF" in line_ray[0]
+                ):  # if the line is for listing the elements with manual high freq.
                     list_of_elements = line_ray[1].split(",")
                     test_contents.append(list_of_elements)
 
-            line_counter = line_counter + 1  # increments our line counter, so we know where we are; count blank lines
+            line_counter = (
+                line_counter + 1
+            )  # increments our line counter, so we know where we are; count blank lines
 
         self.test_data.operator_name = test_contents[0][1]
         self.test_data.comment = test_contents[1][1]
@@ -177,6 +212,7 @@ class Results(MyQWidget, Ui_Form):
 # list of lists given a txt file, other 2 take a list of lists and either save/display it; for the load method, use
 # QFileDialog.get_open_file_name, will create prompt to find and select file"""
 
+
 def print_list(a):
     print("*** beginning of list ***")
     for x in range(len(a)):
@@ -194,15 +230,15 @@ def print_dict(a):
             print(key, " :")
             print_list(value)
         else:
-            print(key, ':', value)
+            print(key, ":", value)
 
 
 def print_indent_dict(a):
     for key, value in a.items():
-        print('\t', key, ':', value)
+        print("\t", key, ":", value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     from PyQt5.QtWidgets import QApplication
 
