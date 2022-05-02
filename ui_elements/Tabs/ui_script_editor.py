@@ -1,9 +1,7 @@
 from datetime import date
 from typing import List
-
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
-
 from Widget_Library.widget_script_editor import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 from ui_elements.script_editor_menus.no_menu_dicts import *
@@ -288,8 +286,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         if new_var_dict is not None:
             pass
-        elif task_name == 'Measure element efficiency (RFB)':
-            new_var_dict = self.measure_efficiency_dict()
         elif task_name == 'Pre-test initialisation':
             new_var_dict = pre_test_dict()
         elif task_name == 'Find element \"n\"':

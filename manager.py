@@ -1412,7 +1412,7 @@ class Manager(QThread):
         self.test_data.log_script(
             ['', 'Configure FGen+PwrMeters', f"Frequency set to {frequency_Hz / 1000000} MHz", ''])
 
-        self.Balance.zero_balance_instantly()  # todo:see if we need this
+        self.Balance.zero_balance_instantly()  # todo: see if we need this
 
         forward_powers_w = list()
         forward_powers_time_s = list()
@@ -1427,6 +1427,8 @@ class Manager(QThread):
         current_cycle = 1
 
         self.test_data.log_script(['', 'Start RFB Acquisition', 'Started RFB Action', ''])
+
+        self.begin_rfb_logger_thread()
 
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
@@ -1559,6 +1561,9 @@ class Manager(QThread):
                                        reflected_powers_w, acoustic_powers_time_s, acoustic_powers_w)
 
         self.test_data.log_script(['', 'End', '', ''])
+
+    def begin_rfb_logger_thread(self):
+        pass
 
     # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):
