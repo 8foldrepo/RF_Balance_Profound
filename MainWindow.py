@@ -202,9 +202,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 if var_name == 'Element' and ('Current' in var_value or not 'Element' in var_value):
                     var.setText(1, f'Current: {self.live_element_field.text()}')
 
-    @pyqtSlot(int)
-    def set_tab_slot(self, index):
-        self.tabWidget.setCurrentIndex(index)
+    @pyqtSlot(str)
+    def set_tab_slot(self, text):
+        self.tabWidget.setCurrentText(text)
 
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
@@ -233,11 +233,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(str)
     def password_result(self, access_level):
         if access_level == 'Engineer':
-
             self.tabWidget.removeTab(7)
         elif access_level == 'Operator':
-            # Remove position tab, add more stuff like this later
-            self.tabWidget.removeTab(6)
+            # Todo: Remove position tab, add more stuff like this later
             self.tabWidget.removeTab(6)
         elif access_level == 'Administrator':
             self.tabWidget.removeTab(6)

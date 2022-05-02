@@ -442,6 +442,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="currentText">
+            <string>Administrator</string>
+           </property>
            <item>
             <property name="text">
              <string>Operator</string>
@@ -3022,7 +3025,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -3251,49 +3254,49 @@
   <customwidget>
    <class>ScriptEditor</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_script_editor</header>
+   <header location="global">ui_elements.tabs.ui_script_editor</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RFB</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_rfb</header>
+   <header location="global">ui_elements.tabs.ui_rfb</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SystemConfig</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_system_config</header>
+   <header location="global">ui_elements.tabs.ui_system_config</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Position</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_position</header>
+   <header location="global">ui_elements.tabs.ui_position</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Results</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_results</header>
+   <header location="global">ui_elements.tabs.ui_results</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>UACalibration</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_ua_calibration</header>
+   <header location="global">ui_elements.tabs.ui_ua_calibration</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SystemInfo</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_system_info</header>
+   <header location="global">ui_elements.tabs.ui_system_info</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Scan</class>
    <extends>QWidget</extends>
-   <header location="global">ui_elements.Tabs.ui_scan</header>
+   <header location="global">ui_elements.tabs.ui_scan</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

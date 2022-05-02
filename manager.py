@@ -99,8 +99,8 @@ class Manager(QThread):
     update_rfb_tab_signal = pyqtSignal()
     # contains
 
-    # sets the current tab of the main window
-    set_tab_signal = pyqtSignal(int)
+    # sets the current tab text of the main window (must match a tab name of the main window
+    set_tab_signal = pyqtSignal(str)
 
     Motors = None
 
@@ -908,7 +908,7 @@ class Manager(QThread):
 
         # If on the first element, set the tab to the scan tab
         if self.element == 1:
-            self.set_tab_signal.emit(6)
+            self.set_tab_signal.emit('Scan')
 
         self.test_data.log_script(['Find element "n"', 'OK', '', ''])
 
@@ -1370,7 +1370,7 @@ class Manager(QThread):
 
         # If on the first element, set the tab to the rfb tab
         if self.element == 1:
-            self.set_tab_signal.emit(3)
+            self.set_tab_signal.emit('RFB')
 
         # todo: replace this with an insert at the end to check if the step finished successfully
         self.test_data.log_script(['Measure element efficiency (RFB)', 'OK', '', ''])

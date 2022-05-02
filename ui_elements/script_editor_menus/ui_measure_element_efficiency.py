@@ -8,7 +8,7 @@ from ui_elements.my_qwidget import MyQWidget
 
 
 class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
-    def __init__(self, config, parent=None):
+    def __init__(self, config=None, parent=None):
         super().__init__(config=config, parent=parent)
         self.setupUi(self)
         self.DATA_DIRECTORY_BUTTON.clicked.connect(self.filebrowser)
