@@ -8,9 +8,7 @@ from Utilities.load_config import *
 class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
 
-    def __init__(
-        self, resource_manager=None, config=None, device_key="Keysight_AWG", parent=None
-    ):
+    def __init__(self, resource_manager=None, config=None, device_key='Keysight_AWG', parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
         if resource_manager is not None:
             self.rm = resource_manager
@@ -51,10 +49,8 @@ class KeysightAWG(AbstractAWG):
                 try:
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
-                    feedback = (
-                        f"Keysight 33509B Series function generator not found: {e}",
-                    )
-                    self.log(level="error", message=feedback)
+                    feedback = f"Keysight 33509B Series function generator not found: {e}",
+                    self.log(level='error', message=feedback)
                     break
 
                 if self.config[self.device_key]["set_on_startup"]:

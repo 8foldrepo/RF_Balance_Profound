@@ -68,13 +68,9 @@ class Manager(QThread):
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = pyqtSignal()
-    write_cal_data_to_ua_signal = pyqtSignal(
-        list
-    )  # list is 2d array of calibration data
+    write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
-    script_complete_signal = pyqtSignal(
-        list, list
-    )  # Contains a pass/fail/dnf list of strings and a list of descriptions
+    script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
 
     system_info_signal = pyqtSignal(SystemInfo)
 
@@ -233,53 +229,34 @@ class Manager(QThread):
                 self.rm = pyvisa.ResourceManager()
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
 
-        if self.config["Debugging"]["simulate_balance"]:
+        if self.config['Debugging']['simulate_balance']:
             from Hardware.Simulated.simulated_balance import SimulatedBalance
-
             self.Balance = SimulatedBalance(config=self.config)
         else:
             from Hardware.mt_balance import MT_balance
-
             self.Balance = MT_balance(config=self.config)
 
-        if self.config["Debugging"]["simulate_power_meters"]:
+        if self.config['Debugging']['simulate_power_meters']:
             from Hardware.Simulated.simulated_power_meter import PowerMeter
-
-            self.Forward_Power_Meter = PowerMeter(
-                config=self.config, device_key="Forward_Power_Meter"
-            )
-            self.Reflected_Power_Meter = PowerMeter(
-                config=self.config, device_key="Reflected_Power_Meter"
-            )
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
         else:
             from Hardware.mini_circuits_power_meter import PowerMeter
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key='Forward_Power_Meter')
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key='Reflected_Power_Meter')
 
-            self.Forward_Power_Meter = PowerMeter(
-                config=self.config, device_key="Forward_Power_Meter"
-            )
-            self.Reflected_Power_Meter = PowerMeter(
-                config=self.config, device_key="Reflected_Power_Meter"
-            )
-
-        if self.config["Debugging"]["simulate_io_board"]:
+        if self.config['Debugging']['simulate_io_board']:
             from Hardware.Simulated.simulated_io_board import SimulatedIOBoard
-
             self.IO_Board = SimulatedIOBoard(config=self.config)
         else:
             from Hardware.dio_board import DIOBoard
+            self.IO_Board = DIOBoard(config=self.config, simulate_sensors=self.config['Debugging']['simulate_sensors'])
 
-            self.IO_Board = DIOBoard(
-                config=self.config,
-                simulate_sensors=self.config["Debugging"]["simulate_sensors"],
-            )
-
-        if self.config["Debugging"]["simulate_thermocouple"]:
+        if self.config['Debugging']['simulate_thermocouple']:
             from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
-
             self.thermocouple = SimulatedThermocouple(config=self.config)
         else:
             from Hardware.ni_thermocouple import NIThermocouple
-
             self.thermocouple = NIThermocouple(config=self.config)
 
         self.devices.append(self.Forward_Power_Meter)
@@ -299,9 +276,7 @@ class Manager(QThread):
             device = self.devices[i]
             connected, feedback = device.connect_hardware()
             if not connected:
-                self.user_prompt_signal.emit(
-                    f"{device.device_key} Could not connect\n\n{feedback}"
-                )
+                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}")
                 try:
                     self.wait_for_cont()
                 except RetryException:
@@ -422,9 +397,7 @@ class Manager(QThread):
                 self.plot_scope(time, voltage)
             return time, voltage
         except pyvisa.errors.InvalidSession:
-            self.log(
-                level="error", message="Could not capture, oscilloscope resource closed"
-            )
+            self.log(level='error', message="Could not capture, oscilloscope resource closed")
         return [], []
 
     def plot_scope(self, time, voltage):
@@ -442,10 +415,7 @@ class Manager(QThread):
         # Only capture if the scan tab is selected
         if not self.parent.scan_tab_widget.plot_ready:
             return
-        if (
-            self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex())
-            != "Scan"
-        ):
+        if self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) != 'Scan':
             return
 
         tabs = self.parent.scan_tab_widget.scan_tabs
@@ -495,45 +465,27 @@ class Manager(QThread):
                 self.description_signal.emit(ray[1].replace('"', ""))
 
             currentLine = currentLine + 1
-            if line == "\n":
-                if (
-                    taskVars
-                ):  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+            if line == '\n':
+                if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
                     tasks.append(OrderedDict(taskVars))
                     taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
-                if (
-                    addingElementsToLoop
-                ):  # detects if we're done with the element name block for the loop in script
-                    addingElementsToLoop = (
-                        False  # we're done with the block so set the flag to false
-                    )
+                if addingElementsToLoop:  # detects if we're done with the element name block for the loop in script
+                    addingElementsToLoop = False  # we're done with the block so set the flag to false
                 continue  # move forward one line
-            elif "[" in line:  # if the line we're on is a task line
-                taskNo = (
-                    taskNo + 1
-                )  # increments the task number counter since we've moved to the next task
+            elif '[' in line:  # if the line we're on is a task line
+                taskNo = taskNo + 1  # increments the task number counter since we've moved to the next task
                 if "Task" in line and not buildingLoop:
-                    self.taskExecOrder.append(
-                        taskNo
-                    )  # adding task number to the execution list
+                    self.taskExecOrder.append(taskNo)  # adding task number to the execution list
             else:  # above ensures we're not parsing a task header nor blank line
                 x0 = ray[0].strip()  # remove trailing/leading spaces
-                x1 = (
-                    ray[1].strip().replace('"', "")
-                )  # does above but also removes quotation marks
-                taskVars[
-                    x0
-                ] = x1  # add the temporary variable pair to the task's variable list
+                x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
+                taskVars[x0] = x1  # add the temporary variable pair to the task's variable list
 
                 if "# of Tasks" in x0:
                     numberOfTasks = x1
 
-                if (
-                    "Loop over elements" in x1
-                ):  # detects if we've encountered a loop builder task
-                    buildingLoop = (
-                        True  # set a flag that we're building a loop for the script
-                    )
+                if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
+                    buildingLoop = True  # set a flag that we're building a loop for the script
                     addingElementsToLoop = True  # set a flag that we're adding element names from script for loop
 
                 # if we're on a line that adds an element name for the loop
@@ -544,13 +496,9 @@ class Manager(QThread):
                     elementName = elementNamePre[1]
                     elementNamesForLoop.append(int(elementName))
 
-                if (
-                    "End loop" in x1
-                ):  # script will have "End loop" in right side of task type to end loop block
+                if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
                     buildingLoop = False  # set the building loop flag to false since the loop block is done
-                    self.loops.append(
-                        list([list(elementNamesForLoop), list(taskNoForLoop)])
-                    )
+                    self.loops.append(list([list(elementNamesForLoop), list(taskNoForLoop)]))
                     elementNamesForLoop.clear()
                     taskNoForLoop.clear()
                     self.taskExecOrder.pop()
@@ -559,13 +507,8 @@ class Manager(QThread):
                     # sublist and the second item being the iteration number for that item in its loop
                     for i in range(len(self.loops[len(self.loops) - 1][0])):
                         for j in range(len(self.loops[len(self.loops) - 1][1])):
-                            self.taskExecOrder.append(
-                                [
-                                    self.loops[len(self.loops) - 1][1][j],
-                                    i + 1,
-                                    loop_index_tracker,
-                                ]
-                            )
+                            self.taskExecOrder.append([self.loops[len(self.loops) - 1][1][j], i + 1,
+                                                       loop_index_tracker])
                     loop_index_tracker = loop_index_tracker + 1
 
                 # if we're building a loop & are not in the name adding phase
@@ -573,14 +516,11 @@ class Manager(QThread):
 
                     # ensure the task no. isn't already in the task list for the loop
                     if taskNo not in taskNoForLoop:
-                        taskNoForLoop.append(
-                            taskNo
-                        )  # add the current task no. to the list of tasks we need to run in loop
+                        # add the current task no. to the list of tasks we need to run in loop
+                        taskNoForLoop.append(taskNo)
         f.close()
 
-        if (
-            taskVars
-        ):  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+        if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
             tasks.append(OrderedDict(taskVars))
             taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
 
@@ -627,67 +567,45 @@ class Manager(QThread):
             self.script_complete()
             return
 
-        if (
-            self.taskArgs is not None
-            and self.taskNames is not None
-            and self.taskExecOrder is not None
-        ):
+        if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
             if 0 <= self.step_index < len(self.taskNames):
                 inside_iteration = False
                 iteration_number = None
 
-                if (
-                    len(self.taskExecOrder[self.step_index]) == 3
-                ):  # elements that are a part of a loop will have a third sub element
+                if len(self.taskExecOrder[
+                           self.step_index]) == 3:  # elements that are a part of a loop will have a third sub element
                     # notating which loop it's from
-                    self.test_data.log_script(
-                        [
-                            f"Iteration {self.taskExecOrder[self.step_index][1]} of "
-                            f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}",
-                            "",
-                            "",
-                            "",
-                        ]
-                    )
+                    self.test_data.log_script([
+                        f"Iteration {self.taskExecOrder[self.step_index][1]} of "
+                        f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}",
+                        '', '', ''])
                     inside_iteration = True
                     iteration_number = self.taskExecOrder[self.step_index][1]
 
                 self.run_script_step()
                 if inside_iteration:
-                    self.test_data.log_script(
-                        [f"Iteration {iteration_number} complete", "", "", ""]
-                    )
+                    self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
                     inside_iteration = False
 
         if not self.scripting:
             self.enable_ui_signal.emit(True)
 
-    """Executes script step with given step index in taskNames/taskArgs"""
+    '''Executes script step with given step index in taskNames/taskArgs'''
 
     def run_script_step(self):
-        if (
-            self.taskArgs is None
-            or self.taskNames is None
-            or self.taskExecOrder is None
-        ):
+        if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
             self.abort()
             return
 
-        name = self.taskNames[
-            self.step_index
-        ]  # sets name (str) to current iteration in taskNames list
-        args = self.taskArgs[
-            self.step_index
-        ]  # sets args (list) to current iteration in taskArgs list
+        name = self.taskNames[self.step_index]  # sets name (str) to current iteration in taskNames list
+        args = self.taskArgs[self.step_index]  # sets args (list) to current iteration in taskArgs list
 
         self.task_number_signal.emit(self.taskExecOrder[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        if (
-            self.taskExecOrder[self.step_index][1] is not None
-        ):  # if the element in the self.taskExecOrder isn't None
+        if self.taskExecOrder[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
-            args["Element"] = self.taskExecOrder[self.step_index][1]
+            args['Element'] = self.taskExecOrder[self.step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
@@ -804,19 +722,11 @@ class Manager(QThread):
     def pretest_initialization(self, var_dict):
         """Collects metadata from user and prompts user until water level is ok"""
         # add first 4 lines of scriptlog
-        self.test_data.log_script(
-            [
-                f"{self.test_data.serial_number}-{self.test_data.test_date_time}",
-                "",
-                "",
-                "",
-            ]
-        )  # this is the first line
-        self.test_data.log_script(
-            ["Running script: ", self.test_data.script_name, "", "", ""]
-        )
-        self.test_data.log_script(["Pretest_initialization", "", "", ""])
-        self.test_data.log_script(["", "Prompt username+UA serial", "OK", ""])
+        self.test_data.log_script([f"{self.test_data.serial_number}-{self.test_data.test_date_time}",
+                                   '', '', ''])  # this is the first line
+        self.test_data.log_script(["Running script: ", self.test_data.script_name, '', '', ''])
+        self.test_data.log_script(["Pretest_initialization", '', '', ''])
+        self.test_data.log_script(['', "Prompt username+UA serial", 'OK', ''])
 
         # Check if wtfib is connected and add that to the scriptlog
         if self.UAInterface.read_result:
@@ -840,24 +750,15 @@ class Manager(QThread):
         # todo: have ua inserted to certain x position like in the ScriptResults.log
         try:
             self.home_system(var_dict={"Axis to home": "All Axes"})
-            self.test_data.log_script(
-                [
-                    "",
-                    "Home all",
-                    f"OK; X={self.Motors.coords_mm[0]}; "
-                    f"Theta={self.Motors.coords_mm[1]}",
-                    "",
-                ]
-            )
+            self.test_data.log_script(['', "Home all", f"OK; X={self.Motors.coords_mm[0]}; "
+                                                       f"Theta={self.Motors.coords_mm[1]}", ''])
         except Exception as e:
             self.test_data.log_script(["", "Home all", f"FAIL: {e}", ""])
             if self.config["Debugging"]["end_script_on_errors"]:
                 return self.abort()
 
         try:
-            self.test_data.log_script(
-                ["", "Insert UA", f"UA Inserted to X={self.Motors.coords_mm[0]}"]
-            )
+            self.test_data.log_script(['', 'Insert UA', f"UA Inserted to X={self.Motors.coords_mm[0]}"])
         except Exception as e:
             self.test_data.log_script(["", "Insert UA", f"FAIL {e}"])
             if self.config["Debugging"]["end_script_on_errors"]:
@@ -881,10 +782,8 @@ class Manager(QThread):
         func_var_dict["Frequency (MHz)"] = self.test_data.low_frequency_MHz
         func_var_dict["Mode"] = "Toneburst"
         func_var_dict["Enable output"] = True
-        func_var_dict["#Cycles"] = self.config[self.AWG.device_key]["burst_cycles"]
-        func_var_dict[
-            "Set frequency options"
-        ] = "From config cluster"  # Todo: what does this mean?
+        func_var_dict["#Cycles"] = self.config[self.AWG.device_key]['burst_cycles']
+        func_var_dict["Set frequency options"] = "From config cluster"  # Todo: what does this mean?
         self.configure_function_generator(func_var_dict)
 
         # Prompt user to turn on power amp
@@ -928,9 +827,7 @@ class Manager(QThread):
                 cont = self.cont_if_cont_clicked()
 
                 self.IO_Board.fill_tank()
-            elif (
-                water_level == WaterLevel.above_level
-            ):  # if the water level is not level
+            elif water_level == WaterLevel.above_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
@@ -959,9 +856,7 @@ class Manager(QThread):
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
         except:
-            self.log(
-                f"Element number not given, using previous element: {self.element}"
-            )
+            self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
     def find_element(self, var_dict):
@@ -988,15 +883,9 @@ class Manager(QThread):
 
         try:  # at this point in the script, the checks have been performed already in pretest_initialization so no
             # need to wrap in if statements
-            self.test_data.log_script(
-                [
-                    "",
-                    "PreChecks",
-                    f"Tank fill status {self.IO_Board.get_water_level()}, UA pump status "
-                    f"{self.IO_Board.get_ua_pump_reading()}",
-                    "",
-                ]
-            )
+            self.test_data.log_script(['', 'PreChecks',
+                                       f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
+                                       f'{self.IO_Board.get_ua_pump_reading()}', ''])
         except Exception as e:
             self.test_data.log_script(["", "PreChecks", f"FAIL {e}", ""])
 
@@ -1005,9 +894,7 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-        print(
-            f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}"
-        )
+        print(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
@@ -1020,56 +907,30 @@ class Manager(QThread):
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)  # script log updated in this method
 
-        self.scan_axis(
-            axis="X",
-            num_points=XPts,
-            increment=x_increment_MM,
-            ref_position=element_x_coordinate,
-            go_to_peak=True,
-            data_storage=data_storage,
-            acquisition_type=acquisition_type,
-            averages=averages,
-        )
+        self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
+                       go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
 
-        self.home_system({"Axis to home": "Theta"})
-        self.scan_axis(
-            axis="Theta",
-            num_points=thetaPts,
-            increment=thetaIncrDeg,
-            ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-            go_to_peak=False,
-            data_storage=data_storage,
-            acquisition_type=acquisition_type,
-            averages=averages,
-        )
+        self.home_system({'Axis to home': 'Theta'})
+        self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+                       ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                       go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
+                       averages=averages)
 
         # Todo: check
         self.home_system({"Axis to home": "Theta"})
 
         self.AWG.SetOutput(False)
-        self.test_data.log_script(
-            ["", "Disable UA and FGen", "Disabled FGen output", ""]
-        )
-        self.test_data.log_script(["", "End", "OK", ""])
+        self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
+        self.test_data.log_script(['', 'End', 'OK', ''])
 
     # Referemce position is the center of the scan range
 
-    def scan_axis(
-        self,
-        axis,
-        num_points,
-        increment,
-        ref_position,
-        data_storage,
-        go_to_peak,
-        scope_channel=1,
-        acquisition_type="N Averaged Waveform",
-        averages=1,
-    ):
-        if axis == "X":
-            axis_letter = "X"
-        elif axis == "Theta":
-            axis_letter = "R"
+    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
+                  acquisition_type='N Averaged Waveform', averages=1):
+        if axis == 'X':
+            axis_letter = 'X'
+        elif axis == 'Theta':
+            axis_letter = 'R'
         else:
             raise Exception
         if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
@@ -1100,13 +961,9 @@ class Manager(QThread):
 
             times_s, voltages_v = self.capture_scope(channel=scope_channel)
 
-            if "Store entire waveform".upper() in data_storage.upper():
-                self.save_hydrophone_waveform(
-                    axis=axis,
-                    waveform_number=i + 1,
-                    times_s=times_s,
-                    voltages_v=voltages_v,
-                )
+            if 'Store entire waveform'.upper() in data_storage.upper():
+                self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
+                                              voltages_v=voltages_v)
 
             vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1118,15 +975,8 @@ class Manager(QThread):
             vsi_values.append(vsi)
             self.profile_plot_signal.emit(positions, vsi_values, axis_label)
 
-        self.test_data.log_script(
-            [
-                "",
-                "Move to element",
-                f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
-                f"Th={'%.2f' % self.Motors.coords_mm[1]}",
-                "",
-            ]
-        )
+        self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
+                                                          f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
         self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
 
@@ -1137,12 +987,9 @@ class Manager(QThread):
 
         self.test_data.set_max_position(axis, self.element, max_position)
 
-        status_str = (
-            f'Start {axis} {"%.2f" % self.element_x_coordinates[self.element]} mm; Incr {axis} '
-            f"{increment} {units_str}; #Points {num_points}; Peak {axis} = "
-            f'{"%.2f" % max_position} '
-            f"mm;"
-        )
+        status_str = f'Start {axis} {"%.2f" % self.element_x_coordinates[self.element]} mm; Incr {axis} ' \
+                     f'{increment} {units_str}; #Points {num_points}; Peak {axis} = ' \
+                     f'{"%.2f" % max_position} 'f'mm;'
 
         if go_to_peak:
             status = self.Motors.go_to_position([axis_letter], [max_position])
@@ -1150,10 +997,8 @@ class Manager(QThread):
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
-        if not "Do not store".upper() == data_storage.upper():
-            self.save_scan_profile(
-                positions=positions, vsi_values=vsi_values, axis=axis
-            )
+        if not 'Do not store'.upper() == data_storage.upper():
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis)
 
     """Saves an oscilloscope trace using the file handler"""
 
@@ -1173,9 +1018,7 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_waveform(
-            metadata=metadata, times=times_s, voltages=voltages_v
-        )
+        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
     def save_scan_profile(self, axis, positions, vsi_values):
         """Saves a voltage squared integral vs distance"""
@@ -1193,14 +1036,10 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(
-            metadata=metadata, positions=positions, vsi_values=vsi_values
-        )
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
 
-    def save_efficiency_test_data(
-        self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w
-    ):
-        """Saves a voltage squared integral vs distance"""
+    def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
+        """Saves a voltage squared integral vs distance """
         metadata = FileMetadata()
         metadata.element_number = self.element
         metadata.serial_number = self.test_data.serial_number
@@ -1221,24 +1060,14 @@ class Manager(QThread):
             acoustic_power=[a_time_s, a_power_w],
         )
 
-    def save_results(
-        self, var_dict
-    ):  # calibration_data is the data gathered by the UA test
+    def save_results(self, var_dict):  # calibration_data is the data gathered by the UA test
         """Save scan results to a file"""
-        save_summary_file = bool(
-            distutils.util.strtobool(var_dict["Save summary file"])
-        )
-        write_uac_calibration = bool(
-            distutils.util.strtobool(var_dict["Write UA Calibration"])
-        )
-        prompt_for_calibration_write = bool(
-            distutils.util.strtobool(var_dict["PromptForCalWrite"])
-        )
+        save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
+        write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
+        prompt_for_calibration_write = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
 
         # Todo: test
-        if (
-            prompt_for_calibration_write
-        ):  # displays the "write to UA" dialog box if this variable is true
+        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA")
             cont = self.cont_if_cont_clicked()
 
@@ -1324,16 +1153,9 @@ class Manager(QThread):
 
         if axis_to_home == "All Axes":
             self.Motors.go_home()
-            self.test_data.log_script(
-                [
-                    "",
-                    "Home all",
-                    f"X={self.Motors.coords_mm[0]}; "
-                    f"Theta={self.Motors.coords_mm[1]}",
-                    "",
-                ]
-            )
-        elif axis_to_home == "X":
+            self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
+                                                       f"Theta={self.Motors.coords_mm[1]}", ''])
+        elif axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             self.Motors.go_home_1d("X")
             cont = self.cont_if_cont_clicked()
@@ -1343,9 +1165,7 @@ class Manager(QThread):
             self.Motors.go_home_1d("R")
             self.test_data.log_script(["", f"Home Theta", f"Home Theta", ""])
         else:
-            self.test_data.log_script(
-                ["", f"Home {axis_to_home}", "FAIL", "axis unrecognized"]
-            )
+            self.test_data.log_script(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])
 
     """Warn the user that the UA is being retracted in x"""
 
@@ -1382,26 +1202,15 @@ class Manager(QThread):
             if "Hydrophone" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, 0])
             elif "RFB" in target:
-                self.Motors.go_to_position(
-                    ["X", "R"], [element_x_coordinate, element_r_coordinate]
-                )
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
             elif "Down" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90])
 
             x_coord_str = "%.2f" % element_x_coordinate
             r_coord_str = "%.1f" % element_r_coordinate
-            self.log(
-                f"Moved to {self.element}, at coordinate x={x_coord_str}, r={r_coord_str}"
-            )
+            self.log(f"Moved to {self.element}, at coordinate x={x_coord_str}, r={r_coord_str}")
 
-            self.test_data.log_script(
-                [
-                    "",
-                    "Move to element",
-                    f"moved to X={x_coord_str}, Th={r_coord_str}",
-                    "",
-                ]
-            )
+            self.test_data.log_script(["", "Move to element", f"moved to X={x_coord_str}, Th={r_coord_str}", ''])
 
     # todo: test
     def select_ua_channel(self, var_dict):
@@ -1438,13 +1247,8 @@ class Manager(QThread):
         else:
             self.Oscilloscope.SetAveraging(averages)
 
-        coarse_freq_MHz_list, coarse_VSI_list = self.run_frequency_sweep(
-            start_freq_MHz,
-            end_freq_MHz,
-            coarse_incr_MHz,
-            burst_count,
-            channel=scope_channel,
-        )
+        coarse_freq_MHz_list, coarse_VSI_list = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz, coarse_incr_MHz,
+                                                                         burst_count, channel=scope_channel)
 
         # todo: enable this in a way that makes sense and add it to the output file
         # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
@@ -1453,23 +1257,11 @@ class Manager(QThread):
         if data_storage == "Store entire waveform":
             # todo: move to file_saver object
             if storage_location == "UA results directory":
-                path = (
-                    self.config["Paths"]["UA results root directory"]
-                    + "\\"
-                    + self.test_data.serial_number
-                    + "-"
-                    + self.test_data.test_date_time
-                    + "-frequency_sweep_data.csv"
-                )  # retrieve path
+                path = self.config['Paths']['UA results root directory'] + "\\" + self.test_data.serial_number + "-" + \
+                       self.test_data.test_date_time + "-frequency_sweep_data.csv"  # retrieve path
             else:
-                path = (
-                    data_directory
-                    + "\\"
-                    + self.test_data.serial_number
-                    + "-"
-                    + self.test_data.test_date_time
-                    + "-frequency_sweep_data.csv"
-                )  # retrieve path
+                path = data_directory + "\\" + self.test_data.serial_number + "-" + \
+                       self.test_data.test_date_time + "-frequency_sweep_data.csv"  # retrieve path
 
             # todo: implement
             self.file_saver.save_frequency_sweep()
@@ -1484,23 +1276,18 @@ class Manager(QThread):
             for i in range(len(coarse_freq_MHz_list)):
                 f.write(f"{coarse_freq_MHz_list[i]},{coarse_VSI_list[i]}")
 
-    def run_frequency_sweep(
-        self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, channel=1
-    ):
+    def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, channel=1):
         list_of_VSIs = list()
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.SetFrequency_Hz(
-                x * 1000000
-            )  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.AWG.SetFrequency_Hz(x * 1000000)  # set frequency accoding to step (coarse/fine) and x incremenet
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
             for i in range(bursts):
-                times_s, voltages_v = self.capture_scope(
-                    channel=1
-                )  # populates times_s and voltages_v with set frequency
+                # populates times_s and voltages_v with set frequency
+                times_s, voltages_v = self.capture_scope(channel=1)
                 vsi = self.find_vsi(times_s, voltages_v)
                 vsi_sum = vsi_sum + vsi
             vsi_avg = vsi_sum / bursts
@@ -1510,9 +1297,7 @@ class Manager(QThread):
 
         assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
 
-        self.profile_plot_signal.emit(
-            list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)"
-        )
+        self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
         return (list_of_frequencies_MHz, list_of_VSIs)
@@ -1528,10 +1313,7 @@ class Manager(QThread):
         voltages_v_squared = np.square(voltages_v)
 
         if dx == 0:
-            self.log(
-                level="Error",
-                message="Error in find_vsi. No delta x found, cannot integrate",
-            )
+            self.log(level='Error', message='Error in find_vsi. No delta x found, cannot integrate')
             return
 
         return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
@@ -1568,15 +1350,10 @@ class Manager(QThread):
             # Todo: add those checks anyway just because the script may vary
             # at this point in the script, the checks have been performed already in pretest_initialization so no
             # need to wrap in if statements
-            self.test_data.log_script(
-                [
-                    "",
-                    "PreChecks",
-                    f"Tank fill status {self.IO_Board.get_water_level()}, UA pump status "
-                    f"{self.IO_Board.get_ua_pump_reading()}",
-                    "",
-                ]
-            )
+            self.test_data.log_script(['', 'PreChecks',
+                                       f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
+                                       f'{self.IO_Board.get_ua_pump_reading()}',
+                                       ''])
         except Exception as e:
             self.test_data.log_script(["", "PreChecks", f"FAIL {e}", ""])
 
@@ -1589,17 +1366,9 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
 
         self.select_ua_channel(var_dict={"Element": self.element})
-        self.move_system(
-            var_dict={
-                "Element": self.element,
-                "Move Type": "Move to element",
-                "Target": "RFB",
-            }
-        )
+        self.move_system(var_dict={"Element": self.element, "Move Type": "Move to element", "Target": 'RFB'})
 
-        self.test_data.log_script(
-            ["", "Set frequency range", f'"{frequency_range}" range set', ""]
-        )
+        self.test_data.log_script(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
 
         if frequency_range == "High frequency":
             frequency_Hz = self.test_data.high_frequency_MHz * 1000000
@@ -1650,9 +1419,7 @@ class Manager(QThread):
                 self.rfb_args = self.rfb_logger.rfb_args
                 self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
-            current_cycle = (
-                current_cycle + 1
-            )  # we just passed a cycle at this point in the code
+            current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
         self.wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
@@ -1687,36 +1454,23 @@ class Manager(QThread):
 
         water_temperature = self.thermocouple.get_reading()
 
-        self.test_data.update_results_summary_with_efficiency_results(
-            frequency_range == "High frequency",
-            self.element,
-            frequency_Hz,
-            efficiency_percent,
-            reflected_power_percent,
-            forward_power_max,
-            water_temperature,
-        )
+        self.test_data.update_results_summary_with_efficiency_results(frequency_range == "High frequency", self.element, frequency_Hz,
+                                                                      efficiency_percent, reflected_power_percent, forward_power_max,
+                                                                      water_temperature)
 
         self.element_number_signal.emit(str(self.element))
 
         temp_var_for_next_command = var_dict["Pf max (limit, W)"]
-        self.test_data.log_script(
-            [
-                "",
-                "Pass/Fail test",
-                f"Element_{self.element};Pf (W)={forward_power_on_mean};Pr (W)="
-                f"{reflected_power_on_mean};Pa (W)={acoustic_power_on_mean};Efficiency (%)"
-                f"={efficiency_percent};RF_Reflection (%)={reflected_power_percent};"
-                f"Pf Max (W)={forward_power_max};WaterTemp (C)={water_temperature};"
-                f"Test result=placeholder;Pf Max limit (W)={temp_var_for_next_command}",
-                "",
-            ]
-        )
+        self.test_data.log_script(['', "Pass/Fail test",
+                                   f"Element_{self.element};Pf (W)={forward_power_on_mean};Pr (W)="
+                                   f"{reflected_power_on_mean};Pa (W)={acoustic_power_on_mean};Efficiency (%)"
+                                   f"={efficiency_percent};RF_Reflection (%)={reflected_power_percent};"
+                                   f"Pf Max (W)={forward_power_max};WaterTemp (C)={water_temperature};"
+                                   f"Test result=placeholder;Pf Max limit (W)={temp_var_for_next_command}",
+                                   ''])
 
         # todo: pass correct arrays instead of forward power 3 times
-        balance_readings_mg = [
-            value * 1000 for value in self.rfb_logger.balance_readings_g
-        ]
+        balance_readings_mg = [value * 1000 for value in self.rfb_logger.balance_readings_g]
         # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
         raw_data = [
             self.rfb_logger.times_s,
@@ -1727,27 +1481,13 @@ class Manager(QThread):
         ]
         power_on_w = [1.366937, 1.357604, 1.357465]  # begin test code
         power_off_w = [1.359971, 1.357153, 1.363679]
-        cumulative_results = [
-            [1.360669, 1.360268, 1.360468],
-            [2.925537, 1.764390, 0.334969],
-            [12.023259, 11.794621, 11.666714],
-        ]
+        cumulative_results = [[1.360669, 1.360268, 1.360468], [2.925537, 1.764390, 0.334969], [12.023259, 11.794621, 11.666714]]
         absorption = ["Off", 1.000690]
         transducer_size = ["Off", 1.013496]
         focussing = ["Off", 1.000000]
         # absorb_trans_focus_times/transition_amp_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
-        absorb_trans_focus_times = [
-            [9.784287, 30.010603, 50.511028],
-            [11.048080, 31.280091, 51.729069],
-            [20.055610, 40.457604, 60.772845],
-            [21.230248, 41.546669, 62.039609],
-        ]
-        transition_amp_times = [
-            [0.004380, 0.016061, 0.018981],
-            [1.372454, 1.362233, 1.369534],
-            [1.389974, 1.394355, 1.401655],
-            [0.043802, 0.045262, 0.037961],
-        ]  # end test data
+        absorb_trans_focus_times = [[9.784287, 30.010603, 50.511028], [11.048080, 31.280091, 51.729069], [20.055610, 40.457604, 60.772845], [21.230248, 41.546669, 62.039609]]
+        transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534], [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
         # todo: check that p_on_rand_unc is the one we want
         self.file_saver.store_measure_rfb_waveform_csv(
             element_number=self.element,
@@ -1781,9 +1521,7 @@ class Manager(QThread):
         self.test_data.log_script(["", "End", "", ""])
 
     def begin_rfb_logger_thread(self):
-        self.rfb_logger = RFBDataLogger(
-            self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter
-        )
+        self.rfb_logger = RFBDataLogger(self.Balance,self.Forward_Power_Meter,self.Reflected_Power_Meter)
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
         self.rfb_logger.start(priority=QThread.HighPriority)
