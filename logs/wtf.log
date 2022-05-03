@@ -1,0 +1,139 @@
+2022-05-02 19:00:50,900 [INFO] [Manager] [manager_thread] : Running script
+2022-05-02 19:00:53,537 [INFO] [Manager] [] : Checking ability to log
+2022-05-02 19:00:57,345 [INFO] [Manager] [] : Maximum of 1177.9286923586988 @ X = -0.375 mm
+2022-05-02 19:00:57,353 [INFO] [Manager] [] : Maximum of 1175.9104505588086 @ Theta = -161.79999999999987 deg
+2022-05-02 19:00:57,424 [INFO] [Manager] [] : Maximum of 1157.8199491554028 @ X = 0.7250000000000001 mm
+2022-05-02 19:00:57,437 [INFO] [Manager] [] : Maximum of 1195.6709972378906 @ Theta = -169.39999999999998 deg
+2022-05-02 19:00:57,505 [INFO] [Manager] [] : Maximum of 1182.9406645927131 @ X = 4.700000000000001 mm
+2022-05-02 19:00:57,518 [INFO] [Manager] [] : Maximum of 1180.8748676277376 @ Theta = -163.7999999999999 deg
+2022-05-02 19:00:57,616 [INFO] [Manager] [] : Maximum of 1162.3795322702206 @ X = 11.499999999999988 mm
+2022-05-02 19:00:57,645 [INFO] [Manager] [] : Maximum of 1184.376538908942 @ Theta = -159.79999999999984 deg
+2022-05-02 19:00:57,735 [INFO] [Manager] [] : Maximum of 1176.987963313532 @ X = 13.299999999999999 mm
+2022-05-02 19:00:57,752 [INFO] [Manager] [] : Maximum of 1187.4786837919776 @ Theta = -165.39999999999992 deg
+2022-05-02 19:00:57,839 [INFO] [Manager] [] : Maximum of 1159.5192780013895 @ X = 21.099999999999987 mm
+2022-05-02 19:00:57,859 [INFO] [Manager] [] : Maximum of 1170.7671170315966 @ Theta = -167.39999999999995 deg
+2022-05-02 19:00:57,958 [INFO] [Manager] [] : Maximum of 1160.881899902227 @ X = 27.099999999999984 mm
+2022-05-02 19:00:57,994 [INFO] [Manager] [] : Maximum of 1177.5199266844957 @ Theta = -167.79999999999995 deg
+2022-05-02 19:00:58,082 [INFO] [Manager] [] : Maximum of 1167.3425938834664 @ X = 31.099999999999987 mm
+2022-05-02 19:00:58,103 [INFO] [Manager] [] : Maximum of 1191.8091064058276 @ Theta = -164.99999999999991 deg
+2022-05-02 19:00:58,190 [INFO] [Manager] [] : Maximum of 1196.4120369044294 @ X = 36.900000000000055 mm
+2022-05-02 19:00:58,206 [INFO] [Manager] [] : Maximum of 1181.2500555322242 @ Theta = -161.79999999999987 deg
+2022-05-02 19:00:58,303 [INFO] [Manager] [] : Maximum of 1179.499046313853 @ X = 41.900000000000055 mm
+2022-05-02 19:00:58,327 [INFO] [Manager] [] : Maximum of 1192.3350255495993 @ Theta = -158.59999999999982 deg
+2022-05-02 19:00:58,417 [INFO] [Manager] [] : Maximum of 1154.6058395793634 @ X = 44.90000000000003 mm
+2022-05-02 19:00:58,436 [INFO] [Manager] [] : Maximum of 1161.0925011282359 @ Theta = -159.79999999999984 deg
+2022-05-02 19:00:58,506 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.73, r=0.7
+2022-05-02 19:00:58,516 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:00:58,517 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:00:58,517 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:00:58,519 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:58,620 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:00:58,720 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:58,820 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:00:58,921 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:59,021 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:00:59,255 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E01\E01_HFpower.csv
+2022-05-02 19:00:59,315 [INFO] [Manager] [] : Moved to 2, at coordinate x=4.70, r=4.7
+2022-05-02 19:00:59,324 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:00:59,329 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:00:59,329 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:00:59,331 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:59,432 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:00:59,532 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:59,632 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:00:59,732 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:00:59,833 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:00,074 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E02\E02_HFpower.csv
+2022-05-02 19:01:00,148 [INFO] [Manager] [] : Moved to 3, at coordinate x=11.50, r=11.5
+2022-05-02 19:01:00,157 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:00,158 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:00,171 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:00,189 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:00,290 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:00,390 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:00,490 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:00,590 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:00,691 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:00,940 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E03\E03_HFpower.csv
+2022-05-02 19:01:01,033 [INFO] [Manager] [] : Moved to 4, at coordinate x=13.30, r=13.3
+2022-05-02 19:01:01,037 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:01,038 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:01,066 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:01,077 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:01,178 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:01,278 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:01,379 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:01,478 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:01,579 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:01,844 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E04\E04_HFpower.csv
+2022-05-02 19:01:01,932 [INFO] [Manager] [] : Moved to 5, at coordinate x=21.10, r=21.1
+2022-05-02 19:01:01,950 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:01,967 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:01,975 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:01,984 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:02,084 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:02,184 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:02,285 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:02,385 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:02,485 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:02,747 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E05\E05_HFpower.csv
+2022-05-02 19:01:02,844 [INFO] [Manager] [] : Moved to 6, at coordinate x=27.10, r=27.1
+2022-05-02 19:01:02,876 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:02,887 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:02,889 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:02,909 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:03,010 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:03,110 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:03,211 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:03,311 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:03,412 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:03,683 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E06\E06_HFpower.csv
+2022-05-02 19:01:03,771 [INFO] [Manager] [] : Moved to 7, at coordinate x=31.10, r=31.1
+2022-05-02 19:01:03,793 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:03,823 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:03,846 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:03,853 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:03,953 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:04,053 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:04,154 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:04,254 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:04,354 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:04,625 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E07\E07_HFpower.csv
+2022-05-02 19:01:04,701 [INFO] [Manager] [] : Moved to 8, at coordinate x=36.90, r=36.9
+2022-05-02 19:01:04,744 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:04,762 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:04,762 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:04,769 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:04,870 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:04,970 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:05,071 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:05,171 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:05,271 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:05,535 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E08\E08_HFpower.csv
+2022-05-02 19:01:05,621 [INFO] [Manager] [] : Moved to 9, at coordinate x=41.90, r=41.9
+2022-05-02 19:01:05,657 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:05,668 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:05,677 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:05,695 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:05,796 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:05,895 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:05,995 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:06,096 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:06,197 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:06,451 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E09\E09_HFpower.csv
+2022-05-02 19:01:06,562 [INFO] [Manager] [] : Moved to 10, at coordinate x=44.90, r=44.9
+2022-05-02 19:01:06,589 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-02 19:01:06,612 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-02 19:01:06,612 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-02 19:01:06,618 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:06,719 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:06,819 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:06,920 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:07,020 [INFO] [Manager] [] : Turning off AWG
+2022-05-02 19:01:07,121 [INFO] [Manager] [] : Turning on AWG
+2022-05-02 19:01:07,370 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Power data\EfficiencyTest\E10\E10_HFpower.csv
+2022-05-02 19:01:07,443 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Results Summary.txt
+2022-05-02 19:01:07,445 [INFO] [FileSaver] [] : Saving log file to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Log files\ScriptResults.log
+2022-05-02 19:01:12,885 [INFO] [Manager] [manager_thread] : Aborting script
+19:01:07,445 [INFO] [FileSaver] [] : Saving log file to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.02-19.00\Log files\ScriptResults.log
+2022-05-02 19:01:12,885 [INFO] [Manager] [manager_thread] : Aborting script

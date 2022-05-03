@@ -794,7 +794,7 @@ class ParkerMotorController(AbstractMotorController):
 if __name__ == "__main__":
     motors = ParkerMotorController(config=None)
     motors.connect_hardware()
-    #motors.setup_motor_1()
+    # motors.setup_motor_1()
     # t.sleep(15)
     # motors.command("1W(PA,0)")
     # motors.command("1D10000")

@@ -425,7 +425,7 @@ class FileSaver:
 
         file.write("\nRaw Data\n")
         file.write("Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)\n")
-        for x in range(len(raw_data[0])):
+        for x in range(min(len(raw_data[0]),len(raw_data[1]),len(raw_data[2]),len(raw_data[3]),len(raw_data[4]))):
             time_s = "%.6f" % raw_data[0][x]
             mass_mg = "% .6f" % raw_data[1][x]
             ac_pow_w = "%.6f" % raw_data[2][x]
