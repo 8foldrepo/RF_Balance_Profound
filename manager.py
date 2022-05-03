@@ -6,13 +6,11 @@ import sys
 import time as t
 from collections import OrderedDict
 from typing import List
-
 import numpy as np
 import pyvisa
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -23,19 +21,9 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
-from Utilities.formulas import (
-    calculate_power_from_balance_reading,
-    calculate_random_uncertainty_percent,
-    calculate_total_uncertainty_percent,
-)
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import (
-    log_msg,
-    get_element_distances,
-    get_awg_on_values,
-    generate_calibration_data,
-    get_awg_off_values,
-)
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data, \
+    get_awg_off_values
 from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel
 
@@ -1622,14 +1610,7 @@ class Manager(QThread):
             frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
 
         self.AWG.SetFrequency_Hz(frequency_Hz)
-        self.test_data.log_script(
-            [
-                "",
-                "Configure FGen+PwrMeters",
-                f"Frequency set to {frequency_Hz / 1000000} MHz",
-                "",
-            ]
-        )
+        self.test_data.log_script(["","Configure FGen+PwrMeters",f"Frequency set to {frequency_Hz / 1000000} MHz","",])
 
         self.Balance.zero_balance_instantly()  # todo: see if we need this
 
@@ -1645,9 +1626,7 @@ class Manager(QThread):
         startTime = t.time()
         current_cycle = 1
 
-        self.test_data.log_script(
-            ["", "Start RFB Acquisition", "Started RFB Action", ""]
-        )
+        self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
         self.begin_rfb_logger_thread()
@@ -1676,19 +1655,13 @@ class Manager(QThread):
             )  # we just passed a cycle at this point in the code
         self.wrap_up_rfb_logger()
 
-        self.test_data.log_script(
-            ["", "Run on/off sequence", "RFB Acquisition complete", ""]
-        )
-        self.test_data.log_script(
-            ["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""]
-        )
+        self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
+        self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
         # List containing all readings while AWG was on
         acoustic_power_on_data = get_awg_on_values(acoustic_powers_w, awg_on)
         # Mean acoustic power while on
-        acoustic_power_on_mean = sum(acoustic_power_on_data) / len(
-            acoustic_power_on_data
-        )
+        acoustic_power_on_mean = sum(acoustic_power_on_data) / len(acoustic_power_on_data)
 
         # List containing all readings while AWG was on
         forward_power_on_data = get_awg_on_values(forward_powers_w, awg_on)
@@ -1703,9 +1676,7 @@ class Manager(QThread):
         # List containing all readings while AWG was on
         reflected_power_on_data = get_awg_on_values(reflected_powers_w, awg_on)
         # Mean acoustic power while on
-        reflected_power_on_mean = sum(reflected_power_on_data) / len(
-            reflected_power_on_data
-        )
+        reflected_power_on_mean = sum(reflected_power_on_data) / len(reflected_power_on_data)
 
         if forward_power_on_mean != 0:
             reflected_power_percent = reflected_power_on_mean / forward_power_on_mean
