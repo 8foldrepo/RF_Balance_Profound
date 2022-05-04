@@ -98,8 +98,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         pass
 
     def set_to_defaults(self):
-        self.log(
-            f"set_to_defaults method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
+        # self.log(
+        #     f"set_to_defaults method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
         self.reset()
         channel = self.config[self.device_key]["channel"]
         self.max_time_of_flight = self.config["Autoset timebase"][
@@ -220,8 +220,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.command(":AUT")
 
     def capture(self, channel):
-        self.log(
-            f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
+        # self.log(
+        #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:FORM ASC")
@@ -321,8 +321,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
     #     self.command(Cycl)
 
     def command(self, command):
-        self.log(
-            f"command method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, command is: {command}")
+        # self.log(
+        #     f"command method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, command is: {command}")
         try:
             self.inst.write(command)
             # t.sleep(.03)
@@ -333,7 +333,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 )
 
     def read(self):
-        self.log(f"read method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
+        # self.log(f"read method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
         try:
             return self.inst.read()
         except AttributeError as e:
@@ -361,7 +361,7 @@ if __name__ == "__main__":
     osc.setHorzScale_sec(.00001)
     for x in range(10):
         osc.capture(1)
-        print(f"capture method called, {x}th time")
+        # print(f"capture method called, {x}th time")
     # print(f'elapsed time: {t.time() - start_time}')
 
     # may not be run if script is terminated early

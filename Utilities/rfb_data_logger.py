@@ -87,12 +87,12 @@ class RFBDataLogger(QThread):
             if self.sensors_ready():
                 self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
                 current_time = t.time() - start_time
-                print(f"current_time in rfb_data_logger.py is {current_time}")
+                # print(f"current_time in rfb_data_logger.py is {current_time}")
                 self.trigger_capture_signal.emit()
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
                 print(
-                    f"Items in A: {len(self.balance_readings_g)}, Items in B: {len(self.f_meter_readings_w)}, Items in C: {len(self.r_meter_readings_w)}"
+                    # f"Items in A: {len(self.balance_readings_g)}, Items in B: {len(self.f_meter_readings_w)}, Items in C: {len(self.r_meter_readings_w)}"
                 )
                 self.update_ui_data()
 
