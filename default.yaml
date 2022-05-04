@@ -9,7 +9,7 @@ Debugging:
   simulate_motors: true
   simulate_oscilloscope: true
   simulate_awg: true
-  simulate_balance: true
+  simulate_balance: false
   simulate_power_meters: true
   simulate_io_board: true
   simulate_thermocouple: true
@@ -72,7 +72,7 @@ Keysight_Oscilloscope:
   retries: 5
 MT_Balance:
   port: COM4
-  timeout_s: .6
+  timeout_s: 10
 Paths:
   UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt

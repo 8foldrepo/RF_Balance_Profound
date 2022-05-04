@@ -1,4 +1,5 @@
 import distutils.util
+import inspect
 import logging
 import os
 import re
@@ -965,6 +966,8 @@ class Manager(QThread):
         return self.element
 
     def find_element(self, var_dict):
+        self.log(
+            f"find_element method called in manager.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
         """Find UA element with given number"""
         self.element = self.element_str_to_int(var_dict["Element"])
         x_increment_MM = float(var_dict["X Incr. (mm)"])
@@ -1612,7 +1615,7 @@ class Manager(QThread):
         self.AWG.SetFrequency_Hz(frequency_Hz)
         self.test_data.log_script(["","Configure FGen+PwrMeters",f"Frequency set to {frequency_Hz / 1000000} MHz","",])
 
-        self.Balance.zero_balance_instantly()  # todo: see if we need this
+        # self.Balance.zero_balance_instantly()  # todo: see if we need this
 
         forward_powers_w = list()
         forward_powers_time_s = list()
@@ -1791,7 +1794,7 @@ class Manager(QThread):
     def wrap_up_rfb_logger(self):
         self.rfb_logger.quit()
         t.sleep(0.1)
-        print(self.Balance.get_reading())
+        print(f"balance reading in manager.py: {self.Balance.get_reading()}")
 
     # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):

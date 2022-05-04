@@ -1,3 +1,4 @@
+import time
 import time as t
 
 import serial
@@ -73,12 +74,12 @@ class MT_balance(AbstractBalance):
             return
         self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
-        print("written")
+        print("zero balance command sent")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                print(item)
+                # print(item)
                 # For some reason when debugging these can also appear as b'ES'. that is normal.
                 if item == b"ZI D" or b"ZI S":
                     self.log(level="info", message="Balance Zeroed")
@@ -110,6 +111,7 @@ class MT_balance(AbstractBalance):
             )
             # self.ser.write(b"ON\r")
             self.connected = True
+            self.start_continuous_reading()
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "Access is denied" in str(e):
@@ -177,7 +179,7 @@ class MT_balance(AbstractBalance):
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                if b"S S" in item:
+                if b"S D" in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
                         if is_number(chunk):
@@ -282,12 +284,24 @@ class MT_balance(AbstractBalance):
                         return None
         self.log(level="error", message=f"{self.device_key} timed out")
 
+    def start_continuous_reading(self):
+        self.ser.write(b"\nSIR\n")
+
+    def stop_continuous_reading(self):
+        self.ser.write(b"\n@\n")
+
 
 if __name__ == "__main__":
     balance = MT_balance(config=load_configuration())
-    balance.connect_hardware()
-    while True:
-        print(balance.get_reading())
+    # balance.connect_hardware()
+    # balance.test()
+    # print(balance.port)
+    # balance.start_continuous_reading()
+    # time_end = time.time() + 10
+    # while time.time() < time_end:
+    #     print(balance.get_reading())
+    # balance.stop_continuous_reading()
     # print(balance.connected)
     # input('press enter when weight is on scale')
     # print(balance.get_reading())
+

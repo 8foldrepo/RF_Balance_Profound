@@ -1,4 +1,5 @@
 import collections.abc
+import datetime
 import os
 
 import numpy as np
@@ -288,7 +289,7 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
         root_logger.warning(log_entry)
     else:
         root_logger.info(log_entry)
-    print(f"[{level}] {log_entry}")
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{level}] {log_entry}")
 
 
 if __name__ == "__main__":
