@@ -41,22 +41,12 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     def style_ui(self):
         self.scan_tabs.setCurrentIndex(0)
-        self.waveform_plot.setLabel(
-            "left", "Voltage Waveform (V)", **self.waveform_plot.styles
-        )
+        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
-        self.profile_plot.setLabel(
-            "left", "Voltage Squared Integral", **self.profile_plot.styles
-        )
-        self.profile_plot.setLabel(
-            "bottom", "Frequency (MHz)", **self.profile_plot.styles
-        )
-        self.voltage_time_plot.setLabel(
-            "left", "Voltage Waveform (V)", **self.voltage_time_plot.styles
-        )
-        self.voltage_time_plot.setLabel(
-            "bottom", "Time (s)", **self.voltage_time_plot.styles
-        )
+        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
+        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
+        self.voltage_time_plot.setLabel("left", "Voltage Waveform (V)", **self.voltage_time_plot.styles)
+        self.voltage_time_plot.setLabel("bottom", "Time (s)", **self.voltage_time_plot.styles)
 
         #  add default data to plots
         y = range(0, 100)
@@ -80,9 +70,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
             return
 
-        self.last_aquired_waveform_plot_label.setText(
-            f"Last Acquired Waveform - refresh rate: {refresh_rate}"
-        )
+        self.last_aquired_waveform_plot_label.setText(f"Last Acquired Waveform - refresh rate: {refresh_rate}")
         if x is None or y is None:
             return
         if len(x) == 0 or len(x) != len(y):

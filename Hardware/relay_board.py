@@ -40,11 +40,9 @@ class RelayBoard(AbstractRelay):
             self.relay_write(self.on_by_default)
         except serial.serialutil.SerialException:
             self.connected = False
-            feedback = (
-                f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
-                f"to determine which COM port to use. Make sure it matches the config file"
-            )
-            self.log(level="error", message=feedback)
+            feedback = f"{self.device_key} not connected. Check that it is plugged in and look at Device manager " \
+                       f"to determine which COM port to use. Make sure it matches the config file"
+            self.log(level='error', message=feedback)
 
         self.connected_signal.emit(self.connected)
         return self.connected, feedback

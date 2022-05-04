@@ -9,9 +9,7 @@ class HomeSystem(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setupUi(self)
-        self.orderedDict_to_ui(
-            OrderedDict([("Task type", "Home system_1"), ("Axis to home", "Theta")])
-        )
+        self.orderedDict_to_ui(OrderedDict([('Task type', 'Home system_1'), ('Axis to home', 'Theta')]))
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         if var_dict["Axis to home"] == "All Axes":

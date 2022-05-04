@@ -10,17 +10,11 @@ from ui_elements.script_editor_menus.ui_frequency_sweep import FrequencySweep
 from ui_elements.script_editor_menus.ui_function_generator import FunctionGenerator
 from ui_elements.script_editor_menus.ui_home_system import HomeSystem
 from ui_elements.script_editor_menus.ui_loop_over_elements import LoopOverElements
-from ui_elements.script_editor_menus.ui_measure_element_efficiency import (
-    MeasureElementEfficiency,
-)
+from ui_elements.script_editor_menus.ui_measure_element_efficiency import MeasureElementEfficiency
 from ui_elements.script_editor_menus.ui_move_system import MoveSystem
 from ui_elements.script_editor_menus.ui_oscilloscope_channel import OscilloscopeChannels
-from ui_elements.script_editor_menus.ui_oscilloscope_timebase import (
-    OscilloscopeTimebase,
-)
-from ui_elements.script_editor_menus.ui_prompt_user_for_action import (
-    PromptUserForAction,
-)
+from ui_elements.script_editor_menus.ui_oscilloscope_timebase import OscilloscopeTimebase
+from ui_elements.script_editor_menus.ui_prompt_user_for_action import PromptUserForAction
 from ui_elements.script_editor_menus.ui_save_results import SaveResults
 from ui_elements.script_editor_menus.ui_script_edit_template import AbstractEditMenu
 from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
@@ -232,10 +226,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         var_dict_copy = list(self.list_of_var_dicts)
 
         # remove quotes
-        task_names = [
-            self.script_cmd_dropdown.itemText(i).replace('"', "")
-            for i in range(self.script_cmd_dropdown.count())
-        ]
+        task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in
+                      range(self.script_cmd_dropdown.count())]
 
         # For each task name,
         for task_name in task_names:

@@ -1,9 +1,6 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
-from Utilities.formulas import (
-    calculate_total_uncertainty_percent,
-    calculate_random_uncertainty_percent,
-)
+from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent
 from Utilities.useful_methods import get_awg_on_values, get_awg_off_values
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
@@ -49,47 +46,28 @@ class RFB(MyQWidget, Ui_Form):
             return
         self.plot_ready = False
 
-        args = self.manager.rfb_args
-        times_s = args["times_s"]
-        forward_w = args["forward_w"]
-        reflected_w = args["reflected_w"]
-        acoustic_w = args["acoustic_w"]
-        awg_on = args["awg_on"]
-        grams = args["grams"]
-        forward_power_w = args["forward_power_w"]
-        reflected_power_w = args["reflected_power_w"]
-        try:
-            p_on_rand_unc = args[
-                "p_on_rand_unc"
-            ]  # this variable might not be ready for some reason, but it's ready most of the time, presumably when it needs to be
-        except KeyError:
-            self.log(
-                "p_on_rand_unc not ready in args dict in update_rfb_tab in ui_rfb.py"
-            )
-        try:
-            p_off_rand_unc = args["p_off_rand_unc"]
-        except KeyError:
-            self.log(
-                "p_off_rand_unc not ready in args dict in update_rfb_tab in ui_rfb.py"
-            )
-        p_on_total_unc = args["p_on_total_unc"]
-        p_off_total_unc = args["p_off_total_unc"]
-        p_com_rand_unc = args["p_com_rand_unc"]
-        p_com_total_unc = args["p_com_total_unc"]
-        acoustic_power_off_mean = args["acoustic_power_off_mean"]
-        acoustic_power_on_mean = args["acoustic_power_on_mean"]
+        rfb_data = self.manager.rfb_data
 
-        min_length = min(
-            len(times_s), len(forward_w), len(reflected_w), len(acoustic_w)
-        )
+        times_s = rfb_data.times_s
+        forward_w = rfb_data.f_meter_readings_w
+        reflected_w = rfb_data.r_meter_readings_w
+        acoustic_w = rfb_data.acoustic_powers_w
+        awg_on = rfb_data.awg_on_ray
+        grams = rfb_data.grams
+        forward_power_w = rfb_data.forward_power_w
+        reflected_power_w = rfb_data.reflected_power_w
+        p_on_rand_unc = rfb_data.p_on_rand_unc
+        p_off_rand_unc = rfb_data.p_off_rand_unc
+        p_on_total_unc = rfb_data.p_on_total_unc
+        p_off_total_unc = rfb_data.p_off_total_unc
+        p_com_rand_unc = rfb_data.p_com_rand_unc
+        p_com_total_unc = rfb_data.p_com_total_unc
+        acoustic_power_off_mean = rfb_data.acoustic_power_off_mean
+        acoustic_power_on_mean = rfb_data.acoustic_power_on_mean
+        acoustic_power_mean = rfb_data.acoustic_power_mean
 
         if grams is not None:
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
-
-        if len(acoustic_w) != 0:
-            acoustic_power_mean = sum(acoustic_w) / len(acoustic_w)
-        else:
-            acoustic_power_mean = float("nan")
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
         self.power_on_rand_uc_field.setText(str(round(p_on_rand_unc, 2)))
@@ -110,14 +88,9 @@ class RFB(MyQWidget, Ui_Form):
         self.forward_power_w_field.setText(str(round(forward_power_w, 2)))
         self.reflected_power_w_field.setText(str(round(reflected_power_w, 2)))
 
-        self.rfb_graph.refresh(
-            times_s[0:min_length], forward_w[0:min_length], pen="k", clear=True
-        )
-        self.rfb_graph.refresh(
-            times_s[0:min_length], reflected_w[0:min_length], pen="g", clear=False
-        )
-        self.rfb_graph.refresh(
-            times_s[0:min_length], acoustic_w[0:min_length], pen="r", clear=False
-        )
+        min_length = min(len(times_s), len(forward_w), len(reflected_w), len(acoustic_w))
+        self.rfb_graph.refresh(times_s, forward_w[0:min_length], pen="k", clear=True)
+        self.rfb_graph.refresh(times_s[0:min_length], reflected_w[0:min_length], pen="g", clear=False)
+        self.rfb_graph.refresh(times_s[0:min_length], acoustic_w[0:min_length], pen="r", clear=False)
         self.app.processEvents()
         self.plot_ready = True

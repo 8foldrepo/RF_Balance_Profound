@@ -16,18 +16,15 @@ file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mod
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
-root_logger = logging.getLogger(ROOT_LOGGER_NAME)
+
 
 
 # Features common to all of the dialogs in this project
 class MyQDialog(QDialog):
     abort_signal = pyqtSignal()
+    root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
-    def __init__(
-        self,
-        config,
-        parent=None,
-    ):
+    def __init__(self, config, parent=None, ):
         super().__init__(parent=parent)
 
         # If this flag is not true when the dialog is closed, the script will abort

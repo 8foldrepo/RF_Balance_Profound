@@ -72,13 +72,9 @@ class SimulatedMotorController(AbstractMotorController):
         current_coordinate_mm = self.coords_mm[axis_index]
 
         if direction < 0:
-            go_to_coord_mm = int(
-                (current_coordinate_mm - abs(self.increment_ray[axis_index]))
-            )
+            go_to_coord_mm = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
         else:
-            go_to_coord_mm = int(
-                (current_coordinate_mm + abs(self.increment_ray[axis_index]))
-            )
+            go_to_coord_mm = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
         self.go_to_position([axis], [go_to_coord_mm])
 
@@ -91,9 +87,7 @@ class SimulatedMotorController(AbstractMotorController):
         origin_steps = list()
 
         for i in range(len(self.ax_letters)):
-            origin_steps[i] = -1 * origin_mm[i] * self.calibrate_ray_steps_per + float(
-                self.coords_mm[i]
-            )
+            origin_steps[i] = -1 * origin_mm[i] * self.calibrate_ray_steps_per + float(self.coords_mm[i])
             if self.reverse_ray[i]:
                 origin_steps[i] = origin_steps * -1
 

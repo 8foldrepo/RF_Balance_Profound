@@ -1,6 +1,4 @@
-def calculate_power_from_balance_reading(
-    balance_reading_g: float, Temperature_c: float = 20
-):
+def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c: float = 20):
     balance_reading_kg = balance_reading_g / 1000
     g_m_per_s_per_s = 9.80665  # Source: [1] in the documentation
 
@@ -12,35 +10,8 @@ def calculate_power_from_balance_reading(
 
 def calculate_speed_of_sound_in_water(temperature_c: float):
     from numpy import poly1d, polyfit
-
-    temp_c_scatter = [
-        0,
-        5,
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100,
-    ]  # Source: [2] in documentation
-    c_water_m_per_s_scatter = [
-        1403,
-        1427,
-        1447,
-        1481,
-        1507,
-        1526,
-        1541,
-        1552,
-        1555,
-        1555,
-        1550,
-        1543,
-    ]
+    temp_c_scatter = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  # Source: [2] in documentation
+    c_water_m_per_s_scatter = [1403, 1427, 1447, 1481, 1507, 1526, 1541, 1552, 1555, 1555, 1550, 1543]
 
     polyfit = poly1d(polyfit(temp_c_scatter, c_water_m_per_s_scatter, 4))
 

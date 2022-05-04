@@ -74,19 +74,8 @@ class KeysightAWG(AbstractAWG):
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
 
-    def setup(
-        self,
-        frequency_Hz,
-        amplitude_V,
-        burst=False,
-        ext_trig=False,
-        burst_period_s=0.00001,
-        burst_cycles=50,
-        offset_V=0,
-        output=False,
-        output_Impedance=50,
-        trigger_out=True,
-    ):
+    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
+              offset_V=0, output=False, output_Impedance=50, trigger_out=True):
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
@@ -306,9 +295,7 @@ class KeysightAWG(AbstractAWG):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
         self.get_state()
-        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(
-            self.state
-        )
+        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 
 
 if __name__ == "__main__":

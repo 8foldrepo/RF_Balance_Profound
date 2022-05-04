@@ -1,0 +1,13 @@
+2022-05-03 18:58:52,494 [INFO] [Manager] [manager_thread] : Running script
+2022-05-03 18:58:52,544 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-05-03 18:58:52,544 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.00, r=0.0
+2022-05-03 18:58:52,544 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
+2022-05-03 18:58:52,544 [INFO] [Manager] [] : Turning off AWG T = 0.00
+2022-05-03 18:58:52,654 [INFO] [Manager] [] : Turning on AWG T = 0.11
+2022-05-03 18:58:52,754 [INFO] [Manager] [] : Turning off AWG T = 0.21
+2022-05-03 18:58:52,864 [INFO] [Manager] [] : Turning on AWG T = 0.32
+2022-05-03 18:58:52,964 [INFO] [Manager] [] : Turning off AWG T = 0.42
+2022-05-03 18:58:53,074 [INFO] [Manager] [] : Turning on AWG T = 0.53
+2022-05-03 18:58:53,314 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\rajiv\Documents\Results\GG1138-2022.05.03-18.58\Power data\EfficiencyTest\E01\E01_HFpower.csv
+[Manager] [] : Turning on AWG T = 0.53
+2022-05-03 18:58:53,314 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\rajiv\Documents\Results\GG1138-2022.05.03-18.58\Power data\EfficiencyTest\E01\E01_HFpower.csv

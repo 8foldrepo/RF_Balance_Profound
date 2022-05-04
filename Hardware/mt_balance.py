@@ -47,10 +47,8 @@ class MT_balance(AbstractBalance):
                     self.log(level="info", message="Balance Zeroed")
                     return
                 else:
-                    if item == b"I":
-                        self.log(
-                            level="error", message="Weight unstable or balance busy"
-                        )
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b"+":
                         self.log(level="error", message="Balance overloaded")
@@ -84,10 +82,8 @@ class MT_balance(AbstractBalance):
                     self.log(level="info", message="Balance Zeroed")
                     return
                 else:
-                    if item == b"I":
-                        self.log(
-                            level="error", message="Weight unstable or balance busy"
-                        )
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b"+":
                         self.log(level="error", message="Balance overloaded")
@@ -113,15 +109,11 @@ class MT_balance(AbstractBalance):
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "Access is denied" in str(e):
-                feedback = (
-                    f"{self.device_key} is in use by another program, close it and restart (also check the "
-                    f"com ports in the config file): \n{e}"
-                )
+                feedback = f"{self.device_key} is in use by another program, close it and restart (also check the " \
+                           f"com ports in the config file): \n{e}"
             else:
-                feedback = (
-                    f"{self.device_key} not connected. Check that it is plugged in and look at Device manager "
-                    f"to determine which COM port to use and enter it into local.yaml: \n{e}"
-                )
+                feedback = f"{self.device_key} not connected. Check that it is plugged in and look at Device manager " \
+                           f"to determine which COM port to use and enter it into local.yaml: \n{e}"
         if not self.connected:
             self.log(level="error", message=feedback)
         self.connected_signal.emit(self.connected)
@@ -186,10 +178,8 @@ class MT_balance(AbstractBalance):
                             self.reading_signal.emit(val)
                             return val
                 else:
-                    if item == b"I":
-                        self.log(
-                            level="error", message="Weight unstable or balance busy"
-                        )
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b"+":
                         self.log(level="error", message="Balance overloaded")
@@ -238,10 +228,8 @@ class MT_balance(AbstractBalance):
                             self.reading_signal.emit(val)
                             return
                 else:
-                    if item == b"I":
-                        self.log(
-                            level="error", message="Weight unstable or balance busy"
-                        )
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return
                     elif item == b"+":
                         self.log(level="error", message="Balance overloaded")
@@ -269,10 +257,8 @@ class MT_balance(AbstractBalance):
                         if len(chunk) > 6:
                             return chunk
                 else:
-                    if item == b"I":
-                        self.log(
-                            level="error", message="Weight unstable or balance busy"
-                        )
+                    if item == b'I':
+                        self.log(level='error', message='Weight unstable or balance busy')
                         return None
                     elif item == b"+":
                         self.log(level="error", message="Balance overloaded")

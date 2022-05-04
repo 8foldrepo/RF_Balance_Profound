@@ -33,9 +33,7 @@ class ParkerMotorController(AbstractMotorController):
             return False
 
         if not len(axes) == len(coords_mm):
-            self.log(
-                level="error", message="Axes length does not match coordinates length"
-            )
+            self.log(level='error', message="Axes length does not match coordinates length")
             self.ready_signal.emit()
             return False
 
@@ -62,21 +60,17 @@ class ParkerMotorController(AbstractMotorController):
                 self.log(level="error", message="Axis not recognized in go to position")
                 origin_offset = 0
 
-            motor_steps = (target_coordinate_mm - origin_offset) * float(
-                self.calibrate_ray_steps_per[num - 1]
-            )
+            motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1])
             coords.append(motor_steps)
 
         if not self.movement_mode == "Distance":
             self.set_movement_mode("Distance")
 
         for i in range(len(axis_numbers)):
-            self.command(f"{axis_numbers[i]}D{int(coords[i])}")
-            self.command(f"{axis_numbers[i]}G")
-            if "*E" in self.get_response(retries=1):
-                self.log(
-                    f"Movement of {axis_numbers[i]} to coordinate {coords} failed, checking fault data"
-                )
+            self.command(f'{axis_numbers[i]}D{int(coords[i])}')
+            self.command(f'{axis_numbers[i]}G')
+            if '*E' in self.get_response(retries=1):
+                self.log(f"Movement of {axis_numbers[i]} to coordinate {coords} failed, checking fault data")
                 self.check_user_fault(axis_number=axis_numbers[i])
                 self.ready_signal.emit()
                 return False
@@ -106,16 +100,11 @@ class ParkerMotorController(AbstractMotorController):
     @pyqtSlot()
     def set_origin(self, origin_mm: list):
         if not len(origin_mm) == len(self.ax_letters):
-            self.log(
-                level="error",
-                message="Error in set_origin, not enough coordinates provided",
-            )
+            self.log(level='error', message='Error in set_origin, not enough coordinates provided')
             return
 
         for i in range(len(origin_mm)):
-            self.set_origin_1d(
-                axis=self.ax_letters[i], coord_mm=origin_mm[i], get_position=False
-            )
+            self.set_origin_1d(axis=self.ax_letters[i], coord_mm=origin_mm[i], get_position=False)
 
         self.get_position()
 
@@ -123,12 +112,10 @@ class ParkerMotorController(AbstractMotorController):
         axis_number = self.get_ax_number(axis)
         axis_index = axis_number - 1
 
-        if axis == "R":
-            coord_mm = (
-                coord_mm + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
-            )
-        elif axis == "X":
-            coord_mm = coord_mm + self.config["WTF_PositionParameters"]["XHomeCoord"]
+        if axis == 'R':
+            coord_mm = coord_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
+        elif axis == 'X':
+            coord_mm = coord_mm + self.config['WTF_PositionParameters']['XHomeCoord']
 
         coord_steps = coord_mm * self.calibrate_ray_steps_per[axis_index]
 
@@ -171,33 +158,13 @@ class ParkerMotorController(AbstractMotorController):
 
     def setup_home(self):
         # todo: test and uncomment
-        self.setup_home_1d(
-            axis="X",
-            enabled=self.config[self.device_key]["enable_homing_ray"][0],
-            reference_edge="+",
-            normally_closed=False,
-            speed=10,
-            mode=1,
-        )
-        self.setup_home_1d(
-            axis="R",
-            enabled=self.config[self.device_key]["enable_homing_ray"][1],
-            reference_edge="-",
-            normally_closed=False,
-            speed=1,
-            mode=1,
-        )
+        self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
+                           reference_edge='+', normally_closed=False, speed=10, mode=1)
+        self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
+                           reference_edge='-', normally_closed=False, speed=1, mode=1)
 
-    def setup_home_1d(
-        self,
-        axis,
-        enabled=True,
-        reference_edge="+",
-        normally_closed=False,
-        speed=-5,
-        mode=1,
-        acceleration=10,
-    ):
+    def setup_home_1d(self, axis, enabled=True, reference_edge='+', normally_closed=False, speed=-5, mode=1,
+                      acceleration=10):
         axis_number = self.get_ax_number(axis)
 
         if enabled:
@@ -248,16 +215,12 @@ class ParkerMotorController(AbstractMotorController):
             self.connected = False
             if "PermissionError" in str(e):
                 feedback = f"{self.device_key} not connected. Another program is likely using it"
-            elif "FileNotFoundError" in str(e):
-                feedback = (
-                    f"{self.device_key} not connected because the COM port was not found. Check that it is "
-                    f"plugged in and look at Device manager to determine which COM port to use. enter it"
-                    f" into Local.yaml: \n\n {e}"
-                )
+            elif 'FileNotFoundError' in str(e):
+                feedback = f"{self.device_key} not connected because the COM port was not found. Check that it is " \
+                           f"plugged in and look at Device manager to determine which COM port to use. enter it" \
+                           f" into Local.yaml: \n\n {e}"
             else:
-                feedback = (
-                    f"{self.device_key} not connected due to an unkown error. \n\n {e}"
-                )
+                feedback = f"{self.device_key} not connected due to an unkown error. \n\n {e}"
 
         if not self.connected:
             self.log(level="error", message=feedback)
@@ -276,9 +239,7 @@ class ParkerMotorController(AbstractMotorController):
 
     """Attempt to send command until it is faithfully echoed by the controller, or else return false"""
 
-    def command(
-        self, command, retry=True, time_limit=None, mutex_locked=False, log=True
-    ):
+    def command(self, command, retry=True, time_limit=None, mutex_locked=False, log=True):
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
         if self.lock is not None and not mutex_locked:
             self.lock.lock()
@@ -289,10 +250,7 @@ class ParkerMotorController(AbstractMotorController):
 
         # Handle not connected case
         if not self.connected:
-            self.log(
-                level="error",
-                message=f"motor not connected, could not send command: {command}",
-            )
+            self.log(level='error', message=f'motor not connected, could not send command: {command}')
             if self.lock is not None and not mutex_locked:
                 self.lock.unlock()
             return
@@ -444,11 +402,8 @@ class ParkerMotorController(AbstractMotorController):
         self.connected_signal.emit(self.connected)
 
         if not self.connected:
-            self.log(
-                level="error",
-                message=f"{self.device_key} COM port found but motor controller is not "
-                f"responding. Make sure it is powered up and click setup.",
-            )
+            self.log(level='error', message=f"{self.device_key} COM port found but motor controller is not "
+                                            f"responding. Make sure it is powered up and click setup.")
             self.ready_signal.emit()
             return
 
@@ -460,10 +415,7 @@ class ParkerMotorController(AbstractMotorController):
         sent_2_successfully = self.command("1W(MS,50)")
 
         if not (sent_1_successfully and sent_2_successfully):
-            self.log(
-                level="error",
-                message="failed to setup, check that drivers are powered on and try again",
-            )
+            self.log(level='error', message='failed to setup, check that drivers are powered on and try again')
             return
 
         if settings is not None:
@@ -577,13 +529,9 @@ class ParkerMotorController(AbstractMotorController):
         current_coordinate_mm = self.coords_mm[axis_index]
 
         if direction < 0:
-            go_to_coord_mm = int(
-                (current_coordinate_mm - abs(self.increment_ray[axis_index]))
-            )
+            go_to_coord_mm = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
         else:
-            go_to_coord_mm = int(
-                (current_coordinate_mm + abs(self.increment_ray[axis_index]))
-            )
+            go_to_coord_mm = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
         self.go_to_position([axis], [go_to_coord_mm])
 
@@ -598,16 +546,11 @@ class ParkerMotorController(AbstractMotorController):
         moving_margin_ray = [0.001, 0.001]
 
         for i in range(len(self.ax_letters)):
-            position_string = self.ask(
-                f"{i + 1}R(PT)", mutex_locked=mutex_locked, log=False
-            )
-            position_string = position_string.replace("*", "")
+            position_string = self.ask(f"{i + 1}R(PT)", mutex_locked=mutex_locked, log=False)
+            position_string = position_string.replace('*', '')
 
             if not is_number(position_string):
-                self.log(
-                    level="Error",
-                    message=f"Failed to get {self.ax_letters[i]} position",
-                )
+                self.log(level='Error', message=f'Failed to get {self.ax_letters[i]} position')
                 continue
 
             position_steps = float(position_string)
@@ -619,17 +562,11 @@ class ParkerMotorController(AbstractMotorController):
 
             if self.ax_letters[i].upper() == "X":
                 # Add on the coordinate of the home position (from the motor's perspective it is zero)
-                position_deg_or_mm = (
-                    position_deg_or_mm
-                    + self.config["WTF_PositionParameters"]["XHomeCoord"]
-                )
+                position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
                 self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
             elif self.ax_letters[i].upper() == "R":
                 # Add on the coordinate of the home position (from the motor's perspective it is zero)
-                position_deg_or_mm = (
-                    position_deg_or_mm
-                    + self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
-                )
+                position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
                 self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
             # Check if position has not changed. If all axes have not changed moving will be false
@@ -654,11 +591,9 @@ class ParkerMotorController(AbstractMotorController):
             return
         if response[1] == "1":
             self.log("Value is out of range")
-        if response[2] == "1":
-            self.log(
-                "Incorrect command syntax (this is a known issue due to unreliable serial communication)"
-            )
-        if response[3] == "1":
+        if response[2] == '1':
+            self.log("Incorrect command syntax (this is a known issue due to unreliable serial communication)")
+        if response[3] == '1':
             self.log("Last label already in use")
         if response[4] == "1":
             self.log("Label of this name not defined")
