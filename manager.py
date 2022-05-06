@@ -111,6 +111,8 @@ class Manager(QThread):
 
     def __init__(self, system_info, config: dict, parent=None):
         super().__init__(parent=parent)
+        # Default to operator access
+        self.access_level = "Operator"
         self.rfb_logger = None
         QThread.currentThread().setObjectName("manager_thread")
         # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
@@ -163,7 +165,8 @@ class Manager(QThread):
 
         self.element = 1
 
-        # Tracks whether a script is being executed
+        # Tracks whether a script is currently being executed
+        self.was_scripting = False # Flag to tell if a script has just stopped
         self.scripting = False
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
         self.continue_var = True
@@ -171,10 +174,10 @@ class Manager(QThread):
         self.abort_var = False
 
         # Keeps track of script step in progress
-        # step_index = -2 at the beginning and -1 if no script is being run.
+        # step_index = -1 and if no script is being run.
         # step_index = -1 t is also the way to check if the script
         # has been aborted
-        self.step_index = -2
+        self.step_index = -1
 
         # ResourceManager for the oscilloscope and function generators
         self.rm = None
@@ -187,96 +190,70 @@ class Manager(QThread):
         use the simulated class instead.
         """
 
-        # Check if w
-        if self.config["Debugging"]["simulate_motors"]:
-            from Hardware.Simulated.simulated_motor_controller import (
-                SimulatedMotorController,
-            )
+        self.access_level = self.parent.access_level_combo.currentText()
+        simulate_access = self.access_level.upper() != "Operator".upper()
 
+        if self.config["Debugging"]["simulate_motors"] and simulate_access:
+            from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
             self.Motors = SimulatedMotorController(config=self.config)
         else:
             from Hardware.parker_motor_controller import ParkerMotorController
+            self.Motors = ParkerMotorController(config=self.config, lock=self.motor_control_lock)
 
-            self.Motors = ParkerMotorController(
-                config=self.config, lock=self.motor_control_lock
-            )
-
-        if self.config["Debugging"]["simulate_oscilloscope"]:
+        if self.config["Debugging"]["simulate_oscilloscope"] and simulate_access:
             from Hardware.Simulated.simulated_oscilloscope import SimulatedOscilloscope
-
             self.Oscilloscope = SimulatedOscilloscope(config=self.config)
         else:
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
             self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
-        if self.config["Debugging"]["simulate_ua_interface"]:
+        if self.config["Debugging"]["simulate_ua_interface"] and simulate_access:
             from Hardware.Simulated.simulated_ua_interface import SimulatedUAInterface
-
             self.UAInterface = SimulatedUAInterface(config=self.config)
         else:
             from Hardware.ua_interface import UAInterface
-
             self.UAInterface = UAInterface(config=self.config)
 
-        if self.config["Debugging"]["simulate_awg"]:
+        if self.config["Debugging"]["simulate_awg"] and simulate_access:
             from Hardware.Simulated.simulated_awg import SimulatedAWG
-
             self.AWG = SimulatedAWG(config=self.config)
         else:
             from Hardware.keysight_awg import KeysightAWG
-
             if self.rm is None:
                 self.rm = pyvisa.ResourceManager()
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
 
-        if self.config["Debugging"]["simulate_balance"]:
+        if self.config["Debugging"]["simulate_balance"] and simulate_access:
             from Hardware.Simulated.simulated_balance import SimulatedBalance
 
             self.Balance = SimulatedBalance(config=self.config)
         else:
             from Hardware.mt_balance import MT_balance
-
             self.Balance = MT_balance(config=self.config)
 
-        if self.config["Debugging"]["simulate_power_meters"]:
+        if self.config["Debugging"]["simulate_power_meters"] and simulate_access:
             from Hardware.Simulated.simulated_power_meter import PowerMeter
 
-            self.Forward_Power_Meter = PowerMeter(
-                config=self.config, device_key="Forward_Power_Meter"
-            )
-            self.Reflected_Power_Meter = PowerMeter(
-                config=self.config, device_key="Reflected_Power_Meter"
-            )
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key="Forward_Power_Meter")
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key="Reflected_Power_Meter")
         else:
             from Hardware.mini_circuits_power_meter import PowerMeter
+            self.Forward_Power_Meter = PowerMeter(config=self.config, device_key="Forward_Power_Meter")
+            self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key="Reflected_Power_Meter")
 
-            self.Forward_Power_Meter = PowerMeter(
-                config=self.config, device_key="Forward_Power_Meter"
-            )
-            self.Reflected_Power_Meter = PowerMeter(
-                config=self.config, device_key="Reflected_Power_Meter"
-            )
-
-        if self.config["Debugging"]["simulate_io_board"]:
+        if self.config["Debugging"]["simulate_io_board"] and simulate_access:
             from Hardware.Simulated.simulated_io_board import SimulatedIOBoard
-
             self.IO_Board = SimulatedIOBoard(config=self.config)
         else:
             from Hardware.dio_board import DIOBoard
-
-            self.IO_Board = DIOBoard(
-                config=self.config,
-                simulate_sensors=self.config["Debugging"]["simulate_sensors"],
-            )
+            self.IO_Board = DIOBoard(config=self.config,simulate_sensors=self.config["Debugging"]["simulate_sensors"])
 
         if self.config["Debugging"]["simulate_thermocouple"]:
             from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
-
             self.thermocouple = SimulatedThermocouple(config=self.config)
         else:
             from Hardware.ni_thermocouple import NIThermocouple
-
             self.thermocouple = NIThermocouple(config=self.config)
 
         self.devices.append(self.Forward_Power_Meter)
@@ -355,26 +332,33 @@ class Manager(QThread):
                 self.wrap_up()
             elif cmd_ray[0] == "CONNECT":
                 self.connect_hardware()
+            elif cmd_ray[0] == "CAPTURE":
+                self.capture_osc_and_plot()
             elif cmd_ray[0] == "STEP":
                 self.advance_script()
             elif cmd_ray[0] == "ABORT":
                 self.abort()
             # What to do when there is no command
             else:
+                # If a script has just ended, show script_complete dialog
+                if not self.scripting and self.was_scripting:
+                    self.script_complete()
+
                 if self.scripting:
                     if self.taskNames is None:
                         self.abort()
                     else:
                         self.advance_script()
                 else:
-                    if self.Oscilloscope.connected:
-                        self.realtime_capture_and_plot()
+                    if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
+                        self.capture_osc_and_plot()
                     else:
                         pass
                     self.update_sensors()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
 
+            self.was_scripting = self.scripting
             self.cmd = ""
         self.wrap_up()
         self.mutex.unlock()
@@ -434,27 +418,18 @@ class Manager(QThread):
         self.plot_signal.emit(time, voltage, refresh_rate)
 
     # noinspection PyUnresolvedReferences
-    def realtime_capture_and_plot(self):
+    def capture_osc_and_plot(self):
         # Do these things if a script is not being run
 
         # Only capture if the scan tab is selected
         if not self.parent.scan_tab_widget.plot_ready:
             return
-        if (
-                self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex())
-                != "Scan"
-        ):
-            return
-
-        tabs = self.parent.scan_tab_widget.scan_tabs
-
-        if tabs.tabText(tabs.currentIndex()) != "1D Scan":
+        if self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) != "Scan":
             return
 
         time, voltage = self.capture_scope()
 
         self.plot_scope(time, voltage)
-
         self.start_time = t.time()
 
     # noinspection PyUnresolvedReferences
@@ -612,7 +587,6 @@ class Manager(QThread):
 
         if self.retry_var is True:
             self.step_index = self.step_index - 1
-
             self.retry_var = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
@@ -622,7 +596,7 @@ class Manager(QThread):
         # run the next script step
 
         if self.step_index > len(self.taskNames):
-            self.script_complete()
+            self.scripting = False
             return
 
         if (
@@ -639,13 +613,8 @@ class Manager(QThread):
                 ):  # elements that are a part of a loop will have a third sub element
                     # notating which loop it's from
                     self.test_data.log_script(
-                        [
-                            f"Iteration {self.taskExecOrder[self.step_index][1]} of "
-                            f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}",
-                            "",
-                            "",
-                            "",
-                        ]
+                        [f"Iteration {self.taskExecOrder[self.step_index][1]} of "
+                        f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}","","","",]
                     )
                     inside_iteration = True
                     iteration_number = self.taskExecOrder[self.step_index][1]
@@ -715,7 +684,6 @@ class Manager(QThread):
         # Reset script control variables
         self.scripting = False
         self.step_index = -1
-
         self.continue_var = True
         self.abort_var = True
         self.task_number_signal.emit(0)
@@ -821,7 +789,7 @@ class Manager(QThread):
             self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
         else:
             self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])
-            if self.config["Debugging"]["end_script_on_errors"]:
+            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
                 return self.abort()
 
         # Show dialogs until pump is on and the water sensor reads level
@@ -849,7 +817,7 @@ class Manager(QThread):
             )
         except Exception as e:
             self.test_data.log_script(["", "Home all", f"FAIL: {e}", ""])
-            if self.config["Debugging"]["end_script_on_errors"]:
+            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
                 return self.abort()
 
         try:
@@ -858,14 +826,14 @@ class Manager(QThread):
             )
         except Exception as e:
             self.test_data.log_script(["", "Insert UA", f"FAIL {e}"])
-            if self.config["Debugging"]["end_script_on_errors"]:
+            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
                 return self.abort()
 
         if self.thermocouple.connected:
             self.test_data.log_script(["", "CheckThermocouple", "OK", ""])
         else:
             self.test_data.log_script(["", "CheckThermocouple", "FAIL", ""])
-            if self.config["Debugging"]["end_script_on_errors"]:
+            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
                 return self.abort()
             # have the script aborted or wait for thermocouple?
 
@@ -941,8 +909,12 @@ class Manager(QThread):
     """Retrieve metadata from mainwindow and trigger the script to run"""
 
     @pyqtSlot(TestData)
-    def pretest_metadata_slot(self, test_data: TestData):
+    def begin_script_slot(self, test_data: TestData):
+        """Receive test metadata from the MainWindow, and begin a script."""
+
         # reset test data to default values
+        self.test_data.set_blank_values()
+
         self.test_data.test_comment = test_data.test_comment
         self.test_data.serial_number = test_data.serial_number
         self.test_data.operator_name = test_data.operator_name
@@ -1096,7 +1068,7 @@ class Manager(QThread):
         max_position = -1 * sys.float_info.max
         for i in range(num_points):
             self.Motors.go_to_position([axis_letter], [position])
-            position = position + abs(increment)
+            position = position + increment
 
             times_s, voltages_v = self.capture_scope(channel=scope_channel)
 
@@ -1345,14 +1317,15 @@ class Manager(QThread):
                 ["", f"Home {axis_to_home}", "FAIL", "axis unrecognized"]
             )
 
-    """Warn the user that the UA is being retracted in x"""
+
 
     def retract_ua_warning(self):
+        """Warn the user that the UA is being retracted in x"""
         self.retracting_ua_warning_signal.emit()
 
-    """Move motors to the specified coordinates"""
 
     def move_system(self, var_dict):
+        """Move motors to the specified coordinates"""
         move_type = var_dict["Move Type"]
 
         if "Go To".upper() in move_type.upper():
@@ -1408,6 +1381,7 @@ class Manager(QThread):
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict):
+        """Sweep through a range of frequencies and plot the voltage squared integral"""
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
         frequency_range = var_dict["Frequency range"]

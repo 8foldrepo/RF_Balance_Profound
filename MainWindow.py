@@ -222,15 +222,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def set_tab_slot(self, text):
-        """Sets the current tab to the one with matching text"""
-        index = -1
-        for i in range(len(self.tabWidget.children())):
-            if self.tabWidget.tabText(i) == text:
-                index = i
-                break
-        if index == -1:
-            return
-
+        index = self.tab_text_to_index(text)
         self.tabWidget.setCurrentIndex(index)
 
     @pyqtSlot(int)
@@ -264,14 +256,27 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.access_level_combo.setCurrentText(access_level)
 
         if access_level == "Engineer":
-            self.tabWidget.removeTab(7)
+            self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
         elif access_level == "Operator":
             # Todo: Remove position tab, add more stuff like this later
-            self.tabWidget.removeTab(6)
+            self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
+            self.tabWidget.removeTab(self.tab_text_to_index("Position"))
+            self.tabWidget.removeTab(self.tab_text_to_index("Edit Script"))
+            self.run_step_button.setEnabled(False)
         elif access_level == "Administrator":
-            self.tabWidget.removeTab(6)
+            pass
         else:
             sys.exit()
+
+    def tab_text_to_index(self, text):
+        """
+        Returns the index of the tab with specified text in the main tabwidget.
+        If no match exists, returns -1. Not case sensitive.
+        """
+        for i in range(self.tabWidget.count()):
+            if self.tabWidget.tabText(i).upper() == text.upper():
+                return i
+        return -1
 
     def configure_non_manager_signals(self):
         self.script_editor.script_changed_signal.connect(self.upon_script_changed)
@@ -651,7 +656,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = PretestDialog(serial_no=serial_no)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
-        dlg.pretest_metadata_signal.connect(self.manager.pretest_metadata_slot)
+        dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
@@ -777,7 +782,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.retract_button.setEnabled(enabled)
         self.run_button.setEnabled(enabled and not self.script_changed)
         self.load_button.setEnabled(enabled)
-        self.run_step_button.setEnabled(enabled)
+        if self.access_level_combo.currentText().upper() != "Operator".upper():
+            self.run_step_button.setEnabled(enabled)
+        else:
+            self.run_step_button.setEnabled(False)
 
     def log(self, message, level="info"):
         log_msg(self, root_logger, message=message, level=level)

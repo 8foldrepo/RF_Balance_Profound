@@ -25,11 +25,16 @@ def main(args):
 
     window = MainWindow()
     window.show()
-    app.processEvents()
+    app.processEvents()  # Ensure UI appears before running the rest of this script
+
+    # Populate ui fields with system and config info
+
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
     window.access_level_combo.setCurrentText("Administrator")
-    # window.prompt_for_password()
+
+    #todo: uncomment this in final product
+    #window.prompt_for_password()
 
     window.begin_manager_thread()
 

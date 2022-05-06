@@ -23,9 +23,7 @@ class Ui_MainWindow(object):
         self.run_step_button.setMinimumSize(QtCore.QSize(120, 0))
         self.run_step_button.setObjectName("run_step_button")
         self.gridLayout.addWidget(self.run_step_button, 2, 4, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
-        )
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 2, 8, 1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -34,14 +32,10 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName("label_5")
         self.verticalLayout_2.addWidget(self.label_5)
         self.script_description_field = QtWidgets.QTextBrowser(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.script_description_field.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy.setHeightForWidth(self.script_description_field.sizePolicy().hasHeightForWidth())
         self.script_description_field.setSizePolicy(sizePolicy)
         self.script_description_field.setMaximumSize(QtCore.QSize(16777215, 40))
         self.script_description_field.setObjectName("script_description_field")
@@ -59,9 +53,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
@@ -70,9 +62,7 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName("label_2")
         self.gridLayout_2.addWidget(self.label_2, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
@@ -81,9 +71,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
@@ -180,9 +168,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.label_22 = QtWidgets.QLabel(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_22.sizePolicy().hasHeightForWidth())
@@ -191,6 +177,7 @@ class Ui_MainWindow(object):
         self.label_22.setObjectName("label_22")
         self.verticalLayout_3.addWidget(self.label_22)
         self.access_level_combo = QtWidgets.QComboBox(self.widget)
+        self.access_level_combo.setEnabled(False)
         self.access_level_combo.setMaximumSize(QtCore.QSize(100, 16777215))
         self.access_level_combo.setObjectName("access_level_combo")
         self.access_level_combo.addItem("")
@@ -650,65 +637,49 @@ class Ui_MainWindow(object):
         self.rfb_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.rfb_indicator.setStyleSheet("background-color: white")
         self.rfb_indicator.setObjectName("rfb_indicator")
-        self.formLayout.setWidget(
-            1, QtWidgets.QFormLayout.FieldRole, self.rfb_indicator
-        )
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.rfb_indicator)
         self.scope_indicator = Switch(self.frame)
         self.scope_indicator.setEnabled(False)
         self.scope_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.scope_indicator.setStyleSheet("background-color: white")
         self.scope_indicator.setObjectName("scope_indicator")
-        self.formLayout.setWidget(
-            2, QtWidgets.QFormLayout.FieldRole, self.scope_indicator
-        )
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.scope_indicator)
         self.fgen_indicator = Switch(self.frame)
         self.fgen_indicator.setEnabled(False)
         self.fgen_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.fgen_indicator.setStyleSheet("background-color: white")
         self.fgen_indicator.setObjectName("fgen_indicator")
-        self.formLayout.setWidget(
-            3, QtWidgets.QFormLayout.FieldRole, self.fgen_indicator
-        )
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.fgen_indicator)
         self.tcouple_indicator = Switch(self.frame)
         self.tcouple_indicator.setEnabled(False)
         self.tcouple_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.tcouple_indicator.setStyleSheet("background-color: white")
         self.tcouple_indicator.setObjectName("tcouple_indicator")
-        self.formLayout.setWidget(
-            4, QtWidgets.QFormLayout.FieldRole, self.tcouple_indicator
-        )
+        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.tcouple_indicator)
         self.motion_indicator = Switch(self.frame)
         self.motion_indicator.setEnabled(False)
         self.motion_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.motion_indicator.setStyleSheet("background-color: white")
         self.motion_indicator.setObjectName("motion_indicator")
-        self.formLayout.setWidget(
-            5, QtWidgets.QFormLayout.FieldRole, self.motion_indicator
-        )
+        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.motion_indicator)
         self.power_meter_indicator = Switch(self.frame)
         self.power_meter_indicator.setEnabled(False)
         self.power_meter_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.power_meter_indicator.setStyleSheet("background-color: white")
         self.power_meter_indicator.setObjectName("power_meter_indicator")
-        self.formLayout.setWidget(
-            6, QtWidgets.QFormLayout.FieldRole, self.power_meter_indicator
-        )
+        self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.power_meter_indicator)
         self.wtfib_indicator = Switch(self.frame)
         self.wtfib_indicator.setEnabled(False)
         self.wtfib_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.wtfib_indicator.setStyleSheet("background-color: white")
         self.wtfib_indicator.setObjectName("wtfib_indicator")
-        self.formLayout.setWidget(
-            7, QtWidgets.QFormLayout.FieldRole, self.wtfib_indicator
-        )
+        self.formLayout.setWidget(7, QtWidgets.QFormLayout.FieldRole, self.wtfib_indicator)
         self.dio_indicator = Switch(self.frame)
         self.dio_indicator.setEnabled(False)
         self.dio_indicator.setMaximumSize(QtCore.QSize(40, 15))
         self.dio_indicator.setStyleSheet("background-color: white")
         self.dio_indicator.setObjectName("dio_indicator")
-        self.formLayout.setWidget(
-            8, QtWidgets.QFormLayout.FieldRole, self.dio_indicator
-        )
+        self.formLayout.setWidget(8, QtWidgets.QFormLayout.FieldRole, self.dio_indicator)
         self.verticalLayout_3.addWidget(self.frame)
         self.system_indicator = QtWidgets.QPushButton(self.widget)
         self.system_indicator.setEnabled(False)
@@ -1062,9 +1033,7 @@ class Ui_MainWindow(object):
         self.tab.setObjectName("tab")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        spacerItem1 = QtWidgets.QSpacerItem(
-            20, 150, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred
-        )
+        spacerItem1 = QtWidgets.QSpacerItem(20, 150, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
         self.verticalLayout_4.addItem(spacerItem1)
         self.label_23 = QtWidgets.QLabel(self.tab)
         self.label_23.setObjectName("label_23")
@@ -1092,9 +1061,7 @@ class Ui_MainWindow(object):
         self.label_28 = QtWidgets.QLabel(self.tab)
         self.label_28.setObjectName("label_28")
         self.verticalLayout_4.addWidget(self.label_28)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
-        )
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_4.addItem(spacerItem2)
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
@@ -1169,9 +1136,7 @@ class Ui_MainWindow(object):
         self.gridLayout_16.addWidget(self.system_config, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_9, "")
         self.gridLayout.addWidget(self.tabWidget, 1, 3, 1, 6)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
-        )
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem3, 2, 5, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -1183,7 +1148,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(6)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1198,14 +1163,10 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Current Script"))
         self.label_3.setText(_translate("MainWindow", "By:"))
         self.label_22.setText(_translate("MainWindow", "Access Lvel"))
-        self.access_level_combo.setCurrentText(
-            _translate("MainWindow", "Administrator")
-        )
+        self.access_level_combo.setCurrentText(_translate("MainWindow", "Operator"))
         self.access_level_combo.setItemText(0, _translate("MainWindow", "Operator"))
         self.access_level_combo.setItemText(1, _translate("MainWindow", "Engineer"))
-        self.access_level_combo.setItemText(
-            2, _translate("MainWindow", "Administrator")
-        )
+        self.access_level_combo.setItemText(2, _translate("MainWindow", "Administrator"))
         self.live_element_field.setText(_translate("MainWindow", "1"))
         self.label_21.setText(_translate("MainWindow", "Element"))
         self.label_20.setText(_translate("MainWindow", "Live Element"))
@@ -1247,58 +1208,21 @@ class Ui_MainWindow(object):
         self.load_button.setText(_translate("MainWindow", "LOAD SCRIPT"))
         self.quit_button.setText(_translate("MainWindow", "QUIT"))
         self.label_4.setText(_translate("MainWindow", "Script Status"))
-        self.label_23.setText(
-            _translate("MainWindow", "Welcome to the Wet Test Fixture Control Program.")
-        )
+        self.label_23.setText(_translate("MainWindow", "Welcome to the Wet Test Fixture Control Program."))
         self.label_24.setText(_translate("MainWindow", "To begin a UA test:"))
-        self.label_25.setText(
-            _translate(
-                "MainWindow",
-                '(It is advised to first home the X (linear) axis of the WTF bench by clicking "Retract UA" below.)',
-            )
-        )
-        self.label_26.setText(
-            _translate(
-                "MainWindow",
-                'Select a test script by clicking "Load script" in the lower left corner of the display.',
-            )
-        )
+        self.label_25.setText(_translate("MainWindow", "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)"))
+        self.label_26.setText(_translate("MainWindow", "Select a test script by clicking \"Load script\" in the lower left corner of the display."))
         self.label_27.setText(_translate("MainWindow", "Mount the UA in the fixture."))
-        self.label_28.setText(
-            _translate("MainWindow", 'Click "Run script" when ready to begin.')
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Welcome")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "System Info")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.script_tab),
-            _translate("MainWindow", "Edit Scipt"),
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "RFB")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_4),
-            _translate("MainWindow", "UA Calibration"),
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Results")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "Scan")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_7), _translate("MainWindow", "Position")
-        )
-        self.tabWidget.setTabText(
-            self.tabWidget.indexOf(self.tab_9),
-            _translate("MainWindow", "System Config"),
-        )
-
-
+        self.label_28.setText(_translate("MainWindow", "Click \"Run script\" when ready to begin."))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Welcome"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "System Info"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.script_tab), _translate("MainWindow", "Edit Scipt"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "RFB"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "UA Calibration"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Results"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "Scan"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_7), _translate("MainWindow", "Position"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_9), _translate("MainWindow", "System Config"))
 from ui_elements.switch import Switch
 from ui_elements.tabs.ui_position import Position
 from ui_elements.tabs.ui_results import Results
@@ -1312,7 +1236,6 @@ from ui_elements.tabs.ui_ua_calibration import UACalibration
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

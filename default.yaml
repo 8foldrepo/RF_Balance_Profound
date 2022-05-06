@@ -6,13 +6,14 @@ Debugging:
   simulate_ua_interface: true
   simulate_sensors: true
   simulate_motors: true
-  simulate_oscilloscope: true
+  simulate_oscilloscope: false
   simulate_awg: true
   simulate_balance: true
   simulate_power_meters: true
   simulate_io_board: true
   simulate_thermocouple: true
   end_script_on_errors: false
+  oscilloscope_realtime_capture: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:

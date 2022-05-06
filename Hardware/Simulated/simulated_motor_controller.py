@@ -107,10 +107,10 @@ class SimulatedMotorController(AbstractMotorController):
     @abstractmethod
     def set_origin_here_1d(self, axis):
         self.coords_mm[self.ax_letters.index(axis)] = 0
-        self.get_position()
 
     @abstractmethod
     def go_home(self):
+        self.get_position()
         self.coords_mm[1] = -90
         self.coords_mm[0] = 273
         self.get_position()

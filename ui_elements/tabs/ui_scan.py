@@ -1,10 +1,12 @@
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
 
 from Widget_Library.widget_scan import Ui_scan_tab_widget
 
 
 class Scan(QWidget, Ui_scan_tab_widget):
+    command_signal = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.app = QApplication.instance()
@@ -22,6 +24,12 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     def configure_signals(self):
         self.file_browser_button.clicked.connect(self.browse_clicked)
+        # Tell the manager to capture a scope trace and emit back the plot data. This uses a command not a direct call
+        # or a signal so it runs in the manager thread.
+        self.acquire_scope_trace_button.clicked.connect(self.aquire_scope_trace_button_clicked)
+
+    def aquire_scope_trace_button_clicked(self):
+        self.command_signal.emit("CAPTURE")
 
     def browse_clicked(self):
         self.filename = QFileDialog.getExistingDirectory(self)
@@ -35,6 +43,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager = manager
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
+        self.command_signal.connect(self.manager.exec_command)
 
     def set_tabWidget(self, tabWidget):
         self.tabWidget = tabWidget
@@ -75,11 +84,6 @@ class Scan(QWidget, Ui_scan_tab_widget):
         if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
             return
 
-        tabs = self.scan_tabs
-
-        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
-            return
-
         self.last_aquired_waveform_plot_label.setText(
             f"Last Acquired Waveform - refresh rate: {refresh_rate}"
         )
@@ -90,6 +94,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.plot_ready = False
         self.waveform_plot.refresh(x, y, pen="k", clear=True)
+        self.voltage_time_plot.refresh(x, y, pen='k', clear=True)
         self.app.processEvents()
         self.plot_ready = True
 
