@@ -3,6 +3,7 @@ from typing import List
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from Widget_Library.widget_script_editor import Ui_Form
+from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
 from ui_elements.script_editor_menus.no_menu_dicts import *
 from ui_elements.script_editor_menus.ui_find_element import FindElement
@@ -340,7 +341,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def save_script(self):
         path = QFileDialog.getSaveFileName(
-            parent=self, caption="Save script", filter="Script files (*.wtf)"
+            parent=self, caption="Save script", directory=ROOT_DIR+"/Scripts", filter="Script files (*.wtf)"
         )[0]
 
         # remove existing header(s) if there is one

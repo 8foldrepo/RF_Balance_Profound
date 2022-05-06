@@ -120,7 +120,7 @@ class ParkerMotorController(AbstractMotorController):
         self.get_position()
 
     def set_origin_1d(self, axis, coord_mm, get_position=True):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
         axis_index = axis_number - 1
 
         if axis == "R":
@@ -162,11 +162,16 @@ class ParkerMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def go_home(self):
+        # Theta prehome move
+        self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
         self.command(f"0GH")
 
     @pyqtSlot(str)
     def go_home_1d(self, axis):
-        axis_number = self.get_ax_number(axis)
+        if axis == 'R' or axis == "Theta":
+            self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
+
+        axis_number = self.__get_ax_number(axis)
         self.command(f"{axis_number}GH")
 
     def setup_home(self):
@@ -198,7 +203,7 @@ class ParkerMotorController(AbstractMotorController):
         mode=1,
         acceleration=10,
     ):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
 
         if enabled:
             onString = "1"
@@ -418,7 +423,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def set_motor_on(self, axis, on):
         """Set motor with given axis letter on/off depending on boolean on"""
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
 
         if on:
             self.command(f"{axis_number}ON")
@@ -492,7 +497,7 @@ class ParkerMotorController(AbstractMotorController):
         self.set_mode_1d(axis="All", movement_mode=self.movement_mode)
 
     def set_mode_1d(self, axis, movement_mode=None):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
 
         if movement_mode is None:
             movement_mode = self.movement_mode
@@ -529,15 +534,15 @@ class ParkerMotorController(AbstractMotorController):
             self.command(f"0POSMAIN0(10)")
 
     def set_speeds_1d(self, axis, speed):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
         self.command(f"{axis_number}V{speed}")
 
     def set_increment_1d(self, axis, increment):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
         self.command(f"{axis_number}D{increment}")
 
     def stop_motion_1d(self, axis):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
 
         stopped = False
         for i in range(20):
@@ -709,27 +714,13 @@ class ParkerMotorController(AbstractMotorController):
         if response[27] == "1":
             self.log("")
 
-    def exec_command(self, command):
-        command = command.upper()
-        cmd_ray = command.split(" ")
 
-        if cmd_ray[0] == "MOTOR":
-            cmd_ray.pop(0)
-            command = command[6:]
+    def __get_ax_number(self, axis):
+        """return the motor controller driver number of the axis with the specified letter"""
+        # Added flexibility for synonomous axis identifiers
+        if axis.upper() == "Theta".upper() or axis.upper() == "Th".upper():
+            axis = "R"
 
-        if command == "Stop Motion".upper():
-            self.stop_motion()
-        elif command == "Get Position".upper():
-            self.get_position()
-        elif cmd_ray[0] == "GO":
-            axes, coords = create_coord_rays(cmd_ray[1], self.ax_letters)
-            self.go_to_position(axes=axes, coords_mm=coords)
-        elif cmd_ray[0] == "Origin".upper():
-            if cmd_ray[1] == "Here".upper():
-                self.set_origin_here()
-
-    # return the motor controller driver number of the axis with the specified letter
-    def get_ax_number(self, axis):
         if axis.upper() in self.ax_letters:
             axis_number = self.ax_letters.index(axis.upper()) + 1
         else:

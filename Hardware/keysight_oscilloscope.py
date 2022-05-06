@@ -210,6 +210,24 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def setHorzOffset_sec(self, offset):
         self.command(f":TIM:POS {offset}")
 
+    #stretch: add automatic waveform finding
+    def autoset_timebase(self):
+
+        self.max_time_of_flight = self.config["Autoset timebase"][
+            "Max time of flight (us)"
+        ]
+        self.min_time_of_flight = self.config["Autoset timebase"][
+            "Min time of flight (us)"
+        ]
+        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
+        time_of_flight_window = (
+                                        self.max_time_of_flight - self.min_time_of_flight
+                                ) / 1000000
+        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
+        self.setHorzRange_sec(range_s)
+        self.setHorzOffset_sec(offset_s)
+
+
     def getFreq_Hz(self):
         return float(self.ask(":MEAS:FREQ?"))
 

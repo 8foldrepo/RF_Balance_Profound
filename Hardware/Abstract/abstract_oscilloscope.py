@@ -68,6 +68,10 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
+    def autoset_timebase(self):
+        ...
+
+    @abstractmethod
     def getVertScale_V(self, channel: int):
         ...
 

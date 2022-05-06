@@ -291,6 +291,12 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
         root_logger.info(log_entry)
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{level}] {log_entry}")
 
+def printList(list2):
+    for x in range(len(list2)):
+        print(list2[x])
+
+def printList2(list2):
+    print(str(list2)[1:-1])
 
 if __name__ == "__main__":
     pass

@@ -327,6 +327,7 @@ class Manager(QThread):
 
     @pyqtSlot()
     def disconnect_hardware(self):
+        """Safely disconnect all devices"""
         self.enable_ui_signal.emit(False)
         self.abort()
         for device in self.devices:
@@ -440,8 +441,8 @@ class Manager(QThread):
         if not self.parent.scan_tab_widget.plot_ready:
             return
         if (
-            self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex())
-            != "Scan"
+                self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex())
+                != "Scan"
         ):
             return
 
@@ -494,12 +495,12 @@ class Manager(QThread):
             currentLine = currentLine + 1
             if line == "\n":
                 if (
-                    taskVars
+                        taskVars
                 ):  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
                     tasks.append(OrderedDict(taskVars))
                     taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
                 if (
-                    addingElementsToLoop
+                        addingElementsToLoop
                 ):  # detects if we're done with the element name block for the loop in script
                     addingElementsToLoop = (
                         False  # we're done with the block so set the flag to false
@@ -507,7 +508,7 @@ class Manager(QThread):
                 continue  # move forward one line
             elif "[" in line:  # if the line we're on is a task line
                 taskNo = (
-                    taskNo + 1
+                        taskNo + 1
                 )  # increments the task number counter since we've moved to the next task
                 if "Task" in line and not buildingLoop:
                     self.taskExecOrder.append(
@@ -526,7 +527,7 @@ class Manager(QThread):
                     numberOfTasks = x1
 
                 if (
-                    "Loop over elements" in x1
+                        "Loop over elements" in x1
                 ):  # detects if we've encountered a loop builder task
                     buildingLoop = (
                         True  # set a flag that we're building a loop for the script
@@ -542,7 +543,7 @@ class Manager(QThread):
                     elementNamesForLoop.append(int(elementName))
 
                 if (
-                    "End loop" in x1
+                        "End loop" in x1
                 ):  # script will have "End loop" in right side of task type to end loop block
                     buildingLoop = False  # set the building loop flag to false since the loop block is done
                     self.loops.append(
@@ -576,7 +577,7 @@ class Manager(QThread):
         f.close()
 
         if (
-            taskVars
+                taskVars
         ):  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
             tasks.append(OrderedDict(taskVars))
             taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
@@ -625,16 +626,16 @@ class Manager(QThread):
             return
 
         if (
-            self.taskArgs is not None
-            and self.taskNames is not None
-            and self.taskExecOrder is not None
+                self.taskArgs is not None
+                and self.taskNames is not None
+                and self.taskExecOrder is not None
         ):
             if 0 <= self.step_index < len(self.taskNames):
                 inside_iteration = False
                 iteration_number = None
 
                 if (
-                    len(self.taskExecOrder[self.step_index]) == 3
+                        len(self.taskExecOrder[self.step_index]) == 3
                 ):  # elements that are a part of a loop will have a third sub element
                     # notating which loop it's from
                     self.test_data.log_script(
@@ -663,9 +664,9 @@ class Manager(QThread):
 
     def run_script_step(self):
         if (
-            self.taskArgs is None
-            or self.taskNames is None
-            or self.taskExecOrder is None
+                self.taskArgs is None
+                or self.taskNames is None
+                or self.taskExecOrder is None
         ):
             self.abort()
             return
@@ -681,7 +682,7 @@ class Manager(QThread):
         self.task_index_signal.emit(self.step_index)
 
         if (
-            self.taskExecOrder[self.step_index][1] is not None
+                self.taskExecOrder[self.step_index][1] is not None
         ):  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
             args["Element"] = self.taskExecOrder[self.step_index][1]
@@ -873,7 +874,7 @@ class Manager(QThread):
         # Configure function generator
         func_var_dict = dict()
         func_var_dict["Amplitude (mVpp)"] = (
-            self.config[self.AWG.device_key]["amplitude_V"] * 1000
+                self.config[self.AWG.device_key]["amplitude_V"] * 1000
         )
         func_var_dict["Frequency (MHz)"] = self.test_data.low_frequency_MHz
         func_var_dict["Mode"] = "Toneburst"
@@ -926,7 +927,7 @@ class Manager(QThread):
 
                 self.IO_Board.fill_tank()
             elif (
-                water_level == WaterLevel.above_level
+                    water_level == WaterLevel.above_level
             ):  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
@@ -1054,16 +1055,16 @@ class Manager(QThread):
     # Referemce position is the center of the scan range
 
     def scan_axis(
-        self,
-        axis,
-        num_points,
-        increment,
-        ref_position,
-        data_storage,
-        go_to_peak,
-        scope_channel=1,
-        acquisition_type="N Averaged Waveform",
-        averages=1,
+            self,
+            axis,
+            num_points,
+            increment,
+            ref_position,
+            data_storage,
+            go_to_peak,
+            scope_channel=1,
+            acquisition_type="N Averaged Waveform",
+            averages=1,
     ):
         if axis == "X":
             axis_letter = "X"
@@ -1197,7 +1198,7 @@ class Manager(QThread):
         )
 
     def save_efficiency_test_data(
-        self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w
+            self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w
     ):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
@@ -1221,7 +1222,7 @@ class Manager(QThread):
         )
 
     def save_results(
-        self, var_dict
+            self, var_dict
     ):  # calibration_data is the data gathered by the UA test
         """Save scan results to a file"""
         save_summary_file = bool(
@@ -1236,7 +1237,7 @@ class Manager(QThread):
 
         # Todo: test
         if (
-            prompt_for_calibration_write
+                prompt_for_calibration_write
         ):  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA")
             cont = self.cont_if_cont_clicked()
@@ -1312,9 +1313,7 @@ class Manager(QThread):
         self.Oscilloscope.setHorzOffset_sec(delay_us / 1000000)
 
     def autoset_timebase(self, var_dict):
-        usdiv = 0
-        dt = 0
-        self.test_data.log_script(["", "AutoSetTimebase", f"{usdiv} usdiv;dt={dt} us"])
+        self.Oscilloscope.autoset_timebase()
 
     def home_system(self, var_dict):
         """Return axis to zero coordinate"""
@@ -1453,21 +1452,21 @@ class Manager(QThread):
             # todo: move to file_saver object
             if storage_location == "UA results directory":
                 path = (
-                    self.config["Paths"]["UA results root directory"]
-                    + "\\"
-                    + self.test_data.serial_number
-                    + "-"
-                    + self.test_data.test_date_time
-                    + "-frequency_sweep_data.csv"
+                        self.config["Paths"]["UA results root directory"]
+                        + "\\"
+                        + self.test_data.serial_number
+                        + "-"
+                        + self.test_data.test_date_time
+                        + "-frequency_sweep_data.csv"
                 )  # retrieve path
             else:
                 path = (
-                    data_directory
-                    + "\\"
-                    + self.test_data.serial_number
-                    + "-"
-                    + self.test_data.test_date_time
-                    + "-frequency_sweep_data.csv"
+                        data_directory
+                        + "\\"
+                        + self.test_data.serial_number
+                        + "-"
+                        + self.test_data.test_date_time
+                        + "-frequency_sweep_data.csv"
                 )  # retrieve path
 
             # todo: implement
@@ -1484,7 +1483,7 @@ class Manager(QThread):
                 f.write(f"{coarse_freq_MHz_list[i]},{coarse_VSI_list[i]}")
 
     def run_frequency_sweep(
-        self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, channel=1
+            self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, channel=1
     ):
         list_of_VSIs = list()
         list_of_frequencies_MHz = list()
@@ -1609,7 +1608,8 @@ class Manager(QThread):
             frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
 
         self.AWG.SetFrequency_Hz(frequency_Hz)
-        self.test_data.log_script(["","Configure FGen+PwrMeters",f"Frequency set to {frequency_Hz / 1000000} MHz","",])
+        self.test_data.log_script(
+            ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_Hz / 1000000} MHz", "", ])
 
         # self.Balance.zero_balance_instantly()  # todo: see if we need this
 
@@ -1628,14 +1628,14 @@ class Manager(QThread):
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
-        self.begin_rfb_logger_thread()
+        self.__begin_rfb_logger_thread()
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
             # Turn on AWG
             self.log("Turning off AWG")
             self.AWG.SetOutput(False)
             while (
-                t.time() - cycle_start_time < rfb_on_time
+                    t.time() - cycle_start_time < rfb_on_time
             ):  # for the duration of rfb on time
                 self.rfb_args = self.rfb_logger.rfb_args
                 self.update_rfb_tab_signal.emit()
@@ -1644,15 +1644,15 @@ class Manager(QThread):
             self.log("Turning on AWG")
             self.AWG.SetOutput(True)
             while (
-                t.time() - cycle_start_time < rfb_on_time + rfb_off_time
+                    t.time() - cycle_start_time < rfb_on_time + rfb_off_time
             ):  # for the duration of rfb on time
                 self.rfb_args = self.rfb_logger.rfb_args
                 self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
             current_cycle = (
-                current_cycle + 1
+                    current_cycle + 1
             )  # we just passed a cycle at this point in the code
-        self.wrap_up_rfb_logger()
+        self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
@@ -1754,8 +1754,8 @@ class Manager(QThread):
             freq_mhz=frequency_MHz,
             diameter_mm=float(
                 self.system_info["Hydrophone system"]["Hydrophone Diameter"]
-                .split(" ")[0]
-                .replace('"', "")
+                    .split(" ")[0]
+                    .replace('"', "")
             ),
             propagation_distance_mm=15.000000,
             T_decC=water_temperature,
@@ -1779,7 +1779,7 @@ class Manager(QThread):
 
         self.test_data.log_script(["", "End", "", ""])
 
-    def begin_rfb_logger_thread(self):
+    def __begin_rfb_logger_thread(self):
         self.rfb_logger = RFBDataLogger(
             self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter
         )
@@ -1787,7 +1787,7 @@ class Manager(QThread):
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
         self.rfb_logger.start(priority=QThread.HighPriority)
 
-    def wrap_up_rfb_logger(self):
+    def __wrap_up_rfb_logger(self):
         self.rfb_logger.quit()
         t.sleep(0.1)
         print(f"balance reading in manager.py: {self.Balance.get_reading()}")
@@ -1797,13 +1797,7 @@ class Manager(QThread):
         # todo: check that a dialog appears
         self.write_cal_data_to_ua_signal.emit(calibration_data)
 
-    def printList(self, list2):
-        for x in range(len(list2)):
-            print(list2[x])
-
-    def printList2(self, list2):
-        print(str(list2)[1:-1])
-
+    # todo: test that this turns off and disconnects all devices
     def wrap_up(self):
         for device in self.devices:
             device.wrap_up()

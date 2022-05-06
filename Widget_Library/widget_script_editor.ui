@@ -107,11 +107,6 @@
    </item>
    <item>
     <property name="text">
-     <string>Run &quot;Auto Gain Control&quot;</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
      <string>Autoset timebase</string>
     </property>
    </item>
