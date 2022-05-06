@@ -1,16 +1,31 @@
+from typing import List
+
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
 
+from Utilities.formulas import calculate_random_uncertainty_percent
 from Widget_Library.widget_scan import Ui_scan_tab_widget
+from manager import Manager
 
 
 class Scan(QWidget, Ui_scan_tab_widget):
     command_signal = pyqtSignal(str)
+    manager: Manager
+
+    x_data_type: str
+    y_data_type: str
+    x_data_: List[float]
+    y_data: List[float]
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.app = QApplication.instance()
         self.setupUi(self)
+        self.x_data = []
+        self.y_data = []
+        self.x_data_type = self.x_data_type_view.toPlainText()
+        self.y_data_type = self.y_data_type_view.toPlainText()
+
         self.tabWidget = None
         self.manager = None
         self.config = None
@@ -27,6 +42,32 @@ class Scan(QWidget, Ui_scan_tab_widget):
         # Tell the manager to capture a scope trace and emit back the plot data. This uses a command not a direct call
         # or a signal so it runs in the manager thread.
         self.acquire_scope_trace_button.clicked.connect(self.aquire_scope_trace_button_clicked)
+        self.source_channel_combo_box.currentTextChanged.connect(self.source_channel_combo_changed)
+        self.averages_spin_box.valueChanged.connect(self.averages_spin_box_changed)
+        self.acquisition_type_combo_box.currentTextChanged.connect(self.aquisition_type_combo_changed)
+        self.index_spinbox.valueChanged.connect(self.show_data_point)
+
+    def show_data_point(self):
+        index = self.index_spinbox.value()
+        if not index > len(self.x_data):
+            self.x_data_view.setText("{:.4e}".format(self.x_data[index]))
+        if not index > len(self.y_data):
+            self.y_data_view.setText("{:.4e}".format(self.y_data[index]))
+            self.y_uncertainty_view.setText("{:.4e}".format(calculate_random_uncertainty_percent(self.y_data)))
+
+    def source_channel_combo_changed(self):
+        self.manager.oscilloscope_channel = int(self.source_channel_combo_box.currentText())
+
+    def averages_spin_box_changed(self):
+        self.manager.oscilloscope_averages = self.averages_spin_box.value()
+        print(self.manager.oscilloscope_averages)
+
+    def aquisition_type_combo_changed(self):
+        if self.acquisition_type_combo_box.currentText() == "Single Waveform":
+            self.manager.oscilloscope_averages = 1
+            self.averages_spin_box.setEnabled(False)
+        else:
+            self.averages_spin_box.setEnabled(True)
 
     def aquire_scope_trace_button_clicked(self):
         self.command_signal.emit("CAPTURE")
@@ -76,6 +117,8 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.app.processEvents()
 
     def plot(self, x, y, refresh_rate):
+        self.x_data = x
+        self.y_data = y
         # Cancel if this widget is not plot ready
         if not self.plot_ready:
             return
@@ -94,9 +137,18 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
         self.plot_ready = False
         self.waveform_plot.refresh(x, y, pen="k", clear=True)
+
         self.voltage_time_plot.refresh(x, y, pen='k', clear=True)
+        self.x_data_type = "Time (s)"
+        self.y_data_type = "Voltage (V)"
+        self.update_type_labels()
+
         self.app.processEvents()
         self.plot_ready = True
+
+    def update_type_labels(self):
+        self.x_data_type_view.setText(self.x_data_type)
+        self.y_data_type_view.setText(self.y_data_type)
 
     @pyqtSlot(list, list, str)
     def update_profile_plot(self, x, y, axis_label):

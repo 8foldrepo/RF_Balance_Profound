@@ -9,14 +9,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
     max_time_of_flight: float
     min_time_of_flight: float
     timeout_s: float
+    range_mV: float
+    channel: int
+    averages: int
+    range_s: int
 
-    def __init__(
-        self,
-        device_key="Keysight_Oscilloscope",
-        config=None,
-        resource_manager=None,
-        parent=None,
-    ):
+    def __init__(self, device_key="Keysight_Oscilloscope", config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
         if resource_manager is not None:
@@ -48,20 +46,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         self.connected_signal.emit(False)
 
                         if "VI_ERROR_RSRC_NFOUND" in str(e):
-                            feedback = (
-                                f"Oscilloscope not connected, connect and retry: {e}"
-                            )
+                            feedback = (f"Oscilloscope not connected, connect and retry: {e}")
                             # Do not retry
                             break
                         elif "Unknown system error" in str(e):
-                            feedback = (
-                                f"Unknown oscilloscope system error, connect and retry"
-                            )
+                            feedback = (f"Unknown oscilloscope system error, connect and retry")
                             # Do not retry
                             break
                         elif (
-                            "Device reported an input protocol error during transfer."
-                            in str(e)
+                                "Device reported an input protocol error during transfer."
+                                in str(e)
                         ):
                             feedback = f"retry:{retries} Input protocol error, retrying"
                             # Retry
@@ -101,43 +95,37 @@ class KeysightOscilloscope(AbstractOscilloscope):
         # self.log(
         #     f"set_to_defaults method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
         self.reset()
-        channel = self.config[self.device_key]["channel"]
-        self.max_time_of_flight = self.config["Autoset timebase"][
-            "Max time of flight (us)"
-        ]
-        self.min_time_of_flight = self.config["Autoset timebase"][
-            "Min time of flight (us)"
-        ]
-        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10**-6
-        time_of_flight_window = (
-            self.max_time_of_flight - self.min_time_of_flight
-        ) / 1000000
-        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
+        self.channel = self.config[self.device_key]["channel"]
+        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
+        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
+        self.range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
+        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
+        self.offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         autorange_V = self.config[self.device_key]["autorange_v_startup"]
-        range_V = self.config[self.device_key]["range_mV"] / 1000
-        average_count = self.config[self.device_key]["averages"]
+        self.range_mV = self.config[self.device_key]["range_mV"]
+        self.averages = self.config[self.device_key]["averages"]
         external_trigger = self.config[self.device_key]["ext_trigger"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]
 
         self.setup(
-            channel=channel,
-            range_s=range_s,
-            offset_s=offset_s,
+            channel=self.channel,
+            range_s=self.range_s,
+            offset_s=self.offset_s,
             autorange_v=autorange_V,
-            range_v=range_V,
+            range_v=self.range_mV/1000,
             ext_trigger=external_trigger,
-            average_count=average_count,
+            average_count=self.averages,
         )
 
     def setup(
-        self,
-        channel,
-        range_s,
-        offset_s,
-        autorange_v,
-        range_v,
-        ext_trigger,
-        average_count,
+            self,
+            channel,
+            range_s,
+            offset_s,
+            autorange_v,
+            range_v,
+            ext_trigger,
+            average_count,
     ):
         self.setHorzRange_sec(range_s)
         self.setHorzOffset_sec(offset_s)
@@ -165,6 +153,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":TRIG:EDGE:SLOP POS")
 
     def SetAveraging(self, averages=1):
+        self.averages = averages
         if averages > 1:
             self.command(":ACQ:TYPE AVER")
             self.command(f":ACQ:COUN {averages}")
@@ -182,10 +171,11 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def setVertScale_V(self, volts_per_div, channel):
         self.command(f":CHAN{channel}:SCAL {volts_per_div}")
 
-    def getVertRange_V(self, channel, volts):
+    def getVertRange_V(self, channel):
         return float(self.ask(f":CHAN{channel}:RANG?"))
 
     def setVertRange_V(self, channel, volts):
+        self.range_mV = volts * 1000
         self.command(f":CHAN{channel}:RANG {volts}")
 
     def getVertOffset(self, channel):
@@ -201,6 +191,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.command(f":TIM:SCAL {seconds}")
 
     def setHorzRange_sec(self, seconds):
+        self.range_s = seconds
         command = f":TIM:RANG {seconds}"
         self.command(command)
 
@@ -208,25 +199,20 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return float(self.ask(":TIM:POS?"))
 
     def setHorzOffset_sec(self, offset):
+        self.offset_s = offset
         self.command(f":TIM:POS {offset}")
 
-    #stretch: add automatic waveform finding
+    # stretch: add automatic waveform finding
     def autoset_timebase(self):
+        """Automatically sets the horizontal scale and range of the oscilloscope with a predetermined procedure"""
 
-        self.max_time_of_flight = self.config["Autoset timebase"][
-            "Max time of flight (us)"
-        ]
-        self.min_time_of_flight = self.config["Autoset timebase"][
-            "Min time of flight (us)"
-        ]
+        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
+        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
         range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
-        time_of_flight_window = (
-                                        self.max_time_of_flight - self.min_time_of_flight
-                                ) / 1000000
+        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         self.setHorzRange_sec(range_s)
         self.setHorzOffset_sec(offset_s)
-
 
     def getFreq_Hz(self):
         return float(self.ask(":MEAS:FREQ?"))
@@ -242,8 +228,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
         #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
+            print(channel)
+            self.command(f"WAV:SOUR:CHAN{channel}")
             self.command(f"WAV:FORM ASC")
-            # self.command(f"WAV:SOUR:CHAN{channel}")
 
             preamble = None
             start_time = t.time()

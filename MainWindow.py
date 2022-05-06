@@ -226,9 +226,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.tabWidget.setCurrentIndex(index)
 
     @pyqtSlot(int)
-    def expand_step(
-        self, step_index
-    ):  # current_step should match "Task type" from above
+    def expand_step(self, step_index):  # current_step should match "Task type" from above
         root_item = self.script_step_view.invisibleRootItem()
         child_count = root_item.childCount()
 
@@ -237,8 +235,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             if i == step_index:
                 item.setExpanded(True)
-                blue_background = QColor(95, 180, 230)
-                brush_for_background = QBrush(blue_background)
+                yellow_background = QColor(255, 255, 0)
+                brush_for_background = QBrush(yellow_background)
                 item.setBackground(0, brush_for_background)
             else:
                 item.setExpanded(False)

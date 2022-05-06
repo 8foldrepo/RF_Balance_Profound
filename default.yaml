@@ -6,8 +6,8 @@ Debugging:
   simulate_ua_interface: true
   simulate_sensors: true
   simulate_motors: true
-  simulate_oscilloscope: false
-  simulate_awg: true
+  simulate_oscilloscope: true
+  simulate_awg: false
   simulate_balance: true
   simulate_power_meters: true
   simulate_io_board: true
@@ -60,7 +60,6 @@ Keysight_AWG:
 Keysight_Oscilloscope:
   channel: 1
   averages: 16
-  capture_period_ns: 100
   cycles: 10
   delay_cycles: 0
   identifier: '0x179B'

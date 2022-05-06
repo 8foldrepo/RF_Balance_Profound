@@ -241,6 +241,7 @@ class KeysightAWG(AbstractAWG):
 
     def SetCycles(self, cycles):
         self.state["burst_cycles"] = cycles
+        self.command(f"BURS:NCYC {cycles}")
         return self.GetCycles == cycles
 
     def GetCycles(self):
@@ -301,7 +302,7 @@ class KeysightAWG(AbstractAWG):
         if not self.connected:
             return None
 
-        self.command("*IDN")
+        self.command("*IDN?")
         str = self.read()
 
         return str.split(",")[2]

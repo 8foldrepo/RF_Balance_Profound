@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1043</width>
-    <height>713</height>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
     <attribute name="title">
@@ -123,19 +123,6 @@
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
-     <widget class="QSpinBox" name="averages_spin_box">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>150</y>
-        <width>91</width>
-        <height>18</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background:white</string>
-      </property>
-     </widget>
      <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
@@ -161,6 +148,16 @@
          <property name="styleSheet">
           <string notr="true">background:white</string>
          </property>
+         <item>
+          <property name="text">
+           <string>Single Waveform</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>N Averaged Waveform</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -175,26 +172,32 @@
          <property name="styleSheet">
           <string notr="true">background:white</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>Window</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="window_combo_box">
-         <property name="styleSheet">
-          <string notr="true">background:white</string>
-         </property>
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_37">
          <property name="text">
           <string>Averages</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="averages_spin_box">
+         <property name="styleSheet">
+          <string notr="true">background:white</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
          </property>
         </widget>
        </item>
@@ -209,6 +212,12 @@
        <width>441</width>
        <height>181</height>
       </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>55</width>
+       <height>0</height>
+      </size>
      </property>
      <property name="styleSheet">
       <string notr="true">background:lightblue</string>
@@ -265,7 +274,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Frequency (MHz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Time (s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QTextBrowser" name="y_data_type_view">
@@ -288,7 +297,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hydrophone Sensitivity (mV/MPa)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Voltage (V)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QWidget" name="layoutWidget_2">
@@ -310,6 +319,9 @@ p, li { white-space: pre-wrap; }
        </item>
        <item>
         <widget class="QLineEdit" name="label_line_edit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="styleSheet">
           <string notr="true">background:lightgrey</string>
          </property>
@@ -317,111 +329,98 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget_3">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>50</x>
         <y>120</y>
-        <width>421</width>
-        <height>43</height>
+        <width>341</width>
+        <height>41</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="x_y_data_uncertainty_horz">
-       <property name="spacing">
-        <number>59</number>
-       </property>
-       <item>
-        <layout class="QGridLayout" name="x_data_grid">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_41">
-           <property name="text">
-            <string>X Data</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QSpinBox" name="x_data_spin_box">
-           <property name="styleSheet">
-            <string notr="true">background:white</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="x_data_view">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background:lightgrey</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
+      <layout class="QGridLayout" name="x_data_grid">
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_41">
+         <property name="text">
+          <string>X Data</string>
+         </property>
+        </widget>
        </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout_11">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_42">
-           <property name="text">
-            <string>Y Data</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QSpinBox" name="y_data_spin_box">
-           <property name="styleSheet">
-            <string notr="true">background:white</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="y_data_view">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background:lightgrey</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_42">
+         <property name="text">
+          <string>Y Data</string>
+         </property>
+        </widget>
        </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout_12">
-         <item row="0" column="0" colspan="2">
-          <widget class="QLabel" name="label_43">
-           <property name="text">
-            <string>Y Uncertainty</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QSpinBox" name="y_uncertainty_spin_box">
-           <property name="styleSheet">
-            <string notr="true">background:white</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="y_uncertainty_view">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background:lightgrey</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="y_data_view">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:lightgrey</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QSpinBox" name="index_spinbox">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:white</string>
+         </property>
+         <property name="maximum">
+          <number>1000000000</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="x_data_view">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:lightgrey</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_43">
+         <property name="text">
+          <string>Y Uncertainty</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="y_uncertainty_view">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:lightgrey</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Index</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -431,8 +430,8 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>260</x>
        <y>380</y>
-       <width>94</width>
-       <height>13</height>
+       <width>201</width>
+       <height>16</height>
       </rect>
      </property>
      <property name="text">

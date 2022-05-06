@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog, QApplication
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -40,6 +40,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.list_of_var_dicts = list()
         self.setupUi(self)
         self.configure_signals()
+        self.app = QApplication.instance()
 
     def set_tree_widget(self, treeWidget):
         self.treeWidget = treeWidget
@@ -144,9 +145,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         # Clicked cell contains a variable value
         # Prompt user to edit value
-        value = QInputDialog.getText(
-            self, "Change Variable", f"Previous value: {value}"
-        )[0]
+        value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
         if value is not None and value != "":
             # Prevent user from running the script until it is saved and reloaded
             self.script_changed_signal.emit()
@@ -158,7 +157,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
             task_index = self.get_parent_item_index(item) + 1
 
             # Update the parameter in the dictionary
-            self.list_of_var_dicts[task_index][parameter_key] = value
+            try:
+                self.list_of_var_dicts[task_index][parameter_key] = value
+            except IndexError:
+                pass
 
     def get_parent_item_index(self, item):
         try:
@@ -180,25 +182,33 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.treeWidget.clear()
 
-        task_dict = {}
+        task_list = []
         for i in range(len(self.list_of_var_dicts)):
             if "# of Tasks" not in self.list_of_var_dicts[i].keys():
                 arg_list = list()
                 for key in self.list_of_var_dicts[i]:
-                    if not key == "Task type":
-                        arg_list.append([key, self.list_of_var_dicts[i][key]])
+                    arg_list.append([key, self.list_of_var_dicts[i][key]])
 
-                task_dict[self.list_of_var_dicts[i]["Task type"]] = arg_list
+                task_list.append(arg_list)
 
         # Add an item for each task and child items for all of its variables
         tree_items = []
-        for key, values in task_dict.items():
-            item = QTreeWidgetItem([key])
-            for value in values:
-                child = QTreeWidgetItem(value)
-                item.addChild(child)
+        for parameter_pairs in task_list:
+            children = []
+            for parameter_pair in parameter_pairs:
+                if parameter_pair[0].upper() == "Task Type".upper():
+                    # Discard the task type label and only show the task type itself
+                    item = QTreeWidgetItem([parameter_pair[1]])
+                else:
+                    children.append(QTreeWidgetItem(parameter_pair))
+
+            if item is None:
+                item = QTreeWidgetItem()
+
+            item.addChildren(children)
 
             tree_items.append(item)
+
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
         self.add_empty_item_at_end()
 
@@ -340,6 +350,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.add_empty_item_at_end()
 
     def save_script(self):
+        self.updateTree()
+        self.app.processEvents()
+
         path = QFileDialog.getSaveFileName(
             parent=self, caption="Save script", directory=ROOT_DIR+"/Scripts", filter="Script files (*.wtf)"
         )[0]
@@ -359,13 +372,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.list_of_var_dicts[0]["# of Tasks"] = num_tasks
             today = date.today()
             self.list_of_var_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
-            Createdby = QInputDialog.getText(
-                self, "Save script metadata", f"Enter operator name:"
-            )[0]
+
+            Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
             self.list_of_var_dicts[0]["Createdby"] = Createdby
-            Description = QInputDialog.getText(
-                self, "Save script metadata", f"Enter script description:"
-            )[0]
+
+            Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
             self.list_of_var_dicts[0]["Description"] = Description
 
             # Write header info

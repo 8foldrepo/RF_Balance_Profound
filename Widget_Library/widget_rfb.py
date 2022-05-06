@@ -359,7 +359,7 @@ class Ui_Form(object):
         self.label_116.setText(_translate("Form", "Pr (W)"))
 
 
-from ui_elements.tabs.ui_oscilloscope_plot import Plot
+from ui_elements.ui_oscilloscope_plot import Plot
 
 if __name__ == "__main__":
     import sys

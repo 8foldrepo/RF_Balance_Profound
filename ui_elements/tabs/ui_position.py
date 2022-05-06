@@ -176,13 +176,13 @@ class Position(MyQWidget, Ui_Form):
         self.set_buttons_enabled_signal.emit(True)
         self.stop_motion_signal.emit()
 
-    """Command the motors to go to the insertion point"""
 
     @pyqtSlot()
     def insert_button_clicked(self):
+        """Command the motors to go to the insertion point"""
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.command_signal.emit(["X"], [int(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])])
+        self.go_to_signal.emit(["X"], [int(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])])
 
     @pyqtSlot(float)
     def update_x_postion(self, mm):

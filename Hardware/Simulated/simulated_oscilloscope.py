@@ -15,10 +15,10 @@ class SimulatedOscilloscope(AbstractOscilloscope):
 
     @abstractmethod
     def fields_setup(self):
-        self.range_mv = self.config[self.device_key]["range_mV"]
+        self.range_mV = self.config[self.device_key]["range_mV"]
         self.channel = self.config[self.device_key]["channel"]
         self.averages = self.config[self.device_key]["averages"]
-        self.capture_period_ns = self.config[self.device_key]["capture_period_ns"]
+        self.capture_period_ns = 100
         self.signal_frequency_MHz = 4.2
         self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
         self.cycles = self.config[self.device_key]["cycles"]
@@ -29,8 +29,8 @@ class SimulatedOscilloscope(AbstractOscilloscope):
 
     def configure(self, parameters: dict):
         for key in parameters:
-            if key == "range_mv":
-                self.range_mv = parameters[key]
+            if key == "range_mV":
+                self.range_mV = parameters[key]
             if key == "channel":
                 self.channel = parameters[key]
             if key == "averages":

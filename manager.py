@@ -284,6 +284,8 @@ class Manager(QThread):
                     self.app.exit(-1)
             i = i + 1
 
+        self.oscilloscope_averages = self.Oscilloscope.averages
+        self.oscilloscope_channel = self.Oscilloscope.channel
         self.update_system_info()
         self.enable_ui_signal.emit(True)
 
@@ -341,9 +343,6 @@ class Manager(QThread):
             # What to do when there is no command
             else:
                 # If a script has just ended, show script_complete dialog
-                if not self.scripting and self.was_scripting:
-                    self.script_complete()
-
                 if self.scripting:
                     if self.taskNames is None:
                         self.abort()
@@ -358,7 +357,11 @@ class Manager(QThread):
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
 
+            # Show script complete dialog whenever a script finishes
+            if not self.scripting and self.was_scripting:
+                self.script_complete()
             self.was_scripting = self.scripting
+
             self.cmd = ""
         self.wrap_up()
         self.mutex.unlock()
@@ -421,13 +424,16 @@ class Manager(QThread):
     def capture_osc_and_plot(self):
         # Do these things if a script is not being run
 
+        if self.oscilloscope_averages != self.Oscilloscope.averages:
+            self.Oscilloscope.SetAveraging(self.oscilloscope_averages)
+
         # Only capture if the scan tab is selected
         if not self.parent.scan_tab_widget.plot_ready:
             return
         if self.parent.tabWidget.tabText(self.parent.tabWidget.currentIndex()) != "Scan":
             return
 
-        time, voltage = self.capture_scope()
+        time, voltage = self.capture_scope(channel=self.oscilloscope_channel)
 
         self.plot_scope(time, voltage)
         self.start_time = t.time()
@@ -660,7 +666,7 @@ class Manager(QThread):
             self.measure_element_efficiency_rfb_multithreaded(args)
         elif name.upper() == "Pre-test initialisation".upper():
             self.pretest_initialization(args)
-        elif "Find element n".upper() in name.upper():
+        elif "Find element".upper() in name.upper():
             self.find_element(args)
         elif name.upper() == "Save results".upper():
             self.save_results(args)
@@ -668,6 +674,21 @@ class Manager(QThread):
             self.prompt_user_for_action(args)
         elif "Home system".upper() in name.upper():
             self.home_system(args)
+        elif "Oscilloscope Channels".upper() in name.upper():
+            self.configure_oscilloscope_channels(args)
+        elif "Oscilloscope Timebase".upper() in name.upper():
+            self.configure_oscilloscope_timebase(args)
+        elif"Function Generator".upper() in name.upper():
+            self.configure_function_generator(args)
+        elif "Autoset Timebase".upper() in name.upper():
+            self.autoset_timebase(args)
+        elif "Home System".upper() in name.upper():
+            self.home_system(args)
+        elif "Move System".upper() in name.upper():
+            self.move_system(args)
+        elif "Select Channel".upper() in name.upper():
+            self.select_ua_channel(args)
+            raise Exception
 
         self.task_index_signal.emit(self.step_index + 1)
 
