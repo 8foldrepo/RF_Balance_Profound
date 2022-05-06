@@ -174,12 +174,14 @@ class MT_balance(AbstractBalance):
             self.log(level="error", message=f"{self.device_key} not connected")
             return
 
+        self.ser.flushInput()
+
         # self.ser.write(b"\nSI\n")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                if b"S D" in item:
+                if b"S D" in item or b"S S" in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
                         if is_number(chunk):

@@ -104,9 +104,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Note: the UA interface box is instantiated in both the manager and the UI thread.
         # This is done to improve responsiveness, as triggering UI dialogs with a signal causes a delay.
         # There should be no conflicts between the two objects, as they both just send commands to the exe file
-        if self.config["Debugging"]["simulate_hw"]:
+        if self.config["Debugging"]["simulate_ua_interface"]:
             from Hardware.Simulated.simulated_ua_interface import SimulatedUAInterface
-
             self.UAInterface = SimulatedUAInterface(config=self.config)
         else:
             from Hardware.ua_interface import UAInterface
@@ -479,7 +478,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def load_script_clicked(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Open file", "", "Script files (*.wtf *.txt)"
+            self, "Open file", ROOT_DIR+"/Scripts", "Script files (*.wtf *.txt)"
         )
 
         if path == "":

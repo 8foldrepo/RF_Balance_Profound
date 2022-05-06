@@ -52,7 +52,6 @@ run the following commands
 > pip install pythonnet\
 > pip install pyqtgraph\
 > pip install pyqt5\
-> pip install pvisa\
 > pip install pyvisa\
 > pip install pyyaml\
 > pip install scipy\

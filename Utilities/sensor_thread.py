@@ -40,14 +40,10 @@ class SensorThread(QThread):
 
     def capture(self):
         self.ready = False
-        # print(f"Beginning capture of {QThread.currentThread().objectName()}, time = {t.time()-self.start_time}, index = {self.index}")
         reading = None
         while reading == None:
             reading = self.sensor.get_reading()
-            # print(f"sensor {self.name} read in sensor_thread.py, reading is: {reading}")
-
         self.reading_signal.emit(reading)
-        # print(f"Finishing capture of {QThread.currentThread().objectName()}, time = {t.time() - self.start_time}, index = {self.index}")
         self.ready = True
 
     # Trigger a capture

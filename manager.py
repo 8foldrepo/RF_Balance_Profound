@@ -23,8 +23,7 @@ from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data, \
-    get_awg_off_values
+from Utilities.useful_methods import log_msg, get_element_distances, get_awg_on_values, generate_calibration_data
 from Utilities.variable_containers import TestData, FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel
 
@@ -208,11 +207,8 @@ class Manager(QThread):
             self.Oscilloscope = SimulatedOscilloscope(config=self.config)
         else:
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
-
             self.rm = pyvisa.ResourceManager()
-            self.Oscilloscope = KeysightOscilloscope(
-                config=self.config, resource_manager=self.rm
-            )
+            self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.config["Debugging"]["simulate_ua_interface"]:
             from Hardware.Simulated.simulated_ua_interface import SimulatedUAInterface
