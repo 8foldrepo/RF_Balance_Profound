@@ -1,0 +1,27 @@
+[Top Level]
+# of Tasks = "1"
+Createdon = "05/05/2022"
+Createdby = ""
+Description = ""
+
+[Task0]
+Task type = "Measure element efficiency (RFB)"
+Element = "Current"
+Frequency range = "Low frequency"
+RFB.#on/off cycles = "3"
+RFB.On time (s) = "10"
+RFB.Off time (s) = "10"
+RFB.Threshold = "0.050000"
+RFB.Offset = "0.500000"
+Set frequency options = "Common peak frequency"
+Frequency (MHz) = "4.200000"
+Amplitude (mVpp) = "100.000000"
+Storage location = "UA results directory"
+Data directory = ""
+RFB target position = "Average UA RFB position"
+RFB target angle = "-90.000000"
+EfficiencyTest = "TRUE"
+Pa max (target, W) = "4.000000"
+Pf max (limit, W) = "12.000000"
+Reflection limit (%) = "70.000000"
+

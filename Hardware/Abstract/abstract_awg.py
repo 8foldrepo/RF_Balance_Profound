@@ -11,7 +11,7 @@ class AbstractAWG(AbstractDevice):
     frequency_signal = pyqtSignal(float)
     state: dict
 
-    def __init__(self, config=None, device_key='Keysight_AWG', parent=None):
+    def __init__(self, config=None, device_key="Keysight_AWG", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
     @abstractmethod

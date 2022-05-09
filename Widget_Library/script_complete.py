@@ -103,7 +103,11 @@ class Ui_Dialog(object):
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("Dialog", "Pass/Fail"))
         item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("Dialog", "Description                                                "))
+        item.setText(
+            _translate(
+                "Dialog", "Description                                                "
+            )
+        )
         __sortingEnabled = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
         self.tableWidget.setSortingEnabled(__sortingEnabled)

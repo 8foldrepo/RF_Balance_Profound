@@ -381,7 +381,9 @@ class Ui_Form(object):
         self.POWERSWITCH_MANUFACTURER_FIELD = QtWidgets.QLineEdit(self.frame_9)
         self.POWERSWITCH_MANUFACTURER_FIELD.setEnabled(False)
         self.POWERSWITCH_MANUFACTURER_FIELD.setGeometry(QtCore.QRect(10, 40, 113, 20))
-        self.POWERSWITCH_MANUFACTURER_FIELD.setObjectName("POWERSWITCH_MANUFACTURER_FIELD")
+        self.POWERSWITCH_MANUFACTURER_FIELD.setObjectName(
+            "POWERSWITCH_MANUFACTURER_FIELD"
+        )
         self.label_42 = QtWidgets.QLabel(self.frame_9)
         self.label_42.setGeometry(QtCore.QRect(10, 20, 91, 16))
         self.label_42.setObjectName("label_42")
@@ -507,66 +509,110 @@ class Ui_Form(object):
         self.label_2.setText(_translate("Form", "Software Version"))
         self.label_3.setText(_translate("Form", "UA Water Circuit"))
         self.label_4.setText(_translate("Form", "Tank Water Circuit"))
-        self.label_11.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Wet Test Fixture</span></p></body></html>"))
+        self.label_11.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Wet Test Fixture</span></p></body></html>',
+            )
+        )
         self.label_5.setText(_translate("Form", "Manufacturer"))
         self.label_6.setText(_translate("Form", "Model"))
         self.label_7.setText(_translate("Form", "Serial Number"))
         self.label_8.setText(_translate("Form", "Firmware Version"))
         self.label_9.setText(_translate("Form", "Date of Last Calibration"))
-        self.label_10.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Radio Force Balance</span></p></body></html>"))
+        self.label_10.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Radio Force Balance</span></p></body></html>',
+            )
+        )
         self.label_12.setText(_translate("Form", "Manufacturer"))
         self.label_13.setText(_translate("Form", "Model"))
         self.label_14.setText(_translate("Form", "Serial Number"))
         self.label_15.setText(_translate("Form", "Firmware Version"))
-        self.label_17.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Oscilloscope</span></p></body></html>"))
+        self.label_17.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Oscilloscope</span></p></body></html>',
+            )
+        )
         self.label_16.setText(_translate("Form", "Manufacturer"))
         self.label_18.setText(_translate("Form", "Model"))
         self.label_19.setText(_translate("Form", "Serial Number"))
         self.label_20.setText(_translate("Form", "Firmware Version"))
-        self.label_21.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Arbitrary Waveform Generator</span></p></body></html>"))
+        self.label_21.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Arbitrary Waveform Generator</span></p></body></html>',
+            )
+        )
         self.label_22.setText(_translate("Form", "Manufacturer"))
         self.label_23.setText(_translate("Form", "Model"))
         self.label_24.setText(_translate("Form", "Serial Number"))
         self.label_25.setText(_translate("Form", "Firmware Version"))
-        self.label_26.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Reflected Power Meter</span></p></body></html>"))
+        self.label_26.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Reflected Power Meter</span></p></body></html>',
+            )
+        )
         self.label_27.setText(_translate("Form", "Manufacturer"))
         self.label_28.setText(_translate("Form", "Model"))
         self.label_29.setText(_translate("Form", "Serial Number"))
         self.label_30.setText(_translate("Form", "Firmware Version"))
-        self.label_31.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Forward Power Meter</span></p></body></html>"))
+        self.label_31.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Forward Power Meter</span></p></body></html>',
+            )
+        )
         self.label_32.setText(_translate("Form", "Manufacturer"))
         self.label_33.setText(_translate("Form", "Model"))
         self.label_34.setText(_translate("Form", "Serial Number"))
         self.label_35.setText(_translate("Form", "Revision Number"))
-        self.label_36.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Power Amplifier</span></p></body></html>"))
+        self.label_36.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Power Amplifier</span></p></body></html>',
+            )
+        )
         self.label_37.setText(_translate("Form", "Manufacturer"))
         self.label_38.setText(_translate("Form", "Model"))
         self.label_39.setText(_translate("Form", "Serial Number"))
         self.label_40.setText(_translate("Form", "Firmware Version"))
-        self.label_41.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Thermocouple</span></p></body></html>"))
+        self.label_41.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Thermocouple</span></p></body></html>',
+            )
+        )
         self.label_42.setText(_translate("Form", "Manufacturer"))
         self.label_43.setText(_translate("Form", "Model"))
         self.label_44.setText(_translate("Form", "Serial Number"))
-        self.label_46.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Power Measurement &amp; Switching Module</span></p></body></html>"))
+        self.label_46.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Power Measurement &amp; Switching Module</span></p></body></html>',
+            )
+        )
         self.label_47.setText(_translate("Form", "Model"))
         self.label_48.setText(_translate("Form", "Serial Number"))
         self.label_49.setText(_translate("Form", "Firmware Version"))
-        self.label_51.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Wet Test Fixture Interface Board</span></p></body></html>"))
+        self.label_51.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Wet Test Fixture Interface Board</span></p></body></html>',
+            )
+        )
         self.label_50.setText(_translate("Form", "Hydrophone Type"))
         self.label_52.setText(_translate("Form", "Hydrophone Diameter"))
         self.label_53.setText(_translate("Form", "Hydrophone Serial Number"))
-        self.label_54.setText(_translate("Form",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Hydrophone System</span></p></body></html>"))
+        self.label_54.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Hydrophone System</span></p></body></html>',
+            )
+        )
         self.label_55.setText(_translate("Form", "DC Coupler Serial Number"))
         self.label_56.setText(_translate("Form", "Pre-Amplifier Serial Number"))
 

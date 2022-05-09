@@ -6,17 +6,13 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractOscilloscope(AbstractDevice):
     """Defines key functionalities for oscilloscopes"""
-    range_mv: float
+    range_s: float
+    offset_s: float
+    range_mV: float
     channel: int
     averages: int
-    capture_period_ns: int
-    signal_frequency_MHz: float
-    signal_period_ns: float
-    cycles: int
-    delay_cycles: float
-    captures: int
 
-    def __init__(self, device_key='Keysight_Oscilloscope', config=None, parent=None):
+    def __init__(self, device_key="Keysight_Oscilloscope", config=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
 
     @abstractmethod
@@ -47,7 +43,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def setVertRange_V(self, channel: int, volts: float):
+    def setVertRange_V(self, channel: int):
         ...
 
     @abstractmethod
@@ -56,6 +52,10 @@ class AbstractOscilloscope(AbstractDevice):
 
     @abstractmethod
     def setHorzScale_sec(self, seconds: float):
+        ...
+
+    @abstractmethod
+    def autoset_timebase(self):
         ...
 
     @abstractmethod

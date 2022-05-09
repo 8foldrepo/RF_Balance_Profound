@@ -7,6 +7,7 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractRelay(AbstractDevice):
     """AbstractRelay adds relay read and write methods"""
+
     __metaclass__ = ABCMeta
 
     reading_signal = pyqtSignal(bool)
@@ -15,7 +16,7 @@ class AbstractRelay(AbstractDevice):
     port: str
 
     @abstractmethod
-    def __init__(self, config=None, device_key='Pump', parent=None):
+    def __init__(self, config=None, device_key="Pump", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
     @abstractmethod

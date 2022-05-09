@@ -22,11 +22,12 @@ def calculate_speed_of_sound_in_water(temperature_c: float):
 # Todo: double check this formula
 def calculate_total_uncertainty_percent(data_set: list):
     if len(data_set) == 0:
-        return float('nan')
+        return float("nan")
     from numpy import mean, std
+
     mean = mean(data_set)
     if mean == 0:
-        return float('nan')
+        return float("nan")
     return std(data_set) / mean * 100
 
 
@@ -34,15 +35,16 @@ def calculate_total_uncertainty_percent(data_set: list):
 # Todo: double check this formula
 def calculate_random_uncertainty_percent(data_set: list):
     if len(data_set) == 0:
-        return float('nan')
+        return float("nan")
     from numpy import mean, std
+
     mean = mean(data_set)
     if mean == 0:
-        return float('nan')
+        return float("nan")
     return std(data_set) / mean * 100
 
 
 # Test script
-if __name__ == '__main__':
-    print(calculate_power_from_balance_reading(.053))
+if __name__ == "__main__":
+    print(calculate_power_from_balance_reading(0.053))
     print(calculate_speed_of_sound_in_water(20))

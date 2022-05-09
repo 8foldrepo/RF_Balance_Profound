@@ -3,17 +3,17 @@ Autoset timebase:
   Min time of flight (us): 42
   Horizontal scale (us): 5
 Debugging:
-  simulate_hw: true
   simulate_ua_interface: true
   simulate_sensors: true
   simulate_motors: true
   simulate_oscilloscope: true
-  simulate_awg: true
+  simulate_awg: false
   simulate_balance: true
   simulate_power_meters: true
   simulate_io_board: true
   simulate_thermocouple: true
   end_script_on_errors: false
+  oscilloscope_realtime_capture: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
@@ -60,7 +60,6 @@ Keysight_AWG:
 Keysight_Oscilloscope:
   channel: 1
   averages: 16
-  capture_period_ns: 100
   cycles: 10
   delay_cycles: 0
   identifier: '0x179B'
@@ -72,7 +71,7 @@ Keysight_Oscilloscope:
   retries: 5
 MT_Balance:
   port: COM4
-  timeout_s: .6
+  timeout_s: 10
 Paths:
   UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
     numbers.txt

@@ -37,26 +37,26 @@ class AbstractMotorController(AbstractDevice):
     connected_signal = pyqtSignal(bool)
     ready_signal = pyqtSignal()
 
-    def __init__(self, config: dict, device_key='VIX_Motors', parent=None):
+    def __init__(self, config: dict, device_key="VIX_Motors", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.fields_setup()
 
     def fields_setup(self):
-        self.ax_letters = self.config[self.device_key]['axes']
+        self.ax_letters = self.config[self.device_key]["axes"]
         num_axes = len(self.ax_letters)
         for i in range(num_axes):
             self.coords_mm.append(0)
-        self.reverse_ray = self.config[self.device_key]['reverse_ray']
-        self.movement_mode = self.config[self.device_key]['movement_mode']
-        self.ax_letters = self.config[self.device_key]['axes']
-        self.calibrate_ray_steps_per = self.config[self.device_key]['calibrate_ray']
-        self.rotational_ray = self.config[self.device_key]['rotational_ray']
-        self.speeds_ray = self.config[self.device_key]['speeds_ray']
-        self.increment_ray = self.config[self.device_key]['increment_ray']
-        self.timeout_s = self.config[self.device_key]['timeout_s']
-        self.time_limit_s = self.config[self.device_key]['time_limit_s']
-        self.on_by_default = self.config[self.device_key]['on_by_default']
-        self.port = self.config[self.device_key]['port']
+        self.reverse_ray = self.config[self.device_key]["reverse_ray"]
+        self.movement_mode = self.config[self.device_key]["movement_mode"]
+        self.ax_letters = self.config[self.device_key]["axes"]
+        self.calibrate_ray_steps_per = self.config[self.device_key]["calibrate_ray"]
+        self.rotational_ray = self.config[self.device_key]["rotational_ray"]
+        self.speeds_ray = self.config[self.device_key]["speeds_ray"]
+        self.increment_ray = self.config[self.device_key]["increment_ray"]
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        self.time_limit_s = self.config[self.device_key]["time_limit_s"]
+        self.on_by_default = self.config[self.device_key]["on_by_default"]
+        self.port = self.config[self.device_key]["port"]
 
     @abstractmethod
     @pyqtSlot(list, list)

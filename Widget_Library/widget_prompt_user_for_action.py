@@ -54,7 +54,9 @@ class Ui_Form(object):
         self.prompt_field.setItemText(2, _translate("Form", "Enable UA pump"))
         self.prompt_field.setItemText(3, _translate("Form", "Disable UA pump"))
         self.prompt_field.setItemText(4, _translate("Form", "Enable Power Amplifier"))
-        self.prompt_field.setItemText(5, _translate("Form", "Testing sequence complete"))
+        self.prompt_field.setItemText(
+            5, _translate("Form", "Testing sequence complete")
+        )
         self.prompt_field.setItemText(6, _translate("Form", "Other"))
         self.label.setText(_translate("Form", "Prompt message"))
 

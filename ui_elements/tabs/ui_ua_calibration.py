@@ -15,8 +15,8 @@ class UACalibration(MyQWidget, Ui_Form):
         self.manager = None
         self.config = None
 
-        self.High_Frequency_MHz = float('nan')
-        self.Low_Frequency_MHz = float('nan')
+        self.High_Frequency_MHz = float("nan")
+        self.Low_Frequency_MHz = float("nan")
 
     def set_config(self, config):
         self.config = config
@@ -43,13 +43,21 @@ class UACalibration(MyQWidget, Ui_Form):
     @pyqtSlot(list, int)
     def populate_results_table(self, data=None, status=None):
         if status == -1 or status == 2:
-            self.main_window.dialog_critical("UA not found, please connect UA to interface box and try again")
-            self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
+            self.main_window.dialog_critical(
+                "UA not found, please connect UA to interface box and try again"
+            )
+            self.main_window.log(
+                level="Error", message="No UA connected, plug one in and try again"
+            )
             return
         # data, status = self.ua_interface.read_data()
         if status == -2:
-            self.main_window.dialog_critical("wtfib is not connected (check power and ethernet connection)")
-            self.main_window.log(level='Error', message='No UA connected, plug one in and try again')
+            self.main_window.dialog_critical(
+                "wtfib is not connected (check power and ethernet connection)"
+            )
+            self.main_window.log(
+                level="Error", message="No UA connected, plug one in and try again"
+            )
             return
         elif status == 0:
             self.data = data
@@ -91,7 +99,7 @@ class UACalibration(MyQWidget, Ui_Form):
         dlg.exec()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)

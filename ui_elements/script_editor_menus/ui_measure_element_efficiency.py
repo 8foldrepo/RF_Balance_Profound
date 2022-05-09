@@ -1,15 +1,13 @@
 from collections import OrderedDict
-
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QFileDialog
-
 from Widget_Library.widget_measure_element_efficiency import Ui_Form_2
 from ui_elements.my_qwidget import MyQWidget
 
 
 class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
-    def __init__(self, config, parent=None):
-        super().__init__(config=config, parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setupUi(self)
         self.DATA_DIRECTORY_BUTTON.clicked.connect(self.filebrowser)
         self.configure_signals()
@@ -54,7 +52,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
 
     @pyqtSlot()
     def storage_loc_combo_changed(self):
-        if 'Results Directory'.upper() in self.DATALOC_FIELD.currentText().upper():
+        if "Results Directory".upper() in self.DATALOC_FIELD.currentText().upper():
             self.DATA_DIRECTORY_FIELD.setEnabled(False)
             self.DATA_DIRECTORY_BUTTON.setEnabled(False)
         else:
@@ -63,7 +61,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Measure element efficiency (RFB)'
+        var_dict["Task type"] = "Measure element efficiency (RFB)"
         var_dict["Element"] = self.ELEMENT_SELECTION_FIELD.currentText()
         var_dict["Frequency range"] = self.FREQUENCY_SELECTION_FIELD.currentText()
         var_dict["RFB.#on/off cycles"] = str(int(self.RFB_CYCLES_FIELD.value()))
@@ -91,7 +89,7 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         return var_dict
 
     def filebrowser(self):
-        filename, _ = QFileDialog.getExistingDirectory(self, 'Select Directory')
+        filename, _ = QFileDialog.getExistingDirectory(self, "Select Directory")
         self.DATA_DIRECTORY_FIELD.setText(filename)
 
 

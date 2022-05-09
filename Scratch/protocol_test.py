@@ -12,6 +12,7 @@ class device(QObject):
         super().__init__(parent=parent)
         from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
         import logging
+
         log_formatter = logging.Formatter(LOGGER_FORMAT)
         import os
         from definitions import ROOT_DIR
@@ -40,9 +41,9 @@ class AWG(device, ABC):
         self.log("HELLO WORLD")
         self.connect_hardware()
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         log_msg(self, self.root_logger, message=message, level=level)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     awg = AWG(config=None, device_key=None, parent=None)

@@ -26,20 +26,22 @@ class KeysightAWG(AbstractAWG):
             self.config = load_configuration()
 
     def set_to_defaults(self):
-        self.setup(frequency_Hz=self.config[self.device_key]['frequency_Hz'],
-                   amplitude_V=self.config[self.device_key]['amplitude_V'],
-                   burst=self.config[self.device_key]['burst'],
-                   burst_cycles=self.config[self.device_key]['burst_cycles'],
-                   ext_trig=self.config[self.device_key]['trig_in'],
-                   burst_period_s=self.config[self.device_key]['burst_period_s'],
-                   offset_V=self.config[self.device_key]['offset_V'],
-                   output=False,
-                   output_Impedance=self.config[self.device_key]['output_Impedance'],
-                   trigger_out=self.config[self.device_key]['trig_out'])
+        self.setup(
+            frequency_Hz=self.config[self.device_key]["frequency_Hz"],
+            amplitude_V=self.config[self.device_key]["amplitude_V"],
+            burst=self.config[self.device_key]["burst"],
+            burst_cycles=self.config[self.device_key]["burst_cycles"],
+            ext_trig=self.config[self.device_key]["trig_in"],
+            burst_period_s=self.config[self.device_key]["burst_period_s"],
+            offset_V=self.config[self.device_key]["offset_V"],
+            output=False,
+            output_Impedance=self.config[self.device_key]["output_Impedance"],
+            trigger_out=self.config[self.device_key]["trig_out"],
+        )
 
     def connect_hardware(self):
         resources = self.rm.list_resources()
-        feedback = ''
+        feedback = ""
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
@@ -51,7 +53,7 @@ class KeysightAWG(AbstractAWG):
                     self.log(level='error', message=feedback)
                     break
 
-                if self.config[self.device_key]['set_on_startup']:
+                if self.config[self.device_key]["set_on_startup"]:
                     self.set_to_defaults()
                 else:
                     self.get_state()
@@ -60,7 +62,7 @@ class KeysightAWG(AbstractAWG):
                 self.connected_signal.emit(self.connected)
                 return self.connected, feedback
 
-        self.log("Keysight 33509B Series function generator not found", level='error')
+        self.log("Keysight 33509B Series function generator not found", level="error")
         self.connected = False
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
@@ -110,14 +112,14 @@ class KeysightAWG(AbstractAWG):
 
     def SetOutput(self, on: bool):
         if on:
-            self.command('OUTP ON')
+            self.command("OUTP ON")
             self.output_signal.emit(True)
         else:
-            self.command('OUTP OFF')
+            self.command("OUTP OFF")
             self.output_signal.emit(False)
 
     def Get_Output(self):
-        self.command('OUTP?')
+        self.command("OUTP?")
         reply = self.read()
         self.state["output"] = "1" in reply
         self.output_signal.emit(self.state["output"])
@@ -130,7 +132,7 @@ class KeysightAWG(AbstractAWG):
         self.command(f"FREQ {frequency}")
 
         if not self.GetFrequency_Hz() == frequency:
-            self.log(level='error', message='frequency not set')
+            self.log(level="error", message="frequency not set")
             return False
         return True
 
@@ -145,7 +147,7 @@ class KeysightAWG(AbstractAWG):
     def SetAmplitude_V(self, amplitude):
         self.command(f"VOLT {amplitude}")
         if not self.GetAmplitude_V() == amplitude:
-            self.log(level='error', message='frequency not set')
+            self.log(level="error", message="frequency not set")
             return False
         return True
 
@@ -196,10 +198,10 @@ class KeysightAWG(AbstractAWG):
 
     def GetBurst(self):
         self.command(f"BURS?")
-        self.state['burst_on'] = "1" in self.read()
+        self.state["burst_on"] = "1" in self.read()
         self.command(f"BURS:NCYC?")
-        self.state['burst_cycles'] = int(float(self.read()))
-        return self.state['burst_on'], self.state['burst_cycles']
+        self.state["burst_cycles"] = int(float(self.read()))
+        return self.state["burst_on"], self.state["burst_cycles"]
 
     def SetOutputImpedance(self, impedance_ohms=50, HiZ=False):
         if HiZ:
@@ -224,6 +226,7 @@ class KeysightAWG(AbstractAWG):
 
     def SetCycles(self, cycles):
         self.state["burst_cycles"] = cycles
+        self.command(f"BURS:NCYC {cycles}")
         return self.GetCycles == cycles
 
     def GetCycles(self):
@@ -235,19 +238,19 @@ class KeysightAWG(AbstractAWG):
         try:
             self.inst.write(command)
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'write\'":
+            if str(e) == "'NoneType' object has no attribute 'write'":
                 self.log(f"{self.device_key} Not connected")
             else:
-                self.log(level='error', message=f'error in command: {e}')
+                self.log(level="error", message=f"error in command: {e}")
 
     def read(self):
         try:
             return self.inst.read()
         except AttributeError as e:
-            if str(e) == "\'NoneType\' object has no attribute \'read\'":
+            if str(e) == "'NoneType' object has no attribute 'read'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
             else:
-                self.log(level='error', message=f'error in read: {e}')
+                self.log(level="error", message=f"error in read: {e}")
 
     def check_connected(self):
         return self.inst is not None
@@ -284,10 +287,10 @@ class KeysightAWG(AbstractAWG):
         if not self.connected:
             return None
 
-        self.command("*IDN")
+        self.command("*IDN?")
         str = self.read()
 
-        return str.split(',')[2]
+        return str.split(",")[2]
 
     def __str__(self):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""

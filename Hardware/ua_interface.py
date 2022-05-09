@@ -15,7 +15,7 @@ class UAInterface(AbstractUAInterface):
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
-        self.ip_address = '192.168.3.3'
+        self.ip_address = "192.168.3.3"
         self.read_result = False
         self.write_result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
@@ -24,26 +24,26 @@ class UAInterface(AbstractUAInterface):
         self.fields_setup()
 
     def fields_setup(self):
-        self.timeout_s = self.config[self.device_key]['timeout_s']
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
 
     def connect_hardware(self):
         self.connected = True
 
-        self.log('Attempting to connect to WTFIB... ')
+        self.log("Attempting to connect to WTFIB... ")
 
         # Ping the UA interface
         p = Popen(["ping", self.ip_address, "-n", "1"], stdout=PIPE)
         output = p.communicate()[0].decode()
 
-        if 'timed out' in output:
-            feedback = 'ping to WTFIB timed out'
+        if "timed out" in output:
+            feedback = "ping to WTFIB timed out"
             self.connected = False
         else:
-            feedback = 'WTFIB connected successfully'
+            feedback = "WTFIB connected successfully"
             self.connected = True
 
         if not self.connected:
-            self.log(feedback, level='error')
+            self.log(feedback, level="error")
         else:
             self.log(feedback)
         self.connected_signal.emit(self.connected)
@@ -81,11 +81,11 @@ class UAInterface(AbstractUAInterface):
 
         # Try to extract the status number from the output, otherwise retry
         calibration_string_pre = output.splitlines()[3]
-        calibration_string_pre_list = calibration_string_pre.split(' ')
+        calibration_string_pre_list = calibration_string_pre.split(" ")
         # Search for number in the string containing "status = "
         status_str = calibration_string_pre_list[2]
         try:
-            status = int(re.search(r'\d+', status_str).group())
+            status = int(re.search(r"\d+", status_str).group())
         except:
             status = -4
 
@@ -96,7 +96,7 @@ class UAInterface(AbstractUAInterface):
 
         calibration_string_pre_list2 = calibration_string_pre_list[5]
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
-        calibration_data_list = calibration_data_quotes_removed.split(',')
+        calibration_data_list = calibration_data_quotes_removed.split(",")
 
         if len(calibration_data_list) < 27:
             self.log(level="Error", message=f"Calibration data contained less than 27 items : {calibration_data_list}")
@@ -121,7 +121,7 @@ class UAInterface(AbstractUAInterface):
         output = self.get_command_output()
 
         if "status=0" in output:
-            self.log('UA write successful')
+            self.log("UA write successful")
             self.write_result = True
             return 0
 
@@ -131,11 +131,11 @@ class UAInterface(AbstractUAInterface):
             return -2
 
         if "status=2" in output:
-            self.log(level='error', message='No UA connected, write failed')
+            self.log(level="error", message="No UA connected, write failed")
             self.write_result = False
             return 2
 
-        self.log(level='error', message=f'Unrecognized write code: \n{output}')
+        self.log(level="error", message=f"Unrecognized write code: \n{output}")
         self.write_result = False
         return -3
 
@@ -155,7 +155,7 @@ class UAInterface(AbstractUAInterface):
         return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     wtf = UAInterface(config=None)
     print(wtf.write_data(
         ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5', '66.8', '65.2',

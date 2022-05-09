@@ -25,14 +25,14 @@ class SimulatedUAInterface(AbstractUAInterface):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
     def check_connected(self):
-        return self.connected, ''
+        return self.connected, ""
 
     def wrap_up(self):
         self.disconnect_hardware()
@@ -43,7 +43,7 @@ class SimulatedUAInterface(AbstractUAInterface):
         self.cal_data_signal.emit(self.ua_calibration_data, 0)
         return self.ua_calibration_data, 0
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         log_msg(self, self.root_logger, message=message, level=level)
 
     def write_data(self, data):
@@ -51,7 +51,7 @@ class SimulatedUAInterface(AbstractUAInterface):
         return True
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
 
 if __name__ == "__main__":

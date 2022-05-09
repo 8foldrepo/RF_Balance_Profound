@@ -5,8 +5,7 @@ from Utilities.load_config import load_configuration
 
 
 class SimulatedRelay(AbstractRelay):
-
-    def __init__(self, config=None, device_key='Pump', parent=None):
+    def __init__(self, config=None, device_key="Pump", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
         self.ser = None
         self.fields_setup()
@@ -16,16 +15,16 @@ class SimulatedRelay(AbstractRelay):
     def fields_setup(self):
         if self.config is None:
             self.config = load_configuration()
-        self.timeout_s = self.config[self.device_key]['timeout_s']
-        self.on_by_default = self.config[self.device_key]['on_by_default']
-        self.port = self.config[self.device_key]['port']
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        self.on_by_default = self.config[self.device_key]["on_by_default"]
+        self.port = self.config[self.device_key]["port"]
         # retrieve config settings from config file
 
     @abstractmethod
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     @abstractmethod
     def disconnect_hardware(self):
@@ -40,10 +39,10 @@ class SimulatedRelay(AbstractRelay):
         self.on = on
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     switch = SimulatedRelay()
     switch.connect_hardware()
     switch.relay_write(True)

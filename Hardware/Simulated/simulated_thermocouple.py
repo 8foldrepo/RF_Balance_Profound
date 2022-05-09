@@ -5,7 +5,6 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
 class SimulatedThermocouple(AbstractSensor):
-
     @abstractmethod
     def __init__(self, config, parent=None, device_key=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
@@ -15,7 +14,7 @@ class SimulatedThermocouple(AbstractSensor):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     @abstractmethod
     def disconnect_hardware(self):
@@ -24,7 +23,7 @@ class SimulatedThermocouple(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
-        noise = .1 * random.random()
+        noise = 0.1 * random.random()
         signal = 23.2 + noise
         reading = round(signal, 1)
 
@@ -32,4 +31,4 @@ class SimulatedThermocouple(AbstractSensor):
         return reading
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'

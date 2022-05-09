@@ -11,6 +11,7 @@ class AbstractDevice(QObject):
     This base device class gives all devices access to signals and slots, the ability to log, and connect/disconnect
     hardware methods.
     """
+
     __metaclass__ = ABCMeta
 
     connected_signal = pyqtSignal(bool)
@@ -23,6 +24,7 @@ class AbstractDevice(QObject):
         import logging
         import os
         from definitions import ROOT_DIR
+
         log_formatter = logging.Formatter(LOGGER_FORMAT)
         balance_logger = logging.getLogger('wtf_log')
         file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
@@ -60,7 +62,7 @@ class AbstractDevice(QObject):
         """Safely stop or turn off hardware and disconnect"""
         self.disconnect_hardware()
 
-    def log(self, message, level='info'):
+    def log(self, message, level="info"):
         """Log a message to the WTF.log file (the hardware log)"""
         log_msg(self, self.root_logger, message=message, level=level)
 

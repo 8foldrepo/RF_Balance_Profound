@@ -6,7 +6,7 @@ def connect_oscilloscope():
     resources = rm.list_resources()
     inst = None
     for resource in resources:
-        if '0x179B' in resource:
+        if "0x179B" in resource:
             inst = rm.open_resource(resource)
     return inst
 

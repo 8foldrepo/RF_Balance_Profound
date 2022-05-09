@@ -11,40 +11,40 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
 
 class SimulatedMotorController(AbstractMotorController):
-    def __init__(self, config: dict, device_key='VIX_Motors', parent=None):
+    def __init__(self, config: dict, device_key="VIX_Motors", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.fields_setup()
 
     def go_home_1d(self, axis):
-        if axis == 'R':
+        if axis == "R":
             self.coords_mm[1] = -90
-        elif axis == 'X':
+        elif axis == "X":
             self.coords_mm[0] = 273
         self.get_position()
         self.ready_signal.emit()
 
     def fields_setup(self):
-        self.ax_letters = self.config[self.device_key]['axes']
+        self.ax_letters = self.config[self.device_key]["axes"]
         num_axes = len(self.ax_letters)
         for i in range(num_axes):
             self.coords_mm.append(0)
-        self.reverse_ray = self.config[self.device_key]['reverse_ray']
-        self.movement_mode = self.config[self.device_key]['movement_mode']
-        self.ax_letters = self.config[self.device_key]['axes']
-        self.calibrate_ray_steps_per = self.config[self.device_key]['calibrate_ray']
-        self.rotational_ray = self.config[self.device_key]['rotational_ray']
-        self.speeds_ray = self.config[self.device_key]['speeds_ray']
-        self.increment_ray = self.config[self.device_key]['increment_ray']
-        self.timeout_s = self.config[self.device_key]['timeout_s']
-        self.time_limit_s = self.config[self.device_key]['time_limit_s']
-        self.on_by_default = self.config[self.device_key]['on_by_default']
-        self.port = self.config[self.device_key]['port']
+        self.reverse_ray = self.config[self.device_key]["reverse_ray"]
+        self.movement_mode = self.config[self.device_key]["movement_mode"]
+        self.ax_letters = self.config[self.device_key]["axes"]
+        self.calibrate_ray_steps_per = self.config[self.device_key]["calibrate_ray"]
+        self.rotational_ray = self.config[self.device_key]["rotational_ray"]
+        self.speeds_ray = self.config[self.device_key]["speeds_ray"]
+        self.increment_ray = self.config[self.device_key]["increment_ray"]
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        self.time_limit_s = self.config[self.device_key]["time_limit_s"]
+        self.on_by_default = self.config[self.device_key]["on_by_default"]
+        self.port = self.config[self.device_key]["port"]
 
     """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
 
     @pyqtSlot(dict)
     def setup(self, settings):
-        t.sleep(.1)
+        t.sleep(0.1)
         self.ready_signal.emit()
 
     """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
@@ -58,14 +58,14 @@ class SimulatedMotorController(AbstractMotorController):
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
     def check_connected(self):
-        return self.connected, ''
+        return self.connected, ""
 
     def begin_motion(self, axis=None, direction=None, feedback=True):
         axis_index = self.ax_letters.index(axis)
@@ -101,10 +101,10 @@ class SimulatedMotorController(AbstractMotorController):
     @abstractmethod
     def set_origin_here_1d(self, axis):
         self.coords_mm[self.ax_letters.index(axis)] = 0
-        self.get_position()
 
     @abstractmethod
     def go_home(self):
+        self.get_position()
         self.coords_mm[1] = -90
         self.coords_mm[0] = 273
         self.get_position()
@@ -128,14 +128,14 @@ class SimulatedMotorController(AbstractMotorController):
 
     @abstractmethod
     def get_position(self, mutex_locked=False):
-        self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('X')])
-        self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index('R')])
+        self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("X")])
+        self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("R")])
 
     def wrap_up(self):
         self.disconnect_hardware()
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
     def wrap_up(self):
         self.stop_motion()

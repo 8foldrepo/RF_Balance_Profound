@@ -56,7 +56,9 @@ class Ui_Form(object):
         self.freq_incr_subframe.setObjectName("freq_incr_subframe")
         self.label_2 = QtWidgets.QLabel(self.layoutWidget)
         self.label_2.setObjectName("label_2")
-        self.freq_incr_subframe.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_2)
+        self.freq_incr_subframe.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.label_2
+        )
         self.freq_range_combo = QtWidgets.QComboBox(self.layoutWidget)
         self.freq_range_combo.setStyleSheet("background:white")
         self.freq_range_combo.setObjectName("freq_range_combo")
@@ -65,57 +67,83 @@ class Ui_Form(object):
         self.freq_range_combo.addItem("")
         self.freq_range_combo.addItem("")
         self.freq_range_combo.addItem("")
-        self.freq_incr_subframe.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.freq_range_combo)
+        self.freq_incr_subframe.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.freq_range_combo
+        )
         self.label_3 = QtWidgets.QLabel(self.layoutWidget)
         self.label_3.setObjectName("label_3")
-        self.freq_incr_subframe.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_3)
+        self.freq_incr_subframe.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.label_3
+        )
         self.start_freq_spin = QtWidgets.QSpinBox(self.layoutWidget)
         self.start_freq_spin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.start_freq_spin.setStyleSheet("background:white")
         self.start_freq_spin.setObjectName("start_freq_spin")
-        self.freq_incr_subframe.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.start_freq_spin)
+        self.freq_incr_subframe.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.start_freq_spin
+        )
         self.label_4 = QtWidgets.QLabel(self.layoutWidget)
         self.label_4.setObjectName("label_4")
-        self.freq_incr_subframe.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_4)
+        self.freq_incr_subframe.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.label_4
+        )
         self.end_freq_doublespin = QtWidgets.QDoubleSpinBox(self.layoutWidget)
         self.end_freq_doublespin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.end_freq_doublespin.setStyleSheet("background:white")
         self.end_freq_doublespin.setDecimals(1)
         self.end_freq_doublespin.setObjectName("end_freq_doublespin")
-        self.freq_incr_subframe.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.end_freq_doublespin)
+        self.freq_incr_subframe.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.end_freq_doublespin
+        )
         self.label_5 = QtWidgets.QLabel(self.layoutWidget)
         self.label_5.setObjectName("label_5")
-        self.freq_incr_subframe.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_5)
+        self.freq_incr_subframe.setWidget(
+            3, QtWidgets.QFormLayout.LabelRole, self.label_5
+        )
         self.coarse_inc_doublespin = QtWidgets.QDoubleSpinBox(self.layoutWidget)
         self.coarse_inc_doublespin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.coarse_inc_doublespin.setStyleSheet("background:white")
         self.coarse_inc_doublespin.setDecimals(1)
         self.coarse_inc_doublespin.setObjectName("coarse_inc_doublespin")
-        self.freq_incr_subframe.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.coarse_inc_doublespin)
+        self.freq_incr_subframe.setWidget(
+            3, QtWidgets.QFormLayout.FieldRole, self.coarse_inc_doublespin
+        )
         self.label_6 = QtWidgets.QLabel(self.layoutWidget)
         self.label_6.setObjectName("label_6")
-        self.freq_incr_subframe.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_6)
+        self.freq_incr_subframe.setWidget(
+            4, QtWidgets.QFormLayout.LabelRole, self.label_6
+        )
         self.fine_incr_doublespin = QtWidgets.QDoubleSpinBox(self.layoutWidget)
         self.fine_incr_doublespin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.fine_incr_doublespin.setStyleSheet("background:white")
         self.fine_incr_doublespin.setObjectName("fine_incr_doublespin")
-        self.freq_incr_subframe.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.fine_incr_doublespin)
+        self.freq_incr_subframe.setWidget(
+            4, QtWidgets.QFormLayout.FieldRole, self.fine_incr_doublespin
+        )
         self.label_7 = QtWidgets.QLabel(self.layoutWidget)
         self.label_7.setObjectName("label_7")
-        self.freq_incr_subframe.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.label_7)
+        self.freq_incr_subframe.setWidget(
+            5, QtWidgets.QFormLayout.LabelRole, self.label_7
+        )
         self.burst_count_spin = QtWidgets.QSpinBox(self.layoutWidget)
         self.burst_count_spin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.burst_count_spin.setStyleSheet("background:white")
         self.burst_count_spin.setObjectName("burst_count_spin")
-        self.freq_incr_subframe.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.burst_count_spin)
+        self.freq_incr_subframe.setWidget(
+            5, QtWidgets.QFormLayout.FieldRole, self.burst_count_spin
+        )
         self.label_8 = QtWidgets.QLabel(self.layoutWidget)
         self.label_8.setObjectName("label_8")
-        self.freq_incr_subframe.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.label_8)
+        self.freq_incr_subframe.setWidget(
+            6, QtWidgets.QFormLayout.LabelRole, self.label_8
+        )
         self.amplitude_spin = QtWidgets.QSpinBox(self.layoutWidget)
         self.amplitude_spin.setMaximumSize(QtCore.QSize(60, 16777215))
         self.amplitude_spin.setStyleSheet("background:white")
         self.amplitude_spin.setObjectName("amplitude_spin")
-        self.freq_incr_subframe.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.amplitude_spin)
+        self.freq_incr_subframe.setWidget(
+            6, QtWidgets.QFormLayout.FieldRole, self.amplitude_spin
+        )
         self.layoutWidget1 = QtWidgets.QWidget(self.freq_sweep_frame)
         self.layoutWidget1.setGeometry(QtCore.QRect(10, 190, 291, 51))
         self.layoutWidget1.setObjectName("layoutWidget1")
@@ -208,13 +236,23 @@ class Ui_Form(object):
         self.label_16.setText(_translate("Form", "Include test"))
         self.data_direc_button.setText(_translate("Form", "📁"))
         self.label_2.setText(_translate("Form", "Frequency range"))
-        self.freq_range_combo.setToolTip(_translate("Form",
-                                                    "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>"))
+        self.freq_range_combo.setToolTip(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>',
+            )
+        )
         self.freq_range_combo.setItemText(0, _translate("Form", "From config cluster"))
-        self.freq_range_combo.setItemText(1, _translate("Form", "Element pk low frequency"))
-        self.freq_range_combo.setItemText(2, _translate("Form", "Element pk high frequency"))
+        self.freq_range_combo.setItemText(
+            1, _translate("Form", "Element pk low frequency")
+        )
+        self.freq_range_combo.setItemText(
+            2, _translate("Form", "Element pk high frequency")
+        )
         self.freq_range_combo.setItemText(3, _translate("Form", "Common low frequency"))
-        self.freq_range_combo.setItemText(4, _translate("Form", "Common high frequency"))
+        self.freq_range_combo.setItemText(
+            4, _translate("Form", "Common high frequency")
+        )
         self.label_3.setText(_translate("Form", "Start frequency (MHz)"))
         self.label_4.setText(_translate("Form", "End frequency (MHz)"))
         self.label_5.setText(_translate("Form", "Coarse increment (MHz)"))
@@ -226,19 +264,33 @@ class Ui_Form(object):
         self.label_11.setText(_translate("Form", "Averages"))
         self.scope_channel_combo.setItemText(0, _translate("Form", "Channel 1"))
         self.scope_channel_combo.setItemText(1, _translate("Form", "Channel 2"))
-        self.acq_type_combo.setToolTip(_translate("Form",
-                                                  "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- Single Waveform </p><p>- N Averaged Waveform</p></body></html>"))
+        self.acq_type_combo.setToolTip(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- Single Waveform </p><p>- N Averaged Waveform</p></body></html>',
+            )
+        )
         self.acq_type_combo.setItemText(0, _translate("Form", "Single Waveform"))
         self.acq_type_combo.setItemText(1, _translate("Form", "N Averaged Waveform"))
         self.label_14.setText(_translate("Form", "Data directory"))
         self.label_12.setText(_translate("Form", "Data storage"))
         self.label_13.setText(_translate("Form", "Storage location"))
-        self.data_storage_combo.setToolTip(_translate("Form",
-                                                      "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- Do not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html> "))
+        self.data_storage_combo.setToolTip(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- Do not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html> ',
+            )
+        )
         self.data_storage_combo.setItemText(0, _translate("Form", "Do not store"))
-        self.data_storage_combo.setItemText(1, _translate("Form", "Store profiles only"))
-        self.data_storage_combo.setItemText(2, _translate("Form", "Store entire waveform"))
-        self.storage_loc_combo.setItemText(0, _translate("Form", "UA results directory"))
+        self.data_storage_combo.setItemText(
+            1, _translate("Form", "Store profiles only")
+        )
+        self.data_storage_combo.setItemText(
+            2, _translate("Form", "Store entire waveform")
+        )
+        self.storage_loc_combo.setItemText(
+            0, _translate("Form", "UA results directory")
+        )
         self.storage_loc_combo.setItemText(1, _translate("Form", "Custom directory"))
 
 

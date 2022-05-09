@@ -8,7 +8,6 @@ from test import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
@@ -40,7 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             a.append(self.capture_a())
             b.append(self.capture_b())
             c.append(self.capture_c())
-            print(f'Items in A: {len(a)}, Items in B: {len(b)}, Items in C: {len(c)}')
+            print(f"Items in A: {len(a)}, Items in B: {len(b)}, Items in C: {len(c)}")
 
         finish_time = t.time()
 

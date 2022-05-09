@@ -15,7 +15,7 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
 
 sys.path.append(POWER_METER_DLL_PATH)
-clr.AddReference('mcl_pm_NET45')  # Reference the DLL
+clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
 
 
@@ -59,7 +59,7 @@ class PowerMeter(AbstractSensor):
             self.pwr.Format_mW = True
 
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def disconnect_hardware(self):
         self.pwr.Close_Sensor()
@@ -80,14 +80,14 @@ class PowerMeter(AbstractSensor):
         return self.serial_number
 
 
-if __name__ == '__main__':
-    reflected_meter = PowerMeter(config=None, device_key='Reflected_Power_Meter')
-    forward_meter = PowerMeter(config=None, device_key='Forward_Power_Meter')
+if __name__ == "__main__":
+    reflected_meter = PowerMeter(config=None, device_key="Reflected_Power_Meter")
+    forward_meter = PowerMeter(config=None, device_key="Forward_Power_Meter")
     forward_meter.connect_hardware()
     reflected_meter.connect_hardware()
 
-    print(f'Forward power: {forward_meter.get_reading()} Watts')
-    print(f'Reflected power: {reflected_meter.get_reading()} Watts')
+    print(f"Forward power: {forward_meter.get_reading()} Watts")
+    print(f"Reflected power: {reflected_meter.get_reading()} Watts")
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()

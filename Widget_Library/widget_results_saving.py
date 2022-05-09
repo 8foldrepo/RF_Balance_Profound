@@ -34,7 +34,9 @@ class Ui_configure_results_saving(object):
         self.horz_lyout_write_ua.setObjectName("horz_lyout_write_ua")
         self.write_ua_calibration_checkbox = QtWidgets.QCheckBox(self.layoutWidget)
         self.write_ua_calibration_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.write_ua_calibration_checkbox.setObjectName("write_ua_calibration_checkbox")
+        self.write_ua_calibration_checkbox.setObjectName(
+            "write_ua_calibration_checkbox"
+        )
         self.horz_lyout_write_ua.addWidget(self.write_ua_calibration_checkbox)
         self.with_prompt_checkbox = QtWidgets.QCheckBox(self.layoutWidget)
         self.with_prompt_checkbox.setLayoutDirection(QtCore.Qt.RightToLeft)
@@ -50,10 +52,18 @@ class Ui_configure_results_saving(object):
 
     def retranslateUi(self, configure_results_saving):
         _translate = QtCore.QCoreApplication.translate
-        configure_results_saving.setWindowTitle(_translate("configure_results_saving", "Form"))
-        self.write_ua_calibration_checkbox.setText(_translate("configure_results_saving", "Write UA Calibration"))
-        self.with_prompt_checkbox.setText(_translate("configure_results_saving", "With prompt"))
-        self.sav_sum_file_chkbx.setText(_translate("configure_results_saving", "Save summary file   "))
+        configure_results_saving.setWindowTitle(
+            _translate("configure_results_saving", "Form")
+        )
+        self.write_ua_calibration_checkbox.setText(
+            _translate("configure_results_saving", "Write UA Calibration")
+        )
+        self.with_prompt_checkbox.setText(
+            _translate("configure_results_saving", "With prompt")
+        )
+        self.sav_sum_file_chkbx.setText(
+            _translate("configure_results_saving", "Save summary file   ")
+        )
 
 
 if __name__ == "__main__":

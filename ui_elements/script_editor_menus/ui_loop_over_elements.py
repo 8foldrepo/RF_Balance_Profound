@@ -74,7 +74,7 @@ class LoopOverElements(QWidget, Ui_Form):
     # todo: populate var_dict, arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict([])
-        var_dict['Task type'] = 'Loop over elements'
+        var_dict["Task type"] = "Loop over elements"
         var_dict["Element 1"] = str(self.element_checkbox_1.isChecked())
         var_dict["Element 2"] = str(self.element_checkbox_2.isChecked())
         var_dict["Element 3"] = str(self.element_checkbox_3.isChecked())

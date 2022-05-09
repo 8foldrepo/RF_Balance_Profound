@@ -10,8 +10,8 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-balance_logger = logging.getLogger('wtf_log')
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+balance_logger = logging.getLogger("wtf_log")
+file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
@@ -25,19 +25,24 @@ def main(args):
 
     window = MainWindow()
     window.show()
-    app.processEvents()
+    app.processEvents()  # Ensure UI appears before running the rest of this script
+
+    # Populate ui fields with system and config info
+
     window.system_info_tab.load_system_info()
     window.system_config.populate_config_ui()
-    window.begin_manager_thread()
-    # window.connect_hardware_signal.emit()
+    window.access_level_combo.setCurrentText("Administrator")
 
-    # window.prompt_for_password()
-    # Todo: For testing purposes, remove later
-    # window.manager.test_code()
+    #todo: uncomment this in final product
+    #window.prompt_for_password()
+
+    window.begin_manager_thread()
 
     code = app.exec_()
 
-    root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")
+    root_logger.info(
+        f"[{QThread.currentThread().objectName()}] : app exited with code {code}"
+    )
     sys.exit(code)
 
 

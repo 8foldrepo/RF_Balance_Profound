@@ -40,7 +40,7 @@ class FrequencySweep(MyQWidget, Ui_Form):
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
-        var_dict["Task type"] = 'Frequency sweep'
+        var_dict["Task type"] = "Frequency sweep"
         var_dict["Frequency Range"] = self.freq_range_combo.currentText()
         var_dict["Start Frequency"] = str(self.start_freq_spin.value())
         var_dict["End Frequency"] = str(self.end_freq_doublespin.value())

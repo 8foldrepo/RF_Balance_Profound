@@ -26,14 +26,18 @@ class Ui_Form(object):
         self.label_31.setMaximumSize(QtCore.QSize(16777215, 20))
         self.label_31.setObjectName("label_31")
         self.gridLayout_10.addWidget(self.label_31, 1, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum
+        )
         self.gridLayout_10.addItem(spacerItem, 0, 0, 1, 1)
         self.pushButton = QtWidgets.QPushButton(self.tab_10)
         self.pushButton.setMinimumSize(QtCore.QSize(0, 40))
         self.pushButton.setMaximumSize(QtCore.QSize(150, 16777215))
         self.pushButton.setObjectName("pushButton")
         self.gridLayout_10.addWidget(self.pushButton, 3, 0, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(20, 150, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20, 150, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout_10.addItem(spacerItem1, 3, 1, 1, 1)
         self.widget_3 = QtWidgets.QWidget(self.tab_10)
         self.widget_3.setStyleSheet("background-color: rgb(220, 242, 255)")
@@ -212,21 +216,27 @@ class Ui_Form(object):
         self.pitch_combobox = QtWidgets.QComboBox(self.frame)
         self.pitch_combobox.setStyleSheet("background-color: white")
         self.pitch_combobox.setObjectName("pitch_combobox")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.pitch_combobox)
+        self.formLayout_2.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.pitch_combobox
+        )
         self.label_47 = QtWidgets.QLabel(self.frame)
         self.label_47.setObjectName("label_47")
         self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_47)
         self.gearing_combobox = QtWidgets.QComboBox(self.frame)
         self.gearing_combobox.setStyleSheet("background-color: white")
         self.gearing_combobox.setObjectName("gearing_combobox")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.gearing_combobox)
+        self.formLayout_2.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.gearing_combobox
+        )
         self.label_48 = QtWidgets.QLabel(self.frame)
         self.label_48.setObjectName("label_48")
         self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_48)
         self.type_combobox = QtWidgets.QComboBox(self.frame)
         self.type_combobox.setStyleSheet("background-color: white")
         self.type_combobox.setObjectName("type_combobox")
-        self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.type_combobox)
+        self.formLayout_2.setWidget(
+            4, QtWidgets.QFormLayout.FieldRole, self.type_combobox
+        )
         self.label_49 = QtWidgets.QLabel(self.frame)
         self.label_49.setObjectName("label_49")
         self.formLayout_2.setWidget(6, QtWidgets.QFormLayout.LabelRole, self.label_49)
@@ -235,7 +245,9 @@ class Ui_Form(object):
         self.encoded_combobox.setMaximumSize(QtCore.QSize(40, 15))
         self.encoded_combobox.setStyleSheet("background-color: white")
         self.encoded_combobox.setObjectName("encoded_combobox")
-        self.formLayout_2.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.encoded_combobox)
+        self.formLayout_2.setWidget(
+            6, QtWidgets.QFormLayout.FieldRole, self.encoded_combobox
+        )
         self.label_44 = QtWidgets.QLabel(self.widget_3)
         self.label_44.setGeometry(QtCore.QRect(10, 70, 111, 20))
         self.label_44.setObjectName("label_44")
@@ -275,9 +287,13 @@ class Ui_Form(object):
         self.insert_ua_button = QtWidgets.QPushButton(self.gridLayoutWidget_3)
         self.insert_ua_button.setObjectName("insert_ua_button")
         self.gridLayout_14.addWidget(self.insert_ua_button, 3, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout_14.addItem(spacerItem2, 0, 2, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
+        )
         self.gridLayout_14.addItem(spacerItem3, 2, 0, 1, 1)
         self.theta_neg_button = QtWidgets.QPushButton(self.gridLayoutWidget_3)
         self.theta_neg_button.setObjectName("theta_neg_button")
@@ -295,10 +311,14 @@ class Ui_Form(object):
         self.gridLayout_14.addWidget(self.theta_pos_lineedit, 1, 3, 1, 1)
         self.x_pos_lineedit = QtWidgets.QLineEdit(self.gridLayoutWidget_3)
         self.x_pos_lineedit.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.x_pos_lineedit.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.x_pos_lineedit.sizePolicy().hasHeightForWidth()
+        )
         self.x_pos_lineedit.setSizePolicy(sizePolicy)
         self.x_pos_lineedit.setMaximumSize(QtCore.QSize(60, 16777215))
         self.x_pos_lineedit.setObjectName("x_pos_lineedit")
@@ -307,10 +327,14 @@ class Ui_Form(object):
         self.theta_pos_button.setObjectName("theta_pos_button")
         self.gridLayout_14.addWidget(self.theta_pos_button, 1, 1, 1, 1)
         self.go_theta_button = QtWidgets.QPushButton(self.gridLayoutWidget_3)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.go_theta_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.go_theta_button.sizePolicy().hasHeightForWidth()
+        )
         self.go_theta_button.setSizePolicy(sizePolicy)
         self.go_theta_button.setMinimumSize(QtCore.QSize(80, 0))
         self.go_theta_button.setObjectName("go_theta_button")
@@ -348,7 +372,9 @@ class Ui_Form(object):
         self.formLayout_3 = QtWidgets.QFormLayout(self.frame_2)
         self.formLayout_3.setObjectName("formLayout_3")
         self.label_52 = QtWidgets.QLabel(self.frame_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_52.sizePolicy().hasHeightForWidth())
@@ -368,18 +394,24 @@ class Ui_Form(object):
         self.x_home_radio.setMaximumSize(QtCore.QSize(20, 20))
         self.x_home_radio.setText("")
         self.x_home_radio.setObjectName("x_home_radio")
-        self.formLayout_3.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.x_home_radio)
+        self.formLayout_3.setWidget(
+            2, QtWidgets.QFormLayout.FieldRole, self.x_home_radio
+        )
         self.all_axes_radio = QtWidgets.QRadioButton(self.frame_2)
         self.all_axes_radio.setMaximumSize(QtCore.QSize(20, 20))
         self.all_axes_radio.setText("")
         self.all_axes_radio.setChecked(True)
         self.all_axes_radio.setObjectName("all_axes_radio")
-        self.formLayout_3.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.all_axes_radio)
+        self.formLayout_3.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.all_axes_radio
+        )
         self.theta_home_radio = QtWidgets.QRadioButton(self.frame_2)
         self.theta_home_radio.setMaximumSize(QtCore.QSize(20, 20))
         self.theta_home_radio.setText("")
         self.theta_home_radio.setObjectName("theta_home_radio")
-        self.formLayout_3.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.theta_home_radio)
+        self.formLayout_3.setWidget(
+            3, QtWidgets.QFormLayout.FieldRole, self.theta_home_radio
+        )
         self.verticalLayout_5.addWidget(self.frame_2)
         self.manual_home_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.manual_home_button.setObjectName("manual_home_button")
@@ -497,7 +529,9 @@ class Ui_Form(object):
         self.encoded_combobox.setText(_translate("Form", "PushButton"))
         self.label_44.setText(_translate("Form", "Axes present"))
         self.label_45.setText(_translate("Form", "Sim if absent"))
-        self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_10), _translate("Form", "Config"))
+        self.tabWidget_3.setTabText(
+            self.tabWidget_3.indexOf(self.tab_10), _translate("Form", "Config")
+        )
         self.x_pos_button.setText(_translate("Form", "+X"))
         self.x_neg_button.setText(_translate("Form", "-X"))
         self.go_element_combo.setItemText(0, _translate("Form", "Current"))
@@ -537,9 +571,13 @@ class Ui_Form(object):
         self.movement_mode_comboBox.setItemText(1, _translate("Form", "Continuous"))
         self.movement_mode_comboBox.setItemText(2, _translate("Form", "Distance"))
         self.label_3.setText(_translate("Form", "Movement mode"))
-        self.save_settings_button.setText(_translate("Form", "Save settings as default"))
+        self.save_settings_button.setText(
+            _translate("Form", "Save settings as default")
+        )
         self.stop_button.setText(_translate("Form", "STOP"))
-        self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), _translate("Form", "Move"))
+        self.tabWidget_3.setTabText(
+            self.tabWidget_3.indexOf(self.tab_11), _translate("Form", "Move")
+        )
 
 
 from ui_elements.switch import Switch

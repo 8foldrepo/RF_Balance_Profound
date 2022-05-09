@@ -16,14 +16,18 @@ class SaveResults(MyQWidget, Ui_Form):
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.Save_Summary_File_Checkbox.setChecked(bool(var_dict["Save summary file"]))
-        self.Write_UA_Calibration_Checkbox.setChecked(bool(var_dict["Write UA Calibration"]))
+        self.Write_UA_Calibration_Checkbox.setChecked(
+            bool(var_dict["Write UA Calibration"])
+        )
         self.With_Prompt_Checkbox.setChecked(bool(var_dict["PromptForCalWrite"]))
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict([])
-        var_dict["Task type"] = 'Save results'
+        var_dict["Task type"] = "Save results"
         var_dict["Save summary file"] = str(self.Save_Summary_File_Checkbox.isChecked())
-        var_dict["Write UA Calibration"] = str(self.Write_UA_Calibration_Checkbox.isChecked())
+        var_dict["Write UA Calibration"] = str(
+            self.Write_UA_Calibration_Checkbox.isChecked()
+        )
         var_dict["PromptForCalWrite"] = str(self.With_Prompt_Checkbox.isChecked())
 
         return var_dict

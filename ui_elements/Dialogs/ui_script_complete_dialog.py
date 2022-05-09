@@ -1,4 +1,6 @@
-from PyQt5.QtCore import pyqtSignal
+from typing import List
+
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QTableWidgetItem, QApplication
 
 from Widget_Library import dialog_script_complete
@@ -24,17 +26,15 @@ class ScriptCompleteDialog(MyQDialog, dialog_script_complete.Ui_Dialog):
         self.ok_button.clicked.connect(self.ok_clicked)
 
     # Todo, test and make sure this works as expected
-    def fill_table(self, passed_ray, description_ray):
+    @pyqtSlot(list, list)
+    def fill_table(self, passed_ray: List[str], description_ray):
         for i in range(len(passed_ray)):
 
             # Create and populate table items
             passed_item = QTableWidgetItem()
             description_item = QTableWidgetItem()
 
-            if passed_ray[i]:
-                passed_item.setText("Pass")
-            else:
-                passed_item.setText("Fail")
+            passed_item.setText(passed_ray[i])
 
             description_item.setText(description_ray[i])
 
@@ -63,9 +63,11 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
-    form = ScriptCompleteDialog(config=None,
-                                passed_ray=[True, True, True, True, True, False, False, False, False, False, False],
-                                description_ray=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"])
+    form = ScriptCompleteDialog(
+        config=None,
+        passed_ray=["DNF"] * 11,
+        description_ray=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+    )
     form.show()
 
     form.continue_signal.connect(lambda: print("Done! Continue script"))

@@ -40,8 +40,12 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Home System"))
-        self.label.setText(_translate("Form",
-                                      "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; text-decoration: underline;\">Axis to Home</span></p></body></html>"))
+        self.label.setText(
+            _translate(
+                "Form",
+                '<html><head/><body><p><span style=" font-size:14pt; font-weight:600; text-decoration: underline;">Axis to Home</span></p></body></html>',
+            )
+        )
         self.radioButton.setText(_translate("Form", "All Axes"))
         self.radioButton_2.setText(_translate("Form", "X-Axis"))
         self.radioButton_3.setText(_translate("Form", "Theta Axis"))

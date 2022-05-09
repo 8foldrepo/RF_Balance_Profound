@@ -19,8 +19,8 @@ class AbstractBalance(AbstractSensor):
 
     @abstractmethod
     def fields_setup(self):
-        self.timeout_s = self.config[self.device_key]['timeout_s']
-        self.port = self.config[self.device_key]['port']
+        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        self.port = self.config[self.device_key]["port"]
 
     @abstractmethod
     def zero_balance_stable(self):

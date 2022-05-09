@@ -26,7 +26,9 @@ class Ui_Form(object):
         self.Save_Summary_File_Checkbox.setObjectName("Save_Summary_File_Checkbox")
         self.Write_UA_Calibration_Checkbox = QtWidgets.QCheckBox(self.frame)
         self.Write_UA_Calibration_Checkbox.setGeometry(QtCore.QRect(20, 40, 125, 17))
-        self.Write_UA_Calibration_Checkbox.setObjectName("Write_UA_Calibration_Checkbox")
+        self.Write_UA_Calibration_Checkbox.setObjectName(
+            "Write_UA_Calibration_Checkbox"
+        )
         self.With_Prompt_Checkbox = QtWidgets.QCheckBox(self.frame)
         self.With_Prompt_Checkbox.setGeometry(QtCore.QRect(140, 10, 80, 17))
         self.With_Prompt_Checkbox.setObjectName("With_Prompt_Checkbox")
@@ -38,7 +40,9 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Save Results"))
         self.Save_Summary_File_Checkbox.setText(_translate("Form", "Save Summary File"))
-        self.Write_UA_Calibration_Checkbox.setText(_translate("Form", "Write UA Calibration"))
+        self.Write_UA_Calibration_Checkbox.setText(
+            _translate("Form", "Write UA Calibration")
+        )
         self.With_Prompt_Checkbox.setText(_translate("Form", "With Prompt"))
 
 

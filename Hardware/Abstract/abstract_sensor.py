@@ -7,6 +7,7 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 
 class AbstractSensor(AbstractDevice):
     """AbstractSensor adds the ability to get a reading"""
+
     reading_signal = pyqtSignal(float)
 
     @abstractmethod

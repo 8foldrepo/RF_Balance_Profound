@@ -23,11 +23,13 @@ class Results(MyQWidget, Ui_Form):
     # load log file, put it into a 2d list, store it in self.test_data.script_log, and also return it
     def load_log_data(self, path=None):
         if path is None:
-            path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Open file", "", "Results files (*.txt)"
+            )
         log_2d_list = list()
-        log_file = open(path, 'r')
+        log_file = open(path, "r")
         for line in log_file:
-            line_ray = line.split('\t')
+            line_ray = line.split("\t")
             log_2d_list.append(line_ray)  # populates class' internal 2d log list
 
         self.test_data.script_log = log_2d_list
@@ -42,7 +44,9 @@ class Results(MyQWidget, Ui_Form):
 
         for line_counter in range(len(log_table)):
             line_ray = log_table[line_counter]
-            self.script_log_table.insertRow(self.script_log_table.rowCount())  # insert a row to the script table
+            self.script_log_table.insertRow(
+                self.script_log_table.rowCount()
+            )  # insert a row to the script table
             for x in range(len(line_ray)):
                 item = QTableWidgetItem()
                 item.setText(line_ray[x].strip())
@@ -102,7 +106,7 @@ class Results(MyQWidget, Ui_Form):
             path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
 
         """header of the table starts at 0th row so start populating it at row 1 and down"""
-        if path == '':
+        if path == "":
             return
         test_results_file = open(path, "r")
         test_contents = list()
@@ -177,6 +181,7 @@ class Results(MyQWidget, Ui_Form):
 # list of lists given a txt file, other 2 take a list of lists and either save/display it; for the load method, use
 # QFileDialog.get_open_file_name, will create prompt to find and select file"""
 
+
 def print_list(a):
     print("*** beginning of list ***")
     for x in range(len(a)):
@@ -194,15 +199,15 @@ def print_dict(a):
             print(key, " :")
             print_list(value)
         else:
-            print(key, ':', value)
+            print(key, ":", value)
 
 
 def print_indent_dict(a):
     for key, value in a.items():
-        print('\t', key, ':', value)
+        print("\t", key, ":", value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     from PyQt5.QtWidgets import QApplication
 

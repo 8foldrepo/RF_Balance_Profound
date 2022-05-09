@@ -1,9 +1,7 @@
 import time as t
-
 from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
-from Hardware.relay_board import RelayBoard
+from Hardware.Simulated.simulated_relay import SimulatedRelay
 from definitions import WaterLevel
 
 """Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware"""
@@ -18,7 +16,7 @@ class SimulatedIOBoard(AbstractIOBoard):
 
     def __init__(self, config, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
-        self.power_relay = RelayBoard(config=config, device_key="Daq_Power_Relay")
+        self.power_relay = SimulatedRelay(config=config, device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
         self.ua_pump_on = True
@@ -74,7 +72,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         self.get_water_level()
         self.connected = True
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def activate_relay_channel(self, channel_number: int):
         pass
@@ -87,7 +85,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         return self.connected
 
     def get_serial_number(self) -> str:
-        return '\"Simulated\"'
+        return '"Simulated"'
 
     def wrap_up(self):
         self.disconnect_hardware()

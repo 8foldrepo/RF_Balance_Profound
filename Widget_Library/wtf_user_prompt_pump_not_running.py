@@ -13,7 +13,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_wtf_user_prompt_pump_not_running(object):
     def setupUi(self, wtf_user_prompt_pump_not_running):
-        wtf_user_prompt_pump_not_running.setObjectName("wtf_user_prompt_pump_not_running")
+        wtf_user_prompt_pump_not_running.setObjectName(
+            "wtf_user_prompt_pump_not_running"
+        )
         wtf_user_prompt_pump_not_running.resize(400, 157)
         wtf_user_prompt_pump_not_running.setMinimumSize(QtCore.QSize(400, 157))
         font = QtGui.QFont()
@@ -29,10 +31,14 @@ class Ui_wtf_user_prompt_pump_not_running(object):
         self.cont_abort_horz.setSpacing(13)
         self.cont_abort_horz.setObjectName("cont_abort_horz")
         self.continue_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.continue_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.continue_button.sizePolicy().hasHeightForWidth()
+        )
         self.continue_button.setSizePolicy(sizePolicy)
         self.continue_button.setMaximumSize(QtCore.QSize(70, 30))
         font = QtGui.QFont()
@@ -42,7 +48,9 @@ class Ui_wtf_user_prompt_pump_not_running(object):
         self.continue_button.setObjectName("continue_button")
         self.cont_abort_horz.addWidget(self.continue_button)
         self.abort_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.abort_button.sizePolicy().hasHeightForWidth())
@@ -54,7 +62,9 @@ class Ui_wtf_user_prompt_pump_not_running(object):
         self.abort_button.setFont(font)
         self.abort_button.setObjectName("abort_button")
         self.cont_abort_horz.addWidget(self.abort_button)
-        self.user_prompt_output = QtWidgets.QTextBrowser(wtf_user_prompt_pump_not_running)
+        self.user_prompt_output = QtWidgets.QTextBrowser(
+            wtf_user_prompt_pump_not_running
+        )
         self.user_prompt_output.setGeometry(QtCore.QRect(10, 10, 381, 71))
         self.user_prompt_output.setFrameShape(QtWidgets.QFrame.Panel)
         self.user_prompt_output.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -118,18 +128,30 @@ class Ui_wtf_user_prompt_pump_not_running(object):
 
     def retranslateUi(self, wtf_user_prompt_pump_not_running):
         _translate = QtCore.QCoreApplication.translate
-        wtf_user_prompt_pump_not_running.setWindowTitle(_translate("wtf_user_prompt_pump_not_running", "Dialog"))
-        self.continue_button.setText(_translate("wtf_user_prompt_pump_not_running", "Continue"))
-        self.abort_button.setText(_translate("wtf_user_prompt_pump_not_running", "Abort"))
-        self.user_prompt_output.setHtml(_translate("wtf_user_prompt_pump_not_running",
-                                                   "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                                   "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                                   "p, li { white-space: pre-wrap; }\n"
-                                                   "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:600; font-style:normal;\">\n"
-                                                   "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">UA pump not running.</span></p>\n"
-                                                   "<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:400;\"><br /></p>\n"
-                                                   "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:400;\">Please enable the UA pump and click to continue.</span></p></body></html>"))
-        self.label.setText(_translate("wtf_user_prompt_pump_not_running", "UA pump status"))
+        wtf_user_prompt_pump_not_running.setWindowTitle(
+            _translate("wtf_user_prompt_pump_not_running", "Dialog")
+        )
+        self.continue_button.setText(
+            _translate("wtf_user_prompt_pump_not_running", "Continue")
+        )
+        self.abort_button.setText(
+            _translate("wtf_user_prompt_pump_not_running", "Abort")
+        )
+        self.user_prompt_output.setHtml(
+            _translate(
+                "wtf_user_prompt_pump_not_running",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:600; font-style:normal;\">\n"
+                '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:400;">UA pump not running.</span></p>\n'
+                '<p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:400;"><br /></p>\n'
+                '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:400;">Please enable the UA pump and click to continue.</span></p></body></html>',
+            )
+        )
+        self.label.setText(
+            _translate("wtf_user_prompt_pump_not_running", "UA pump status")
+        )
 
 
 from ui_elements.switch import Switch

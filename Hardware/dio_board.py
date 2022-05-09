@@ -36,15 +36,15 @@ class DIOBoard(AbstractIOBoard):
         self.active_channel = 0  # 0 means all channels are off
 
     def connect_hardware(self):
-        self.log('Connecting to DIO board... ')
+        self.log("Connecting to DIO board... ")
         self.connected = self.activate_relay_channel(-1)
         if self.connected:
-            self.log(f'{self.device_key} connected successfully')
+            self.log(f"{self.device_key} connected successfully")
         else:
-            self.log(f'{self.device_key} failed to connect')
+            self.log(f"{self.device_key} failed to connect")
 
         self.connected_signal.emit(self.connected)
-        return self.connected, ''
+        return self.connected, ""
 
     def activate_relay_channel(self, channel_number: int) -> bool:
         with nidaqmx.Task() as task:
@@ -107,7 +107,10 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=False)
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -133,7 +136,10 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=False)
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -150,7 +156,10 @@ class DIOBoard(AbstractIOBoard):
             self.filling_signal.emit()
             start_time = t.time()
 
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+            while (
+                t.time() - start_time
+                < self.config[self.device_key]["Water level timeout (s)"]
+            ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -229,4 +238,4 @@ class DIOBoard(AbstractIOBoard):
         self.disconnect_hardware()
 
     def fields_setup(self):
-        self.name = self.config[self.device_key]['DAQ Device name']
+        self.name = self.config[self.device_key]["DAQ Device name"]

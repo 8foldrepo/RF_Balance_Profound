@@ -30,7 +30,9 @@ class Ui_wtf_user_prompt(object):
         self.buttons_horz.setSpacing(13)
         self.buttons_horz.setObjectName("buttons_horz")
         self.abort_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.abort_button.sizePolicy().hasHeightForWidth())
@@ -40,7 +42,9 @@ class Ui_wtf_user_prompt(object):
         self.abort_button.setObjectName("abort_button")
         self.buttons_horz.addWidget(self.abort_button)
         self.retry_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.retry_button.sizePolicy().hasHeightForWidth())
@@ -49,10 +53,14 @@ class Ui_wtf_user_prompt(object):
         self.retry_button.setObjectName("retry_button")
         self.buttons_horz.addWidget(self.retry_button)
         self.continue_button = QtWidgets.QPushButton(self.layoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.continue_button.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(
+            self.continue_button.sizePolicy().hasHeightForWidth()
+        )
         self.continue_button.setSizePolicy(sizePolicy)
         self.continue_button.setMinimumSize(QtCore.QSize(70, 30))
         self.continue_button.setMaximumSize(QtCore.QSize(70, 30))

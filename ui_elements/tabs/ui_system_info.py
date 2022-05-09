@@ -15,7 +15,7 @@ class SystemInfo(MyQWidget, Ui_Form):
         self.setupUi(self)
 
     def load_system_info(self):
-        output = ''
+        output = ""
         self.parser = ConfigParser()
         self.parser.read(SYSTEM_INFO_INI_PATH)
 

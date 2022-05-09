@@ -4,7 +4,7 @@ import yaml
 
 from Utilities import useful_methods
 
-ROOT_LOGGER_NAME = 'wtf_log'
+ROOT_LOGGER_NAME = "wtf_log"
 
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 from definitions import DEFAULT_CONFIG_PATH
@@ -16,13 +16,13 @@ def load_configuration() -> dict:
     Load the configuration .yaml file into a dictionary
     """
 
-    with open(DEFAULT_CONFIG_PATH, 'r') as fh:
+    with open(DEFAULT_CONFIG_PATH, "r") as fh:
         configuration = yaml.load(fh, Loader=yaml.SafeLoader)
 
     if os.path.isfile(LOCAL_CONFIG_PATH) is False:  # -> file does not exist
         print(f"[-] File: {LOCAL_CONFIG_PATH} does not exist")
     else:
-        with open(LOCAL_CONFIG_PATH, 'r') as fh:
+        with open(LOCAL_CONFIG_PATH, "r") as fh:
             local_config = yaml.load(fh, Loader=yaml.SafeLoader)
             try:
                 useful_methods.update(configuration, local_config)

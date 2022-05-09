@@ -1,4 +1,5 @@
 from datetime import datetime
+from os.path import exists
 
 from PyQt5.QtCore import pyqtSignal
 
@@ -46,17 +47,21 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
 
     def lookup_clicked(self):
         serial_no = self.ua_serial_no_inputline.text().upper()
-        self.lf_MHz_field.setText('')
-        self.hf_MHz_field.setText('')
-        self.hardware_code_field.setText('')
-
-        with open(str(ROOT_DIR) + "\\Program_Data\\UA serial number and frequency data.txt") as f:
+        self.lf_MHz_field.setText("")
+        self.hf_MHz_field.setText("")
+        self.hardware_code_field.setText("")
+        path = str(ROOT_DIR) + "\\Program_Data\\UA serial number and frequency data.txt"
+        if not exists(path):
+            self.log(level='error', message=f'file at path: "{path}" does not exist')
+            self.close()
+            return
+        with open(path) as f:
             line = f.readline()
             while line:
                 line = f.readline()
                 if len(serial_no) == 6 and serial_no in line:
-                    chunks = line.replace(' ', '').split('|')
-                    freqs = chunks[2].split(',')
+                    chunks = line.replace(" ", "").split("|")
+                    freqs = chunks[2].split(",")
                     hardware_code = chunks[3]
 
                     self.lf_MHz_field.setText(freqs[0])
@@ -64,11 +69,11 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
                     self.hardware_code_field.setText(hardware_code)
                     break
 
-        if self.lf_MHz_field.text() == '':
+        if self.lf_MHz_field.text() == "":
             self.lf_MHz_field.setText("Not found")
-        if self.hf_MHz_field.text() == '':
+        if self.hf_MHz_field.text() == "":
             self.hf_MHz_field.setText("Not found")
-        if self.hardware_code_field.text() == '':
+        if self.hardware_code_field.text() == "":
             self.hardware_code_field.setText("Not found")
 
     def ok_clicked(self):

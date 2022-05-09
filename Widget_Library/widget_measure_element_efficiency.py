@@ -298,23 +298,47 @@ class Ui_Form_2(object):
     def retranslateUi(self, Form_2):
         _translate = QtCore.QCoreApplication.translate
         Form_2.setWindowTitle(_translate("Form_2", "Measure Element Efficiency (RFB)"))
-        self.label_4.setText(_translate("Form_2",
-                                        "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">RFB Parameters</span></p></body></html>"))
-        self.label_10.setText(_translate("Form_2", "<html><head/><body><p>RFB on/off Cycles:</p></body></html>"))
-        self.RFB_CYCLES_FIELD.setToolTip(_translate("Form_2",
-                                                    "<html><head/><body><p><span style=\" font-size:12pt;\">A non-negative integer that sets the amount of On/Off cycles the RFB will perform.</span></p><p><span style=\" font-size:12pt;\">Maximum: 1000000 Cycles</span></p></body></html>"))
-        self.RFB_ON_FIELD.setToolTip(_translate("Form_2",
-                                                "<html><head/><body><p><span style=\" font-size:12pt;\">A non-negative decimal that sets the amount of ON time the RFB will fire in seconds.</span></p><p><span style=\" font-size:12pt;\">Maximum: 1000000 Seconds</span></p></body></html>"))
+        self.label_4.setText(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">RFB Parameters</span></p></body></html>',
+            )
+        )
+        self.label_10.setText(
+            _translate(
+                "Form_2", "<html><head/><body><p>RFB on/off Cycles:</p></body></html>"
+            )
+        )
+        self.RFB_CYCLES_FIELD.setToolTip(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:12pt;">A non-negative integer that sets the amount of On/Off cycles the RFB will perform.</span></p><p><span style=" font-size:12pt;">Maximum: 1000000 Cycles</span></p></body></html>',
+            )
+        )
+        self.RFB_ON_FIELD.setToolTip(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:12pt;">A non-negative decimal that sets the amount of ON time the RFB will fire in seconds.</span></p><p><span style=" font-size:12pt;">Maximum: 1000000 Seconds</span></p></body></html>',
+            )
+        )
         self.label_11.setText(_translate("Form_2", "RFB ON time (s):"))
         self.label_12.setText(_translate("Form_2", "RFB OFF time(s):"))
         self.label_13.setText(_translate("Form_2", "RFB Threshold:"))
         self.label_14.setText(_translate("Form_2", "RFB Offset:"))
         self.label_15.setText(_translate("Form_2", "RFB Target Angle:"))
-        self.RFB_TARGET_POSITION_FIELD.setItemText(0, _translate("Form_2", "Average UA RFB Position"))
-        self.RFB_TARGET_POSITION_FIELD.setItemText(1, _translate("Form_2", "RFB Position for Each Item"))
+        self.RFB_TARGET_POSITION_FIELD.setItemText(
+            0, _translate("Form_2", "Average UA RFB Position")
+        )
+        self.RFB_TARGET_POSITION_FIELD.setItemText(
+            1, _translate("Form_2", "RFB Position for Each Item")
+        )
         self.label_3.setText(_translate("Form_2", "RFB Target Position"))
-        self.ELEMENT_SELECTION_FIELD.setToolTip(_translate("Form_2",
-                                                           "<html><head/><body><p><span style=\" font-size:12pt;\">Select the element you would like to measure the efficiency of.</span></p></body></html>"))
+        self.ELEMENT_SELECTION_FIELD.setToolTip(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:12pt;">Select the element you would like to measure the efficiency of.</span></p></body></html>',
+            )
+        )
         self.ELEMENT_SELECTION_FIELD.setItemText(0, _translate("Form_2", "Current"))
         self.ELEMENT_SELECTION_FIELD.setItemText(1, _translate("Form_2", "Element 1"))
         self.ELEMENT_SELECTION_FIELD.setItemText(2, _translate("Form_2", "Element 2"))
@@ -327,23 +351,49 @@ class Ui_Form_2(object):
         self.ELEMENT_SELECTION_FIELD.setItemText(9, _translate("Form_2", "Element 9"))
         self.ELEMENT_SELECTION_FIELD.setItemText(10, _translate("Form_2", "Element 10"))
         self.label_2.setText(_translate("Form_2", "Element Selected:"))
-        self.label_9.setText(_translate("Form_2",
-                                        "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Frequency Parameters</span></p></body></html>"))
+        self.label_9.setText(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Frequency Parameters</span></p></body></html>',
+            )
+        )
         self.label_38.setText(_translate("Form_2", "Frequency (MHz):"))
         self.label_39.setText(_translate("Form_2", "Amplitude (mVpp):"))
         self.label_34.setText(_translate("Form_2", "Frequency Range Selected"))
-        self.FREQUENCY_SELECTION_FIELD.setItemText(0, _translate("Form_2", "Low Frequency"))
-        self.FREQUENCY_SELECTION_FIELD.setItemText(1, _translate("Form_2", "High Frequency"))
+        self.FREQUENCY_SELECTION_FIELD.setItemText(
+            0, _translate("Form_2", "Low Frequency")
+        )
+        self.FREQUENCY_SELECTION_FIELD.setItemText(
+            1, _translate("Form_2", "High Frequency")
+        )
         self.label_35.setText(_translate("Form_2", "Set Frequency Options"))
-        self.OPTIONS_SELECTION_FIELD.setToolTip(_translate("Form_2",
-                                                           "<html><head/><body><p><span style=\" font-size:10pt; text-decoration: underline;\">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>"))
-        self.OPTIONS_SELECTION_FIELD.setItemText(0, _translate("Form_2", "From config cluster"))
-        self.OPTIONS_SELECTION_FIELD.setItemText(1, _translate("Form_2", "Element pk low frequency"))
-        self.OPTIONS_SELECTION_FIELD.setItemText(2, _translate("Form_2", "Element pk high frequency"))
-        self.OPTIONS_SELECTION_FIELD.setItemText(3, _translate("Form_2", "Common low frequency"))
-        self.OPTIONS_SELECTION_FIELD.setItemText(4, _translate("Form_2", "Common high frequency"))
-        self.label_41.setText(_translate("Form_2",
-                                         "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600; text-decoration: underline;\">Power Parameters</span></p></body></html>"))
+        self.OPTIONS_SELECTION_FIELD.setToolTip(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:10pt; text-decoration: underline;">Selections Available:</span></p><p>- From config cluster </p><p>- Element pk low frequency</p><p>- Element pk high frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>',
+            )
+        )
+        self.OPTIONS_SELECTION_FIELD.setItemText(
+            0, _translate("Form_2", "From config cluster")
+        )
+        self.OPTIONS_SELECTION_FIELD.setItemText(
+            1, _translate("Form_2", "Element pk low frequency")
+        )
+        self.OPTIONS_SELECTION_FIELD.setItemText(
+            2, _translate("Form_2", "Element pk high frequency")
+        )
+        self.OPTIONS_SELECTION_FIELD.setItemText(
+            3, _translate("Form_2", "Common low frequency")
+        )
+        self.OPTIONS_SELECTION_FIELD.setItemText(
+            4, _translate("Form_2", "Common high frequency")
+        )
+        self.label_41.setText(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600; text-decoration: underline;">Power Parameters</span></p></body></html>',
+            )
+        )
         self.label_42.setText(_translate("Form_2", "Pa max (target, W):"))
         self.label_43.setText(_translate("Form_2", "Pf max (limit, W):"))
         self.label_44.setText(_translate("Form_2", "Reflection Limit (%):"))
@@ -353,8 +403,12 @@ class Ui_Form_2(object):
         self.label_49.setText(_translate("Form_2", "Storage Location:"))
         self.DATA_DIRECTORY_BUTTON.setText(_translate("Form_2", "Browse"))
         self.label_50.setText(_translate("Form_2", "Data Directory:"))
-        self.label.setText(_translate("Form_2",
-                                      "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600; text-decoration: underline;\">Measure Element Efficiency (RFB)</span></p></body></html>"))
+        self.label.setText(
+            _translate(
+                "Form_2",
+                '<html><head/><body><p><span style=" font-size:14pt; font-weight:600; text-decoration: underline;">Measure Element Efficiency (RFB)</span></p></body></html>',
+            )
+        )
 
 
 if __name__ == "__main__":
