@@ -23,6 +23,7 @@ from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
 from ui_elements.Dialogs.ui_retracting_ua_warning import UARetractDialog
 from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
 from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
+from ui_elements.Dialogs.ui_user_info_dialog import WTFUserInfo
 from ui_elements.Dialogs.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.Dialogs.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
 from ui_elements.Dialogs.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
@@ -263,6 +264,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 return i
         return -1
 
+    # signal connections
     def configure_non_manager_signals(self):
         self.script_editor.script_changed_signal.connect(self.upon_script_changed)
         self.load_button.clicked.connect(self.load_script_clicked)
@@ -338,6 +340,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
+        self.manager.user_info_signal.connect(self.show_user_info_dialog)
         self.manager.user_prompt_pump_not_running_signal.connect(
             self.show_user_prompt_pump_not_running
         )
@@ -651,6 +654,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.user_prompt_output.setText(message)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.retry_signal.connect(self.manager.retry)
+        dlg.continue_signal.connect(self.manager.cont)
+        dlg.exec()
+
+    @pyqtSlot(str)
+    def show_user_info_dialog(self, message):
+        dlg = WTFUserInfo(config=self.config)
+        dlg.user_prompt_output.setText(message)
         dlg.continue_signal.connect(self.manager.cont)
         dlg.exec()
 

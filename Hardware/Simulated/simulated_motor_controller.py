@@ -111,6 +111,9 @@ class SimulatedMotorController(AbstractMotorController):
 
     @pyqtSlot(list, list)
     def go_to_position(self, axes: list, coords_mm: list) -> bool:
+        if self.config["Debugging"]["simulate_errors"]:
+            return False
+
         for i in range(len(axes)):
             self.coords_mm[self.ax_letters.index(axes[i])] = coords_mm[i]
 

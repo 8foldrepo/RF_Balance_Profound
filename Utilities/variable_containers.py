@@ -111,8 +111,10 @@ class RFBData:
                                             self.f_meter_readings_w, self.r_meter_readings_w, self.balance_readings_g])
 
     #Todo:
+    # Either "Pass", "FAIL", or "DNF", should not be case sensitive, so use .upper()
     def get_pass_result(self) -> str:
-        return "Pass"
+        """Either "Pass", "FAIL", or "DNF", should not be case sensitive, so use .upper()"""
+        return "Fail"
 
     def get_result_log_entry(self):
         return ['', "Pass/Fail test",
@@ -122,6 +124,19 @@ class RFBData:
                                    f"Pf Max (W)={self.forward_power_max};WaterTemp (C)={self.water_temperature_c};"
                                    f"Test result={self.get_pass_result()};Pf Max limit (W)={self.Pf_max}",
                                    '']
+
+    def data_is_valid(self):
+        """Returns True if there were no hardware errors during the test"""
+
+        if float('nan') in self.balance_readings_g:
+            return False
+        if float('nan') in self.f_meter_readings_w:
+            return False
+        if float('nan') in self.r_meter_readings_w:
+            return False
+
+        return True
+
 
 
 class TestData(QObject):

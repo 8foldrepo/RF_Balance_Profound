@@ -63,6 +63,7 @@ class Manager(QThread):
     sensor_refresh_interval_s: float
     last_sensor_update_time: float
 
+    # Signal section
     # Dialog signals
     user_prompt_signal = pyqtSignal(str)  # str is message for user to read
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
@@ -71,6 +72,7 @@ class Manager(QThread):
     write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = pyqtSignal()
     script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
+    user_info_signal = pyqtSignal(str)
 
     system_info_signal = pyqtSignal(SystemInfo)
 
@@ -104,11 +106,14 @@ class Manager(QThread):
 
     Motors = None
 
+    # Global variables section
+
     def __init__(self, system_info, config: dict, parent=None):
         super().__init__(parent=parent)
         # Default to operator access
         self.access_level = "Operator"
         self.rfb_logger = None
+        self.warn = str(logging.WARNING)
         QThread.currentThread().setObjectName("manager_thread")
         # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
         self.sensor_refresh_interval_s = 0.2
@@ -167,6 +172,7 @@ class Manager(QThread):
         self.continue_var = True
         self.retry_var = False
         self.abort_var = False
+        self.retry_count = 0
 
         # Keeps track of script step in progress
         # step_index = -2 at the beginning and -1 if no script is being run.
@@ -243,7 +249,7 @@ class Manager(QThread):
             self.IO_Board = SimulatedIOBoard(config=self.config)
         else:
             from Hardware.dio_board import DIOBoard
-            self.IO_Board = DIOBoard(config=self.config,simulate_sensors=self.config["Debugging"]["simulate_sensors"])
+            self.IO_Board = DIOBoard(config=self.config, simulate_sensors=self.config["Debugging"]["simulate_sensors"])
 
         if self.config["Debugging"]["simulate_thermocouple"]:
             from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
@@ -578,7 +584,7 @@ class Manager(QThread):
                     # notating which loop it's from
                     self.test_data.log_script(
                         [f"Iteration {self.taskExecOrder[self.step_index][1]} of "
-                        f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}","","","",]
+                         f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}", "", "", "", ]
                     )
                     inside_iteration = True
                     iteration_number = self.taskExecOrder[self.step_index][1]
@@ -623,7 +629,7 @@ class Manager(QThread):
             self.configure_oscilloscope_channels(args)
         elif "Oscilloscope Timebase".upper() in name.upper():
             self.configure_oscilloscope_timebase(args)
-        elif"Function Generator".upper() in name.upper():
+        elif "Function Generator".upper() in name.upper():
             self.configure_function_generator(args)
         elif "Autoset Timebase".upper() in name.upper():
             self.autoset_timebase(args)
@@ -645,6 +651,11 @@ class Manager(QThread):
     @pyqtSlot()
     def abort(self, log=True):
         """Aborts script when current step is done running"""
+
+        curframe = inspect.currentframe()
+        calframe = inspect.getouterframes(curframe, 2)
+        print('abort() caller name:', calframe[1][3])  # ! debug line
+
         if log:
             self.log("Aborting script")
         # Reset script control variables
@@ -669,7 +680,8 @@ class Manager(QThread):
             self.test_data.log_script(["", "Prompt PowerAmp", "FAIL", "Closed by user"])
             return False
         except RetryException:
-            self.step_index = self.step_index - 2
+            self.log("Retrying step")
+            self.step_index = self.step_index - 1
 
             return False
 
@@ -704,6 +716,7 @@ class Manager(QThread):
 
     @pyqtSlot()
     def retry(self):
+        print("retry method has been called")  # debug line
         self.retry_var = True
 
     def write_cal_data_to_ua_button(self):
@@ -747,8 +760,11 @@ class Manager(QThread):
             self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
         else:
             self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])
-            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
-                return self.abort()
+
+            self.sequence_pass_fail("Get UA Serial in pretest initialisation failed", "interrupt_action")
+
+            retry_var = False
+            print("retry_var set to False in pretest_initialization for get ua serial")  # debug line
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
@@ -768,22 +784,154 @@ class Manager(QThread):
                                                        f"Theta={self.Motors.coords_mm[1]}", ''])
         except Exception as e:
             self.test_data.log_script(["", "Home all", f"FAIL: {e}", ""])
-            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
-                return self.abort()
+            if self.access_level != "Operator":
+                k1 = 'Sequence pass/fail'
+                k2 = 'Interrupt action'
+                if k1 in self.config and k2 in self.config[k1]:
+                    if self.config[k1][k2].upper() == 'RETRY AUTOMATICALLY':
+                        self.retry_var = True
+                        print("retry_var is now true from pretest_initialization")  # debug line
+
+                        try:
+                            max_retries = self.config[k1]['Retries']
+                        except KeyError:
+                            self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+                            max_retries = 5
+
+                        self.step_index = self.step_index - 1
+
+                        if self.retry_count < max_retries:
+                            self.retry_count = self.retry_count + 1
+                            return
+                        else:
+                            self.log("retry limit reached in pretest_initialization for home all, aborting script", str(logging.WARNING))
+                            self.abort()
+
+                    elif self.config[k1][k2].upper() == 'NO DIALOG (ABORT)':
+                        return self.abort()
+                    else:
+                        self.log("invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt user", str(logging.WARNING))
+                        self.user_prompt_signal.emit(F"Home all has failed in pretest initialisation\n\n"
+                                                     F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                     F" this test.\nContinue to move to the next test in the"
+                                                     F"sequence.")
+                        cont = self.cont_if_cont_clicked()
+                        if not cont:
+                            return
+                else:
+                    self.log("Key missing in config file, defaulting to prompt user on fail", str(logging.WARNING))
+                    self.user_prompt_signal.emit(F"Home all has failed in pretest initialisation\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                    cont = self.cont_if_cont_clicked()
+                    if not cont:
+                        return
+
+            retry_var = False
+            print("retry_var set to False in pretest_initialization for home all")  # debug line
 
         try:
             self.test_data.log_script(['', 'Insert UA', f"UA Inserted to X={self.Motors.coords_mm[0]}"])
         except Exception as e:
             self.test_data.log_script(["", "Insert UA", f"FAIL {e}"])
-            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
-                return self.abort()
+            if self.access_level != "Operator":
+                k1 = 'Sequence pass/fail'
+                k2 = 'Interrupt action'
+                if k1 in self.config and k2 in self.config[k1]:
+                    if self.config[k1][k2].upper() == 'RETRY AUTOMATICALLY':
+                        self.retry_var = True
+                        print("retry_var is now true from pretest_initialization for UA insertion")  # debug line
+
+                        try:
+                            max_retries = self.config[k1]['Retries']
+                        except KeyError:
+                            self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+                            max_retries = 5
+
+                        self.step_index = self.step_index - 1
+
+                        if self.retry_count < max_retries:
+                            self.retry_count = self.retry_count + 1
+                            return
+                        else:
+                            self.log("retry limit reached in pretest_initialization for insert UA, aborting script", str(logging.WARNING))
+                            self.abort()
+
+                    elif self.config[k1][k2].upper() == 'NO DIALOG (ABORT)':
+                        return self.abort()
+                    else:
+                        self.log("invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt user", str(logging.WARNING))
+                        self.user_prompt_signal.emit(F"Insert UA in pretest initialisation has failed\n\n"
+                                                     F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                     F" this test.\nContinue to move to the next test in the"
+                                                     F"sequence.")
+                        cont = self.cont_if_cont_clicked()
+                        if not cont:
+                            return
+                else:
+                    self.log("Key missing in config file, defaulting to prompt user on fail", str(logging.WARNING))
+                    self.user_prompt_signal.emit(F"Insert UA in pretest initialisation has failed\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                    cont = self.cont_if_cont_clicked()
+                    if not cont:
+                        return
+
+            retry_var = False
+            print("retry_var set to False in pretest_initialization for insert UA")  # debug line
 
         if self.thermocouple.connected:
             self.test_data.log_script(["", "CheckThermocouple", "OK", ""])
         else:
             self.test_data.log_script(["", "CheckThermocouple", "FAIL", ""])
-            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
-                return self.abort()
+            if self.config['Sequence pass/fail']['Interrupt action'] and not self.access_level == "Operator":
+                k1 = 'Sequence pass/fail'
+                k2 = 'Interrupt action'
+                if k1 in self.config and k2 in self.config[k1]:
+                    if self.config[k1][k2].upper() == 'RETRY AUTOMATICALLY':
+                        self.retry_var = True
+                        print("retry_var is now true from pretest_initialization for thermocouple")  # debug line
+
+                        try:
+                            max_retries = self.config[k1]['Retries']
+                        except KeyError:
+                            self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+                            max_retries = 5
+
+                        self.step_index = self.step_index - 1
+
+                        if self.retry_count < max_retries:
+                            self.retry_count = self.retry_count + 1
+                            return
+                        else:
+                            self.log("retry limit reached in measure element efficiency, aborting script", str(logging.WARNING))
+                            self.abort()
+
+                    elif self.config[k1][k2].upper() == 'NO DIALOG (ABORT)':
+                        return self.abort()
+                    else:
+                        self.log("invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt user", str(logging.WARNING))
+                        self.user_prompt_signal.emit(F"Element_{self.element:02} Failed efficiency test\n\n"
+                                                     F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                     F" this test.\nContinue to move to the next test in the"
+                                                     F"sequence.")
+                        cont = self.cont_if_cont_clicked()
+                        if not cont:
+                            return
+                else:
+                    self.log("Key missing in config file, defaulting to prompt user on fail", str(logging.WARNING))
+                    self.user_prompt_signal.emit(F"Element_{self.element:02} Failed efficiency test\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                    cont = self.cont_if_cont_clicked()
+                    if not cont:
+                        return
+
+            retry_var = False
+            print("retry_var set to False in pretest_initialization for thermocouple")  # debug line
             # have the script aborted or wait for thermocouple?
 
         burst_mode, unused = self.AWG.GetBurst()
@@ -1083,7 +1231,9 @@ class Manager(QThread):
             acoustic_power=[a_time_s, a_power_w],
         )
 
-    def save_results(self, var_dict):  # calibration_data is the data gathered by the UA test
+    def save_results(self, var_dict):
+        """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
+
         """Save scan results to a file"""
         save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
@@ -1187,8 +1337,6 @@ class Manager(QThread):
             self.test_data.log_script(["", f"Home Theta", f"Home Theta", ""])
         else:
             self.test_data.log_script(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])
-
-
 
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
@@ -1362,11 +1510,11 @@ class Manager(QThread):
         reflection_limit = var_dict["Reflection limit (%)"]
 
         self.rfb_data = RFBData(element=self.element,
-                           water_temperature_c=self.thermocouple.get_reading(),
-                           frequency_range=frequency_range,
-                           Pf_max=Pf_max,
-                           Pa_max=Pa_max,
-                           ref_limit=reflection_limit)
+                                water_temperature_c=self.thermocouple.get_reading(),
+                                frequency_range=frequency_range,
+                                Pf_max=Pf_max,
+                                Pa_max=Pa_max,
+                                ref_limit=reflection_limit)
 
         self.element_number_signal.emit(str(self.element))
         # If on the first element, set the tab to the rfb tab
@@ -1437,11 +1585,114 @@ class Manager(QThread):
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
         self.__wrap_up_rfb_logger()
 
+
+
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
+        if not self.rfb_data.data_is_valid():
+            # todo: trigger interrupt action
+
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()
+
+        # prompt user if test failed
+        if self.rfb_data.get_pass_result().upper() == 'FAIL':
+            self.retry_if_retry_enabled()  # todo: put retry logic in this method
+
+            k1 = 'Sequence pass/fail'
+            k2 = 'Pass fail action'
+            if k1 in self.config and k2 in self.config[k1]:
+                if self.config[k1][k2].upper() == 'RETRY AUTOMATICALLY':
+
+                    self.retry_var = True
+                    print("retry_var is now true")  # debug line
+
+                    try:
+                        max_retries = self.config[k1]['Retries']
+                    except KeyError:
+                        self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+                        max_retries = 5
+
+                    self.step_index = self.step_index - 1
+
+                    if self.retry_count < max_retries:
+                        self.retry_count = self.retry_count + 1
+                        return
+                    else:
+                        self.log("retry limit reached in measure element efficiency, aborting script", str(logging.WARNING))
+                        self.abort()
+
+                elif self.config[k1][k2].upper() == 'PROMPT FOR RETRY':
+
+                elif self.config[k1][k2].upper() == 'NO DIALOG (ABORT)':
+                    return self.abort()
+                else:
+                    self.log("invalid setting for Sequence pass/fail : Pass fail action in config file; defaulting to prompt user", str(logging.WARNING))
+                    self.user_prompt_signal.emit(F"Element_{self.element:02} Failed efficiency test\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                    cont = self.cont_if_cont_clicked()
+                    if not cont:
+                        return
+            else:
+                self.log("Key missing in config file, defaulting to prompt user on fail", str(logging.WARNING))
+                self.user_prompt_signal.emit("Element_{self.element:02} Failed efficiency test\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
+        elif self.rfb_data.get_pass_result().upper() == 'DNF':
+            k1 = 'Sequence pass/fail'
+            k2 = 'Interrupt action'
+            if k1 in self.config and k2 in self.config[k1]:
+                if self.config[k1][k2].upper() == 'RETRY AUTOMATICALLY':
+                    self.retry_var = True
+                    print("retry_var is now true")  # debug line
+
+                    try:
+                        max_retries = self.config[k1]['Retries']
+                    except KeyError:
+                        self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+                        max_retries = 5
+
+                    self.step_index = self.step_index - 1
+
+                    if self.retry_count < max_retries:
+                        self.retry_count = self.retry_count + 1
+                        return
+                    else:
+                        self.log("retry limit reached in measure element efficiency, aborting script", str(logging.WARNING))
+                        self.abort()
+
+                elif self.config[k1][k2].upper() == 'NO DIALOG (ABORT)':
+                    return self.abort()
+                else:
+                    self.log("invalid setting for Sequence pass/fail : Pass fail action in config file; defaulting to prompt user", str(logging.WARNING))
+                    self.user_prompt_signal.emit(F"Element_{self.element:02} Failed efficiency test\n\n"
+                                                 F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                                 F" this test.\nContinue to move to the next test in the"
+                                                 F"sequence.")
+                    cont = self.cont_if_cont_clicked()
+                    if not cont:
+                        return
+            else:
+                self.log("Key missing in config file, defaulting to prompt user on fail", str(logging.WARNING))
+                self.user_prompt_signal.emit("Element x failed")
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
+        elif self.rfb_data.get_pass_result().upper() != 'PASS':
+            self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", str(logging.WARNING))
+            self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
+            self.wait_for_cont()
+            return self.abort()
+
+        retry_var = False
+        print("retry_var set to False")  # debug line
 
         self.test_data.update_results_summary_with_efficiency_results(
             high_frequency=frequency_range == "High frequency",
@@ -1478,7 +1729,7 @@ class Manager(QThread):
         focussing = ["Off", 1.000000]
         # absorb_trans_focus_times/transition_amp_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
 
-        #todo:
+        # todo:
         absorb_trans_focus_times = [[9.784287, 30.010603, 50.511028], [11.048080, 31.280091, 51.729069],
                                     [20.055610, 40.457604, 60.772845], [21.230248, 41.546669, 62.039609]]
         transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534],
@@ -1513,7 +1764,7 @@ class Manager(QThread):
 
         self.test_data.log_script(["", "End", "", ""])
 
-    def __begin_rfb_logger_thread(self, rfb_data:RFBData):
+    def __begin_rfb_logger_thread(self, rfb_data: RFBData):
         self.rfb_logger = RFBDataLogger(rfb_data, self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter)
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
@@ -1541,6 +1792,58 @@ class Manager(QThread):
     def exec_command(self, command):
         self.cmd = command
         self.condition.wakeAll()
+
+    def sequence_pass_fail(self, action_type : str, error_detail : str):
+        """action_type should be either "Interrupt action" or "Pass fail action",
+        error_detail should describe what went wrong"""
+        k1 = 'Sequence pass/fail'
+        if k1 in self.config and action_type in self.config[k1]:
+            if self.config[k1][action_type].upper() == 'RETRY AUTOMATICALLY':
+                self.retry_if_retry_enabled(action_type, error_detail)
+            elif self.config[k1][action_type].upper() == 'NO DIALOG (ABORT)':
+                return self.abort()
+            elif self.config[k1][action_type].upper() == 'PROMPT FOR RETRY':
+                self.prompt_for_retry(error_detail)
+            else:
+                self.log("invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt user", str(logging.WARNING))
+                self.prompt_for_retry(error_detail)
+
+        # todo: make sure that ignoring errors and continuing is reserved for engineers and admin_pass_field
+        # if self.access_level != "Operator":
+
+    def prompt_for_retry(self, error_detail : str):
+        self.user_prompt_signal.emit(F"{error_detail}\n\n"
+                                     F"Abort to end the UA testing sequence.\nRetry to re-run"
+                                     F" this test.\nContinue to move to the next test in the"
+                                     F"sequence.")
+        cont = self.cont_if_cont_clicked()
+        if not cont:
+            return
+
+    def retry_if_retry_enabled(self, action_type : str, error_detail : str):
+        self.log("invalid type passed for action_type in retry_if_retry_enabled, aborting", str(self.warn))
+        if action_type != 'Interrupt action' or action_type != 'Pass fail action':
+            self.abort()
+
+        k1 = 'Sequence pass/fail'
+
+
+        self.retry_var = True
+
+        try:
+            max_retries = self.config[k1]['Retries']
+        except KeyError:
+            self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", str(logging.WARNING))
+            max_retries = 5
+
+        self.step_index = self.step_index - 1
+
+        if self.retry_count < max_retries:
+            self.retry_count = self.retry_count + 1
+            return
+        else:
+            self.log(f"retry limit reached for {error_detail}, aborting script", str(logging.WARNING))
+            self.abort()
 
 
 class AbortException(Exception):

@@ -23,6 +23,9 @@ class SimulatedThermocouple(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
+        if self.config["Debugging"]["simulate_errors"]:
+            return None
+
         noise = 0.1 * random.random()
         signal = 23.2 + noise
         reading = round(signal, 1)
