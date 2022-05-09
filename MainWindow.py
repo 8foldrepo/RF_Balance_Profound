@@ -8,14 +8,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (
-    QTreeWidgetItem,
-    QFileDialog,
-    QAction,
-    QMessageBox,
-    QApplication,
-    QMainWindow,
-)
+from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
@@ -30,9 +23,7 @@ from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
 from ui_elements.Dialogs.ui_retracting_ua_warning import UARetractDialog
 from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
 from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
-from ui_elements.Dialogs.ui_user_prompt_pump_not_running import (
-    WTFUserPromptPumpNotRunning,
-)
+from ui_elements.Dialogs.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.Dialogs.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
 from ui_elements.Dialogs.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
 from ui_elements.Dialogs.ui_write_cal_to_ua import WriteCalDataToUA
@@ -74,12 +65,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     command_signal = QtCore.pyqtSignal(str)
     abort_instantly_signal = QtCore.pyqtSignal()
     load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
-    num_tasks = (
-        0  # the number of tasks in the current script. Used to calculate progress
-    )
-    progress_bar_ready = (
-        True  # variables to prevent signals from refreshing UI elements too quickly
-    )
+    num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
+    progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
     script_changed = False  # prevents user from running a script if it has been modified and not reloaded
 
     # List of dictionaries representing each task and its arguments (repeats excluded)

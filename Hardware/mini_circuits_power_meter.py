@@ -38,14 +38,8 @@ class PowerMeter(AbstractSensor):
             ctypes.c_,  # Parameters 1 ...
             ctypes.c_void_p,
             ctypes.c_void_p,
-            ctypes.c_void_p,
-        )  # ... thru 4.
-        hllApiParams = (
-            (1, "p1", 0),
-            (1, "p2", 0),
-            (1, "p3", 0),
-            (1, "p4", 0),
-        )
+            ctypes.c_void_p)  # ... thru 4.
+        hllApiParams = (1, "p1", 0), (1, "p2", 0), (1, "p3", 0), (1, "p4", 0),
 
     def connect_hardware(self):
         self.pwr.Open_Sensor(self.serial_number)
@@ -57,11 +51,8 @@ class PowerMeter(AbstractSensor):
         else:
             self.serial_number = SerialNo
             self.connected = True
-            self.log(
-                level="info",
-                message=f"{self.device_key} (model {ModelName}, serial "
-                f"{SerialNo} connected successfully",
-            )
+            self.log(level="info", message=f"{self.device_key} (model {ModelName}, serial "
+                                           f"{SerialNo} connected successfully")
             self.pwr.Freq = 1000  # Set measurement frequency
             self.pwr.AvgCount = 1  # Set averaging count to 1
             self.pwr.AVG = 1  # Enable averaging

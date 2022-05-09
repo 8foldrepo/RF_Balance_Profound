@@ -24,16 +24,8 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def setup(
-        self,
-        channel: int,
-        range_s: float,
-        offset_s: float,
-        autorange_v: float,
-        range_v: float,
-        ext_trigger: bool,
-        average_count: int,
-    ):
+    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
+              ext_trigger: bool, average_count: int):
         ...
 
     @abstractmethod

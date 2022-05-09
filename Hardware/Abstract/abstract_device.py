@@ -20,20 +20,14 @@ class AbstractDevice(QObject):
     def __init__(self, config, device_key, parent=None):
         """Load config if one was not given and set up the logger"""
         super().__init__(parent=parent)
-        from Utilities.load_config import (
-            ROOT_LOGGER_NAME,
-            LOGGER_FORMAT,
-            load_configuration,
-        )
+        from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
         import logging
         import os
         from definitions import ROOT_DIR
 
         log_formatter = logging.Formatter(LOGGER_FORMAT)
-        balance_logger = logging.getLogger("wtf_log")
-        file_handler = logging.FileHandler(
-            os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w"
-        )
+        balance_logger = logging.getLogger('wtf_log')
+        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
         file_handler.setFormatter(log_formatter)
         balance_logger.addHandler(file_handler)
         balance_logger.setLevel(logging.INFO)

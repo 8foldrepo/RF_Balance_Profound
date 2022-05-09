@@ -71,17 +71,13 @@ class Position(MyQWidget, Ui_Form):
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.setup_signal.emit(
-            {
-                "movement_mode": self.movement_mode_comboBox.currentText(),
-                "lin_incr": self.lin_incr_double_sb.value(),
-                "lin_speed": self.linear_speed_mm_s_sb.value(),
-                "rot_speed": self.rotational_speed_deg_s_sb.value(),
-                "steps_per_deg": self.steps_per_degree_sb.value(),
-                "steps_per_mm": self.steps_per_mm_sb.value(),
-                "ang_incr": self.ang_inc_double_sb.value(),
-            }
-        )
+        self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
+                                'lin_incr': self.lin_incr_double_sb.value(),
+                                'lin_speed': self.linear_speed_mm_s_sb.value(),
+                                'rot_speed': self.rotational_speed_deg_s_sb.value(),
+                                'steps_per_deg': self.steps_per_degree_sb.value(),
+                                'steps_per_mm': self.steps_per_mm_sb.value(),
+                                'ang_incr': self.ang_inc_double_sb.value(), })
 
     def populate_default_ui(self):
         self.movement_mode_comboBox.setCurrentText(self.config[self.motors.device_key]["movement_mode"])
@@ -121,9 +117,7 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_button.setEnabled(enabled)
 
     def configure_signals(self):
-        self.stop_button.clicked.connect(
-            lambda: self.set_buttons_enabled_signal.emit(True)
-        )
+        self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
         # Hardware control signals
         self.x_pos_button.clicked.connect(lambda: self.begin_motion("X", 1))
         self.x_neg_button.clicked.connect(lambda: self.begin_motion("X", -1))
@@ -176,13 +170,12 @@ class Position(MyQWidget, Ui_Form):
         self.set_buttons_enabled_signal.emit(True)
         self.stop_motion_signal.emit()
 
-
     @pyqtSlot()
     def insert_button_clicked(self):
         """Command the motors to go to the insertion point"""
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.go_to_signal.emit(["X"], [int(self.config["WTF_PositionParameters"]["X-TankInsertionPoint"])])
+        self.go_to_signal.emit(['X'], [int(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])])
 
     @pyqtSlot(float)
     def update_x_postion(self, mm):
@@ -206,7 +199,7 @@ class Position(MyQWidget, Ui_Form):
         if is_number(self.go_element_combo.currentText()):
             offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
             target_position = element_1_pos + offset
-            self.command_signal.emit(["X"], [target_position])
+            self.go_to_signal.emit(["X"], [target_position])
         else:
             # TODO: fill in later to handle "current" element condition
             return

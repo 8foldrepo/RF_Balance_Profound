@@ -10,22 +10,10 @@ class LoopOverElements(QWidget, Ui_Form):
         super().__init__(parent=parent)
         self.setupUi(self)
         self.orderedDict_to_ui(
-            OrderedDict(
-                [
-                    ("Task type", "Loop over elements"),
-                    ("Element 1", "TRUE"),
-                    ("Element 2", "TRUE"),
-                    ("Element 3", "TRUE"),
-                    ("Element 4", "TRUE"),
-                    ("Element 5", "TRUE"),
-                    ("Element 6", "TRUE"),
-                    ("Element 7", "TRUE"),
-                    ("Element 8", "TRUE"),
-                    ("Element 9", "TRUE"),
-                    ("Element 10", "TRUE"),
-                ]
-            )
-        )
+            OrderedDict([('Task type', 'Loop over elements'), ('Element 1', 'TRUE'), ('Element 2', 'TRUE'),
+                         ('Element 3', 'TRUE'), ('Element 4', 'TRUE'), ('Element 5', 'TRUE'), ('Element 6', 'TRUE'),
+                         ('Element 7', 'TRUE'), ('Element 8', 'TRUE'), ('Element 9', 'TRUE'),
+                         ('Element 10', 'TRUE')]))
         self.configure_signals()
 
     def configure_signals(self):

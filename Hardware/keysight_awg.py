@@ -8,9 +8,7 @@ from Utilities.load_config import *
 class KeysightAWG(AbstractAWG):
     output_signal = pyqtSignal(bool)
 
-    def __init__(
-        self, resource_manager=None, config=None, device_key="Keysight_AWG", parent=None
-    ):
+    def __init__(self, resource_manager=None, config=None, device_key='Keysight_AWG', parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
         if resource_manager is not None:
             self.rm = resource_manager
@@ -51,10 +49,8 @@ class KeysightAWG(AbstractAWG):
                 try:
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
-                    feedback = (
-                        f"Keysight 33509B Series function generator not found: {e}",
-                    )
-                    self.log(level="error", message=feedback)
+                    feedback = f"Keysight 33509B Series function generator not found: {e}",
+                    self.log(level='error', message=feedback)
                     break
 
                 if self.config[self.device_key]["set_on_startup"]:
@@ -78,19 +74,8 @@ class KeysightAWG(AbstractAWG):
 
     """Sets all settings of the awg with one command and wait until it is done configuring"""
 
-    def setup(
-        self,
-        frequency_Hz,
-        amplitude_V,
-        burst=False,
-        ext_trig=False,
-        burst_period_s=0.00001,
-        burst_cycles=50,
-        offset_V=0,
-        output=False,
-        output_Impedance=50,
-        trigger_out=True,
-    ):
+    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
+              offset_V=0, output=False, output_Impedance=50, trigger_out=True):
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
         self.SetAmplitude_V(amplitude_V)
@@ -311,9 +296,7 @@ class KeysightAWG(AbstractAWG):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
         self.get_state()
-        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(
-            self.state
-        )
+        return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 
 
 if __name__ == "__main__":

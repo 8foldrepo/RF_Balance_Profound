@@ -39,18 +39,8 @@ class SimulatedAWG(AbstractAWG):
         self.connected = False
         self.connected_signal.emit(False)
 
-    def setup(
-        self,
-        frequency_Hz,
-        amplitude_V,
-        burst=False,
-        ext_trig=False,
-        burst_period_s=0.00001,
-        burst_cycles=50,
-        offset_V=0,
-        output=False,
-        output_Impedance=50,
-    ):
+    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
+              offset_V=0, output=False, output_Impedance=50):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.SetOutput(output)
         self.SetFrequency_Hz(frequency_Hz)
@@ -178,15 +168,6 @@ if __name__ == "__main__":
     awg.connect_hardware()
     awg.Reset()
     print(awg)
-    awg.setup(
-        frequency_Hz=4290000,
-        amplitude_V=0.2,
-        burst=False,
-        burst_cycles=50,
-        ext_trig=False,
-        burst_period_s=0.10,
-        offset_V=0,
-        output=True,
-        output_Impedance=50,
-    )
+    awg.setup(frequency_Hz=4290000, amplitude_V=.2, burst=False, burst_cycles=50, ext_trig=False,
+              burst_period_s=.10, offset_V=0, output=True, output_Impedance=50)
     print(awg)

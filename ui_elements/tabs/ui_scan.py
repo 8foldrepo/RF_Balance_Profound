@@ -84,29 +84,18 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager = manager
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
-        self.command_signal.connect(self.manager.exec_command)
 
     def set_tabWidget(self, tabWidget):
         self.tabWidget = tabWidget
 
     def style_ui(self):
         self.scan_tabs.setCurrentIndex(0)
-        self.waveform_plot.setLabel(
-            "left", "Voltage Waveform (V)", **self.waveform_plot.styles
-        )
+        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
         self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
-        self.profile_plot.setLabel(
-            "left", "Voltage Squared Integral", **self.profile_plot.styles
-        )
-        self.profile_plot.setLabel(
-            "bottom", "Frequency (MHz)", **self.profile_plot.styles
-        )
-        self.voltage_time_plot.setLabel(
-            "left", "Voltage Waveform (V)", **self.voltage_time_plot.styles
-        )
-        self.voltage_time_plot.setLabel(
-            "bottom", "Time (s)", **self.voltage_time_plot.styles
-        )
+        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
+        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
+        self.voltage_time_plot.setLabel("left", "Voltage Waveform (V)", **self.voltage_time_plot.styles)
+        self.voltage_time_plot.setLabel("bottom", "Time (s)", **self.voltage_time_plot.styles)
 
         #  add default data to plots
         y = range(0, 100)

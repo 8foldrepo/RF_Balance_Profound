@@ -1,9 +1,8 @@
 import collections.abc
 import datetime
 import os
-
+from typing import Tuple, List
 import numpy as np
-
 from Utilities.variable_containers import TestData
 
 
@@ -191,6 +190,27 @@ def clearLayout(layout):
         if child.edit_menu():
             child.edit_menu().setParent(None)
 
+
+def trim(lists: List[List]) -> Tuple:
+    """Cut a tuple of lists to a their minimum length, removing elements at the end"""
+    lengths = [None] * len(lists)
+    trimmed_lists = [None] * len(lists)
+
+    for i in range(len(lists)):
+        lengths[i] = len(lists[i])
+
+    # Ensure that every list had its length checked
+    assert None not in lengths
+
+    min_length = min(lengths)
+
+    for i in range(len(lists)):
+        trimmed_lists[i] = (lists[i][0:min_length])
+
+    # Ensure that every list was trimmed
+    assert None not in trimmed_lists
+
+    return tuple(trimmed_lists)
 
 def listToRay(xCoords, yCoords, zCoords, Intensity):
     unique_xCoords = unique(list=xCoords)

@@ -40,16 +40,12 @@ class SimulatedOscilloscope(AbstractOscilloscope):
             if key == "signal_frequency_MHz":
                 self.signal_frequency_MHz = parameters[key]
                 self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
-                self.captures = int(
-                    self.cycles * self.signal_period_ns / self.capture_period_ns
-                )
-            if key == "cycles":
+                self.captures = int(self.cycles * self.signal_period_ns / self.capture_period_ns)
+            if key == 'cycles':
                 self.cycles = parameters[key]
                 self.signal_period_ns = 1 / self.signal_frequency_MHz * 1000
-                self.captures = int(
-                    self.cycles * self.signal_period_ns / self.capture_period_ns
-                )
-            if key == "delay_cycles":
+                self.captures = int(self.cycles * self.signal_period_ns / self.capture_period_ns)
+            if key == 'delay_cycles':
                 self.delay_cycles = parameters[key]
 
     def SetAveraging(self, averages=1):

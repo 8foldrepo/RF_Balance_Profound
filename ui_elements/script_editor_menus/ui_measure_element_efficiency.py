@@ -13,29 +13,15 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         self.configure_signals()
         self.orderedDict_to_ui(
             OrderedDict(
-                [
-                    ("Task type", "Measure element efficiency (RFB)"),
-                    ("Element", "Current"),
-                    ("Frequency range", "Low frequency"),
-                    ("RFB.#on/off cycles", "3"),
-                    ("RFB.On time (s)", "10.000000"),
-                    ("RFB.Off time (s)", "10.000000"),
-                    ("RFB.Threshold", "0.050000"),
-                    ("RFB.Offset", "0.500000"),
-                    ("Set frequency options", "Common peak frequency"),
-                    ("Frequency (MHz)", "4.200000"),
-                    ("Amplitude (mVpp)", "100.000000"),
-                    ("Storage location", "UA results directory"),
-                    ("Data directory", ""),
-                    ("RFB target position", "Average UA RFB position"),
-                    ("RFB target angle", "-90.000000"),
-                    ("EfficiencyTest", "TRUE"),
-                    ("Pa max (target, W)", "4.000000"),
-                    ("Pf max (limit, W)", "12.000000"),
-                    ("Reflection limit (%)", "70.000000"),
-                ]
-            )
-        )
+                [('Task type', 'Measure element efficiency (RFB)'), ('Element', 'Current')
+                    , ('Frequency range', 'Low frequency'), ('RFB.#on/off cycles', '3')
+                    , ('RFB.On time (s)', '10.000000'), ('RFB.Off time (s)', '10.000000'), ('RFB.Threshold', '0.050000')
+                    , ('RFB.Offset', '0.500000'), ('Set frequency options', 'Common peak frequency')
+                    , ('Frequency (MHz)', '4.200000'), ('Amplitude (mVpp)', '100.000000')
+                    , ('Storage location', 'UA results directory'), ('Data directory', '')
+                    , ('RFB target position', 'Average UA RFB position')
+                    , ('RFB target angle', '-90.000000'), ('EfficiencyTest', 'TRUE'), ('Pa max (target, W)', '4.000000')
+                    , ('Pf max (limit, W)', '12.000000'), ('Reflection limit (%)', '70.000000')]))
 
     def configure_signals(self):
         self.DATALOC_FIELD.currentIndexChanged.connect(self.storage_loc_combo_changed)

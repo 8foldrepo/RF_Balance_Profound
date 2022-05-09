@@ -11,16 +11,8 @@ class SaveResults(MyQWidget, Ui_Form):
         super().__init__(parent=parent)
         self.setupUi(self)
         # fill in with default parameters in name-argument pairs
-        self.orderedDict_to_ui(
-            OrderedDict(
-                [
-                    ("Task type", "Save results"),
-                    ("Save summary file", "TRUE"),
-                    ("Write UA Calibration", "TRUE"),
-                    ("PromptForCalWrite", ""),
-                ]
-            )
-        )
+        self.orderedDict_to_ui(OrderedDict([('Task type', 'Save results'), ('Save summary file', 'TRUE'),
+                                            ('Write UA Calibration', 'TRUE'), ('PromptForCalWrite', '')]))
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.Save_Summary_File_Checkbox.setChecked(bool(var_dict["Save summary file"]))
