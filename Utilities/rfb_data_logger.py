@@ -72,10 +72,7 @@ class RFBDataLogger(QThread):
         self.F_Meter_Thread.start(priority=QThread.HighPriority)
         self.R_Meter_Thread.start(priority=QThread.HighPriority)
 
-        print("Beginning thread")
-
     def run(self) -> None:
-        print("Running")
         # Setup event loop
         start_time = t.time()
         self.stay_alive = True
@@ -91,9 +88,6 @@ class RFBDataLogger(QThread):
                 self.trigger_capture_signal.emit()
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
-                print(
-                    # f"Items in A: {len(self.balance_readings_g)}, Items in B: {len(self.f_meter_readings_w)}, Items in C: {len(self.r_meter_readings_w)}"
-                )
                 self.update_ui_data()
 
             if self.stay_alive is False:
@@ -205,7 +199,8 @@ class RFBDataLogger(QThread):
         self.balance_readings_g = self.balance_readings_g[0:min_length]
 
     def quit(self):
+        print("Quiting thread")
         self.trim()
-
         self.stay_alive = False
         super().quit()
+        print("Done quiting thread")

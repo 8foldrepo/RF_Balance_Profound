@@ -203,7 +203,7 @@ class FileSaver:
                 path, f"MeasureRFB_E{metadata.element_number:02}.csv"
             )
 
-            self.log(f"Saving efficiency test data to: {file_path}")
+            self.log(f"Saving waveform data to: {file_path}")
             file = open(file_path, "w+")
             file.write(f"UASerialNumber={self.test_data.serial_number}\n")
             file.write("[File Format]\n")
@@ -433,6 +433,7 @@ class FileSaver:
             rf_pow_w = "%.6f" % raw_data[4][x]
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
+        self.log(f"Done saving efficiency test data")
 
     def save_find_element_profile(self, metadata, positions, vsi_values):
         path = check_directory(

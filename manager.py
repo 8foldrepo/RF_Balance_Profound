@@ -1783,6 +1783,7 @@ class Manager(QThread):
         self.rfb_logger.start(priority=QThread.HighPriority)
 
     def __wrap_up_rfb_logger(self):
+        self.log("Wrapping up rfb logger")
         self.rfb_logger.quit()
         t.sleep(0.1)
         print(f"balance reading in manager.py: {self.Balance.get_reading()}")
