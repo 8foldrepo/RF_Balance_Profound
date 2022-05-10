@@ -138,9 +138,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         else:
             self.command(":ACQ:TYPE HRES")
 
-    """Shows text_item on the oscilloscope screen"""
+
 
     def DisplayText(self, text: str):
+        """Shows text_item on the oscilloscope screen"""
         self.command(f":DISP:TEXT {text}")
 
     def getVertScale_V(self, channel):

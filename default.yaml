@@ -113,6 +113,9 @@ VIX_Motors:
   increment_ray:
     - 5
     - 2
+  gearing_ray:
+    - 1
+    - 1.92
   movement_mode: Distance
   on_by_default: true
   port: COM7

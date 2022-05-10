@@ -1,0 +1,287 @@
+2022-05-10 13:24:29,978 [INFO] [ParkerMotorController] [] : Connecting to motor controller...
+2022-05-10 13:24:34,588 [INFO] [ParkerMotorController] [manager_thread] : 0MA
+2022-05-10 13:24:34,588 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MA\r\n'
+2022-05-10 13:24:34,647 [INFO] [ParkerMotorController] [manager_thread] : 2D10024
+2022-05-10 13:24:34,647 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D10024\r\n'
+2022-05-10 13:24:34,707 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:34,707 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:36,262 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-10 13:24:36,262 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-10 13:24:36,262 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-10 13:24:36,342 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-10 13:24:36,342 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-10 13:24:36,342 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-10 13:24:37,112 [INFO] [ParkerMotorController] [manager_thread] : 1W(PT,-53126)
+2022-05-10 13:24:37,112 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(PT,-53126)\r\n'
+2022-05-10 13:24:37,292 [INFO] [ParkerMotorController] [manager_thread] : 2W(PT,499)
+2022-05-10 13:24:37,301 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(PT,499)\r\n'
+2022-05-10 13:24:37,452 [INFO] [ParkerMotorController] [manager_thread] : 1W(PT,-53126)
+2022-05-10 13:24:37,461 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(PT,-53126)\r\n'
+2022-05-10 13:24:37,621 [INFO] [ParkerMotorController] [manager_thread] : 2W(PT,499)
+2022-05-10 13:24:37,621 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(PT,499)\r\n'
+2022-05-10 13:24:38,056 [INFO] [ParkerMotorController] [manager_thread] : 2D1297
+2022-05-10 13:24:38,056 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D1297\r\n'
+2022-05-10 13:24:38,106 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:38,106 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:39,406 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-10 13:24:39,416 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-10 13:24:39,416 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-10 13:24:39,506 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-10 13:24:39,506 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-10 13:24:39,506 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-10 13:24:43,222 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-10 13:24:43,222 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
+2022-05-10 13:24:43,222 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:24:43,282 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:24:43,342 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
+2022-05-10 13:24:43,342 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-10 13:24:43,402 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
+2022-05-10 13:24:43,402 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
+2022-05-10 13:24:43,462 [INFO] [ParkerMotorController] [manager_thread] : 0POSMAIN0(10)
+2022-05-10 13:24:43,462 [INFO] [ParkerMotorController] [manager_thread] : output = b'0POSMAIN0(10)\r\n'
+2022-05-10 13:24:43,522 [INFO] [ParkerMotorController] [manager_thread] : 0MC
+2022-05-10 13:24:43,522 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
+2022-05-10 13:24:43,581 [INFO] [ParkerMotorController] [manager_thread] : 0ON
+2022-05-10 13:24:43,581 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
+2022-05-10 13:24:43,631 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,0,10,10,1)
+2022-05-10 13:24:43,631 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,0,10,10,1)\r\n'
+2022-05-10 13:24:43,691 [INFO] [ParkerMotorController] [manager_thread] : 2HOME0(-,0,1,10,1)
+2022-05-10 13:24:43,691 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME0(-,0,1,10,1)\r\n'
+2022-05-10 13:24:43,741 [INFO] [ParkerMotorController] [manager_thread] : 1V1.0
+2022-05-10 13:24:43,741 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V1.0\r\n'
+2022-05-10 13:24:43,801 [INFO] [ParkerMotorController] [manager_thread] : 1D100
+2022-05-10 13:24:43,801 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
+2022-05-10 13:24:43,861 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
+2022-05-10 13:24:43,861 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
+2022-05-10 13:24:43,916 [INFO] [ParkerMotorController] [manager_thread] : 2D360
+2022-05-10 13:24:43,916 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
+2022-05-10 13:24:43,966 [INFO] [ParkerMotorController] [manager_thread] : Done setting up
+2022-05-10 13:24:44,097 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-10 13:24:44,097 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
+2022-05-10 13:24:44,097 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:24:44,147 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:24:44,207 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
+2022-05-10 13:24:44,207 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-10 13:24:44,267 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
+2022-05-10 13:24:44,267 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
+2022-05-10 13:24:44,327 [INFO] [ParkerMotorController] [manager_thread] : 0POSMAIN0(10)
+2022-05-10 13:24:44,327 [INFO] [ParkerMotorController] [manager_thread] : output = b'0POSMAIN0(10)\r\n'
+2022-05-10 13:24:44,377 [INFO] [ParkerMotorController] [manager_thread] : 0MC
+2022-05-10 13:24:44,377 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
+2022-05-10 13:24:44,437 [INFO] [ParkerMotorController] [manager_thread] : 0ON
+2022-05-10 13:24:44,437 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
+2022-05-10 13:24:44,487 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,0,10,10,1)
+2022-05-10 13:24:44,487 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,0,10,10,1)\r\n'
+2022-05-10 13:24:44,547 [INFO] [ParkerMotorController] [manager_thread] : 2HOME0(-,0,1,10,1)
+2022-05-10 13:24:44,547 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME0(-,0,1,10,1)\r\n'
+2022-05-10 13:24:44,607 [INFO] [ParkerMotorController] [manager_thread] : 1V1.0
+2022-05-10 13:24:44,607 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V1.0\r\n'
+2022-05-10 13:24:44,657 [INFO] [ParkerMotorController] [manager_thread] : 1D100
+2022-05-10 13:24:44,657 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
+2022-05-10 13:24:44,707 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
+2022-05-10 13:24:44,707 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
+2022-05-10 13:24:44,767 [INFO] [ParkerMotorController] [manager_thread] : 2D360
+2022-05-10 13:24:44,767 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
+2022-05-10 13:24:44,827 [INFO] [ParkerMotorController] [manager_thread] : Done setting up
+2022-05-10 13:24:45,886 [INFO] [ParkerMotorController] [manager_thread] : 0MA
+2022-05-10 13:24:45,886 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MA\r\n'
+2022-05-10 13:24:45,936 [INFO] [ParkerMotorController] [manager_thread] : 2D1641
+2022-05-10 13:24:45,936 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D1641\r\n'
+2022-05-10 13:24:45,996 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:45,996 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:47,515 [INFO] [ParkerMotorController] [manager_thread] : 2D1893
+2022-05-10 13:24:47,515 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D1893\r\n'
+2022-05-10 13:24:47,575 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:47,575 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:48,678 [INFO] [ParkerMotorController] [manager_thread] : 2D2026
+2022-05-10 13:24:48,678 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2026\r\n'
+2022-05-10 13:24:48,738 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:48,738 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:49,499 [INFO] [ParkerMotorController] [manager_thread] : 2D2095
+2022-05-10 13:24:49,499 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2095\r\n'
+2022-05-10 13:24:49,549 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:49,549 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:50,098 [INFO] [ParkerMotorController] [manager_thread] : 2D2130
+2022-05-10 13:24:50,098 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2130\r\n'
+2022-05-10 13:24:50,149 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:50,149 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:50,578 [INFO] [ParkerMotorController] [manager_thread] : 2D2147
+2022-05-10 13:24:50,578 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2147\r\n'
+2022-05-10 13:24:50,628 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:50,628 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:51,038 [INFO] [ParkerMotorController] [manager_thread] : 2D2156
+2022-05-10 13:24:51,038 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2156\r\n'
+2022-05-10 13:24:51,088 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:51,088 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:51,558 [INFO] [ParkerMotorController] [manager_thread] : 2D2162
+2022-05-10 13:24:51,558 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2162\r\n'
+2022-05-10 13:24:51,608 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:51,608 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:57,458 [INFO] [ParkerMotorController] [manager_thread] : 2D2165
+2022-05-10 13:24:57,458 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2165\r\n'
+2022-05-10 13:24:57,518 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:57,518 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:58,325 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:24:58,325 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:24:58,385 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:58,385 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:58,910 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:24:58,910 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:24:58,960 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:58,960 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:59,246 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:24:59,246 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:24:59,296 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:59,296 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:59,586 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:24:59,586 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:24:59,645 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:59,645 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:24:59,915 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:24:59,915 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:24:59,975 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:24:59,975 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:00,245 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:00,245 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:00,305 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:00,305 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:00,595 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:00,595 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:00,645 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:00,645 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:00,955 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:00,955 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:01,005 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:01,005 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:01,295 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:01,295 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:01,355 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:01,355 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:01,664 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:01,664 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:01,714 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:01,714 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:02,017 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:02,017 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:02,078 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:02,078 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:02,497 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:02,497 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:02,557 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:02,557 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:02,977 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:02,977 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:03,037 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:03,037 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:03,926 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:03,926 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:03,976 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:03,976 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:04,856 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:04,856 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:04,916 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:04,916 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:05,555 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:05,555 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:05,615 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:05,615 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:06,035 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:06,035 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:06,095 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:06,095 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:06,485 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:06,485 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:06,535 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:06,535 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:08,911 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:08,911 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:08,981 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:08,981 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:09,609 [INFO] [ParkerMotorController] [manager_thread] : 2D2167
+2022-05-10 13:25:09,609 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D2167\r\n'
+2022-05-10 13:25:09,669 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:09,669 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:10,429 [INFO] [ParkerMotorController] [manager_thread] : 2D89
+2022-05-10 13:25:10,429 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D89\r\n'
+2022-05-10 13:25:10,489 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:10,489 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:16,312 [INFO] [ParkerMotorController] [manager_thread] : 2D-991
+2022-05-10 13:25:16,312 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-991\r\n'
+2022-05-10 13:25:16,372 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:16,372 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:19,136 [INFO] [ParkerMotorController] [manager_thread] : 2D-1555
+2022-05-10 13:25:19,136 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-1555\r\n'
+2022-05-10 13:25:19,196 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:19,196 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:20,865 [INFO] [ParkerMotorController] [manager_thread] : 2D-1850
+2022-05-10 13:25:20,865 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-1850\r\n'
+2022-05-10 13:25:20,915 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:20,915 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:22,174 [INFO] [ParkerMotorController] [manager_thread] : 2D-2003
+2022-05-10 13:25:22,174 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-2003\r\n'
+2022-05-10 13:25:22,234 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:22,234 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:23,808 [INFO] [ParkerMotorController] [manager_thread] : 2D-2081
+2022-05-10 13:25:23,808 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-2081\r\n'
+2022-05-10 13:25:23,868 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:23,868 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:27,216 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-10 13:25:27,216 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
+2022-05-10 13:25:27,216 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:25:27,266 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:25:27,326 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
+2022-05-10 13:25:27,326 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-10 13:25:27,386 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
+2022-05-10 13:25:27,386 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
+2022-05-10 13:25:27,436 [INFO] [ParkerMotorController] [manager_thread] : 0POSMAIN0(10)
+2022-05-10 13:25:27,436 [INFO] [ParkerMotorController] [manager_thread] : output = b'0POSMAIN0(10)\r\n'
+2022-05-10 13:25:27,496 [INFO] [ParkerMotorController] [manager_thread] : 0MC
+2022-05-10 13:25:27,496 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
+2022-05-10 13:25:27,556 [INFO] [ParkerMotorController] [manager_thread] : 0ON
+2022-05-10 13:25:27,556 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
+2022-05-10 13:25:27,606 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,0,10,10,1)
+2022-05-10 13:25:27,606 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,0,10,10,1)\r\n'
+2022-05-10 13:25:27,666 [INFO] [ParkerMotorController] [manager_thread] : 2HOME0(-,0,1,10,1)
+2022-05-10 13:25:27,666 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME0(-,0,1,10,1)\r\n'
+2022-05-10 13:25:27,726 [INFO] [ParkerMotorController] [manager_thread] : 1V1.0
+2022-05-10 13:25:27,726 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V1.0\r\n'
+2022-05-10 13:25:27,786 [INFO] [ParkerMotorController] [manager_thread] : 1D100
+2022-05-10 13:25:27,786 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
+2022-05-10 13:25:27,846 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
+2022-05-10 13:25:27,846 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
+2022-05-10 13:25:27,896 [INFO] [ParkerMotorController] [manager_thread] : 2D360
+2022-05-10 13:25:27,896 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
+2022-05-10 13:25:27,951 [INFO] [ParkerMotorController] [manager_thread] : Done setting up
+2022-05-10 13:25:29,012 [INFO] [ParkerMotorController] [manager_thread] : 0MA
+2022-05-10 13:25:29,013 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MA\r\n'
+2022-05-10 13:25:29,069 [INFO] [ParkerMotorController] [manager_thread] : 2D-40
+2022-05-10 13:25:29,069 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D-40\r\n'
+2022-05-10 13:25:29,129 [INFO] [ParkerMotorController] [manager_thread] : 2G
+2022-05-10 13:25:29,129 [INFO] [ParkerMotorController] [manager_thread] : output = b'2G\r\n'
+2022-05-10 13:25:39,879 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-10 13:25:39,879 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
+2022-05-10 13:25:39,879 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:25:39,938 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-10 13:25:39,989 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
+2022-05-10 13:25:39,989 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-10 13:25:40,048 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
+2022-05-10 13:25:40,048 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
+2022-05-10 13:25:40,099 [INFO] [ParkerMotorController] [manager_thread] : 0POSMAIN0(10)
+2022-05-10 13:25:40,099 [INFO] [ParkerMotorController] [manager_thread] : output = b'0POSMAIN0(10)\r\n'
+2022-05-10 13:25:40,158 [INFO] [ParkerMotorController] [manager_thread] : 0MC
+2022-05-10 13:25:40,158 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
+2022-05-10 13:25:40,218 [INFO] [ParkerMotorController] [manager_thread] : 0ON
+2022-05-10 13:25:40,218 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
+2022-05-10 13:25:40,268 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,0,10,10,1)
+2022-05-10 13:25:40,268 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,0,10,10,1)\r\n'
+2022-05-10 13:25:40,328 [INFO] [ParkerMotorController] [manager_thread] : 2HOME0(-,0,1,10,1)
+2022-05-10 13:25:40,328 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME0(-,0,1,10,1)\r\n'
+2022-05-10 13:25:40,388 [INFO] [ParkerMotorController] [manager_thread] : 1V1.0
+2022-05-10 13:25:40,388 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V1.0\r\n'
+2022-05-10 13:25:40,449 [INFO] [ParkerMotorController] [manager_thread] : 1D100
+2022-05-10 13:25:40,451 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
+2022-05-10 13:25:40,501 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
+2022-05-10 13:25:40,501 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
+2022-05-10 13:25:40,561 [INFO] [ParkerMotorController] [manager_thread] : 2D360
+2022-05-10 13:25:40,561 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
+2022-05-10 13:25:40,621 [INFO] [ParkerMotorController] [manager_thread] : Done setting up

@@ -60,7 +60,7 @@ class ParkerMotorController(AbstractMotorController):
                 self.log(level="error", message="Axis not recognized in go to position")
                 origin_offset = 0
 
-            motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1])
+            motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1]) / float(self.gearing_ray[num-1])
             coords.append(motor_steps)
 
         if not self.movement_mode == "Distance":
@@ -431,6 +431,8 @@ class ParkerMotorController(AbstractMotorController):
             self.calibrate_ray_steps_per[0] = settings["steps_per_mm"]
             self.calibrate_ray_steps_per[1] = settings["steps_per_deg"]
             self.movement_mode = settings["movement_mode"]
+            self.gearing_ray[0] = settings["x_gearing"]
+            self.gearing_ray[1] = settings["r_gearing"]
 
         self.set_limits_enabled(True)
         self.set_position_maintanance(on=False)
@@ -461,14 +463,11 @@ class ParkerMotorController(AbstractMotorController):
         elif movement_mode == "Distance":
             self.command(f"{axis_number}MA", log=True)
 
-    """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
-
     def update_distance_and_velocity(self, axis):
+        """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
         axis_index = self.ax_letters.index(axis)
         axis_number = axis_index + 1
-        steps_per_s = (
-            self.calibrate_ray_steps_per[axis_index] * self.speeds_ray[axis_index]
-        )
+        steps_per_s = self.speeds_ray[axis_index]
         # self.calibrate_ray_steps_per[axis_index] *
         self.command(f"{axis_number}V{steps_per_s}")
         self.command(f"{axis_number}D{self.increment_ray[axis_index]}")
