@@ -5,7 +5,7 @@ Autoset timebase:
 Debugging:
   simulate_ua_interface: true
   simulate_sensors: true
-  simulate_motors: true
+  simulate_motors: false
   simulate_oscilloscope: true
   simulate_awg: false
   simulate_balance: true

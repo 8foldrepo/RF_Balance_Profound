@@ -3,8 +3,7 @@ import datetime
 import os
 from typing import Tuple, List
 import numpy as np
-from Utilities.variable_containers import TestData
-
+from data_structures.test_data import TestData
 
 def create_coord_rays(coords: str, ax_letters: list):
     """
@@ -153,35 +152,36 @@ def unique(list):
     return unique_list
 
 
-# Additional feature: add smart transition detection
-def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
-    if len(acoustic_power_trace_w) == 0:
-        return [float("nan")]
-    if len(acoustic_power_trace_w) != len(awg_on_ray):
-        return [float("nan")]
-    acoustic_power_on_data = list()
-
-    for i in range(len(acoustic_power_trace_w)):
-        if awg_on_ray[i]:
-            acoustic_power_on_data.append(acoustic_power_trace_w[i])
-
-    return acoustic_power_on_data
-
-
-# Additional feature: add smart transition detection
-def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
-    if len(acoustic_power_trace_w) == 0:
-        return [float("nan")]
-    if len(acoustic_power_trace_w) != len(awg_on_ray):
-        return [float("nan")]
-
-    acoustic_power_off_data = list()
-
-    for i in range(len(acoustic_power_trace_w)):
-        if not awg_on_ray[i]:
-            acoustic_power_off_data.append(acoustic_power_trace_w[i])
-
-    return acoustic_power_off_data
+# DEPRECATED, use the get_on_interval_indicies and get_averages_from_interval_indicies methods in the rfb_data class
+# # Additional feature: add smart transition detection
+# def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
+#     if len(acoustic_power_trace_w) == 0:
+#         return [float("nan")]
+#     if len(acoustic_power_trace_w) != len(awg_on_ray):
+#         return [float("nan")]
+#     acoustic_power_on_data = list()
+#
+#     for i in range(len(acoustic_power_trace_w)):
+#         if awg_on_ray[i]:
+#             acoustic_power_on_data.append(acoustic_power_trace_w[i])
+#
+#     return acoustic_power_on_data
+#
+#
+# # Additional feature: add smart transition detection
+# def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
+#     if len(acoustic_power_trace_w) == 0:
+#         return [float("nan")]
+#     if len(acoustic_power_trace_w) != len(awg_on_ray):
+#         return [float("nan")]
+#
+#     acoustic_power_off_data = list()
+#
+#     for i in range(len(acoustic_power_trace_w)):
+#         if not awg_on_ray[i]:
+#             acoustic_power_off_data.append(acoustic_power_trace_w[i])
+#
+#     return acoustic_power_off_data
 
 
 def clearLayout(layout):
@@ -211,6 +211,7 @@ def trim(lists: List[List]) -> Tuple:
     assert None not in trimmed_lists
 
     return tuple(trimmed_lists)
+
 
 def listToRay(xCoords, yCoords, zCoords, Intensity):
     unique_xCoords = unique(list=xCoords)
@@ -311,12 +312,15 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
         root_logger.info(log_entry)
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{level}] {log_entry}")
 
+
 def printList(list2):
     for x in range(len(list2)):
         print(list2[x])
 
+
 def printList2(list2):
     print(str(list2)[1:-1])
+
 
 if __name__ == "__main__":
     pass

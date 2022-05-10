@@ -213,8 +213,6 @@ class MT_balance(AbstractBalance):
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
-        # Command: I2 Inquiry of balance data.
-        # Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
         self.log("Getting stable reading, please wait")
 
@@ -249,17 +247,18 @@ class MT_balance(AbstractBalance):
             return None
 
         self.ser.write(b"\nI4\n")
-        self.log("Getting stable reading, please wait")
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
+
                 if b"I4" in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
                         if len(chunk) > 6:
-                            return chunk
+                            return chunk.decode("utf-8")
+
                 else:
                     if item == b'I':
                         self.log(level='error', message='Weight unstable or balance busy')

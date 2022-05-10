@@ -1,12 +1,10 @@
 import distutils.util
-import inspect
 import logging
 import os
 import re
 import sys
 import time as t
 from collections import OrderedDict
-from statistics import mean
 from typing import List
 import numpy as np
 import pyvisa
@@ -25,7 +23,9 @@ from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data
-from Utilities.variable_containers import TestData, FileMetadata, SystemInfo, RFBData
+from data_structures.rfb_data import RFBData
+from data_structures.test_data import TestData
+from data_structures.variable_containers import FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel, FrequencyRange
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -756,7 +756,8 @@ class Manager(QThread):
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
                 cont = self.cont_if_cont_clicked()
-
+                if not cont:
+                    return
             else:
                 self.test_data.log_script(["", "Check/prompt UA Pump", "OK", ""])
                 break
@@ -805,6 +806,8 @@ class Manager(QThread):
             self.user_prompt_signal.emit("Please ensure that the power amplifier is on")
 
             cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
             self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])
             break
@@ -839,12 +842,16 @@ class Manager(QThread):
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
 
                 self.IO_Board.fill_tank()
             elif water_level == WaterLevel.above_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
 
                 self.IO_Board.fill_tank()
             else:
@@ -1093,6 +1100,8 @@ class Manager(QThread):
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA")
             cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
         # Todo: populate calibration data from test data in useful_methods
         calibration_data = generate_calibration_data(self.test_data)
@@ -1118,6 +1127,8 @@ class Manager(QThread):
             self.user_prompt_signal.emit(prompt_type)
 
         cont = self.cont_if_cont_clicked()
+        if not cont:
+            return
 
     def configure_function_generator(self, var_dict):
         """Set function generator to desired settings"""
@@ -1180,6 +1191,8 @@ class Manager(QThread):
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             self.Motors.go_home_1d("X")
             cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
             self.test_data.log_script(["", f"Home  X", f"Home X", ""])
         elif axis_to_home == "Theta":
@@ -1242,7 +1255,7 @@ class Manager(QThread):
     def frequency_sweep(self, var_dict):
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
-        frequency_range = var_dict["Frequency range"]
+        frequency_range = FrequencyRange[var_dict["Frequency range"].lower().replace(" ", "_")]
         start_freq_MHz = var_dict["Start frequency (MHz)"]
         end_freq_MHz = var_dict["Start frequency (MHz)"]
         coarse_incr_MHz = var_dict["Coarse increment (MHz)"]
@@ -1366,7 +1379,7 @@ class Manager(QThread):
                            frequency_range=frequency_range,
                            Pf_max=Pf_max,
                            Pa_max=Pa_max,
-                           ref_limit=reflection_limit)
+                           ref_limit=reflection_limit, config = self.config)
 
         self.element_number_signal.emit(str(self.element))
         # If on the first element, set the tab to the rfb tab
@@ -1391,9 +1404,9 @@ class Manager(QThread):
 
         self.test_data.log_script(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
 
-        if frequency_range == "High frequency":
+        if frequency_range == FrequencyRange.low_frequency:
             frequency_Hz = self.test_data.high_frequency_MHz * 1000000
-        elif frequency_range == "Low frequency":
+        elif frequency_range == FrequencyRange.high_frequency:
             frequency_Hz = self.test_data.low_frequency_MHz * 1000000
         else:
             self.log("Improper frequency set, defaulting to low frequency")
@@ -1405,42 +1418,66 @@ class Manager(QThread):
 
         # self.Balance.zero_balance_instantly()  # todo: see if we need this
 
-        startTime = t.time()
-        current_cycle = 1
 
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
         # Begin multithreaded capture from the power meters and the balance and cycle the awg on and off
         self.__begin_rfb_logger_thread(self.rfb_data)
+
+        startTime = t.time()
+        current_cycle = 1
+
+        # Extra off cycle at beginning
+        self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
+        self.AWG.SetOutput(False)
+        # for the duration of rfb off time
+        while t.time() - startTime < rfb_off_time:
+            # retrieve data from the RFB_logger and pass it to the UI
+            self.rfb_data = self.rfb_logger.rfb_data
+            try:
+                print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
+            except IndexError:
+                pass
+            self.update_rfb_tab_signal.emit()
+
+            self.app.processEvents()
+
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
 
-            # Turn off AWG
-            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
-            self.AWG.SetOutput(False)
-            # for the duration of rfb off time
-            while t.time() - cycle_start_time < rfb_off_time:
-                # retrieve data from the RFB_logger and pass it to the UI
-                self.rfb_data = self.rfb_logger.rfb_data
-                self.update_rfb_tab_signal.emit()
-                self.app.processEvents()
+
             #  turn on awg
             self.log(f"Turning on AWG T = {'%.2f' % (t.time() - startTime)}")
             self.AWG.SetOutput(True)
             # for the duration of rfb on time
-            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
+            while t.time() - cycle_start_time < rfb_on_time:
                 # retrieve data from the RFB_logger and pass it to the UI
                 self.rfb_data = self.rfb_logger.rfb_data
                 self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
+
+            # Turn off AWG
+            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
+            self.AWG.SetOutput(False)
+            # for the duration of rfb off time
+            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
+                # retrieve data from the RFB_logger and pass it to the UI
+                self.rfb_data = self.rfb_logger.rfb_data
+                try:
+                    print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
+                except IndexError:
+                    pass
+                self.update_rfb_tab_signal.emit()
+
+                self.app.processEvents()
+
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
-        self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()
 
         self.test_data.update_results_summary_with_efficiency_results(
@@ -1449,7 +1486,7 @@ class Manager(QThread):
             frequency_Hz=frequency_Hz,
             efficiency_percent=self.rfb_data.efficiency_percent,
             reflected_power_percent=self.rfb_data.reflected_power_percent,
-            forward_power_max=self.rfb_data.forward_power_max,
+            forward_power_max=self.rfb_data.forward_power_max_extrapolated,
             water_temperature_c=self.rfb_data.water_temperature_c
         )
 
@@ -1484,6 +1521,7 @@ class Manager(QThread):
         transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534],
                                 [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
         # todo: check that p_on_rand_unc is the one we want
+        print("saving")
         self.file_saver.store_measure_rfb_waveform_csv(
             element_number=self.element,
             ua_serial_number=self.test_data.serial_number,
@@ -1510,7 +1548,7 @@ class Manager(QThread):
             transition_amp_times=transition_amp_times,
             raw_data=raw_data,
         )
-
+        print("done")
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data:RFBData):

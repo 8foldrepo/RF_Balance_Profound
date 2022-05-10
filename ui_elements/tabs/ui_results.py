@@ -1,8 +1,7 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QHeaderView
-
 from Utilities.useful_methods import create_test_results_summary_file
-from Utilities.variable_containers import TestData
+from data_structures.test_data import TestData
 from Widget_Library.widget_results import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 

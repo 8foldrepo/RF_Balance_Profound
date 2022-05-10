@@ -20,7 +20,10 @@ def calculate_speed_of_sound_in_water(temperature_c: float):
 
 # returns the random uncertainty of a data set as a percentage
 # Todo: double check this formula
-def calculate_total_uncertainty_percent(data_set: list):
+def calculate_total_uncertainty_percent(data_set: list) -> float:
+    if isinstance(data_set, float):
+        return 0
+
     if len(data_set) == 0:
         return float("nan")
     from numpy import mean, std
@@ -33,7 +36,10 @@ def calculate_total_uncertainty_percent(data_set: list):
 
 # returns the random uncertainty of a data set as a percentage
 # Todo: double check this formula
-def calculate_random_uncertainty_percent(data_set: list):
+def calculate_random_uncertainty_percent(data_set: list) -> float:
+    if isinstance(data_set, float):
+        return 0
+
     if len(data_set) == 0:
         return float("nan")
     from numpy import mean, std

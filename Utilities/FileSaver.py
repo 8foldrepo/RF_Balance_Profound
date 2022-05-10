@@ -4,7 +4,8 @@ import shutil
 from datetime import datetime
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
-from Utilities.variable_containers import FileMetadata, TestData
+from data_structures.test_data import TestData
+from data_structures.variable_containers import FileMetadata
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -371,7 +372,6 @@ class FileSaver:
             rf_pow_w = "%.6f" % raw_data[4][x]
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
-        self.log(f"Done saving efficiency test data")
 
     def save_find_element_profile(self, metadata, positions, vsi_values):
         path = check_directory(
