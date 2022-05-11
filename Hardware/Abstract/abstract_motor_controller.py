@@ -51,6 +51,7 @@ class AbstractMotorController(AbstractDevice):
         self.ax_letters = self.config[self.device_key]["axes"]
         self.calibrate_ray_steps_per = self.config[self.device_key]["calibrate_ray"]
         self.rotational_ray = self.config[self.device_key]["rotational_ray"]
+        self.gearing_ray = self.config[self.device_key]["gearing_ray"]
         self.speeds_ray = self.config[self.device_key]["speeds_ray"]
         self.increment_ray = self.config[self.device_key]["increment_ray"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]

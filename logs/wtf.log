@@ -1,137 +1,25 @@
-2022-05-09 11:51:00,571 [INFO] [Manager] [manager_thread] : Running script
-2022-05-09 11:51:02,905 [INFO] [Manager] [] : Checking ability to log
-2022-05-09 11:51:07,079 [INFO] [Manager] [] : Maximum of 1161.8733039586123 @ X = -0.125 mm
-2022-05-09 11:51:07,362 [INFO] [Manager] [] : Maximum of 1181.2279078031108 @ Theta = -186.20000000000022 deg
-2022-05-09 11:51:07,442 [INFO] [Manager] [] : Maximum of 1172.7418306009226 @ X = -0.6250000000000002 mm
-2022-05-09 11:51:07,468 [INFO] [Manager] [] : Maximum of 1181.0401603754267 @ Theta = -186.20000000000022 deg
-2022-05-09 11:51:07,570 [INFO] [Manager] [] : Maximum of 1177.3041478132716 @ X = 3.3000000000000003 mm
-2022-05-09 11:51:07,609 [INFO] [Manager] [] : Maximum of 1185.061625926155 @ Theta = -176.20000000000007 deg
-2022-05-09 11:51:07,705 [INFO] [Manager] [] : Maximum of 1169.1732134110155 @ X = 11.099999999999989 mm
-2022-05-09 11:51:07,746 [INFO] [Manager] [] : Maximum of 1183.8436810050343 @ Theta = -183.40000000000018 deg
-2022-05-09 11:51:07,844 [INFO] [Manager] [] : Maximum of 1169.2924339399224 @ X = 15.69999999999999 mm
-2022-05-09 11:51:07,906 [INFO] [Manager] [] : Maximum of 1197.1145623903813 @ Theta = -187.80000000000024 deg
-2022-05-09 11:51:08,017 [INFO] [Manager] [] : Maximum of 1172.7343991969287 @ X = 21.699999999999985 mm
-2022-05-09 11:51:08,075 [INFO] [Manager] [] : Maximum of 1182.0833435594905 @ Theta = -186.20000000000022 deg
-2022-05-09 11:51:08,165 [INFO] [Manager] [] : Maximum of 1172.3341703794397 @ X = 23.099999999999998 mm
-2022-05-09 11:51:08,189 [INFO] [Manager] [] : Maximum of 1177.824960334517 @ Theta = -174.20000000000005 deg
-2022-05-09 11:51:08,266 [INFO] [Manager] [] : Maximum of 1176.1237837812537 @ X = 28.099999999999998 mm
-2022-05-09 11:51:08,288 [INFO] [Manager] [] : Maximum of 1173.9767350476202 @ Theta = -174.20000000000005 deg
-2022-05-09 11:51:08,378 [INFO] [Manager] [] : Maximum of 1167.8070094604998 @ X = 35.70000000000004 mm
-2022-05-09 11:51:08,411 [INFO] [Manager] [] : Maximum of 1173.0386867171853 @ Theta = -182.20000000000016 deg
-2022-05-09 11:51:08,495 [INFO] [Manager] [] : Maximum of 1196.6905079198414 @ X = 39.30000000000002 mm
-2022-05-09 11:51:08,512 [INFO] [Manager] [] : Maximum of 1172.0982377977136 @ Theta = -183.40000000000018 deg
-2022-05-09 11:51:08,590 [INFO] [Manager] [] : Maximum of 1173.0143954243154 @ X = 43.50000000000001 mm
-2022-05-09 11:51:08,602 [INFO] [Manager] [] : Maximum of 1185.4173266359387 @ Theta = -172.60000000000002 deg
-2022-05-09 11:51:08,673 [INFO] [Manager] [] : Moved to 1, at coordinate x=-0.63, r=-0.6
-2022-05-09 11:51:08,685 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:08,688 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:08,696 [INFO] [Manager] [] : Turning off AWG T = 0.01
-2022-05-09 11:51:08,801 [INFO] [Manager] [] : Turning on AWG T = 0.11
-2022-05-09 11:51:08,897 [INFO] [Manager] [] : Turning off AWG T = 0.21
-2022-05-09 11:51:08,998 [INFO] [Manager] [] : Turning on AWG T = 0.31
-2022-05-09 11:51:09,098 [INFO] [Manager] [] : Turning off AWG T = 0.41
-2022-05-09 11:51:09,198 [INFO] [Manager] [] : Turning on AWG T = 0.51
-2022-05-09 11:51:09,425 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E01\E01_HFpower.csv
-2022-05-09 11:51:09,432 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:09,500 [INFO] [Manager] [] : Moved to 2, at coordinate x=3.30, r=3.3
-2022-05-09 11:51:09,509 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:09,515 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:09,523 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:09,623 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:09,726 [INFO] [Manager] [] : Turning off AWG T = 0.21
-2022-05-09 11:51:09,827 [INFO] [Manager] [] : Turning on AWG T = 0.31
-2022-05-09 11:51:09,926 [INFO] [Manager] [] : Turning off AWG T = 0.41
-2022-05-09 11:51:10,027 [INFO] [Manager] [] : Turning on AWG T = 0.51
-2022-05-09 11:51:10,244 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E02\E02_HFpower.csv
-2022-05-09 11:51:10,251 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:10,320 [INFO] [Manager] [] : Moved to 3, at coordinate x=11.10, r=11.1
-2022-05-09 11:51:10,329 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:10,338 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:10,351 [INFO] [Manager] [] : Turning off AWG T = 0.01
-2022-05-09 11:51:10,451 [INFO] [Manager] [] : Turning on AWG T = 0.11
-2022-05-09 11:51:10,552 [INFO] [Manager] [] : Turning off AWG T = 0.21
-2022-05-09 11:51:10,653 [INFO] [Manager] [] : Turning on AWG T = 0.31
-2022-05-09 11:51:10,753 [INFO] [Manager] [] : Turning off AWG T = 0.41
-2022-05-09 11:51:10,853 [INFO] [Manager] [] : Turning on AWG T = 0.51
-2022-05-09 11:51:11,082 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E03\E03_HFpower.csv
-2022-05-09 11:51:11,089 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:11,156 [INFO] [Manager] [] : Moved to 4, at coordinate x=15.70, r=15.7
-2022-05-09 11:51:11,163 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:11,170 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:11,179 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:11,279 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:11,382 [INFO] [Manager] [] : Turning off AWG T = 0.21
-2022-05-09 11:51:11,483 [INFO] [Manager] [] : Turning on AWG T = 0.31
-2022-05-09 11:51:11,582 [INFO] [Manager] [] : Turning off AWG T = 0.41
-2022-05-09 11:51:11,683 [INFO] [Manager] [] : Turning on AWG T = 0.51
-2022-05-09 11:51:11,901 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E04\E04_HFpower.csv
-2022-05-09 11:51:11,905 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:11,979 [INFO] [Manager] [] : Moved to 5, at coordinate x=21.70, r=21.7
-2022-05-09 11:51:11,987 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:11,994 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:12,002 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:12,104 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:12,202 [INFO] [Manager] [] : Turning off AWG T = 0.20
-2022-05-09 11:51:12,304 [INFO] [Manager] [] : Turning on AWG T = 0.30
-2022-05-09 11:51:12,402 [INFO] [Manager] [] : Turning off AWG T = 0.40
-2022-05-09 11:51:12,503 [INFO] [Manager] [] : Turning on AWG T = 0.50
-2022-05-09 11:51:12,724 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E05\E05_HFpower.csv
-2022-05-09 11:51:12,756 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:12,891 [INFO] [Manager] [] : Moved to 6, at coordinate x=23.10, r=23.1
-2022-05-09 11:51:12,893 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:12,899 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:12,902 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:13,002 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:13,102 [INFO] [Manager] [] : Turning off AWG T = 0.20
-2022-05-09 11:51:13,203 [INFO] [Manager] [] : Turning on AWG T = 0.30
-2022-05-09 11:51:13,303 [INFO] [Manager] [] : Turning off AWG T = 0.40
-2022-05-09 11:51:13,403 [INFO] [Manager] [] : Turning on AWG T = 0.50
-2022-05-09 11:51:13,619 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E06\E06_HFpower.csv
-2022-05-09 11:51:13,622 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:13,703 [INFO] [Manager] [] : Moved to 7, at coordinate x=28.10, r=28.1
-2022-05-09 11:51:13,708 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:13,713 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:13,729 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:13,830 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:13,930 [INFO] [Manager] [] : Turning off AWG T = 0.20
-2022-05-09 11:51:14,031 [INFO] [Manager] [] : Turning on AWG T = 0.30
-2022-05-09 11:51:14,130 [INFO] [Manager] [] : Turning off AWG T = 0.40
-2022-05-09 11:51:14,231 [INFO] [Manager] [] : Turning on AWG T = 0.50
-2022-05-09 11:51:14,444 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E07\E07_HFpower.csv
-2022-05-09 11:51:14,445 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:14,505 [INFO] [Manager] [] : Moved to 8, at coordinate x=35.70, r=35.7
-2022-05-09 11:51:14,507 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:14,510 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:14,513 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:14,614 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:14,713 [INFO] [Manager] [] : Turning off AWG T = 0.20
-2022-05-09 11:51:14,814 [INFO] [Manager] [] : Turning on AWG T = 0.30
-2022-05-09 11:51:14,914 [INFO] [Manager] [] : Turning off AWG T = 0.40
-2022-05-09 11:51:15,014 [INFO] [Manager] [] : Turning on AWG T = 0.50
-2022-05-09 11:51:15,230 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E08\E08_HFpower.csv
-2022-05-09 11:51:15,233 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:15,305 [INFO] [Manager] [] : Moved to 9, at coordinate x=39.30, r=39.3
-2022-05-09 11:51:15,308 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:15,311 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:15,317 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-09 11:51:15,418 [INFO] [Manager] [] : Turning on AWG T = 0.10
-2022-05-09 11:51:15,518 [INFO] [Manager] [] : Turning off AWG T = 0.20
-2022-05-09 11:51:15,618 [INFO] [Manager] [] : Turning on AWG T = 0.30
-2022-05-09 11:51:15,718 [INFO] [Manager] [] : Turning off AWG T = 0.40
-2022-05-09 11:51:15,818 [INFO] [Manager] [] : Turning on AWG T = 0.50
-2022-05-09 11:51:16,042 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E09\E09_HFpower.csv
-2022-05-09 11:51:16,051 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:16,134 [INFO] [Manager] [] : Moved to 10, at coordinate x=43.50, r=43.5
-2022-05-09 11:51:16,146 [INFO] [Manager] [] : Improper frequency set, defaulting to low frequency
-2022-05-09 11:51:16,153 [ERROR] [KeysightAWG] [] : frequency not set
-2022-05-09 11:51:16,175 [INFO] [Manager] [] : Turning off AWG T = 0.01
-2022-05-09 11:51:16,275 [INFO] [Manager] [] : Turning on AWG T = 0.11
-2022-05-09 11:51:16,378 [INFO] [Manager] [] : Turning off AWG T = 0.22
-2022-05-09 11:51:16,479 [INFO] [Manager] [] : Turning on AWG T = 0.32
-2022-05-09 11:51:16,579 [INFO] [Manager] [] : Turning off AWG T = 0.42
-2022-05-09 11:51:16,680 [INFO] [Manager] [] : Turning on AWG T = 0.52
-2022-05-09 11:51:16,904 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Power data\EfficiencyTest\E10\E10_HFpower.csv
-2022-05-09 11:51:16,910 [INFO] [FileSaver] [] : Done saving efficiency test data
-2022-05-09 11:51:16,972 [INFO] [FileSaver] [] : Saving results summary to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Results Summary.txt
-2022-05-09 11:51:16,980 [INFO] [FileSaver] [] : Saving log file to: C:\Users\Isaiah\Documents\UA results\GG1138-2022.05.09-11.50\Log files\ScriptResults.log
-2022-05-09 11:51:21,361 [INFO] [Manager] [manager_thread] : Aborting script
+2022-05-11 13:00:36,564 [INFO] [ParkerMotorController] [] : Connecting to motor controller...
+2022-05-11 13:00:47,410 [INFO] [ParkerMotorController] [manager_thread] : 0MA
+2022-05-11 13:00:47,410 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MA\r\n'
+2022-05-11 13:00:47,420 [INFO] [ParkerMotorController] [manager_thread] : 1D2042
+2022-05-11 13:00:47,420 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D2042\r\n'
+2022-05-11 13:00:47,430 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:47,430 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:48,360 [INFO] [ParkerMotorController] [manager_thread] : 1D2591
+2022-05-11 13:00:48,360 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D2591\r\n'
+2022-05-11 13:00:48,380 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:48,380 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:49,238 [INFO] [ParkerMotorController] [manager_thread] : 1D3141
+2022-05-11 13:00:49,238 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D3141\r\n'
+2022-05-11 13:00:49,258 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:49,258 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:59,013 [INFO] [ParkerMotorController] [manager_thread] : 1D56959
+2022-05-11 13:00:59,013 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D56959\r\n'
+2022-05-11 13:00:59,033 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:59,033 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'

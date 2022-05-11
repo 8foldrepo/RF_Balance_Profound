@@ -1,9 +1,7 @@
 from configparser import ConfigParser
-
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
-
-from Utilities.variable_containers import SystemInfo
+from data_structures.variable_containers import SystemInfo
 from Widget_Library.widget_system_info import Ui_Form
 from definitions import SYSTEM_INFO_INI_PATH
 from ui_elements.my_qwidget import MyQWidget
@@ -87,6 +85,9 @@ class SystemInfo(MyQWidget, Ui_Form):
             self.parser.set('Reflected power meter', 'Serial number', system_info.reflected_power_sn)
         if system_info.thermocouple_sn is not None:
             self.parser.set('Thermocouple', 'Serial number', system_info.thermocouple_sn)
+
+        if system_info.rf_balance_sn is not None:
+            self.parser.set('RFB', 'Serial number', str(system_info.rf_balance_sn))
 
         # Writing our configuration file to 'example.ini'
         with open(SYSTEM_INFO_INI_PATH, 'w') as configfile:

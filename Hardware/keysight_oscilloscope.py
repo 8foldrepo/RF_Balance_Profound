@@ -12,7 +12,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
     range_mV: float
     channel: int
     averages: int
-    range_s: int
+    range_s: float
+    offset_s: float
 
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
@@ -88,19 +89,19 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def set_to_defaults(self):
         self.reset()
-        channel = self.config[self.device_key]['channel']
+        self.channel = self.config[self.device_key]['channel']
         self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
         self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
-        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
+        self.range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
-        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
+        self.offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         autorange_V = self.config[self.device_key]["autorange_v_startup"]
-        range_V = self.config[self.device_key]["range_mV"] / 1000
+        self.range_mV = self.config[self.device_key]["range_mV"]
         average_count = self.config[self.device_key]["averages"]
         external_trigger = self.config[self.device_key]["ext_trigger"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]
 
-        self.setup(channel=channel, range_s=range_s, offset_s=offset_s, autorange_v=autorange_V, range_v=range_V,
+        self.setup(channel=self.channel, range_s=self.range_s, offset_s=self.offset_s, autorange_v=autorange_V, range_v=self.range_mV/1000,
                    ext_trigger=external_trigger, average_count=average_count)
 
     def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
@@ -137,9 +138,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         else:
             self.command(":ACQ:TYPE HRES")
 
-    """Shows text_item on the oscilloscope screen"""
+
 
     def DisplayText(self, text: str):
+        """Shows text_item on the oscilloscope screen"""
         self.command(f":DISP:TEXT {text}")
 
     def getVertScale_V(self, channel):
@@ -205,7 +207,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
-            print(channel)
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command(f"WAV:FORM ASC")
 

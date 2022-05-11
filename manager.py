@@ -1,12 +1,10 @@
 import distutils.util
-import inspect
 import logging
 import os
 import re
 import sys
 import time as t
 from collections import OrderedDict
-from statistics import mean
 from typing import List
 import numpy as np
 import pyvisa
@@ -25,7 +23,9 @@ from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data
-from Utilities.variable_containers import TestData, FileMetadata, SystemInfo, RFBData
+from data_structures.rfb_data import RFBData
+from data_structures.test_data import TestData
+from data_structures.variable_containers import FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel, FrequencyRange
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -774,7 +774,8 @@ class Manager(QThread):
                 # launch the dialog box signifying this issue
                 self.user_prompt_pump_not_running_signal.emit(pump_status)
                 cont = self.cont_if_cont_clicked()
-
+                if not cont:
+                    return
             else:
                 self.test_data.log_script(["", "Check/prompt UA Pump", "OK", ""])
                 break
@@ -859,12 +860,16 @@ class Manager(QThread):
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
 
                 self.IO_Board.fill_tank()
             elif water_level == WaterLevel.above_level:  # if the water level is not level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return
 
                 self.IO_Board.fill_tank()
             else:
@@ -917,6 +922,12 @@ class Manager(QThread):
         data_directory = var_dict["Data directory"]
         maxPosErrMM = float(var_dict["Max. position error (+/- mm)"])
         elemPosTest = bool(var_dict["ElementPositionTest"])
+        max_angle_variation_Deg = float(var_dict["Max angle variation (deg)"])
+        beam_angle_test = bool(var_dict["BeamAngleTest"])
+        frequency_settings = var_dict["Frequency settings"]
+        frequency_MHz =float(var_dict["Frequency (MHz)"])
+        amplitude_mVpp = float(var_dict["Amplitude (mV)"])
+        burst_count = int(float(var_dict["Burst count"]))
 
         # If on the first element, set the tab to the scan tab
         if self.element == 1:
@@ -937,33 +948,52 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-        print(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        # self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
-        frequency_Hz = self.test_data.low_frequency_MHz * 1000000
-        self.AWG.SetFrequency_Hz(frequency_Hz)
-        self.AWG.SetOutput(True)
+
+        # Configure function generator
+        awg_var_dict = dict()
+        awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
+        awg_var_dict["Frequency (MHz)"] = frequency_MHz
+        awg_var_dict["Mode"] = "Toneburst"
+        awg_var_dict["Enable output"] = "False"
+        awg_var_dict["#Cycles"] = burst_count
+        if "low".upper() in frequency_settings.upper():
+            awg_var_dict["Set frequency options"] = 'Common low frequency'
+        elif "high".upper() in frequency_settings.upper():
+            awg_var_dict["Set frequency options"] = 'Common high frequency'
+        elif "config cluster".upper() in frequency_settings.upper():
+            awg_var_dict["Set frequency options"] = frequency_settings
+        else:
+            self.user_prompt_signal.emit("Invalid frequency parameter")
+            return self.abort()
+
+        self.configure_function_generator(awg_var_dict)
+
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
         # todo: populate var_dict and make sure method is implemented
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)  # script log updated in this method
 
+        self.Motors.go_to_position(['R'], [-180])
         cont = self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                        go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
-
         if not cont:
             return False
+
 
         self.home_system({'Axis to home': 'Theta'})
-        cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
-                       ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                       go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
-                       averages=averages)
+        if beam_angle_test:
+            cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+                           ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                           go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
+                           averages=averages)
 
-        if not cont:
-            return False
+            if not cont:
+                return False
 
         # Todo: check
         self.home_system({"Axis to home": "Theta"})
@@ -981,7 +1011,8 @@ class Manager(QThread):
         elif axis == 'Theta':
             axis_letter = 'R'
         else:
-            raise Exception
+            self.user_prompt_signal.emit("Invalid axis parameter, aborting")
+            return self.abort()
         if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
             units_str = "deg"
             axis_label = "Angle (deg)"
@@ -1130,6 +1161,8 @@ class Manager(QThread):
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA")
             cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
         # Todo: populate calibration data from test data in useful_methods
         calibration_data = generate_calibration_data(self.test_data)
@@ -1155,6 +1188,8 @@ class Manager(QThread):
             self.user_prompt_signal.emit(prompt_type)
 
         cont = self.cont_if_cont_clicked()
+        if not cont:
+            return
 
     def configure_function_generator(self, var_dict):
         """Set function generator to desired settings"""
@@ -1163,16 +1198,30 @@ class Manager(QThread):
         fMHz = float(var_dict["Frequency (MHz)"])
         mode = var_dict["Mode"]
         output = bool(var_dict["Enable output"])
-        cycles = int(var_dict["#Cycles"])
         frequency_options = var_dict["Set frequency options"]
+
+        if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
+            fMHz = self.test_data.low_frequency_MHz
+        elif frequency_options == "Common high frequency" or frequency_options == 'Element pk high frequency':
+            fMHz = self.test_data.high_frequency_MHz
+        elif frequency_options == "From config cluster":
+            pass
+        else:
+            self.user_prompt_signal.emit("Invalid frequency parameter, aborting")
+            return self.abort()
+
+
 
         self.AWG.SetOutput(output)
         self.AWG.SetFrequency_Hz(int(fMHz * 1000000))
+        self.test_data.log_script(
+            ["", "Configure FGen+PwrMeters", f"Frequency set to {fMHz} MHz", "", ])
         self.AWG.SetAmplitude_V(mVpp / 1000)
-        self.AWG.SetCycles(cycles)
 
         if mode == "N Cycle":
             self.AWG.SetBurst(True)
+            cycles = int(var_dict["#Cycles"])
+            self.AWG.SetCycles(cycles)
         else:
             self.AWG.SetBurst(False)
 
@@ -1219,6 +1268,8 @@ class Manager(QThread):
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             self.Motors.go_home_1d("X")
             cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
             self.test_data.log_script(["", f"Home  X", f"Home X", ""])
             return True
@@ -1262,7 +1313,7 @@ class Manager(QThread):
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
             if "Hydrophone" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, 0])
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
             elif "RFB" in target:
                 self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
             elif "Down" in target:
@@ -1283,7 +1334,7 @@ class Manager(QThread):
     def frequency_sweep(self, var_dict):
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
-        frequency_range = var_dict["Frequency range"]
+        frequency_range = FrequencyRange[var_dict["Frequency range"].lower().replace(" ", "_")]
         start_freq_MHz = var_dict["Start frequency (MHz)"]
         end_freq_MHz = var_dict["Start frequency (MHz)"]
         coarse_incr_MHz = var_dict["Coarse increment (MHz)"]
@@ -1397,17 +1448,23 @@ class Manager(QThread):
         data_directory = var_dict["Data directory"]
         target_position = var_dict["RFB target position"]
         target_angle = var_dict["RFB target angle"]
-        efficiency_test = var_dict["EfficiencyTest"]
+        efficiency_test = bool(var_dict["EfficiencyTest"])
         Pa_max = var_dict["Pa max (target, W)"]
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
+
+
+        settling_time = self.config["Analysis"]['settling_time_s']
+        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
+            self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
+                                         "specified in the config file. Either change it or load a different script")
 
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),
                                 frequency_range=frequency_range,
                                 Pf_max=Pf_max,
                                 Pa_max=Pa_max,
-                                ref_limit=reflection_limit)
+                                ref_limit=reflection_limit, config=self.config)
 
         self.element_number_signal.emit(str(self.element))
         # If on the first element, set the tab to the rfb tab
@@ -1432,50 +1489,76 @@ class Manager(QThread):
 
         self.test_data.log_script(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])
 
-        if frequency_range == "High frequency":
-            frequency_Hz = self.test_data.high_frequency_MHz * 1000000
-        elif frequency_range == "Low frequency":
-            frequency_Hz = self.test_data.low_frequency_MHz * 1000000
+        # Configure function generator
+        awg_var_dict = dict()
+        awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
+        awg_var_dict["Frequency (MHz)"] = frequency_MHz
+        awg_var_dict["Mode"] = "Continous"
+        awg_var_dict["Enable output"] = "False"
+        awg_var_dict["#Cycles"] = ""
+        if "Common".upper() in set_frequency_options.upper() and frequency_range == FrequencyRange.low_frequency:
+            awg_var_dict["Set frequency options"] = 'Common low frequency'
+        elif "Common".upper() in set_frequency_options.upper() and frequency_range == FrequencyRange.high_frequency:
+            awg_var_dict["Set frequency options"] = 'Common high frequency'
+        elif "config cluster".upper() in set_frequency_options.upper():
+            awg_var_dict["Set frequency options"] = set_frequency_options
         else:
-            self.log("Improper frequency set, defaulting to low frequency")
-            frequency_Hz = self.parent.ua_calibration_tab.Low_Frequency_MHz * 1000000
+            self.user_prompt_signal.emit("Invalid frequency parameter, aborting")
+            return self.abort
 
-        self.AWG.SetFrequency_Hz(frequency_Hz)
-        self.test_data.log_script(
-            ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_Hz / 1000000} MHz", "", ])
+        self.configure_function_generator(awg_var_dict)
 
-        # self.Balance.zero_balance_instantly()  # todo: see if we need this
-
-        startTime = t.time()
-        current_cycle = 1
+        self.Balance.zero_balance_instantly()
 
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
         # Begin multithreaded capture from the power meters and the balance and cycle the awg on and off
         self.__begin_rfb_logger_thread(self.rfb_data)
+
+        startTime = t.time()
+        current_cycle = 1
+
+        # Extra off cycle at beginning
+        self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
+        self.AWG.SetOutput(False)
+        # for the duration of rfb off time
+        while t.time() - startTime < rfb_off_time:
+            # retrieve data from the RFB_logger and pass it to the UI
+            self.rfb_data = self.rfb_logger.rfb_data
+            self.update_rfb_tab_signal.emit()
+
+            self.app.processEvents()
+
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
 
-            # Turn off AWG
-            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
-            self.AWG.SetOutput(False)
-            # for the duration of rfb off time
-            while t.time() - cycle_start_time < rfb_off_time:
-                # retrieve data from the RFB_logger and pass it to the UI
-                self.rfb_data = self.rfb_logger.rfb_data
-                self.update_rfb_tab_signal.emit()
-                self.app.processEvents()
             #  turn on awg
             self.log(f"Turning on AWG T = {'%.2f' % (t.time() - startTime)}")
             self.AWG.SetOutput(True)
             # for the duration of rfb on time
-            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
+            while t.time() - cycle_start_time < rfb_on_time:
                 # retrieve data from the RFB_logger and pass it to the UI
                 self.rfb_data = self.rfb_logger.rfb_data
                 self.update_rfb_tab_signal.emit()
                 self.app.processEvents()
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
+
+            # Turn off AWG
+            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
+            self.AWG.SetOutput(False)
+            # for the duration of rfb off time
+            while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
+                # retrieve data from the RFB_logger and pass it to the UI
+                self.rfb_data = self.rfb_logger.rfb_data
+                try:
+                    print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
+                except IndexError:
+                    pass
+                self.update_rfb_tab_signal.emit()
+
+                self.app.processEvents()
+
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
@@ -1508,10 +1591,10 @@ class Manager(QThread):
         self.test_data.update_results_summary_with_efficiency_results(
             high_frequency=frequency_range == "High frequency",
             element=self.element,
-            frequency_Hz=frequency_Hz,
+            frequency_Hz=self.AWG.state["frequency_Hz"],
             efficiency_percent=self.rfb_data.efficiency_percent,
             reflected_power_percent=self.rfb_data.reflected_power_percent,
-            forward_power_max=self.rfb_data.forward_power_max,
+            forward_power_max=self.rfb_data.forward_power_max_extrapolated,
             water_temperature_c=self.rfb_data.water_temperature_c
         )
 

@@ -29,7 +29,7 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
                     ("ElementPositionTest", "FALSE"),
                     ("Max angle variation (deg)", "2.000000"),
                     ("BeamAngleTest", "FALSE"),
-                    ("Frequency settings", "Avg. Low frequency"),
+                    ("Frequency settings", "Common low frequency"),
                     ("Auto set timebase", "TRUE"),
                     ("#Cycles.Capture", "10"),
                     ("#Cycles.Delay", "0"),

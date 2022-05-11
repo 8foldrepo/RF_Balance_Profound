@@ -7,6 +7,7 @@
 #            - Right-click on the file, select properties, click "Unblock" (if shown)
 import ctypes
 import sys
+import time as t
 
 import clr  # pythonnet
 from PyQt5.QtCore import pyqtSignal
@@ -67,12 +68,14 @@ class PowerMeter(AbstractSensor):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
-        # Todo: read a wattage value and emit it via the reading signal
-        Power = self.pwr.ReadPower()
+        startTime = t.time()
+        Power = self.pwr.ReadImmediatePower()
         self.reading_signal.emit(Power)
+        #print(f"{self.device_key} Power meter reading time: {t.time() - startTime}")
+        self.last_reading_time = t.time()
+
         return Power
 
-    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None
@@ -81,13 +84,14 @@ class PowerMeter(AbstractSensor):
 
 
 if __name__ == "__main__":
-    reflected_meter = PowerMeter(config=None, device_key="Reflected_Power_Meter")
     forward_meter = PowerMeter(config=None, device_key="Forward_Power_Meter")
     forward_meter.connect_hardware()
-    reflected_meter.connect_hardware()
 
-    print(f"Forward power: {forward_meter.get_reading()} Watts")
-    print(f"Reflected power: {reflected_meter.get_reading()} Watts")
+    start_time = t.time()
+    while True:
+        cycle_start_time = t.time()
+        print(f"Forward power: {forward_meter.get_reading()} Watts")
+
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()

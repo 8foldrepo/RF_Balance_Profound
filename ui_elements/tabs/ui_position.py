@@ -41,6 +41,9 @@ class Position(MyQWidget, Ui_Form):
         self.motors = None
         self.manager = None
         self.config = None
+        self.com_port = None
+        self.settings_ray = list()
+
 
     def set_config(self, config):
         self.config = config
@@ -51,7 +54,7 @@ class Position(MyQWidget, Ui_Form):
     def set_motors(self, motors):
         self.motors = motors
         self.populate_default_ui()
-
+        self.com_port = self.config[self.motors.device_key]['port']
         self.setup_signal.connect(self.motors.setup)
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)
@@ -60,8 +63,29 @@ class Position(MyQWidget, Ui_Form):
         self.home_1d_signal.connect(self.motors.go_home_1d)
         self.reset_zero_signal.connect(self.motors.set_origin_here)
         self.go_to_signal.connect(self.motors.go_to_position)
-
+        self.populate_settings_ray()
         self.configure_signals()
+
+    def populate_settings_ray(self):
+        self.trans_1_indicator.setChecked(True)
+        self.trans_1_indicator.dPtr.animate(True)
+        self.theta_rotation_indicator.setChecked(True)
+        self.theta_rotation_indicator.dPtr.animate(True)
+
+        self.visa_resource_field.setText(self.com_port)
+
+        self.axis_spinbox.setValue(2)
+        self.calibrate_ray = self.config[self.motors.device_key]['calibrate_ray']
+        self.steps_per_mm_sb.setValue(self.calibrate_ray[1])
+        self.gearing_ray = self.config[self.motors.device_key]['gearing_ray']
+        self.gearing_double_spinbox.setValue(self.gearing_ray[1])
+        self.encoder_ray = self.config[self.motors.device_key]['encoder_ray']
+        self.encoded_indicator.setChecked(self.encoder_ray[1])
+        self.rotational_ray = self.config[self.motors.device_key]['rotational_ray']
+        if self.rotational_ray[1]:
+            self.type_combobox.setCurrentText("Rotational")
+        else:
+            self.type_combobox.setCurrentText("Translational")
 
     # Enable ui to control motors unless the manager is running a script
     def motors_ready(self):
@@ -77,7 +101,10 @@ class Position(MyQWidget, Ui_Form):
                                 'rot_speed': self.rotational_speed_deg_s_sb.value(),
                                 'steps_per_deg': self.steps_per_degree_sb.value(),
                                 'steps_per_mm': self.steps_per_mm_sb.value(),
-                                'ang_incr': self.ang_inc_double_sb.value(), })
+                                'ang_incr': self.ang_inc_double_sb.value(),
+                                'x_gearing': self.gearing_ray[0],
+                                'r_gearing': self.gearing_ray[1]
+                                })
 
     def populate_default_ui(self):
         self.movement_mode_comboBox.setCurrentText(self.config[self.motors.device_key]["movement_mode"])
@@ -117,6 +144,8 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_button.setEnabled(enabled)
 
     def configure_signals(self):
+        #self.set_button.clicked.connect(self.set_clicked)
+        self.axis_spinbox.valueChanged.connect(self.axis_changed)
         self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
         # Hardware control signals
         self.x_pos_button.clicked.connect(lambda: self.begin_motion("X", 1))
@@ -139,10 +168,27 @@ class Position(MyQWidget, Ui_Form):
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
 
-    """Begin motion in with the specified axis letter is the specified direction. Example text: X+ """
+    def axis_changed(self):
+        """Change the settings displayed in the UI to reflect the current axis"""
+        axis = self.axis_spinbox.value()-1
+        self.steps_per_mm_sb.setValue(self.motors.calibrate_ray_steps_per[axis])
+        self.gearing_double_spinbox.setValue(self.motors.gearing_ray[axis])
+        self.encoded_indicator.setChecked(self.motors.encoder_ray[axis])
+        if self.motors.rotational_ray[axis]:
+            self.type_combobox.setCurrentText("Rotational")
+        else:
+            self.type_combobox.setCurrentText("Translational")
+
+    #todo: this is disabled in the UI
+    # def set_clicked(self):
+    #     """Update the motor settings to reflect the UI"""
+    #     axis = self.axis_spinbox.value() - 1
+    #     self.motors.
 
     @pyqtSlot(str, int)
     def begin_motion(self, axis, direction):
+        """Begin motion in with the specified axis letter is the specified direction. Example text: X+ """
+
         # Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
         # self.motors.moving = True
         self.set_buttons_enabled_signal.emit(False)

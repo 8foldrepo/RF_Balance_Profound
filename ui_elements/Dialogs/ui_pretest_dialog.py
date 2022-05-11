@@ -1,10 +1,8 @@
 from datetime import datetime
 from os.path import exists
-
 from PyQt5.QtCore import pyqtSignal
-
 from Utilities.useful_methods import is_number
-from Utilities.variable_containers import TestData
+from data_structures.test_data import TestData
 from Widget_Library import dialog_pretest
 from definitions import ROOT_DIR
 from ui_elements.Dialogs.my_qdialog import MyQDialog

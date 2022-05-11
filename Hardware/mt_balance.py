@@ -15,7 +15,7 @@ class MT_balance(AbstractBalance):
 
     def __init__(self, config, device_key="MT_Balance", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
-
+        self.continuously_reading = False
         self.ser = None
         self.latest_weight = -1
         self.connected = False
@@ -107,7 +107,6 @@ class MT_balance(AbstractBalance):
             )
             # self.ser.write(b"ON\r")
             self.connected = True
-            self.start_continuous_reading()
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "Access is denied" in str(e):
@@ -166,6 +165,10 @@ class MT_balance(AbstractBalance):
             self.log(level="error", message=f"{self.device_key} not connected")
             return
 
+        if not self.continuously_reading:
+            self.start_continuous_reading()
+            self.continuously_reading = True
+
         self.ser.flushInput()
 
         # self.ser.write(b"\nSI\n")
@@ -213,8 +216,6 @@ class MT_balance(AbstractBalance):
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
-        # Command: I2 Inquiry of balance data.
-        # Response: I2 A Balance data as "text_item".
         self.ser.write(b"\nS\n")
         self.log("Getting stable reading, please wait")
 
@@ -249,17 +250,18 @@ class MT_balance(AbstractBalance):
             return None
 
         self.ser.write(b"\nI4\n")
-        self.log("Getting stable reading, please wait")
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
+
                 if b"I4" in item:
                     chunks = item.split(b" ")
                     for chunk in chunks:
                         if len(chunk) > 6:
-                            return chunk
+                            return chunk.decode("utf-8")
+
                 else:
                     if item == b'I':
                         self.log(level='error', message='Weight unstable or balance busy')
