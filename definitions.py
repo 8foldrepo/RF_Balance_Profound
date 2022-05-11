@@ -1,9 +1,11 @@
 import os
 from enum import Enum
 
+
 class FrequencyRange(Enum):
     high_frequency = 1
     low_frequency = 2
+
 
 class WaterLevel(Enum):
     below_level = 1

@@ -97,7 +97,7 @@ class RFBData:
 
         # List containing all readings while AWG was on
         reflected_power_on_means, _, _ = analyze_intervals(self.r_meter_readings_w,
-                                                     self.get_on_interval_indicies())
+                                                           self.get_on_interval_indicies())
         # Mean reflected power while on
         if len(reflected_power_on_means) > 0:
             self.reflected_power_on_mean = mean(reflected_power_on_means)
@@ -134,7 +134,8 @@ class RFBData:
         self.update_realtime_data()
 
         if self.forward_power_on_mean != 0:
-            self.efficiency_percent = self.acoustic_power_on_mean / (self.forward_power_on_mean - self.reflected_power_on_mean) * 100
+            self.efficiency_percent = self.acoustic_power_on_mean / (
+                        self.forward_power_on_mean - self.reflected_power_on_mean) * 100
         else:
             self.efficiency_percent = 0
 
@@ -158,8 +159,6 @@ class RFBData:
         Returns a list of pairs of integers corresponding to the indicies of this class' list attributes where
         the AWG was on and the sensors have had time to settle.
         """
-
-        # todo: implement a delay
 
         if len(self.awg_on_ray) == 0:
             return []
@@ -202,7 +201,7 @@ class RFBData:
             copy[i] = list(copy[i])
 
             copy[i][0] = self.times_s[copy[i][0]]
-            copy[i][1] = self.times_s[copy[i][1]-1]
+            copy[i][1] = self.times_s[copy[i][1] - 1]
 
         return tuple(copy)
 
@@ -213,8 +212,6 @@ class RFBData:
         Returns a list of pairs of integers corresponding to the indicies of this class' list attributes where
         the AWG was on and the sensors have had time to settle.
         """
-
-        # todo: implement a delay
 
         if len(self.awg_on_ray) == 0:
             return []
@@ -294,7 +291,7 @@ class RFBData:
 
     def data_is_valid(self):
         return not None in self.balance_readings_g or None in self.r_meter_readings_w or \
-            None in self.f_meter_readings_w
+               None in self.f_meter_readings_w
 
 
 def analyze_intervals(data: List[float], intervals: List[Tuple[int]]) \

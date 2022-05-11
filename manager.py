@@ -7,11 +7,13 @@ import sys
 import time as t
 from collections import OrderedDict
 from typing import List
+
 import numpy as np
 import pyvisa
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -20,9 +22,9 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
-from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
@@ -66,7 +68,8 @@ class Manager(QThread):
 
     # Signal section
     # Dialog signals
-    user_prompt_signal = pyqtSignal(str, bool)  # str is message for user to read, bool is whether or not to restrict the continue button
+    user_prompt_signal = pyqtSignal(str,
+                                    bool)  # str is message for user to read, bool is whether or not to restrict the continue button
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = pyqtSignal()
@@ -412,7 +415,7 @@ class Manager(QThread):
         except pyvisa.errors.InvalidSession:
             self.log(level='error', message="Could not capture, oscilloscope resource closed")
         except TypeError:
-            self.log(level='error', message = "Cold not capture")
+            self.log(level='error', message="Cold not capture")
         return [], []
 
     def plot_scope(self, time, voltage):
@@ -764,7 +767,8 @@ class Manager(QThread):
             self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
         else:
             self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])
-            cont = self.sequence_pass_fail(error_detail="Get UA Serial in pretest initialisation failed", action_type="Interrupt action")
+            cont = self.sequence_pass_fail(error_detail="Get UA Serial in pretest initialisation failed",
+                                           action_type="Interrupt action")
             if not cont:
                 return
             self.retry_var = False
@@ -787,12 +791,13 @@ class Manager(QThread):
 
         if home_successful:
             self.test_data.log_script(['', "Home all", f"OK; X={self.Motors.coords_mm[0]}; "
-                                                   f"Theta={self.Motors.coords_mm[1]}", ''])
+                                                       f"Theta={self.Motors.coords_mm[1]}", ''])
         else:
             self.test_data.log_script(['', "Home all", f"FAIL; X={self.Motors.coords_mm[0]}; "
-                                                        f"Theta={self.Motors.coords_mm[1]}", ''])
+                                                       f"Theta={self.Motors.coords_mm[1]}", ''])
 
-            cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Home all has failed in pretest initialisation')
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Home all has failed in pretest initialisation')
             if not cont:
                 return
 
@@ -926,7 +931,7 @@ class Manager(QThread):
         max_angle_variation_Deg = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
-        frequency_MHz =float(var_dict["Frequency (MHz)"])
+        frequency_MHz = float(var_dict["Frequency (MHz)"])
         amplitude_mVpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
 
@@ -981,17 +986,17 @@ class Manager(QThread):
 
         self.Motors.go_to_position(['R'], [-180])
         cont = self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
-                       go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
+                              go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,
+                              averages=averages)
         if not cont:
             return False
-
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
             cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
-                           ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                           go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
-                           averages=averages)
+                                  ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                                  go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
+                                  averages=averages)
 
             if not cont:
                 return False
@@ -1042,7 +1047,8 @@ class Manager(QThread):
 
             times_s, voltages_v = self.capture_scope(channel=scope_channel)
             if times_s == [] or voltages_v == []:
-                cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Oscilloscope capture failed')
+                cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                               error_detail='Oscilloscope capture failed')
                 if not cont:
                     return False
 
@@ -1210,8 +1216,6 @@ class Manager(QThread):
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
             return self.abort()
-
-
 
         self.AWG.SetOutput(output)
         self.AWG.SetFrequency_Hz(int(fMHz * 1000000))
@@ -1454,11 +1458,11 @@ class Manager(QThread):
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
 
-
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
-                                         "specified in the config file. Either change it or load a different script", False)
+                                         "specified in the config file. Either change it or load a different script",
+                                         False)
 
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),
@@ -1569,16 +1573,20 @@ class Manager(QThread):
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()
 
+        test_result = self.rfb_data.get_pass_result()
+
         # prompt user if test failed
-        if self.rfb_data.get_pass_result().upper() == 'FAIL':
-            cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=f'Element_{self.element:02} Failed efficiency test')
+        if test_result == 'FAIL':
+            cont = self.sequence_pass_fail(action_type='Pass fail action',
+                                           error_detail=f'Element_{self.element:02} Failed efficiency test')
             if not cont:
                 return
-        elif self.rfb_data.get_pass_result().upper() == 'DNF':
-            cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail=f'Element_{self.element:02} Failed efficiency test')
+        elif test_result == 'DNF':
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail=f'Element_{self.element:02} Failed efficiency test')
             if not cont:
                 return
-        elif self.rfb_data.get_pass_result().upper() != 'PASS':
+        elif test_result != 'PASS':
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
             self.wait_for_cont()
@@ -1593,7 +1601,8 @@ class Manager(QThread):
             efficiency_percent=self.rfb_data.efficiency_percent,
             reflected_power_percent=self.rfb_data.reflected_power_percent,
             forward_power_max=self.rfb_data.forward_power_max_extrapolated,
-            water_temperature_c=self.rfb_data.water_temperature_c
+            water_temperature_c=self.rfb_data.water_temperature_c,
+            test_result=test_result
         )
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
@@ -1658,7 +1667,8 @@ class Manager(QThread):
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data: RFBData):
-        self.rfb_logger = RFBDataLogger(rfb_data, self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter, config=self.config)
+        self.rfb_logger = RFBDataLogger(rfb_data, self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter,
+                                        config=self.config)
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
         self.rfb_logger.start(priority=QThread.HighPriority)
@@ -1685,7 +1695,6 @@ class Manager(QThread):
     def exec_command(self, command):
         self.cmd = command
         self.condition.wakeAll()
-
 
     def sequence_pass_fail(self, action_type: str, error_detail: str) -> bool:
         """

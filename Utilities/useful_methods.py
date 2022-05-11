@@ -2,8 +2,11 @@ import collections.abc
 import datetime
 import os
 from typing import Tuple, List
+
 import numpy as np
+
 from data_structures.test_data import TestData
+
 
 def create_coord_rays(coords: str, ax_letters: list):
     """

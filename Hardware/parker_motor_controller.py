@@ -55,12 +55,14 @@ class ParkerMotorController(AbstractMotorController):
                 origin_offset = -1 * self.config["WTF_PositionParameters"]["XHomeCoord"]
             elif axes[i] == "R":
                 # Remove the coordinate of the home position (the motor doesn't recognize it)
-                origin_offset = self.config["WTF_PositionParameters"]["ThetaHomeCoord"] * float(self.gearing_ray[num-1])
+                origin_offset = self.config["WTF_PositionParameters"]["ThetaHomeCoord"] * float(
+                    self.gearing_ray[num - 1])
             else:
                 self.log(level="error", message="Axis not recognized in go to position")
                 origin_offset = 0
 
-            motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1]) / float(self.gearing_ray[num-1])
+            motor_steps = (target_coordinate_mm - origin_offset) * float(self.calibrate_ray_steps_per[num - 1]) / float(
+                self.gearing_ray[num - 1])
             coords.append(motor_steps)
 
         if not self.movement_mode == "Distance":
@@ -125,8 +127,6 @@ class ParkerMotorController(AbstractMotorController):
         if get_position:
             self.get_position()
 
-
-
     @pyqtSlot(dict)
     def setup_slot(self, settings=None):
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
@@ -171,8 +171,6 @@ class ParkerMotorController(AbstractMotorController):
 
         self.ready_signal.emit()
         return True
-
-
 
     def setup_home(self):
         # todo: test and uncomment
@@ -291,7 +289,7 @@ class ParkerMotorController(AbstractMotorController):
                 self.log(f"output = {output}")
 
             self.ser.write(output)
-            #t.sleep(0.1)  # todo: test this for time and reliability
+            # t.sleep(0.1)  # todo: test this for time and reliability
             # Listen for echo twice
             for i in range(2):
                 echo = self.ser.readline().strip(b"\r\n")
@@ -313,7 +311,6 @@ class ParkerMotorController(AbstractMotorController):
         if self.lock is not None and not mutex_locked:
             self.lock.unlock()
         return False
-
 
     def print_response(self, mutex_locked=False):
         """Print every line of the controller's output until timeout is reached"""
@@ -524,7 +521,6 @@ class ParkerMotorController(AbstractMotorController):
                 return True
         return False
 
-
     def getBaud(self):
         """Query and return the baud rate"""
         if self.ser is None:
@@ -580,11 +576,11 @@ class ParkerMotorController(AbstractMotorController):
             if self.ax_letters[i].upper() == "X":
                 # Add on the coordinate of the home position (from the motor's perspective it is zero)
                 position_deg_or_mm = position_deg_or_mm - self.config['WTF_PositionParameters']['XHomeCoord']
-                self.x_pos_mm_signal.emit(round(position_deg_or_mm * float(self.gearing_ray[i]), 2) )
+                self.x_pos_mm_signal.emit(round(position_deg_or_mm * float(self.gearing_ray[i]), 2))
             elif self.ax_letters[i].upper() == "R":
                 # Add on the coordinate of the home position (from the motor's perspective it is zero)
                 position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
-                self.r_pos_mm_signal.emit(round(position_deg_or_mm * float(self.gearing_ray[i]), 2) )
+                self.r_pos_mm_signal.emit(round(position_deg_or_mm * float(self.gearing_ray[i]), 2))
 
             position_deg_or_mm = position_deg_or_mm * float(self.gearing_ray[i])
 

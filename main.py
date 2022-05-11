@@ -33,8 +33,8 @@ def main(args):
     window.system_config.populate_config_ui()
     window.access_level_combo.setCurrentText("Administrator")
 
-    #todo: uncomment this in final product
-    #window.prompt_for_password()
+    # todo: uncomment this in final product
+    # window.prompt_for_password()
 
     window.begin_manager_thread()
     code = app.exec_()

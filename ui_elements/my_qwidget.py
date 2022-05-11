@@ -23,8 +23,8 @@ class MyQWidget(QWidget):
     set_buttons_enabled_signal = QtCore.pyqtSignal(bool)
 
     def __init__(
-        self,
-        parent=None,
+            self,
+            parent=None,
     ):
         super().__init__(parent=parent)
 

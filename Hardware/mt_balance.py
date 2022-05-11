@@ -1,4 +1,3 @@
-import time
 import time as t
 
 import serial
@@ -286,4 +285,3 @@ if __name__ == "__main__":
     balance.connect_hardware()
     while True:
         print(balance.get_reading())
-

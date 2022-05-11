@@ -2,6 +2,7 @@ import logging
 import os
 import shutil
 from datetime import datetime
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
 from data_structures.test_data import TestData
@@ -235,29 +236,29 @@ class FileSaver:
     # the three lists are 2D, first col in sub list is time second is voltage
     # todo: add a more specific filename and match the format of the example files
     def store_measure_rfb_waveform_csv(
-        self,
-        element_number,
-        ua_serial_number,
-        freq_mhz: float,
-        diameter_mm: float,
-        propagation_distance_mm: float,
-        T_decC: float,
-        UC_percent: float,
-        power_ratio: float,
-        g_mpersecsqrd: float,
-        cal_fact,
-        points: int,
-        power_on_w: list,
-        power_off_w: list,
-        cumulative_results: list,
-        threshold: float,
-        offset_s: float,
-        absorption: list,
-        transducer_size: list,
-        focussing: list,
-        absorb_trans_focus_times: list,
-        transition_amp_times: list,
-        raw_data: list,
+            self,
+            element_number,
+            ua_serial_number,
+            freq_mhz: float,
+            diameter_mm: float,
+            propagation_distance_mm: float,
+            T_decC: float,
+            UC_percent: float,
+            power_ratio: float,
+            g_mpersecsqrd: float,
+            cal_fact,
+            points: int,
+            power_on_w: list,
+            power_off_w: list,
+            cumulative_results: list,
+            threshold: float,
+            offset_s: float,
+            absorption: list,
+            transducer_size: list,
+            focussing: list,
+            absorb_trans_focus_times: list,
+            transition_amp_times: list,
+            raw_data: list,
     ):
 
         path = check_directory(
@@ -343,11 +344,11 @@ class FileSaver:
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
         if (
-            not points
-            == len(transition_amp_times[0])
-            == len(transition_amp_times[1])
-            == len(transition_amp_times[2])
-            == len(transition_amp_times[3])
+                not points
+                    == len(transition_amp_times[0])
+                    == len(transition_amp_times[1])
+                    == len(transition_amp_times[2])
+                    == len(transition_amp_times[3])
         ):
             self.log(
                 f"error: length mismatch between points ({points}) parameter and transition_amp_times start/end lists "
@@ -364,7 +365,7 @@ class FileSaver:
 
         file.write("\nRaw Data\n")
         file.write("Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)\n")
-        for x in range(min(len(raw_data[0]),len(raw_data[1]),len(raw_data[2]),len(raw_data[3]),len(raw_data[4]))):
+        for x in range(min(len(raw_data[0]), len(raw_data[1]), len(raw_data[2]), len(raw_data[3]), len(raw_data[4]))):
             time_s = "%.6f" % raw_data[0][x]
             mass_mg = "% .6f" % raw_data[1][x]
             ac_pow_w = "%.6f" % raw_data[2][x]
@@ -436,7 +437,6 @@ class FileSaver:
 
     def log(self, message, level="info"):
         log_msg(self, root_logger, message=message, level=level)
-
 
 # def test_store_find_element_waveform(file_saver):
 #     from numpy.random import uniform

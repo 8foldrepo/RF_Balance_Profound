@@ -71,7 +71,7 @@ class PowerMeter(AbstractSensor):
         startTime = t.time()
         Power = self.pwr.ReadImmediatePower()
         self.reading_signal.emit(Power)
-        #print(f"{self.device_key} Power meter reading time: {t.time() - startTime}")
+        # print(f"{self.device_key} Power meter reading time: {t.time() - startTime}")
         self.last_reading_time = t.time()
 
         return Power
@@ -91,7 +91,6 @@ if __name__ == "__main__":
     while True:
         cycle_start_time = t.time()
         print(f"Forward power: {forward_meter.get_reading()} Watts")
-
 
     forward_meter.disconnect_hardware()
     reflected_meter.disconnect_hardware()

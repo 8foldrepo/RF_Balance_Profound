@@ -1,7 +1,9 @@
 from datetime import date
 from typing import List
+
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog, QApplication
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -110,7 +112,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if not index + 1 >= len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
-
     def delete_all(self):
         """Clear the ui script visual and clear the internal var_dicts variable"""
         # Prevent user from running the script until it is saved and reloaded
@@ -131,8 +132,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         value = item.text(1)
 
         is_task = (
-            item.parent() is self.treeWidget.invisibleRootItem()
-            or item.parent() is None
+                item.parent() is self.treeWidget.invisibleRootItem()
+                or item.parent() is None
         )
         if is_task:
             return
@@ -346,7 +347,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.app.processEvents()
 
         path = QFileDialog.getSaveFileName(
-            parent=self, caption="Save script", directory=ROOT_DIR+"/Scripts", filter="Script files (*.wtf)"
+            parent=self, caption="Save script", directory=ROOT_DIR + "/Scripts", filter="Script files (*.wtf)"
         )[0]
 
         # remove existing header(s) if there is one

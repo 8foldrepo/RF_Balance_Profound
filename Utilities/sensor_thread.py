@@ -1,6 +1,7 @@
-import random
-from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 import time as t
+
+from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
@@ -46,11 +47,10 @@ class SensorThread(QThread):
 
         print(self.sensor)
 
-        while t.time()-startTime < self.config["MT_Balance"]["timeout_s"]:
+        while t.time() - startTime < self.config["MT_Balance"]["timeout_s"]:
             reading = self.sensor.get_reading()
             if reading is not None:
                 break
-
 
         self.reading_signal.emit(reading)
         self.ready = True

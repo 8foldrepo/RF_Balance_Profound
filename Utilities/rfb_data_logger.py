@@ -1,10 +1,12 @@
-from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 import time as t
+
+from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
+
 from Hardware.Abstract.abstract_balance import AbstractBalance
-from Utilities.sensor_thread import SensorThread
 from Hardware.Abstract.abstract_sensor import AbstractSensor
-from Utilities.useful_methods import trim
 from Utilities.formulas import calculate_power_from_balance_reading
+from Utilities.sensor_thread import SensorThread
+from Utilities.useful_methods import trim
 from data_structures.rfb_data import RFBData
 
 
@@ -49,8 +51,8 @@ class RFBDataLogger(QThread):
         self.r_meter_ready = True
 
         self.BalanceThread = SensorThread(config=self.config, sensor=Balance)
-        self.F_Meter_Thread = SensorThread(config=self.config,sensor=Forward_Power_Meter)
-        self.R_Meter_Thread = SensorThread(config=self.config,sensor=Reflected_Power_Meter)
+        self.F_Meter_Thread = SensorThread(config=self.config, sensor=Forward_Power_Meter)
+        self.R_Meter_Thread = SensorThread(config=self.config, sensor=Reflected_Power_Meter)
         self.thread_list = list()
         self.thread_list.append(self.BalanceThread)
         self.thread_list.append(self.F_Meter_Thread)
@@ -79,7 +81,7 @@ class RFBDataLogger(QThread):
             if self.sensors_ready():
                 self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
                 current_time = t.time() - start_time
-                #print(f"current_time in rfb_data_logger.py is {current_time}")
+                # print(f"current_time in rfb_data_logger.py is {current_time}")
                 self.trigger_capture_signal.emit()
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
@@ -140,14 +142,14 @@ class RFBDataLogger(QThread):
         else:
             reading_w = reading_w / 50
 
-        self.f_meter_readings_w.append(reading_w )
+        self.f_meter_readings_w.append(reading_w)
         self.f_meter_ready = True
 
     @pyqtSlot(float)
     def log_r_meter(self, reading_w):
         # todo: remove this block
         if self.awg_on:
-            reading_w = reading_w  / 50 + .4
+            reading_w = reading_w / 50 + .4
         else:
             reading_w = reading_w / 50
 

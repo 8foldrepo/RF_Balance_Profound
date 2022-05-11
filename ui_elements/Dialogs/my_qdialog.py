@@ -18,7 +18,6 @@ balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
 
 
-
 # Features common to all of the dialogs in this project
 class MyQDialog(QDialog):
     abort_signal = pyqtSignal()

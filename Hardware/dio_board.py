@@ -108,8 +108,8 @@ class DIOBoard(AbstractIOBoard):
             start_time = t.time()
 
             while (
-                t.time() - start_time
-                < self.config[self.device_key]["Water level timeout (s)"]
+                    t.time() - start_time
+                    < self.config[self.device_key]["Water level timeout (s)"]
             ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
@@ -137,8 +137,8 @@ class DIOBoard(AbstractIOBoard):
             start_time = t.time()
 
             while (
-                t.time() - start_time
-                < self.config[self.device_key]["Water level timeout (s)"]
+                    t.time() - start_time
+                    < self.config[self.device_key]["Water level timeout (s)"]
             ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
@@ -157,8 +157,8 @@ class DIOBoard(AbstractIOBoard):
             start_time = t.time()
 
             while (
-                t.time() - start_time
-                < self.config[self.device_key]["Water level timeout (s)"]
+                    t.time() - start_time
+                    < self.config[self.device_key]["Water level timeout (s)"]
             ):
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level

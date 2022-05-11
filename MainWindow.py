@@ -22,8 +22,8 @@ from ui_elements.Dialogs.ui_password_dialog import PasswordDialog
 from ui_elements.Dialogs.ui_pretest_dialog import PretestDialog
 from ui_elements.Dialogs.ui_retracting_ua_warning import UARetractDialog
 from ui_elements.Dialogs.ui_script_complete_dialog import ScriptCompleteDialog
-from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
 from ui_elements.Dialogs.ui_user_info_dialog import WTFUserInfo
+from ui_elements.Dialogs.ui_user_prompt import WTFUserPrompt
 from ui_elements.Dialogs.ui_user_prompt_pump_not_running import WTFUserPromptPumpNotRunning
 from ui_elements.Dialogs.ui_user_prompt_water_too_high import WTFUserPromptWaterTooHigh
 from ui_elements.Dialogs.ui_user_prompt_water_too_low import WTFUserPromptWaterTooLow
@@ -160,7 +160,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         except KeyError:
             self.log('Debugging:disable_password_prompt not found in config, defaulting to true', str(logging.INFO))
 
-
     def pass_manager_and_hardware_to_tabs(self):
         self.rfb.set_manager(self.manager)
         self.rfb.set_balance(self.manager.Balance)
@@ -211,7 +210,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 var_value = var.text(1)
                 # If the variable is an element number that is looped
                 if var_name == "Element" and (
-                    "Current" in var_value or not "Element" in var_value
+                        "Current" in var_value or not "Element" in var_value
                 ):
                     var.setText(1, f"Current: {self.live_element_field.text()}")
 
@@ -479,7 +478,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def load_script_clicked(self):
         path, _ = QFileDialog.getOpenFileName(
-            self, "Open file", ROOT_DIR+"/Scripts", "Script files (*.wtf *.txt)"
+            self, "Open file", ROOT_DIR + "/Scripts", "Script files (*.wtf *.txt)"
         )
 
         if path == "":
@@ -658,7 +657,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str, bool)
     def show_user_prompt(self, message, restrict_continue):
-        dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue = restrict_continue)
+        dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.retry_signal.connect(self.manager.retry)
@@ -698,7 +697,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     # todo: test
     @pyqtSlot()
     def show_write_cal_data_prompt(
-        self, calibration_data
+            self, calibration_data
     ):  # calibration data var is 2d list
         dlg = WriteCalDataToUA()
         dlg.schema.setText(calibration_data[0][0])

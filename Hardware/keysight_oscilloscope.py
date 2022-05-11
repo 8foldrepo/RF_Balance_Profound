@@ -1,5 +1,5 @@
 import time as t
-import inspect
+
 import pyvisa
 
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
@@ -101,7 +101,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         external_trigger = self.config[self.device_key]["ext_trigger"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]
 
-        self.setup(channel=self.channel, range_s=self.range_s, offset_s=self.offset_s, autorange_v=autorange_V, range_v=self.range_mV/1000,
+        self.setup(channel=self.channel, range_s=self.range_s, offset_s=self.offset_s, autorange_v=autorange_V,
+                   range_v=self.range_mV / 1000,
                    ext_trigger=external_trigger, average_count=average_count)
 
     def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
@@ -137,8 +138,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(f":ACQ:COUN {averages}")
         else:
             self.command(":ACQ:TYPE HRES")
-
-
 
     def DisplayText(self, text: str):
         """Shows text_item on the oscilloscope screen"""

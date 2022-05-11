@@ -1,8 +1,10 @@
 from configparser import ConfigParser
+
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
-from data_structures.variable_containers import SystemInfo
+
 from Widget_Library.widget_system_info import Ui_Form
+from data_structures.variable_containers import SystemInfo
 from definitions import SYSTEM_INFO_INI_PATH
 from ui_elements.my_qwidget import MyQWidget
 
