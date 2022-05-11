@@ -283,15 +283,7 @@ class MT_balance(AbstractBalance):
 
 if __name__ == "__main__":
     balance = MT_balance(config=load_configuration())
-    # balance.connect_hardware()
-    # balance.test()
-    # print(balance.port)
-    # balance.start_continuous_reading()
-    # time_end = time.time() + 10
-    # while time.time() < time_end:
-    #     print(balance.get_reading())
-    # balance.stop_continuous_reading()
-    # print(balance.connected)
-    # input('press enter when weight is on scale')
-    # print(balance.get_reading())
+    balance.connect_hardware()
+    while True:
+        print(balance.get_reading())
 

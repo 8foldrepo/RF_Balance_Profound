@@ -19,8 +19,9 @@ class RFBDataLogger(QThread):
     rfb_data: RFBData
 
     def __init__(self, rfb_data, Balance: AbstractBalance, Forward_Power_Meter: AbstractSensor,
-                 Reflected_Power_Meter: AbstractSensor, parent=None):
+                 Reflected_Power_Meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
+        self.config = config
         # Encapsulates all data relevent to the RFB efficiency test Polled by the manager and shared with the
         # Ui thread by reference
         self.rfb_data = rfb_data
@@ -47,9 +48,9 @@ class RFBDataLogger(QThread):
         self.f_meter_ready = True
         self.r_meter_ready = True
 
-        self.BalanceThread = SensorThread(sensor=Balance)
-        self.F_Meter_Thread = SensorThread(sensor=Forward_Power_Meter)
-        self.R_Meter_Thread = SensorThread(sensor=Reflected_Power_Meter)
+        self.BalanceThread = SensorThread(config=self.config, sensor=Balance)
+        self.F_Meter_Thread = SensorThread(config=self.config,sensor=Forward_Power_Meter)
+        self.R_Meter_Thread = SensorThread(config=self.config,sensor=Reflected_Power_Meter)
         self.thread_list = list()
         self.thread_list.append(self.BalanceThread)
         self.thread_list.append(self.F_Meter_Thread)
@@ -144,7 +145,6 @@ class RFBDataLogger(QThread):
 
     @pyqtSlot(float)
     def log_r_meter(self, reading_w):
-
         # todo: remove this block
         if self.awg_on:
             reading_w = reading_w  / 50 + .4

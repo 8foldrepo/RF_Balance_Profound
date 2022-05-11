@@ -29,7 +29,7 @@ class KeysightAWG(AbstractAWG):
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],
-            burst=self.config[self.device_key]["burst"],
+            burst=self.config[self.device_key]["burst_on"],
             burst_cycles=self.config[self.device_key]["burst_cycles"],
             ext_trig=self.config[self.device_key]["trig_in"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
@@ -187,6 +187,7 @@ class KeysightAWG(AbstractAWG):
             self.command("OUTP:TRIG OFF")
 
     def SetBurst(self, on=True):
+        self.state["burst_on"] = on
         if "Phase_degrees" in self.state.keys():
             self.command(f"BURS:PHAS {self.state['Phase_degrees']}")
         if on:

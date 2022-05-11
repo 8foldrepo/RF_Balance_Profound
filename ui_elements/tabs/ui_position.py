@@ -79,7 +79,7 @@ class Position(MyQWidget, Ui_Form):
         self.steps_per_mm_sb.setValue(self.calibrate_ray[1])
         self.gearing_ray = self.config[self.motors.device_key]['gearing_ray']
         self.gearing_double_spinbox.setValue(self.gearing_ray[1])
-        self.encoder_ray = self.config[self.motors.device_key]['encoder_ray']
+        self.encoder_ray = self.config[self.motors.device_key]['encoder_installed_ray']
         self.encoded_indicator.setChecked(self.encoder_ray[1])
         self.rotational_ray = self.config[self.motors.device_key]['rotational_ray']
         if self.rotational_ray[1]:

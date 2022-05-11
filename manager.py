@@ -1,4 +1,5 @@
 import distutils.util
+import inspect
 import logging
 import os
 import re
@@ -65,7 +66,7 @@ class Manager(QThread):
 
     # Signal section
     # Dialog signals
-    user_prompt_signal = pyqtSignal(str)  # str is message for user to read
+    user_prompt_signal = pyqtSignal(str, bool)  # str is message for user to read, bool is whether or not to restrict the continue button
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = pyqtSignal()
@@ -276,7 +277,7 @@ class Manager(QThread):
             device = self.devices[i]
             connected, feedback = device.connect_hardware()
             if not connected:
-                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}")
+                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", False)
                 try:
                     self.wait_for_cont()
                 except RetryException:
@@ -669,7 +670,7 @@ class Manager(QThread):
         self.abort_var = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.enable_ui_signal.emit(True)
+        # self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
     def cont_if_cont_clicked(self) -> bool:
@@ -759,7 +760,7 @@ class Manager(QThread):
         self.test_data.log_script(['', "Prompt username+UA serial", 'OK', ''])
 
         # Check if wtfib is connected and add that to the script log
-        if self.UAInterface.read_result:
+        if self.test_data.serial_number != "":
             self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
         else:
             self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])
@@ -821,7 +822,7 @@ class Manager(QThread):
 
         # Prompt user to turn on power amp
         while True:
-            self.user_prompt_signal.emit("Please ensure that the power amplifier is on")
+            self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)
 
             cont = self.cont_if_cont_clicked()
             if not cont:
@@ -896,7 +897,7 @@ class Manager(QThread):
             self.file_saver.create_folders(test_data=self.test_data)
         except PermissionError:
             self.user_prompt_signal.emit("Access to the results folder is denied, change it in local.yaml."
-                                         "Copy default.yaml if local.yaml does not exist.")
+                                         "Copy default.yaml if local.yaml does not exist.", False)
             return self.abort()
         self.run_script()
 
@@ -967,7 +968,7 @@ class Manager(QThread):
         elif "config cluster".upper() in frequency_settings.upper():
             awg_var_dict["Set frequency options"] = frequency_settings
         else:
-            self.user_prompt_signal.emit("Invalid frequency parameter")
+            self.user_prompt_signal.emit("Invalid frequency parameter", False)
             return self.abort()
 
         self.configure_function_generator(awg_var_dict)
@@ -1011,7 +1012,7 @@ class Manager(QThread):
         elif axis == 'Theta':
             axis_letter = 'R'
         else:
-            self.user_prompt_signal.emit("Invalid axis parameter, aborting")
+            self.user_prompt_signal.emit("Invalid axis parameter, aborting", False)
             return self.abort()
         if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
             units_str = "deg"
@@ -1159,7 +1160,7 @@ class Manager(QThread):
 
         # Todo: test
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
-            self.user_prompt_signal.emit("Write calibration data to UA")
+            self.user_prompt_signal.emit("Write calibration data to UA", False)
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return
@@ -1183,9 +1184,9 @@ class Manager(QThread):
             except KeyError:
                 prompt_type = "Blank Prompt"
 
-            self.user_prompt_signal.emit(prompt_type)
+            self.user_prompt_signal.emit(prompt_type, False)
         else:
-            self.user_prompt_signal.emit(prompt_type)
+            self.user_prompt_signal.emit(prompt_type, False)
 
         cont = self.cont_if_cont_clicked()
         if not cont:
@@ -1207,7 +1208,7 @@ class Manager(QThread):
         elif frequency_options == "From config cluster":
             pass
         else:
-            self.user_prompt_signal.emit("Invalid frequency parameter, aborting")
+            self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
             return self.abort()
 
 
@@ -1457,7 +1458,7 @@ class Manager(QThread):
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
-                                         "specified in the config file. Either change it or load a different script")
+                                         "specified in the config file. Either change it or load a different script", False)
 
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),
@@ -1503,7 +1504,7 @@ class Manager(QThread):
         elif "config cluster".upper() in set_frequency_options.upper():
             awg_var_dict["Set frequency options"] = set_frequency_options
         else:
-            self.user_prompt_signal.emit("Invalid frequency parameter, aborting")
+            self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
             return self.abort
 
         self.configure_function_generator(awg_var_dict)
@@ -1551,10 +1552,6 @@ class Manager(QThread):
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
                 # retrieve data from the RFB_logger and pass it to the UI
                 self.rfb_data = self.rfb_logger.rfb_data
-                try:
-                    print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
-                except IndexError:
-                    pass
                 self.update_rfb_tab_signal.emit()
 
                 self.app.processEvents()
@@ -1565,8 +1562,9 @@ class Manager(QThread):
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
         if not self.rfb_data.data_is_valid():
-            # todo: trigger interrupt action
-            pass
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail=f'Element_{self.element:02} RFB did not complete due to sensor issue')
+            return self.abort()
 
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()
@@ -1660,7 +1658,7 @@ class Manager(QThread):
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data: RFBData):
-        self.rfb_logger = RFBDataLogger(rfb_data, self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter)
+        self.rfb_logger = RFBDataLogger(rfb_data, self.Balance, self.Forward_Power_Meter, self.Reflected_Power_Meter, config=self.config)
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
         self.rfb_logger.start(priority=QThread.HighPriority)
@@ -1727,7 +1725,7 @@ class Manager(QThread):
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
                                      F"Abort to end the UA testing sequence.\nRetry to re-run"
                                      F" this test.\nContinue to move to the next test in the "
-                                     F"sequence.")
+                                     F"sequence.", True)
         cont = self.cont_if_cont_clicked()
         if not cont:
             return False

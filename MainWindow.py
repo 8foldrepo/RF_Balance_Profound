@@ -656,9 +656,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort)
         dlg.exec()
 
-    @pyqtSlot(str)
-    def show_user_prompt(self, message):
-        dlg = WTFUserPrompt(config=self.config, access_level=self.access_level)
+    @pyqtSlot(str, bool)
+    def show_user_prompt(self, message, restrict_continue):
+        dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue = restrict_continue)
         dlg.user_prompt_output.setText(message)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.retry_signal.connect(self.manager.retry)

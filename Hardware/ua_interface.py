@@ -104,6 +104,7 @@ class UAInterface(AbstractUAInterface):
 
         self.ua_calibration_data = calibration_data_list
         self.cal_data_signal.emit(calibration_data_list, status)
+        self.read_result = True
         return calibration_data_list, status
 
     def write_data(self, ua_calibration_data=None):

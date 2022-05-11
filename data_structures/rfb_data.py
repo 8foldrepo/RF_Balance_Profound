@@ -95,6 +95,15 @@ class RFBData:
         else:
             self.forward_power_on_mean = float('nan')
 
+        # List containing all readings while AWG was on
+        reflected_power_on_means, _, _ = analyze_intervals(self.r_meter_readings_w,
+                                                     self.get_on_interval_indicies())
+        # Mean reflected power while on
+        if len(reflected_power_on_means) > 0:
+            self.reflected_power_on_mean = mean(reflected_power_on_means)
+        else:
+            self.reflected_power_on_mean = float('nan')
+
         if len(self.balance_readings_g) != 0:
             self.grams = self.balance_readings_g[len(self.balance_readings_g) - 1]
         else:
@@ -128,16 +137,6 @@ class RFBData:
             self.efficiency_percent = self.acoustic_power_on_mean / (self.forward_power_on_mean - self.reflected_power_on_mean) * 100
         else:
             self.efficiency_percent = 0
-
-        # List containing all readings while AWG was on
-        reflected_power_on_means, _, _ = analyze_intervals(self.r_meter_readings_w,
-                                                     self.get_on_interval_indicies())
-
-        # Mean acoustic power while on
-        if len(reflected_power_on_means) > 0:
-            self.reflected_power_on_mean = mean(reflected_power_on_means)
-        else:
-            self.reflected_power_on_mean = float('nan')
 
         if self.forward_power_on_mean != 0:
             self.reflected_power_percent = self.reflected_power_on_mean / self.forward_power_on_mean * 100
@@ -292,6 +291,10 @@ class RFBData:
                 f"Pf Max (W)={self.forward_power_max_extrapolated};WaterTemp (C)={self.water_temperature_c};"
                 f"Test result={self.get_pass_result()};Pf Max limit (W)={self.Pf_max}",
                 '']
+
+    def data_is_valid(self):
+        return not None in self.balance_readings_g or None in self.r_meter_readings_w or \
+            None in self.f_meter_readings_w
 
 
 def analyze_intervals(data: List[float], intervals: List[Tuple[int]]) \

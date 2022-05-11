@@ -420,12 +420,14 @@ class FileSaver:
                 f"length of distances = {len(positions)} ; length of vsi = {len(vsi_values)} size mismatch in "
                 f"store_find_element_waveform()"
             )
+            file.close()
             return
         else:
             for x in range(len(positions)):
                 formatted_time = "{:.6e}".format(positions[x])
                 formatted_voltage = "{:.6e}".format(vsi_values[x])
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
+        file.close()
 
     # todo
     def save_frequency_sweep(self):

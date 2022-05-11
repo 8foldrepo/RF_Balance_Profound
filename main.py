@@ -37,7 +37,6 @@ def main(args):
     #window.prompt_for_password()
 
     window.begin_manager_thread()
-
     code = app.exec_()
 
     root_logger.info(

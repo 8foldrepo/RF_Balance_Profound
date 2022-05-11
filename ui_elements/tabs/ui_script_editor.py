@@ -110,9 +110,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if not index + 1 >= len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
-    """Clear the ui script visual and clear the internal var_dicts variable"""
 
     def delete_all(self):
+        """Clear the ui script visual and clear the internal var_dicts variable"""
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -194,7 +194,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
                     # Discard the task type label and only show the task type itself
                     item = QTreeWidgetItem([parameter_pair[1]])
                 else:
-                    print(parameter_pair)
                     children.append(QTreeWidgetItem(parameter_pair))
 
             if item is None:

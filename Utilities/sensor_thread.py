@@ -7,11 +7,11 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 class SensorThread(QThread):
     reading_signal = pyqtSignal(float)
 
-    def __init__(self, sensor: AbstractSensor, parent=None):
+    def __init__(self, config, sensor: AbstractSensor, parent=None):
         super().__init__(parent=parent)
         self.name = sensor.device_key
         self.sensor = sensor
-
+        self.config = config
         self.capture_command = False
         self.ready = False
         self.mutex = QMutex()
@@ -44,9 +44,12 @@ class SensorThread(QThread):
 
         startTime = t.time()
 
+        print(self.sensor)
 
-        while reading == None and t.time()-startTime < self.config["MT_Balance"]["timeout_s"]:
+        while t.time()-startTime < self.config["MT_Balance"]["timeout_s"]:
             reading = self.sensor.get_reading()
+            if reading is not None:
+                break
 
 
         self.reading_signal.emit(reading)

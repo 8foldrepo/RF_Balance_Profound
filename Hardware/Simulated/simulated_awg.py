@@ -20,7 +20,7 @@ class SimulatedAWG(AbstractAWG):
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],
-            burst=self.config[self.device_key]["burst"],
+            burst=self.config[self.device_key]["burst_on"],
             burst_cycles=self.config[self.device_key]["burst_cycles"],
             ext_trig=self.config[self.device_key]["ext_trig"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
