@@ -125,7 +125,7 @@ class RFBData:
         self.update_realtime_data()
 
         if self.forward_power_on_mean != 0:
-            self.efficiency_percent = self.acoustic_power_on_mean / self.forward_power_on_mean * 100
+            self.efficiency_percent = self.acoustic_power_on_mean / (self.forward_power_on_mean - self.reflected_power_on_mean) * 100
         else:
             self.efficiency_percent = 0
 

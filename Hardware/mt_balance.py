@@ -15,7 +15,7 @@ class MT_balance(AbstractBalance):
 
     def __init__(self, config, device_key="MT_Balance", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
-
+        self.continuously_reading = False
         self.ser = None
         self.latest_weight = -1
         self.connected = False
@@ -107,7 +107,6 @@ class MT_balance(AbstractBalance):
             )
             # self.ser.write(b"ON\r")
             self.connected = True
-            self.start_continuous_reading()
         except serial.serialutil.SerialException as e:
             self.connected = False
             if "Access is denied" in str(e):
@@ -165,6 +164,10 @@ class MT_balance(AbstractBalance):
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
+
+        if not self.continuously_reading:
+            self.start_continuous_reading()
+            self.continuously_reading = True
 
         self.ser.flushInput()
 

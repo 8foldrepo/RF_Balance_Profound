@@ -698,22 +698,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Element pk low frequency</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Element pk high frequency</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Common low frequency</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Common high frequency</string>
+       <string>Common peak frequency</string>
       </property>
      </item>
     </widget>
