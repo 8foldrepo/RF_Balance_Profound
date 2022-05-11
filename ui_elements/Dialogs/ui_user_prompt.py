@@ -9,10 +9,12 @@ class WTFUserPrompt(MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
     abort_signal = pyqtSignal()
     retry_signal = pyqtSignal()
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, access_level='Engineer'):
         super().__init__(config=config)
         self.setupUi(self)
         self.configure_signals()
+        if access_level == 'Operator':
+            self.continue_button.setEnabled(False)
 
     def configure_signals(self):
         self.continue_button.clicked.connect(self.continue_clicked)

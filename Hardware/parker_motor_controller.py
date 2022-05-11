@@ -86,7 +86,6 @@ class ParkerMotorController(AbstractMotorController):
         # self.get_position()
         # Send ready signal to enable UI
         self.ready_signal.emit()
-        return True
 
     @pyqtSlot()
     def set_origin_here(self):
@@ -153,6 +152,12 @@ class ParkerMotorController(AbstractMotorController):
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
         self.command(f"0GH")
 
+        while self.moving:
+            self.get_position()
+
+        self.ready_signal.emit()
+        return True
+
     @pyqtSlot(str)
     def go_home_1d(self, axis):
         if axis == 'R' or axis == "Theta":
@@ -160,6 +165,15 @@ class ParkerMotorController(AbstractMotorController):
 
         axis_number = self.__get_ax_number(axis)
         self.command(f"{axis_number}GH")
+
+        start_time = t.time()
+        while self.moving:
+            self.get_position()
+
+        self.ready_signal.emit()
+        return True
+
+
 
     def setup_home(self):
         # todo: test and uncomment

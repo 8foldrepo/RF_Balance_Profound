@@ -109,9 +109,14 @@ class SimulatedMotorController(AbstractMotorController):
         self.coords_mm[0] = 273
         self.get_position()
 
+        if self.config['Debugging']['simulate_motor_error']:
+            return False
+
+        return True
+
     @pyqtSlot(list, list)
     def go_to_position(self, axes: list, coords_mm: list) -> bool:
-        if self.config["Debugging"]["simulate_errors"]:
+        if self.config["Debugging"]["simulate_motor_error"]:
             return False
 
         for i in range(len(axes)):

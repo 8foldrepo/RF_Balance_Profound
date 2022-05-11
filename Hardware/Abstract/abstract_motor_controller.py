@@ -100,12 +100,12 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot()
-    def go_home(self):
+    def go_home(self) -> bool:
         ...
 
     @abstractmethod
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str):
+    def go_home_1d(self, axis: str) -> bool:
         ...
 
     @abstractmethod

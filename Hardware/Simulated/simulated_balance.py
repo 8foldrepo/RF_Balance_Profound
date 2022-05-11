@@ -94,7 +94,7 @@ class SimulatedBalance(AbstractBalance):
         self.connected_signal.emit(self.connected)
 
     def get_reading(self):
-        if self.config["Debugging"]["simulate_errors"]:
+        if self.config["Debugging"]["simulate_balance_error"]:
             return None
 
         t.sleep(0.02)

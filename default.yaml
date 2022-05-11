@@ -14,6 +14,12 @@ Debugging:
   simulate_thermocouple: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
+  simulate_ua_error: false
+  simulate_motor_error: false
+  simulate_thermocouple_error: false
+  simulate_oscilloscope_error: false
+  simulate_balance_error: false
+  disable_password_prompt: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:

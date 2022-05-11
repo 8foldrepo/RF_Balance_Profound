@@ -75,6 +75,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def __init__(self):
         # Load default.yaml file to self.config as a python dictionary
         super(MainWindow, self).__init__()
+        self.access_level = None
         self.thread_list = list()
         self.list_of_var_dicts = list()
         self.app = QApplication.instance()
@@ -153,6 +154,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.threading = True
         self.manager.start(priority=QThread.HighPriority)
         self.command_signal.emit("CONNECT")
+        try:
+            if not self.config['Debugging']['disable_password_prompt']:
+                self.prompt_for_password()
+        except KeyError:
+            self.log('Debugging:disable_password_prompt not found in config, defaulting to true', str(logging.INFO))
+
 
     def pass_manager_and_hardware_to_tabs(self):
         self.rfb.set_manager(self.manager)
@@ -240,6 +247,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(str)
     def password_result(self, access_level):
         self.access_level_combo.setCurrentText(access_level)
+        self.access_level = access_level
 
         if access_level == "Engineer":
             self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
@@ -650,7 +658,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_user_prompt(self, message):
-        dlg = WTFUserPrompt(config=self.config)
+        dlg = WTFUserPrompt(config=self.config, access_level=self.access_level)
         dlg.user_prompt_output.setText(message)
         dlg.abort_signal.connect(self.manager.abort)
         dlg.retry_signal.connect(self.manager.retry)

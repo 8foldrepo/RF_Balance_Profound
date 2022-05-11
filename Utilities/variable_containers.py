@@ -114,7 +114,9 @@ class RFBData:
     # Either "Pass", "FAIL", or "DNF", should not be case sensitive, so use .upper()
     def get_pass_result(self) -> str:
         """Either "Pass", "FAIL", or "DNF", should not be case sensitive, so use .upper()"""
-        return "Fail"
+        return "DNF"
+        # return 'Pass'
+        # return 'FAIL'
 
     def get_result_log_entry(self):
         return ['', "Pass/Fail test",
