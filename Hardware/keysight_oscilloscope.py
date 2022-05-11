@@ -207,7 +207,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
-            print(channel)
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command(f"WAV:FORM ASC")
 

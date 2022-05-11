@@ -924,7 +924,7 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-        print(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        # self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
@@ -937,17 +937,18 @@ class Manager(QThread):
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)  # script log updated in this method
 
+        self.Motors.go_to_position(['R'], [-180])
         self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                        go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
 
-        self.home_system({'Axis to home': 'Theta'})
+        #self.home_system({'Axis to home': 'Theta'})
         self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                        ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
                        go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
                        averages=averages)
 
         # Todo: check
-        self.home_system({"Axis to home": "Theta"})
+        #self.home_system({"Axis to home": "Theta"})
 
         self.AWG.SetOutput(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
@@ -1234,7 +1235,7 @@ class Manager(QThread):
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
             if "Hydrophone" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, 0])
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
             elif "RFB" in target:
                 self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
             elif "Down" in target:
@@ -1369,10 +1370,16 @@ class Manager(QThread):
         data_directory = var_dict["Data directory"]
         target_position = var_dict["RFB target position"]
         target_angle = var_dict["RFB target angle"]
-        efficiency_test = var_dict["EfficiencyTest"]
+        efficiency_test = bool(var_dict["EfficiencyTest"])
         Pa_max = var_dict["Pa max (target, W)"]
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
+
+
+        settling_time = self.config["Analysis"]['settling_time_s']
+        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
+            self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
+                                         "specified in the config file. Either change it or load a different script")
 
         self.rfb_data = RFBData(element=self.element,
                            water_temperature_c=self.thermocouple.get_reading(),
@@ -1435,10 +1442,6 @@ class Manager(QThread):
         while t.time() - startTime < rfb_off_time:
             # retrieve data from the RFB_logger and pass it to the UI
             self.rfb_data = self.rfb_logger.rfb_data
-            try:
-                print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
-            except IndexError:
-                pass
             self.update_rfb_tab_signal.emit()
 
             self.app.processEvents()
@@ -1521,7 +1524,7 @@ class Manager(QThread):
         transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534],
                                 [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
         # todo: check that p_on_rand_unc is the one we want
-        print("saving")
+
         self.file_saver.store_measure_rfb_waveform_csv(
             element_number=self.element,
             ua_serial_number=self.test_data.serial_number,
@@ -1548,7 +1551,7 @@ class Manager(QThread):
             transition_amp_times=transition_amp_times,
             raw_data=raw_data,
         )
-        print("done")
+
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data:RFBData):
