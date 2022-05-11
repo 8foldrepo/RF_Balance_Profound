@@ -1,0 +1,113 @@
+Autoset timebase:
+  Max time of flight (us): 0.0
+  Min time of flight (us): 0.0
+Debugging:
+  simulate_hw: true
+  simulate_ua_interface: true
+  simulate_sensors: true
+  simulate_motors: true
+  simulate_oscilloscope: true
+  simulate_awg: true
+  simulate_balance: true
+  simulate_power_meters: true
+  simulate_io_board: true
+  simulate_thermocouple: true
+  end_script_on_errors: false
+  simulate_ua_error: false
+  simulate_motor_error: false
+  simulate_thermocouple_error: false
+  simulate_oscilloscope_error: false
+  simulate_balance_error: false
+  disable_password_prompt: true
+Dummy_Motors:
+  axes:
+  - X
+  - R
+  calibrate_ray:
+  - 1
+  - 1
+  jog_speed: 1
+  reverse_ray:
+  - false
+  - false
+  scan_speed: 1
+Dummy_Oscilloscope:
+  averages: 16
+  capture_period_ns: 5
+  channel: 1
+  cycles: 10
+  delay_cycles: 0
+  range_mv: 10
+FrequencyParameters:
+  LF:
+    LowFreqLimit(MHz): 4
+    HighFreqLimit(MHz): 4.8
+    Amplitude(mVpp): 50
+    BurstCount: 50
+  HF:
+    LowFreqLimit(MHz): 12.8
+    HighFreqLimit(MHz): 13.8
+    HF.Amplitude(mVpp): 50
+    HF.BurstCount: 65
+  Search:
+    CoarseIncr(MHz): 0.1
+    FineIncr(MHz): 0.01
+Keysight_AWG:
+  amplitude_V: 0.2
+  burst: false
+  burst_cycles: 50
+  burst_period_s: 0.1
+  ext_trig: false
+  frequency_Hz: 4290000
+  identifier: '0x2507'
+  offset_V: 0
+  output: true
+  output_Impedance: 50
+  set_on_startup: true
+Keysight_Oscilloscope:
+  averages: 16
+  capture_period_ns: 100
+  channel: 1
+  cycles: 10
+  delay_cycles: 0
+  identifier: '0x179B'
+  range_mv: 10
+MT_Balance:
+  port: COM7
+  timeout_s: 30
+Paths:
+  UA Serial numbers file: C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial
+    numbers.txt
+  UA results root directory: C:\Users\Public\Documents\Results\T
+  Script log directory: C:\Users\Public\Documents\Results\Logs
+Pump:
+  on_by_default: false
+  port: COM7
+  timeout_s: 1
+Sequence pass/fail:
+  Dialog timeout (s): 0
+  Interrupt action: Prompt for retry # could be hardware errors
+  Pass fail action: Retry automatically  #No dialog (abort), Prompt for retry, Retry automatically
+  Retries: 4
+User Accounts:
+  Administrator: PMI_Admin
+  Engineer: Engineer
+  Operator: Operator
+WTF_DIO:
+  DAQ Device name: WTF3
+  Fill/Drain mode: Automatic
+  Water level timeout (s): 230
+WTF_Interface_Board:
+  on_by_default: false
+  port: COM6
+  timeout_s: 1
+WTF_PositionParameters:
+  CentreHomeTheta?: true
+  ThetaHomeCoord: -90
+  ThetaLoadEnc?: false
+  ThetaPreHomeMove: 2
+  X-Element pitch (mm): 5
+  X-Element1: 0
+  X-TankInsertionPoint: 108
+  XHomeCoord: 263
+Water_Level_Sensor: null
