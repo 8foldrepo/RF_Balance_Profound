@@ -27,7 +27,6 @@ class TestData(QObject):
         self.set_blank_values()
 
     def set_blank_values(self):
-        super().__init__()
         from datetime import datetime
 
         # add formatted date
@@ -85,6 +84,7 @@ class TestData(QObject):
             self.results_summary[element - 1][2] = "%.2f" % max_position
         self.show_results_summary.emit(self.results_summary)
 
+
     def update_results_summary_with_efficiency_results(
             self,
             high_frequency: bool,
@@ -114,6 +114,7 @@ class TestData(QObject):
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
             self.results_summary[element - 1][9] = "%.1f" % forward_power_max
             self.results_summary[element - 1][10] = "%.1f" % water_temperature_c
+            self.results_summary[element - 1][11] = test_result
 
         self.show_results_summary.emit(self.results_summary)
 

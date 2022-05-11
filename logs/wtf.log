@@ -1,9 +1,15 @@
-2022-05-11 17:00:34,156 [INFO] [PowerMeter] [] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-05-11 17:00:34,738 [INFO] [PowerMeter] [] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-05-11 17:00:34,738 [INFO] [DIOBoard] [] : Connecting to DIO board... 
-2022-05-11 17:00:34,796 [INFO] [DIOBoard] [] : WTF_DIO connected successfully
-2022-05-11 17:00:34,797 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
-2022-05-11 17:00:34,808 [INFO] [UAInterface] [] : WTFIB connected successfully
-onnected successfully
-2022-05-11 17:00:34,797 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
-2022-05-11 17:00:34,808 [INFO] [UAInterface] [] : WTFIB connected successfully
+2022-05-11 18:11:44,730 [INFO] [PowerMeter] [] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
+2022-05-11 18:11:45,319 [INFO] [PowerMeter] [] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
+2022-05-11 18:11:45,320 [INFO] [DIOBoard] [] : Connecting to DIO board... 
+2022-05-11 18:11:45,383 [INFO] [DIOBoard] [] : WTF_DIO connected successfully
+2022-05-11 18:11:45,384 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
+2022-05-11 18:11:45,404 [INFO] [UAInterface] [] : WTFIB connected successfully
+2022-05-11 18:11:55,067 [INFO] [Manager] [manager_thread] : Running script
+2022-05-11 18:11:55,288 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-05-11 18:11:55,728 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.00, r=0.0
+2022-05-11 18:11:55,745 [INFO] [MT_balance] [] : Zeroing Balance
+2022-05-11 18:11:55,747 [INFO] [MT_balance] [] : Balance Zeroed
+2022-05-11 18:11:55,749 [INFO] [Manager] [] : Turning off AWG T = 0.00
+2022-05-11 18:13:05,865 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\LC0013-2022.05.11-18.11\Power data\EfficiencyTest\E01\E01_HFpower.csv
+
+2022-05-11 18:13:05,865 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\LC0013-2022.05.11-18.11\Power data\EfficiencyTest\E01\E01_HFpower.csv

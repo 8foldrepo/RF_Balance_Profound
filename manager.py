@@ -322,6 +322,7 @@ class Manager(QThread):
         Core event loop of the manager thread. For any other methods to be executed in the manager thread
         They must be called from this method.
         """
+
         self.mutex.lock()
         self.start_time = t.time()
 
@@ -448,8 +449,6 @@ class Manager(QThread):
     def load_script(self, path):
         self.abort(log=False)
 
-        self.script = open(path, "r")
-
         # Send name of script to UI
         split_path = path.split("/")
         self.test_data.script_name = split_path[len(split_path) - 1]
@@ -466,7 +465,7 @@ class Manager(QThread):
         taskVars = OrderedDict()  # the list of variables for the individual task
         taskNo = -2  # keeps track of the task number for indexing
         f = open(path, "r")
-        for line in self.script:
+        for line in f:
             ray = line.split(" = ")
 
             # Populate script metadata to UI using signals
@@ -882,13 +881,12 @@ class Manager(QThread):
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
                 break
 
-    """Retrieve metadata from mainwindow and trigger the script to run"""
-
     @pyqtSlot(TestData)
     def begin_script_slot(self, test_data: TestData):
         """Receive test metadata from the MainWindow, and begin a script."""
 
         # reset test data to default values
+
         self.test_data.set_blank_values()
 
         self.test_data.test_comment = test_data.test_comment
@@ -1158,8 +1156,6 @@ class Manager(QThread):
 
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
-
-        """Save scan results to a file"""
         save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
         write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
         prompt_for_calibration_write = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
@@ -1172,8 +1168,8 @@ class Manager(QThread):
                 return
 
         # Todo: populate calibration data from test data in useful_methods
-        calibration_data = generate_calibration_data(self.test_data)
-        self.UAInterface.write_data(calibration_data)
+        # calibration_data = generate_calibration_data(self.test_data)
+        # self.UAInterface.write_data(calibration_data)
 
         self.test_data.software_version = self.config["Software_Version"]
         self.test_data.calc_angle_average()
@@ -1463,6 +1459,9 @@ class Manager(QThread):
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
                                          "specified in the config file. Either change it or load a different script",
                                          False)
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                return
 
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),
@@ -1535,6 +1534,9 @@ class Manager(QThread):
 
             self.app.processEvents()
 
+        last_plot_time = t.time()
+        plot_cooldown_s = .1
+
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
 
@@ -1545,8 +1547,13 @@ class Manager(QThread):
             while t.time() - cycle_start_time < rfb_on_time:
                 # retrieve data from the RFB_logger and pass it to the UI
                 self.rfb_data = self.rfb_logger.rfb_data
-                self.update_rfb_tab_signal.emit()
+
+                if t.time()-last_plot_time < plot_cooldown_s:
+                    self.update_rfb_tab_signal.emit()
+                    self.last_plot_time = t.time()
+
                 self.app.processEvents()
+
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
 
             # Turn off AWG
@@ -1556,7 +1563,10 @@ class Manager(QThread):
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
                 # retrieve data from the RFB_logger and pass it to the UI
                 self.rfb_data = self.rfb_logger.rfb_data
-                self.update_rfb_tab_signal.emit()
+
+                if t.time() - last_plot_time < plot_cooldown_s:
+                    self.update_rfb_tab_signal.emit()
+                    self.last_plot_time = t.time()
 
                 self.app.processEvents()
 
@@ -1576,17 +1586,17 @@ class Manager(QThread):
         test_result = self.rfb_data.get_pass_result()
 
         # prompt user if test failed
-        if test_result == 'FAIL':
+        if test_result.upper() == 'FAIL':
             cont = self.sequence_pass_fail(action_type='Pass fail action',
                                            error_detail=f'Element_{self.element:02} Failed efficiency test')
             if not cont:
                 return
-        elif test_result == 'DNF':
+        elif test_result.upper() == 'DNF':
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail=f'Element_{self.element:02} Failed efficiency test')
             if not cont:
                 return
-        elif test_result != 'PASS':
+        elif test_result.upper() != 'PASS':
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
             self.wait_for_cont()

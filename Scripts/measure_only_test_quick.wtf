@@ -1,6 +1,6 @@
 [Top Level]
 # of Tasks = "1"
-Createdon = "02/05/2022"
+Createdon = "11/05/2022"
 Createdby = "IJB"
 Description = ""
 
@@ -9,8 +9,8 @@ Task type = "Measure element efficiency (RFB)"
 Element = "Current"
 Frequency range = "Low frequency"
 RFB.#on/off cycles = "3"
-RFB.On time (s) = ".1"
-RFB.Off time (s) = ".1"
+RFB.On time (s) = "2"
+RFB.Off time (s) = "2"
 RFB.Threshold = "0.050000"
 RFB.Offset = "0.500000"
 Set frequency options = "Common peak frequency"

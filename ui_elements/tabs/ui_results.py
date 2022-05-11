@@ -6,10 +6,11 @@ from Widget_Library.widget_results import Ui_Form
 from data_structures.test_data import TestData
 from ui_elements.my_qwidget import MyQWidget
 
-"""This widget visualizes scan_data[results_summary], which is a 2d list of lists containing strings."""
+
 
 
 class Results(MyQWidget, Ui_Form):
+    """This widget visualizes scan_data[results_summary], which is a 2d list of lists containing strings."""
     test_data: TestData
 
     def __init__(self, parent=None):
@@ -84,9 +85,9 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
-    """saves the results as a text file with a path specified in the config file."""
 
     def save_test_results_summary(self):
+        """saves the results as a text file with a path specified in the config file."""
         if not self.test_data:  # if dictionary is empty return
             self.log(level='error', message='No test results to save')
             return
@@ -102,10 +103,11 @@ class Results(MyQWidget, Ui_Form):
         self.config = config
 
     def load_test_results(self, path=None):
+        """header of the table starts at 0th row so start populating it at row 1 and down"""
         if path is None:
             path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
 
-        """header of the table starts at 0th row so start populating it at row 1 and down"""
+
         if path == "":
             return
         test_results_file = open(path, "r")

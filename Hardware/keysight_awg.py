@@ -195,9 +195,8 @@ class KeysightAWG(AbstractAWG):
         else:
             self.command("BURS OFF")
 
-    """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
-
     def GetBurst(self):
+        """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
         self.command(f"BURS?")
         self.state["burst_on"] = "1" in self.read()
         self.command(f"BURS:NCYC?")
@@ -278,12 +277,10 @@ class KeysightAWG(AbstractAWG):
     #     self.state['trig_period_s'] = float(self.read())
     #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
 
-    # todo: test
     def wrap_up(self):
         self.SetOutput(False)
         self.disconnect_hardware()
 
-    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None

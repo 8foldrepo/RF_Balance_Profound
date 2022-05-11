@@ -1,6 +1,6 @@
 import time as t
-
 from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
+from PyQt5.QtWidgets import QApplication
 
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_sensor import AbstractSensor
@@ -17,12 +17,12 @@ class RFBDataLogger(QThread):
     Balance: AbstractBalance
     Forward_Power_Meter: AbstractSensor
     Reflected_Power_Meter: AbstractSensor
-
     rfb_data: RFBData
 
     def __init__(self, rfb_data, Balance: AbstractBalance, Forward_Power_Meter: AbstractSensor,
                  Reflected_Power_Meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
+        self.app = QApplication.instance()
         self.config = config
         # Encapsulates all data relevent to the RFB efficiency test Polled by the manager and shared with the
         # Ui thread by reference
@@ -136,7 +136,7 @@ class RFBDataLogger(QThread):
     @pyqtSlot(float)
     def log_f_meter(self, reading_w):
 
-        # todo: remove this block
+        #todo: remove this block
         if self.awg_on:
             reading_w = reading_w / 50 + 1
         else:
@@ -166,4 +166,3 @@ class RFBDataLogger(QThread):
             super().quit()
         except RuntimeError:
             pass
-        print("Done quiting thread")

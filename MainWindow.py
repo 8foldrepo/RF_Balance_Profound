@@ -310,16 +310,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.script_info_signal.connect(self.visualize_script)
         self.manager.script_info_signal.connect(self.script_editor.visualize_script)
         self.manager.script_info_signal.connect(self.update_script_indicator)
-        self.manager.test_data.show_results_summary.connect(
-            self.results_tab.populate_results_table
-        )
-        self.manager.test_data.show_script_log.connect(
-            self.results_tab.populate_log_table
-        )
+
+        self.manager.test_data.show_results_summary.connect(self.results_tab.populate_results_table)
+
+        self.manager.test_data.show_script_log.connect(self.results_tab.populate_log_table)
         self.manager.element_number_signal.connect(self.live_element_field.setText)
-        self.manager.element_number_signal.connect(
-            self.update_script_visual_element_number
-        )
+        self.manager.element_number_signal.connect(self.update_script_visual_element_number)
 
         # Hardware indicator signals
         self.manager.AWG.frequency_signal.connect(self.update_frequency_field)

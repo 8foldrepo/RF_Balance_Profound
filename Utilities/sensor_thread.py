@@ -45,8 +45,6 @@ class SensorThread(QThread):
 
         startTime = t.time()
 
-        print(self.sensor)
-
         while t.time() - startTime < self.config["MT_Balance"]["timeout_s"]:
             reading = self.sensor.get_reading()
             if reading is not None:

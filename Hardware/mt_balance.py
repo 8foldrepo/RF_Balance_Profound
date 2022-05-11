@@ -71,7 +71,6 @@ class MT_balance(AbstractBalance):
             return
         self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
-        print("zero balance command sent")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
