@@ -94,6 +94,7 @@ class TestData(QObject):
             reflected_power_percent: float,
             forward_power_max: float,
             water_temperature_c: float,
+            test_result: str
     ):
         """Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the
             results tab"""
@@ -113,6 +114,7 @@ class TestData(QObject):
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
             self.results_summary[element - 1][9] = "%.1f" % forward_power_max
             self.results_summary[element - 1][10] = "%.1f" % water_temperature_c
+
         self.show_results_summary.emit(self.results_summary)
 
     def calc_angle_average(self):

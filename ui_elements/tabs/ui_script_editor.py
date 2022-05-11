@@ -2,7 +2,7 @@ from datetime import date
 from typing import List
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog, QApplication
 
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
