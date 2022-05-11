@@ -322,7 +322,6 @@ class Manager(QThread):
         Core event loop of the manager thread. For any other methods to be executed in the manager thread
         They must be called from this method.
         """
-
         self.mutex.lock()
         self.start_time = t.time()
 
@@ -660,8 +659,7 @@ class Manager(QThread):
         """Aborts script when current step is done running"""
 
         curframe = inspect.currentframe()
-        calframe = inspect.getouterframes(curframe, 2)
-        print('abort() caller name:', calframe[1][3])  # ! debug line
+        calframe = inspect.getouterframes(curframe, 2) # ! debug line
 
         if log:
             self.log("Aborting script")
@@ -721,8 +719,7 @@ class Manager(QThread):
     """Retries current step"""
 
     @pyqtSlot()
-    def retry(self):
-        print("retry method has been called")  # debug line
+    def retry(self):# debug line
         self.retry_var = True
 
     def write_cal_data_to_ua_button(self):
@@ -1528,14 +1525,7 @@ class Manager(QThread):
         self.AWG.SetOutput(False)
         # for the duration of rfb off time
         while t.time() - startTime < rfb_off_time:
-            # retrieve data from the RFB_logger and pass it to the UI
-            self.rfb_data = self.rfb_logger.rfb_data
-            self.update_rfb_tab_signal.emit()
-
-            self.app.processEvents()
-
-        last_plot_time = t.time()
-        plot_cooldown_s = .1
+            self.refresh_rfb_tab()
 
         while current_cycle <= on_off_cycles:
             cycle_start_time = t.time()
@@ -1545,31 +1535,18 @@ class Manager(QThread):
             self.AWG.SetOutput(True)
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
-                # retrieve data from the RFB_logger and pass it to the UI
-                self.rfb_data = self.rfb_logger.rfb_data
-
-                if t.time()-last_plot_time < plot_cooldown_s:
-                    self.update_rfb_tab_signal.emit()
-                    self.last_plot_time = t.time()
-
-                self.app.processEvents()
-
-            current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
+                self.refresh_rfb_tab()
 
             # Turn off AWG
             self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
             self.AWG.SetOutput(False)
             # for the duration of rfb off time
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
-                # retrieve data from the RFB_logger and pass it to the UI
-                self.rfb_data = self.rfb_logger.rfb_data
+                self.refresh_rfb_tab()
 
-                if t.time() - last_plot_time < plot_cooldown_s:
-                    self.update_rfb_tab_signal.emit()
-                    self.last_plot_time = t.time()
+            current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
 
-                self.app.processEvents()
-
+        startTime = t.time()
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
@@ -1673,7 +1650,6 @@ class Manager(QThread):
             transition_amp_times=transition_amp_times,
             raw_data=raw_data,
         )
-
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data: RFBData):
@@ -1700,6 +1676,12 @@ class Manager(QThread):
 
     def log(self, message, level="info"):
         log_msg(self, root_logger=root_logger, message=message, level=level)
+
+    def refresh_rfb_tab(self):
+        """Helper function which retrieves data from the rfb_logger and tells the rfb tab to update"""
+        self.rfb_data = self.rfb_logger.rfb_data
+        self.update_rfb_tab_signal.emit()
+        self.app.processEvents()
 
     @pyqtSlot(str)
     def exec_command(self, command):
@@ -1763,13 +1745,10 @@ class Manager(QThread):
             max_retries = self.config[k1]['Retries']
         except KeyError:
             self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
-            max_retries = 5
-
-        print(f'retry count is {self.retry_count} for {error_detail}')  # debug line
+            max_retries = 5# debug line
 
         if self.retry_count < max_retries:
             self.retry_count = self.retry_count + 1
-            print(f'retry incremented, now {self.retry_count}')
             return
         else:
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)

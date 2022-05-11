@@ -1,15 +1,16 @@
-2022-05-11 18:11:44,730 [INFO] [PowerMeter] [] : Forward_Power_Meter (model PWR-SEN-6GHS, serial 11408040323 connected successfully
-2022-05-11 18:11:45,319 [INFO] [PowerMeter] [] : Reflected_Power_Meter (model PWR-SEN-6GHS, serial 11506210019 connected successfully
-2022-05-11 18:11:45,320 [INFO] [DIOBoard] [] : Connecting to DIO board... 
-2022-05-11 18:11:45,383 [INFO] [DIOBoard] [] : WTF_DIO connected successfully
-2022-05-11 18:11:45,384 [INFO] [UAInterface] [] : Attempting to connect to WTFIB... 
-2022-05-11 18:11:45,404 [INFO] [UAInterface] [] : WTFIB connected successfully
-2022-05-11 18:11:55,067 [INFO] [Manager] [manager_thread] : Running script
-2022-05-11 18:11:55,288 [INFO] [Manager] [] : Element number not given, using previous element: 1
-2022-05-11 18:11:55,728 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.00, r=0.0
-2022-05-11 18:11:55,745 [INFO] [MT_balance] [] : Zeroing Balance
-2022-05-11 18:11:55,747 [INFO] [MT_balance] [] : Balance Zeroed
-2022-05-11 18:11:55,749 [INFO] [Manager] [] : Turning off AWG T = 0.00
-2022-05-11 18:13:05,865 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\LC0013-2022.05.11-18.11\Power data\EfficiencyTest\E01\E01_HFpower.csv
-
-2022-05-11 18:13:05,865 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\LC0013-2022.05.11-18.11\Power data\EfficiencyTest\E01\E01_HFpower.csv
+2022-05-11 18:38:29,998 [INFO] [ParkerMotorController] [] : Connecting to motor controller...
+2022-05-11 18:38:29,998 [ERROR] [ParkerMotorController] [] : VIX_Motors not connected. Another program is likely using it
+2022-05-11 18:38:58,629 [INFO] [Manager] [manager_thread] : Running script
+2022-05-11 18:38:58,659 [INFO] [Manager] [] : Element number not given, using previous element: 1
+2022-05-11 18:38:58,659 [INFO] [Manager] [] : Moved to 1, at coordinate x=0.00, r=0.0
+2022-05-11 18:38:58,659 [INFO] [SimulatedBalance] [] : Zeroing Balance
+2022-05-11 18:38:58,659 [INFO] [SimulatedBalance] [] : Zeroing Balance, Please wait
+2022-05-11 18:38:58,659 [INFO] [SimulatedBalance] [] : Balance Zeroed
+2022-05-11 18:38:58,659 [INFO] [Manager] [] : Turning off AWG T = 0.00
+2022-05-11 18:39:08,662 [INFO] [Manager] [] : Turning on AWG T = 10.00
+2022-05-11 18:39:18,671 [INFO] [Manager] [] : Turning off AWG T = 20.01
+2022-05-11 18:39:28,664 [INFO] [Manager] [] : Turning on AWG T = 30.01
+2022-05-11 18:39:38,668 [INFO] [Manager] [] : Turning off AWG T = 40.01
+2022-05-11 18:39:48,666 [INFO] [Manager] [] : Turning on AWG T = 50.01
+2022-05-11 18:39:58,673 [INFO] [Manager] [] : Turning off AWG T = 60.01
+2022-05-11 18:40:08,789 [INFO] [FileSaver] [] : Saving efficiency test data to: C:\Users\Axel M\Documents\UA results\GG1138-2022.05.11-18.38\Power data\EfficiencyTest\E01\E01_HFpower.csv

@@ -211,21 +211,22 @@ class ParkerMotorController(AbstractMotorController):
             )
             # Todo: add setup and query if the motor is responding
             #
-            # self.setup()
-            # startTime = t.time()
-            # while t.time()-startTime < self.time_limit_s:
-            #     self.ser.write(b"1R(BD)")
-            #     reply = self.ser.read()
-            #     if not reply == '':
-            #         self.connected = True
-            #
-            #         self.log("Motor controller connected and set to default settings")
-            #         return
-            #
-            # self.connected = False
-            # self.log(level='error', message=
-            # f"{self.device_key} COM port found but motor controller is not responding. "
-            # f"Make sure it is powered up and click setup.")
+            self.setup()
+            startTime = t.time()
+            while t.time()-startTime < self.time_limit_s:
+                self.ser.write(b"1R(BD)")
+                reply = self.ser.read()
+                if not reply == '':
+                    self.connected = True
+
+                    self.log("Motor controller connected and set to default settings")
+                    return
+
+            self.connected = False
+            self.log(level='error', message=
+            f"{self.device_key} COM port found but motor controller is not responding. "
+            f"Make sure it is powered up and click setup.")
+
             self.connected = True
         except serial.serialutil.SerialException as e:
             self.connected = False
