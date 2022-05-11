@@ -91,7 +91,6 @@ if __name__ == "__main__":
     while True:
         cycle_start_time = t.time()
         print(f"Forward power: {forward_meter.get_reading()} Watts")
-        print(t.time()-cycle_start_time)
 
 
     forward_meter.disconnect_hardware()

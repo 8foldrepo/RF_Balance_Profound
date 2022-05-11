@@ -160,5 +160,8 @@ class RFBDataLogger(QThread):
 
     def quit(self):
         self.stay_alive = False
-        super().quit()
+        try:
+            super().quit()
+        except RuntimeError:
+            pass
         print("Done quiting thread")

@@ -243,7 +243,7 @@ class Manager(QThread):
             self.IO_Board = SimulatedIOBoard(config=self.config)
         else:
             from Hardware.dio_board import DIOBoard
-            self.IO_Board = DIOBoard(config=self.config, simulate_sensors=self.config["Debugging"]["simulate_sensors"])
+            self.IO_Board = DIOBoard(config=self.config,simulate_sensors=self.config["Debugging"]["simulate_sensors"])
 
         if self.config["Debugging"]["simulate_thermocouple"]:
             from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
@@ -578,7 +578,7 @@ class Manager(QThread):
                     # notating which loop it's from
                     self.test_data.log_script(
                         [f"Iteration {self.taskExecOrder[self.step_index][1]} of "
-                         f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}", "", "", "", ]
+                        f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}","","","",]
                     )
                     inside_iteration = True
                     iteration_number = self.taskExecOrder[self.step_index][1]
@@ -623,7 +623,7 @@ class Manager(QThread):
             self.configure_oscilloscope_channels(args)
         elif "Oscilloscope Timebase".upper() in name.upper():
             self.configure_oscilloscope_timebase(args)
-        elif "Function Generator".upper() in name.upper():
+        elif"Function Generator".upper() in name.upper():
             self.configure_function_generator(args)
         elif "Autoset Timebase".upper() in name.upper():
             self.autoset_timebase(args)
@@ -633,9 +633,7 @@ class Manager(QThread):
             self.move_system(args)
         elif "Select Channel".upper() in name.upper():
             self.select_ua_channel(args)
-        else:
-            self.user_prompt_signal.emit("Invalid script action name, aborting")
-            return self.abort()
+            raise Exception
 
         self.task_index_signal.emit(self.step_index + 1)
 
@@ -656,6 +654,7 @@ class Manager(QThread):
         self.abort_var = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
+        self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
     def cont_if_cont_clicked(self) -> bool:
@@ -777,25 +776,29 @@ class Manager(QThread):
             self.test_data.log_script(['', 'Insert UA', f"UA Inserted to X={self.Motors.coords_mm[0]}"])
         except Exception as e:
             self.test_data.log_script(["", "Insert UA", f"FAIL {e}"])
-            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
+            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
                 return self.abort()
 
         if self.thermocouple.connected:
             self.test_data.log_script(["", "CheckThermocouple", "OK", ""])
         else:
             self.test_data.log_script(["", "CheckThermocouple", "FAIL", ""])
-            if self.config["Debugging"]["end_script_on_errors"] and not self.access_level == "Operator":
+            if self.config["Debugging"]["end_script_on_errors"]  and not self.access_level == "Operator":
                 return self.abort()
             # have the script aborted or wait for thermocouple?
 
+        burst_mode, unused = self.AWG.GetBurst()
+
         # Configure function generator
         func_var_dict = dict()
-        func_var_dict["Amplitude (mVpp)"] = (self.config[self.AWG.device_key]["amplitude_V"] * 1000)
+        func_var_dict["Amplitude (mVpp)"] = (
+                self.config[self.AWG.device_key]["amplitude_V"] * 1000
+        )
         func_var_dict["Frequency (MHz)"] = self.test_data.low_frequency_MHz
-        func_var_dict["Mode"] = "N Cycle"
+        func_var_dict["Mode"] = "Toneburst"
         func_var_dict["Enable output"] = True
         func_var_dict["#Cycles"] = self.config[self.AWG.device_key]['burst_cycles']
-        func_var_dict["Set frequency options"] = "Common low frequency"
+        func_var_dict["Set frequency options"] = "From config cluster"  # Todo: what does this mean?
         self.configure_function_generator(func_var_dict)
 
         # Prompt user to turn on power amp
@@ -927,7 +930,7 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-        print(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        # self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
@@ -957,6 +960,7 @@ class Manager(QThread):
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)  # script log updated in this method
 
+        self.Motors.go_to_position(['R'], [-180])
         self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                        go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type, averages=averages)
 
@@ -1159,7 +1163,6 @@ class Manager(QThread):
         fMHz = float(var_dict["Frequency (MHz)"])
         mode = var_dict["Mode"]
         output = bool(var_dict["Enable output"])
-
         frequency_options = var_dict["Set frequency options"]
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
@@ -1238,6 +1241,8 @@ class Manager(QThread):
         else:
             self.test_data.log_script(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])
 
+
+
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
         self.retracting_ua_warning_signal.emit()
@@ -1269,7 +1274,7 @@ class Manager(QThread):
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
             if "Hydrophone" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, 0])
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
             elif "RFB" in target:
                 self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
             elif "Down" in target:
@@ -1404,10 +1409,16 @@ class Manager(QThread):
         data_directory = var_dict["Data directory"]
         target_position = var_dict["RFB target position"]
         target_angle = var_dict["RFB target angle"]
-        efficiency_test = var_dict["EfficiencyTest"]
+        efficiency_test = bool(var_dict["EfficiencyTest"])
         Pa_max = var_dict["Pa max (target, W)"]
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
+
+
+        settling_time = self.config["Analysis"]['settling_time_s']
+        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
+            self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
+                                         "specified in the config file. Either change it or load a different script")
 
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),
@@ -1476,10 +1487,6 @@ class Manager(QThread):
         while t.time() - startTime < rfb_off_time:
             # retrieve data from the RFB_logger and pass it to the UI
             self.rfb_data = self.rfb_logger.rfb_data
-            try:
-                print(self.rfb_data.times_s[len(self.rfb_data.times_s) - 1])
-            except IndexError:
-                pass
             self.update_rfb_tab_signal.emit()
 
             self.app.processEvents()
@@ -1556,13 +1563,12 @@ class Manager(QThread):
         focussing = ["Off", 1.000000]
         # absorb_trans_focus_times/transition_amp_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
 
-        # todo:
+        #todo:
         absorb_trans_focus_times = [[9.784287, 30.010603, 50.511028], [11.048080, 31.280091, 51.729069],
                                     [20.055610, 40.457604, 60.772845], [21.230248, 41.546669, 62.039609]]
         transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534],
                                 [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
         # todo: check that p_on_rand_unc is the one we want
-        print("saving")
         self.file_saver.store_measure_rfb_waveform_csv(
             element_number=self.element,
             ua_serial_number=self.test_data.serial_number,
@@ -1589,7 +1595,7 @@ class Manager(QThread):
             transition_amp_times=transition_amp_times,
             raw_data=raw_data,
         )
-        print("done")
+
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data: RFBData):

@@ -138,9 +138,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         else:
             self.command(":ACQ:TYPE HRES")
 
-    """Shows text_item on the oscilloscope screen"""
+
 
     def DisplayText(self, text: str):
+        """Shows text_item on the oscilloscope screen"""
         self.command(f":DISP:TEXT {text}")
 
     def getVertScale_V(self, channel):
@@ -206,7 +207,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
-            print(channel)
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command(f"WAV:FORM ASC")
 

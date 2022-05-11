@@ -1,0 +1,25 @@
+2022-05-11 13:00:36,564 [INFO] [ParkerMotorController] [] : Connecting to motor controller...
+2022-05-11 13:00:47,410 [INFO] [ParkerMotorController] [manager_thread] : 0MA
+2022-05-11 13:00:47,410 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MA\r\n'
+2022-05-11 13:00:47,420 [INFO] [ParkerMotorController] [manager_thread] : 1D2042
+2022-05-11 13:00:47,420 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D2042\r\n'
+2022-05-11 13:00:47,430 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:47,430 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:48,360 [INFO] [ParkerMotorController] [manager_thread] : 1D2591
+2022-05-11 13:00:48,360 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D2591\r\n'
+2022-05-11 13:00:48,380 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:48,380 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:49,238 [INFO] [ParkerMotorController] [manager_thread] : 1D3141
+2022-05-11 13:00:49,238 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D3141\r\n'
+2022-05-11 13:00:49,258 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:49,258 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:00:59,013 [INFO] [ParkerMotorController] [manager_thread] : 1D56959
+2022-05-11 13:00:59,013 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D56959\r\n'
+2022-05-11 13:00:59,033 [INFO] [ParkerMotorController] [manager_thread] : 1G
+2022-05-11 13:00:59,033 [INFO] [ParkerMotorController] [manager_thread] : output = b'1G\r\n'
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-11 13:01:18,256 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : Stopping motion
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : 0S
+2022-05-11 13:01:18,336 [INFO] [ParkerMotorController] [manager_thread] : output = b'0S\r\n'

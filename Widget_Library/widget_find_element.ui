@@ -113,7 +113,7 @@
      <string> mm</string>
     </property>
     <property name="decimals">
-     <number>4</number>
+     <number>2</number>
     </property>
     <property name="minimum">
      <double>-500.000000000000000</double>
@@ -123,6 +123,9 @@
     </property>
     <property name="singleStep">
      <double>0.000100000000000</double>
+    </property>
+    <property name="value">
+     <double>0.250000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -163,7 +166,7 @@
      <string> Degrees</string>
     </property>
     <property name="decimals">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="minimum">
      <double>-360.000000000000000</double>
@@ -172,7 +175,10 @@
      <double>360.000000000000000</double>
     </property>
     <property name="singleStep">
-     <double>1.000000000000000</double>
+     <double>0.100000000000000</double>
+    </property>
+    <property name="value">
+     <double>-0.400000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_22">
@@ -205,6 +211,12 @@
     </property>
     <property name="whatsThis">
      <string/>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="value">
+     <number>21</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -250,6 +262,9 @@
     </property>
     <property name="whatsThis">
      <string/>
+    </property>
+    <property name="value">
+     <number>41</number>
     </property>
    </widget>
   </widget>
@@ -371,6 +386,9 @@
       <width>90</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="currentText">
+     <string>16 Averages</string>
     </property>
     <item>
      <property name="text">
@@ -537,6 +555,9 @@
     </property>
     <property name="text">
      <string>Auto Timebase</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label_12">
@@ -706,6 +727,9 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;- Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;- Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="currentText">
+     <string>Common low frequency</string>
+    </property>
     <item>
      <property name="text">
       <string>From config cluster</string>
@@ -767,6 +791,9 @@
     </property>
     <property name="singleStep">
      <double>1.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>50.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_17">
@@ -831,6 +858,9 @@
     <property name="singleStep">
      <double>0.000100000000000</double>
     </property>
+    <property name="value">
+     <double>4.400000000000000</double>
+    </property>
    </widget>
    <widget class="QDoubleSpinBox" name="FREQANG_VOLT_FIELD">
     <property name="geometry">
@@ -857,7 +887,7 @@
      <string> mV</string>
     </property>
     <property name="decimals">
-     <number>0</number>
+     <number>4</number>
     </property>
     <property name="minimum">
      <double>-10000.000000000000000</double>
@@ -867,6 +897,9 @@
     </property>
     <property name="singleStep">
      <double>1.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>50.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_19">
