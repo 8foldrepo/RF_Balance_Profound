@@ -97,3 +97,8 @@ class AbstractOscilloscope(AbstractDevice):
         """Captures from the specified channel and returns a list of times and a list of voltages of equal length"""
 
         ...
+
+    @abstractmethod
+    def get_rms(self) -> float:
+        """Retrieves the root mean squared value of what's current in the oscilloscope's window as a float"""
+        ...
