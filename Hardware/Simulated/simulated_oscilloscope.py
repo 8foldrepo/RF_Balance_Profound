@@ -59,6 +59,9 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         self.connected_signal.emit(self.connected)
 
     def capture(self, channel):
+        if self.config["Debugging"]["simulate_oscilloscope_error"]:
+            return None
+
         start_time = self.delay_cycles * self.signal_period_ns
         end_time = start_time + self.captures * self.capture_period_ns
         time = np.linspace(start_time, end_time, self.captures)
@@ -71,3 +74,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
 
     def get_serial_number(self) -> str:
         return '"Simulated"'
+
+    def autoset_timebase(self):
+        return

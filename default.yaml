@@ -14,6 +14,12 @@ Debugging:
   simulate_thermocouple: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
+  simulate_ua_error: false
+  simulate_motor_error: false
+  simulate_thermocouple_error: false
+  simulate_oscilloscope_error: false
+  simulate_balance_error: false
+  disable_password_prompt: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 Reflected_Power_Meter:
@@ -83,8 +89,8 @@ Daq_Power_Relay:
   timeout_s: 1
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: No dialog (abort)
-  Pass fail action: No dialog (abort)
+  Interrupt action: No dialog (abort) #No dialog (abort), Prompt for retry, Retry automatically
+  Pass fail action: No dialog (abort) #No dialog (abort), Prompt for retry, Retry automatically
   Retries: 0
 Software_Version: '1.0'
 UAInterface:

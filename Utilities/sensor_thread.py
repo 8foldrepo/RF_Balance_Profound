@@ -40,9 +40,15 @@ class SensorThread(QThread):
 
     def capture(self):
         self.ready = False
-        reading = None
-        while reading == None:
+        reading = float('nan')
+
+        startTime = t.time()
+
+
+        while reading == None and t.time()-startTime < self.config["MT_Balance"]["timeout_s"]:
             reading = self.sensor.get_reading()
+
+
         self.reading_signal.emit(reading)
         self.ready = True
 

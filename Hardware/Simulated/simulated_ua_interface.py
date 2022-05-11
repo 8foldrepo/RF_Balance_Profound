@@ -13,6 +13,11 @@ class SimulatedUAInterface(AbstractUAInterface):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.write_result = False
         self.read_result = True
+        try:
+            if self.config['Debugging']['simulate_ua_error']:
+                self.read_result = False
+        except KeyError:
+            pass
         self.ua_calibration_data = ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5',
                                     '66.8', '65.2',
                                     '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6',

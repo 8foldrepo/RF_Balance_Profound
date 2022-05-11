@@ -194,6 +194,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                     # Discard the task type label and only show the task type itself
                     item = QTreeWidgetItem([parameter_pair[1]])
                 else:
+                    print(parameter_pair)
                     children.append(QTreeWidgetItem(parameter_pair))
 
             if item is None:
