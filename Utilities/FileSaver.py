@@ -7,7 +7,7 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configur
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata
-from definitions import ROOT_DIR
+from definitions import ROOT_DIR, FrequencyRange
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
@@ -259,6 +259,7 @@ class FileSaver:
             absorb_trans_focus_times: list,
             transition_amp_times: list,
             raw_data: list,
+            frequency_range: FrequencyRange
     ):
 
         path = check_directory(
@@ -267,7 +268,7 @@ class FileSaver:
             )
         )
 
-        if freq_mhz > 8:
+        if frequency_range == FrequencyRange.high_frequency:
             file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
         else:
             file_path = os.path.join(path, f"E{element_number:02}_LFpower.csv")

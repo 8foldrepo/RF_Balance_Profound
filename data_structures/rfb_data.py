@@ -271,22 +271,23 @@ class RFBData:
         return closest_index
 
     # TODO: UPDATE THE TEST RESULTS SUMMARY IN MANAGER WITH THIS
-    def get_pass_result(self) -> str:
+    def get_pass_result(self) -> Tuple[str, str]:
         if self.forward_power_max_extrapolated > self.Pf_max:
-            return "FAIL"
+            return "FAIL", f"Extrapolated forward power exceeds {self.Pf_max}W"
 
         if self.reflected_power_percent > self.ref_limit:
-            return "FAIL"
+            return "FAIL", f"Refected power exceeds {self.ref_limit} percent"
 
-        return "Pass"
+        return "Pass", ""
 
     def get_result_log_entry(self):
+        test_result, _ = self.get_pass_result()
         return ['', "Pass/Fail test",
                 f"Element_{self.element};Pf (W)={self.forward_power_on_mean};Pr (W)="
                 f"{self.reflected_power_on_mean};Pa (W)={self.acoustic_power_on_mean};Efficiency (%)"
                 f"={self.efficiency_percent};RF_Reflection (%)={self.reflected_power_percent};"
                 f"Pf Max (W)={self.forward_power_max_extrapolated};WaterTemp (C)={self.water_temperature_c};"
-                f"Test result={self.get_pass_result()};Pf Max limit (W)={self.Pf_max}",
+                f"Test result={test_result};Pf Max limit (W)={self.Pf_max}",
                 '']
 
     def data_is_valid(self):

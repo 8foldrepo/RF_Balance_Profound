@@ -41,7 +41,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def set_tree_widget(self, treeWidget):
         self.treeWidget = treeWidget
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
-        self.delete_all()
+        if self.treeWidget.invisibleRootItem().childCount() > 0:
+            self.delete_all()
 
     def configure_signals(self):
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)

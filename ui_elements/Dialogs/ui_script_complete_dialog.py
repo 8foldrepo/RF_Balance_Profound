@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     form = ScriptCompleteDialog(
         config=None,
-        passed_ray=["DNF"] * 11,
+        passed_ray=["NO TEST"] * 11,
         description_ray=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     )
     form.show()

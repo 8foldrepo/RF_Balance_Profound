@@ -204,9 +204,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 var_name = var.text(0)
                 var_value = var.text(1)
                 # If the variable is an element number that is looped
-                if var_name == "Element" and (
-                        "Current" in var_value or not "Element" in var_value
-                ):
+                if var_name == "Element" and ("Current" in var_value):
                     var.setText(1, f"Current: {self.live_element_field.text()}")
 
     @pyqtSlot(str)
@@ -285,7 +283,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
 
     def configure_manager_signals(self):
-        self.abort_button.clicked.connect(self.manager.abort)
+        self.abort_button.clicked.connect(self.manager.abort_after_step)
+        self.abort_immediately_button.clicked.connect(self.manager.abort_immediately)
+
         self.command_signal.connect(self.manager.exec_command)
         self.manager.enable_ui_signal.connect(self.set_buttons_enabled)
 
@@ -339,33 +339,20 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
         self.manager.user_info_signal.connect(self.show_user_info_dialog)
-        self.manager.user_prompt_pump_not_running_signal.connect(
-            self.show_user_prompt_pump_not_running
-        )
-        self.manager.user_prompt_signal_water_too_low_signal.connect(
-            self.show_user_prompt_water_too_low
-        )
-        self.manager.user_prompt_signal_water_too_high_signal.connect(
-            self.show_user_prompt_water_too_high
-        )
-        self.manager.write_cal_data_to_ua_signal.connect(
-            self.show_write_cal_data_prompt
-        )
-        self.manager.retracting_ua_warning_signal.connect(
-            self.show_ua_retract_warn_prompt
-        )
+        self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
+        self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
+        self.manager.user_prompt_signal_water_too_high_signal.connect(self.show_user_prompt_water_too_high)
+        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+        self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
         self.manager.IO_Board.filling_signal.connect(self.show_filling_tank_dialog)
         self.manager.IO_Board.draining_signal.connect(self.show_draining_tank_dialog)
         self.manager.IO_Board.pump_reading_signal.connect(self.update_pump_indicator)
-        self.manager.IO_Board.water_level_reading_signal.connect(
-            self.update_water_level_indicator
-        )
+        self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
         self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
         self.manager.system_info_signal.connect(self.system_info_tab.system_info_slot)
 
         # Manager communication signals
-        self.abort_instantly_signal.connect(self.manager.abort)
         self.load_script_signal.connect(self.manager.load_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
 
@@ -643,30 +630,30 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot(str, bool)
     def show_user_prompt(self, message, restrict_continue):
         dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
-        dlg.abort_signal.connect(self.manager.abort)
-        dlg.retry_signal.connect(self.manager.retry)
-        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
+        dlg.retry_signal.connect(self.manager.retry_clicked)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
         dlg.exec()
 
     @pyqtSlot(str)
     def show_user_info_dialog(self, message):
         dlg = WTFUserInfo(config=self.config)
         dlg.user_prompt_output.setText(message)
-        dlg.continue_signal.connect(self.manager.cont)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_ua_retract_warn_prompt(self):
         dlg = UARetractDialog(config=self.config)
-        dlg.continue_signal.connect(self.manager.cont)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot(list, list)
@@ -674,8 +661,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = ScriptCompleteDialog(
             passed_ray=passed_ray, description_ray=description_ray, config=self.config
         )
-        dlg.continue_signal.connect(self.manager.cont)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
 
     def dialog_critical(self, text):
         dlg = QMessageBox(self)
@@ -725,7 +712,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.fw_version_hi.setText(calibration_data[2][9])
 
         dlg.write_ua_signal.connect(self.manager.write_cal_data_to_ua_button)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.abort_signal.connect(self.manager.abort_after_step)
         dlg.exec()
 
     @pyqtSlot(str)
@@ -733,24 +720,24 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = WTFUserPromptPumpNotRunning(config=self.config)
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
-        dlg.continue_signal.connect(self.manager.cont)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_user_prompt_water_too_low(self):
         dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
-        dlg.continue_signal.connect(self.manager.cont)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_user_prompt_water_too_high(self):
         dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
-        dlg.continue_signal.connect(self.manager.cont)
-        dlg.abort_signal.connect(self.manager.abort)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot(list, list)
@@ -758,8 +745,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = ScriptCompleteDialog(
             config=self.config, passed_ray=passed_ray, description_ray=description_ray
         )
-        dlg.abort_signal.connect(self.manager.cont)
-        dlg.continue_signal.connect(self.manager.cont)
+        dlg.abort_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.cont_clicked)
         dlg.exec()
 
     @pyqtSlot(bool)

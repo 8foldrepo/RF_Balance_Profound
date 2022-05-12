@@ -60,7 +60,7 @@ class Results(MyQWidget, Ui_Form):
             results_summary = self.test_data.results_summary
 
         for i in range(11):  # covers range of all elements and "UA Common"
-            for x in range(15):  # covers all the data units in each element
+            for x in range(16):  # covers all the data units in each element
                 item = QTableWidgetItem()
                 item.setText(str(results_summary[i][x + 1]))  # skip the header data and ignore name of element
                 if i == 10:  # if we're on the "UA Common" line

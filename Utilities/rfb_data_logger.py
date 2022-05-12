@@ -149,7 +149,7 @@ class RFBDataLogger(QThread):
     def log_r_meter(self, reading_w):
         # todo: remove this block
         if self.awg_on:
-            reading_w = reading_w / 50 + .4
+            reading_w = reading_w / 50 + .1
         else:
             reading_w = reading_w / 50
 
