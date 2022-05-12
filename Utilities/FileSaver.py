@@ -266,7 +266,11 @@ class FileSaver:
                 self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
             )
         )
-        file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
+
+        if freq_mhz > 8:
+            file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
+        else:
+            file_path = os.path.join(path, f"E{element_number:02}_LFpower.csv")
 
         self.log(f"Saving efficiency test data to: {file_path}")
         file = open(file_path, "w+")

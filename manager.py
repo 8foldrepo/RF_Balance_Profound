@@ -43,9 +43,6 @@ pump_status = ""
 tank_status = ""
 
 
-# todo: continue adding prebuilt methods for all of the actions in script editor
-
-
 class Manager(QThread):
     # Devices
     devices: List[AbstractDevice]
@@ -115,11 +112,11 @@ class Manager(QThread):
     def __init__(self, system_info, config: dict, parent=None):
         super().__init__(parent=parent)
         # Default to operator access
+        self.last_rfb_update_time = t.time()
         self.access_level = "Operator"
         self.rfb_logger = None
         self.warn = str(logging.WARNING)
         self.error = str(logging.ERROR)
-        QThread.currentThread().setObjectName("manager_thread")
         # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
         self.sensor_refresh_interval_s = 0.2
         self.last_sensor_update_time = 0.0
@@ -299,14 +296,21 @@ class Manager(QThread):
         Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
         with the info it finds
         """
-        # todo: prevent script from running if cannot get serial_number of oscilloscope, fgen, etc
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
+        if info.oscilloscope_sn == None:
+            self.sequence_pass_fail('Interrrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
+        if info.awg_sn == None:
+            self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
+        if info.forward_power_sn == None:
+            self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
         info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
         info.thermocouple_sn = self.thermocouple.get_serial_number()
         info.rf_balance_sn = self.Balance.get_serial_number()
+        if info.rf_balance_sn == None:
+            self.sequence_pass_fail('Interrrupt action', "Balance serial number not found")
         self.system_info_signal.emit(info)
 
     @pyqtSlot()
@@ -322,6 +326,7 @@ class Manager(QThread):
         Core event loop of the manager thread. For any other methods to be executed in the manager thread
         They must be called from this method.
         """
+        QThread.currentThread().setObjectName("manager_thread")
         self.mutex.lock()
         self.start_time = t.time()
 
@@ -689,12 +694,13 @@ class Manager(QThread):
             self.retry_var = True
             return False
 
-    """
-    Sets continue variable to False and waits for it to be true, raising exceptions if the user 
-    wants to abort or retry. Always handle these exceptions.
-    """
+
 
     def wait_for_cont(self):
+        """
+            Sets continue variable to False and waits for it to be true, raising exceptions if the user
+            wants to abort or retry. Always handle these exceptions.
+        """
         self.continue_var = False
         self.retry_var = False
         self.abort_var = False
@@ -710,16 +716,18 @@ class Manager(QThread):
                 # Always handle this exception
                 raise AbortException
 
-    """Continues execution of script"""
+
 
     @pyqtSlot()
     def cont(self):
+        """Continues execution of script"""
         self.continue_var = True
 
-    """Retries current step"""
+
 
     @pyqtSlot()
-    def retry(self):# debug line
+    def retry(self):
+        """Retries current step"""
         self.retry_var = True
 
     def write_cal_data_to_ua_button(self):
@@ -843,17 +851,8 @@ class Manager(QThread):
         except Exception as e:
             self.test_data.log_script(["", "Create h/w log", f"FAIL {e}", ""])
 
-        # todo: initialize results FGV here
-        try:
-            self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
-        except Exception as e:
-            self.test_data.log_script(["", "Initialize results FGV", f"FAIL {e}", ""])
-
-        # todo: duplicate main script?
-        try:
-            self.test_data.log_script(["", "duplicate main script", "OK", ""])
-        except Exception as e:
-            self.test_data.log_script(["", "Duplicate main script", f"FAIL {e}", ""])
+        self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
+        self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
         while True:
             water_level = self.IO_Board.get_water_level()
@@ -1091,9 +1090,10 @@ class Manager(QThread):
 
         return True
 
-    """Saves an oscilloscope trace using the file handler"""
+
 
     def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v):
+        """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
         metadata.axis = f"{axis}"
@@ -1679,8 +1679,11 @@ class Manager(QThread):
 
     def refresh_rfb_tab(self):
         """Helper function which retrieves data from the rfb_logger and tells the rfb tab to update"""
-        self.rfb_data = self.rfb_logger.rfb_data
-        self.update_rfb_tab_signal.emit()
+        rfb_cooldown_s =.05
+        if t.time() - self.last_rfb_update_time > rfb_cooldown_s:
+            self.rfb_data = self.rfb_logger.rfb_data
+            self.update_rfb_tab_signal.emit()
+            self.last_rfb_update_time = t.time()
         self.app.processEvents()
 
     @pyqtSlot(str)
@@ -1699,6 +1702,11 @@ class Manager(QThread):
         if not cont:
             return
          """
+
+        self.log(level='action_type', message=f'{error_detail}')
+        self.test_data.log_script(["",action_type,error_detail,""])
+
+
         k1 = 'Sequence pass/fail'
         if k1 in self.config and action_type in self.config[k1]:
             if self.config[k1][action_type].upper() == 'RETRY AUTOMATICALLY':

@@ -39,9 +39,7 @@ def main(args):
     window.begin_manager_thread()
     code = app.exec_()
 
-    root_logger.info(
-        f"[{QThread.currentThread().objectName()}] : app exited with code {code}"
-    )
+    root_logger.info(f"[{QThread.currentThread().objectName()}] : app exited with code {code}")
     sys.exit(code)
 
 
