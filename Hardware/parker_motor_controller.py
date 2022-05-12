@@ -215,9 +215,8 @@ class ParkerMotorController(AbstractMotorController):
                 reply = self.ser.read()
                 if not reply == '':
                     self.connected = True
-
                     self.log("Motor controller connected and set to default settings")
-                    return
+                    return self.connected, ''
 
             self.connected = False
             self.log(level='error', message=
@@ -326,9 +325,12 @@ class ParkerMotorController(AbstractMotorController):
         if self.lock is not None and not mutex_locked:
             self.lock.unlock()
 
-    """Return the next non-empty line of the controller's response over serial. Assumes echo has already been read"""
+    #todo: (stretch) implement
+    def get_serial_number(self) -> str:
+        pass
 
     def get_response(self, retries=2, need_reply=False, mutex_locked=False):
+        """Return the next non-empty line of the controller's response over serial. Assumes echo has already been read"""
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
         if self.lock is not None and not mutex_locked:
             self.lock.lock()
@@ -396,6 +398,7 @@ class ParkerMotorController(AbstractMotorController):
         else:
             self.command(f"{axis_number}OFF")
 
+
     def setup(self, settings=None):
         if self.ser is None:
             self.connect_hardware()
@@ -442,10 +445,11 @@ class ParkerMotorController(AbstractMotorController):
             self.gearing_ray[1] = settings["r_gearing"]
 
         self.set_limits_enabled(True)
-        self.set_position_maintanance(on=False)
+        self.setup_position_maintanance()
         self.set_movement_mode(self.movement_mode)
         self.set_motors_on(True)
         self.setup_home()
+        self.command("2W(IC,7136)") # configure inputs of r axis
 
         for i in range(len(self.ax_letters)):
             self.update_distance_and_velocity(axis=self.ax_letters[i])
@@ -485,11 +489,9 @@ class ParkerMotorController(AbstractMotorController):
         else:
             self.command("0LIMITS(1,1,0,200)")
 
-    def set_position_maintanance(self, on):
-        if on:
-            self.command(f"0POSMAIN1(10)")
-        else:
-            self.command(f"0POSMAIN0(10)")
+    def setup_position_maintanance(self):
+        self.command(f"1POSMAIN0(10)")
+        self.command(f"2POSMAIN1(2)") #turn on position maintainence for theta with a margin of error of 2/2000 revolutions
 
     def set_speeds_1d(self, axis, speed):
         axis_number = self.__get_ax_number(axis)
@@ -686,6 +688,15 @@ class ParkerMotorController(AbstractMotorController):
             axis_number = 0
         return axis_number
 
+    def setup_motors(self):
+        """
+        This method takes a while to execute, do not call it in the main application. Call it in the script at the
+        bottom of this class when setting up a new system. Use caution because when used with 0SV it overwrites settings
+        """
+        self.set_motors_on(False)
+        self.command("1MOTOR(718,1,1000,500,5,0.63,2)")
+        self.command("2MOTOR(718,0.1,2000,100,5,3.2,2)")
+        self.print("Motors set, use a serial terminal to confirm smooth operation, then command 0SV and 0Z")
     # def setup_motor(self):
     #     self.command("0Z")
     #     self.set_position_maintanance(False)
@@ -736,6 +747,7 @@ class ParkerMotorController(AbstractMotorController):
     #     self.command('1MOTOR(457,1.2,4000,100,100,3.2,5,312.5)')  # Setup
 
     def wrap_up(self):
+        self.set_motors_on(False)
         self.stop_motion()
         self.disconnect_hardware()
 
