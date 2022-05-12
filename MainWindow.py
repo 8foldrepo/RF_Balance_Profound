@@ -154,11 +154,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.threading = True
         self.manager.start(priority=QThread.HighPriority)
         self.command_signal.emit("CONNECT")
-        try:
-            if not self.config['Debugging']['disable_password_prompt']:
-                self.prompt_for_password()
-        except KeyError:
-            self.log('Debugging:disable_password_prompt not found in config, defaulting to true', str(logging.INFO))
 
     def pass_manager_and_hardware_to_tabs(self):
         self.rfb.set_manager(self.manager)

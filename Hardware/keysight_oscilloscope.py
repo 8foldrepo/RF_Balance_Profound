@@ -315,7 +315,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def ask(self, command):
         return self.inst.query(command)
 
-    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None

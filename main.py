@@ -33,8 +33,11 @@ def main(args):
     window.system_config.populate_config_ui()
     window.access_level_combo.setCurrentText("Administrator")
 
-    # todo: uncomment this in final product
-    # window.prompt_for_password()
+    try:
+        if not window.config['Debugging']['disable_password_prompt']:
+            window.prompt_for_password()
+    except KeyError:
+        window.log('Debugging:disable_password_prompt not found in config, defaulting to true', str(logging.INFO))
 
     window.begin_manager_thread()
     code = app.exec_()

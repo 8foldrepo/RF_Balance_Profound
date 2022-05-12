@@ -68,7 +68,7 @@ class DIOBoard(AbstractIOBoard):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-    # Todo: test
+
     def fill_tank(self):
         water_level = self.get_water_level()
 
@@ -94,7 +94,7 @@ class DIOBoard(AbstractIOBoard):
                     return True
         return False
 
-    # Todo: test
+
     def drain_tank(self):
         water_level = self.get_water_level()
 
@@ -123,7 +123,7 @@ class DIOBoard(AbstractIOBoard):
                     return True
         return False
 
-    # Todo: test
+
     def drain_tank_to_level(self):
         water_level = self.get_water_level()
 
@@ -188,7 +188,6 @@ class DIOBoard(AbstractIOBoard):
             self.pump_reading_signal.emit(self.pump_on)
             return self.pump_on
 
-        # todo: check whether the pump is on or off and return a boolean
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump reading
             task.di_channels.add_di_chan(f"{self.name}/port1/line3:3", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.3
 

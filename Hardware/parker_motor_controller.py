@@ -173,7 +173,6 @@ class ParkerMotorController(AbstractMotorController):
         return True
 
     def setup_home(self):
-        # todo: test and uncomment
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
                            reference_edge='+', normally_closed=False, speed=10, mode=1)
         self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
@@ -209,8 +208,6 @@ class ParkerMotorController(AbstractMotorController):
                 stopbits=serial.STOPBITS_ONE,
                 bytesize=serial.EIGHTBITS,
             )
-            # Todo: add setup and query if the motor is responding
-            #
             self.setup()
             startTime = t.time()
             while t.time()-startTime < self.time_limit_s:
@@ -290,7 +287,7 @@ class ParkerMotorController(AbstractMotorController):
                 self.log(f"output = {output}")
 
             self.ser.write(output)
-            # t.sleep(0.1)  # todo: test this for time and reliability
+            # t.sleep(0.1)
             # Listen for echo twice
             for i in range(2):
                 echo = self.ser.readline().strip(b"\r\n")
@@ -424,7 +421,6 @@ class ParkerMotorController(AbstractMotorController):
             return
 
         # This accounts for the lower idle current of the rotational motor.
-        # TODO: check currents of motors in final application
         # Sets the rotational motor to 10% idle current
         sent_1_successfully = self.command("2W(MS,10)")
         # Sets the translational motor to 50% idle current
@@ -698,7 +694,6 @@ class ParkerMotorController(AbstractMotorController):
     #     encoder_resolution = 2000  # steps_rev
     #     max_rpm = 1000
     #     thermal_time_constant = 1000
-    #     # todo:set a real value, this one is a guess
     #     # Thermal time constant – is the time in seconds for the motor to reach
     #     # two-thirds of its rated temperature while operating at its continuous current
     #     # rating.

@@ -195,6 +195,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
                     # Discard the task type label and only show the task type itself
                     item = QTreeWidgetItem([parameter_pair[1]])
                 else:
+                    parameter_pair[0] = str(parameter_pair[0])
+                    parameter_pair[1] = str(parameter_pair[1])
                     children.append(QTreeWidgetItem(parameter_pair))
 
             if item is None:
@@ -332,7 +334,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             new_var_dict = OrderedDict()
 
         # add the new dictionary to var_dicts at the correct index
-        self.list_of_var_dicts.insert(row + 1, new_var_dict)
+        if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:
+            self.list_of_var_dicts.insert(row + 1, new_var_dict)
+        else:
+            self.list_of_var_dicts.insert(row, new_var_dict)
+
         item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
@@ -349,6 +355,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         path = QFileDialog.getSaveFileName(
             parent=self, caption="Save script", directory=ROOT_DIR + "/Scripts", filter="Script files (*.wtf)"
         )[0]
+
+        if path == "":
+            return
 
         # remove existing header(s) if there is one
         for i in range(len(self.list_of_var_dicts)):

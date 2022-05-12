@@ -20,7 +20,6 @@ class KeysightAWG(AbstractAWG):
         self.state = dict()
         self.fields_setup()
 
-    # Todo: add default settings to config file and switch to them here
     def fields_setup(self):
         if self.config is None:
             self.config = load_configuration()

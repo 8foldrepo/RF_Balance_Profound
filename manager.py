@@ -1573,10 +1573,11 @@ class Manager(QThread):
                                            error_detail=f'Element_{self.element:02} Failed efficiency test')
             if not cont:
                 return
-        elif test_result.upper() != 'PASS':
+        elif test_result.upper() == 'PASS':
+            pass
+        else:
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
-            self.wait_for_cont()
             return self.abort()
 
         self.retry_var = False
@@ -1658,6 +1659,7 @@ class Manager(QThread):
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
         self.rfb_logger.start(priority=QThread.HighPriority)
+
 
     def __wrap_up_rfb_logger(self):
         self.rfb_logger.quit()

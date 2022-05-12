@@ -114,7 +114,7 @@ class TestData(QObject):
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
             self.results_summary[element - 1][9] = "%.1f" % forward_power_max
             self.results_summary[element - 1][10] = "%.1f" % water_temperature_c
-            self.results_summary[element - 1][11] = test_result
+            self.results_summary[element - 1][15] = test_result.upper()
 
         self.show_results_summary.emit(self.results_summary)
 

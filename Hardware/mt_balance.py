@@ -242,7 +242,6 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    # Todo: test
     def get_serial_number(self) -> str:
         if not self.connected:
             return None
