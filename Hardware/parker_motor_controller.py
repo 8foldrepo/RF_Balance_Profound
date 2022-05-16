@@ -104,7 +104,7 @@ class ParkerMotorController(AbstractMotorController):
 
         coord_steps = self.position_to_steps(axis_index,coord_mm)
 
-        home_coordinate = -1 * int(coord_steps)
+        home_coordinate = int(coord_steps)
 
         # add on the offset of the origin from the motor's zero
 
@@ -134,6 +134,7 @@ class ParkerMotorController(AbstractMotorController):
     @pyqtSlot()
     def go_home(self):
         # Theta prehome move
+        print("going home")
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
         self.command(f"0GH")
 
@@ -167,7 +168,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def setup_home(self):
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
-                           reference_edge='+', normally_closed=False, speed=5, mode=1)
+                           reference_edge='+', normally_closed=True, speed=-5, mode=1)
         self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
                            reference_edge='+', normally_closed=False, speed=-3, mode=1)
 

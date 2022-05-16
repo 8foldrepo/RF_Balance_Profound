@@ -31,7 +31,9 @@ Motor setup
 #increase slow speed smoothness. Range: +/-15%.                              
 #Resistance – Winding resistance in Ohms*                                    #0.63 is written on the rotational motor datasheet
 #Inductance – Winding inductance in mH*                                      #2 mH assumed, Measure this later
-1MOTOR(718,1,2000,500,5,0.63,2)
+# 1MOTOR(718,1,2000,500,5,0.63,2)
+1MOTOR(718,2.1,1000,100,5,0.63,2)
+
 2MOTOR(718,0.3,1000,100,5,3.2,2)
 
 #Configure enable input to normally closed

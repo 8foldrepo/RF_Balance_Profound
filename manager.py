@@ -1322,6 +1322,7 @@ class Manager(QThread):
         if not successful_go_home:
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Go home failed')
             return cont
+        return True
 
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
