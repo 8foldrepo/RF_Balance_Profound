@@ -108,10 +108,10 @@ VIX_Motors:
     - 15.0
   enable_homing_ray:
     - true
-    - false
+    - true
   encoder_installed_ray:
     - false
-    - false
+    - true
   encoder_resolution_ray:
     - 4000
     - 1000
