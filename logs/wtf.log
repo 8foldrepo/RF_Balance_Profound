@@ -1,52 +1,45 @@
-2022-05-12 14:50:40,749 [INFO] [DIOBoard] [manager_thread] : Connecting to DIO board... 
-2022-05-12 14:50:40,809 [INFO] [DIOBoard] [manager_thread] : WTF_DIO connected successfully
-2022-05-12 14:50:40,810 [INFO] [UAInterface] [manager_thread] : Attempting to connect to WTFIB... 
-2022-05-12 14:50:40,821 [INFO] [UAInterface] [manager_thread] : WTFIB connected successfully
-2022-05-12 14:50:47,195 [INFO] [Manager] [ui_thread] : Running script
-2022-05-12 14:50:49,464 [INFO] [Manager] [manager_thread] : Home all has failed in pretest initialisation
-2022-05-12 14:50:56,317 [INFO] [Manager] [manager_thread] : Checking ability to log
-2022-05-12 14:50:56,704 [INFO] [Manager] [manager_thread] : Maximum of 1168.0025092725205 @ X = -0.375 mm
-2022-05-12 14:50:56,719 [INFO] [Manager] [manager_thread] : Maximum of 1180.467897460616 @ Theta = -174.60000000000005 deg
-2022-05-12 14:50:56,808 [INFO] [Manager] [manager_thread] : Maximum of 1197.4238732589833 @ X = -0.875 mm
-2022-05-12 14:50:56,825 [INFO] [Manager] [manager_thread] : Maximum of 1169.7079118714948 @ Theta = -178.2000000000001 deg
-2022-05-12 14:50:56,904 [INFO] [Manager] [manager_thread] : Maximum of 1171.5431226721698 @ X = 6.100000000000002 mm
-2022-05-12 14:50:56,924 [INFO] [Manager] [manager_thread] : Maximum of 1194.2526276593146 @ Theta = -187.40000000000023 deg
-2022-05-12 14:50:57,019 [INFO] [Manager] [manager_thread] : Maximum of 1177.5844240851557 @ X = 8.1 mm
-2022-05-12 14:50:57,035 [INFO] [Manager] [manager_thread] : Maximum of 1190.9952848262387 @ Theta = -175.40000000000006 deg
-2022-05-12 14:50:57,130 [INFO] [Manager] [manager_thread] : Maximum of 1178.5070867888805 @ X = 16.29999999999999 mm
-2022-05-12 14:50:57,154 [INFO] [Manager] [manager_thread] : Maximum of 1179.51204282078 @ Theta = -183.00000000000017 deg
-2022-05-12 14:50:57,241 [INFO] [Manager] [manager_thread] : Maximum of 1171.7461036977686 @ X = 20.49999999999999 mm
-2022-05-12 14:50:57,259 [INFO] [Manager] [manager_thread] : Maximum of 1164.7586158684296 @ Theta = -181.80000000000015 deg
-2022-05-12 14:50:57,355 [INFO] [Manager] [manager_thread] : Maximum of 1201.3076349553805 @ X = 26.699999999999985 mm
-2022-05-12 14:50:57,377 [INFO] [Manager] [manager_thread] : Maximum of 1168.24686295838 @ Theta = -180.20000000000013 deg
-2022-05-12 14:50:57,465 [INFO] [Manager] [manager_thread] : Maximum of 1169.4184579551609 @ X = 30.09999999999999 mm
-2022-05-12 14:50:57,484 [INFO] [Manager] [manager_thread] : Maximum of 1185.705239926217 @ Theta = -185.4000000000002 deg
-2022-05-12 14:50:57,578 [INFO] [Manager] [manager_thread] : Maximum of 1178.0785220463733 @ X = 36.100000000000044 mm
-2022-05-12 14:50:57,599 [INFO] [Manager] [manager_thread] : Maximum of 1186.1053850529413 @ Theta = -181.00000000000014 deg
-2022-05-12 14:50:57,707 [INFO] [Manager] [manager_thread] : Maximum of 1169.4630915055163 @ X = 40.70000000000004 mm
-2022-05-12 14:50:57,724 [INFO] [Manager] [manager_thread] : Maximum of 1192.996290231749 @ Theta = -187.00000000000023 deg
-2022-05-12 14:50:57,822 [INFO] [Manager] [manager_thread] : Maximum of 1166.9524897633053 @ X = 44.30000000000002 mm
-2022-05-12 14:50:57,839 [INFO] [Manager] [manager_thread] : Maximum of 1188.6646923206765 @ Theta = -174.20000000000005 deg
-2022-05-12 14:50:57,981 [INFO] [Manager] [manager_thread] : Moved to 1, at coordinate x=-0.88, r=-0.9
-2022-05-12 14:50:57,999 [INFO] [SimulatedBalance] [manager_thread] : Zeroing Balance
-2022-05-12 14:50:58,001 [INFO] [SimulatedBalance] [manager_thread] : Zeroing Balance, Please wait
-2022-05-12 14:50:58,001 [INFO] [SimulatedBalance] [manager_thread] : Balance Zeroed
-2022-05-12 14:50:58,003 [INFO] [Manager] [manager_thread] : Turning off AWG T = 0.00
-2022-05-12 14:51:08,004 [INFO] [Manager] [manager_thread] : Turning on AWG T = 10.00
-2022-05-12 14:51:18,005 [INFO] [Manager] [manager_thread] : Turning off AWG T = 20.00
-2022-05-12 14:51:28,005 [INFO] [Manager] [manager_thread] : Turning on AWG T = 30.00
-2022-05-12 14:51:38,008 [INFO] [Manager] [manager_thread] : Turning off AWG T = 40.01
-2022-05-12 14:51:48,005 [INFO] [Manager] [manager_thread] : Turning on AWG T = 50.00
-2022-05-12 14:51:58,005 [INFO] [Manager] [manager_thread] : Turning off AWG T = 60.00
-2022-05-12 14:52:08,132 [INFO] [FileSaver] [manager_thread] : Saving efficiency test data to: C:\Users\Isaiah\Documents\UA results\LC0013-2022.05.12-14.50\Power data\EfficiencyTest\E01\E01_LFpower.csv
-2022-05-12 14:52:08,256 [INFO] [Manager] [manager_thread] : Moved to 1, at coordinate x=-0.88, r=-0.9
-2022-05-12 14:52:08,289 [INFO] [SimulatedBalance] [manager_thread] : Zeroing Balance
-2022-05-12 14:52:08,293 [INFO] [SimulatedBalance] [manager_thread] : Zeroing Balance, Please wait
-2022-05-12 14:52:08,293 [INFO] [SimulatedBalance] [manager_thread] : Balance Zeroed
-2022-05-12 14:52:08,299 [INFO] [Manager] [manager_thread] : Turning off AWG T = 0.00
-2022-05-12 14:52:18,300 [INFO] [Manager] [manager_thread] : Turning on AWG T = 10.00
-2022-05-12 14:52:28,300 [INFO] [Manager] [manager_thread] : Turning off AWG T = 20.00
-2022-05-12 14:52:38,301 [INFO] [Manager] [manager_thread] : Turning on AWG T = 30.00
-0.00
-2022-05-12 14:52:28,300 [INFO] [Manager] [manager_thread] : Turning off AWG T = 20.00
-2022-05-12 14:52:38,301 [INFO] [Manager] [manager_thread] : Turning on AWG T = 30.00
+2022-05-15 19:12:34,990 [INFO] [ParkerMotorController] [manager_thread] : Connecting to motor controller...
+2022-05-15 19:12:35,120 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-15 19:12:35,120 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
+2022-05-15 19:12:35,120 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-15 19:12:35,160 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-15 19:12:35,200 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
+2022-05-15 19:12:35,200 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-15 19:12:35,240 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
+2022-05-15 19:12:35,240 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
+2022-05-15 19:12:35,280 [INFO] [ParkerMotorController] [manager_thread] : 1POSMAIN0(10)
+2022-05-15 19:12:35,280 [INFO] [ParkerMotorController] [manager_thread] : output = b'1POSMAIN0(10)\r\n'
+2022-05-15 19:12:35,320 [INFO] [ParkerMotorController] [manager_thread] : 2POSMAIN1(10)
+2022-05-15 19:12:35,320 [INFO] [ParkerMotorController] [manager_thread] : output = b'2POSMAIN1(10)\r\n'
+2022-05-15 19:12:35,360 [INFO] [ParkerMotorController] [manager_thread] : 0MC
+2022-05-15 19:12:35,360 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
+2022-05-15 19:12:35,400 [INFO] [ParkerMotorController] [manager_thread] : 0ON
+2022-05-15 19:12:35,400 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
+2022-05-15 19:12:35,440 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,0,5,10,1)
+2022-05-15 19:12:35,440 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,0,5,10,1)\r\n'
+2022-05-15 19:12:35,480 [INFO] [ParkerMotorController] [manager_thread] : 2HOME1(+,0,-3,10,1)
+2022-05-15 19:12:35,480 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME1(+,0,-3,10,1)\r\n'
+2022-05-15 19:12:35,520 [INFO] [ParkerMotorController] [manager_thread] : 2W(IC,7136)
+2022-05-15 19:12:35,520 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(IC,7136)\r\n'
+2022-05-15 19:12:35,560 [INFO] [ParkerMotorController] [manager_thread] : 1V1.0
+2022-05-15 19:12:35,560 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V1.0\r\n'
+2022-05-15 19:12:35,600 [INFO] [ParkerMotorController] [manager_thread] : 1D100
+2022-05-15 19:12:35,600 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
+2022-05-15 19:12:35,640 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
+2022-05-15 19:12:35,640 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
+2022-05-15 19:12:35,680 [INFO] [ParkerMotorController] [manager_thread] : 2D360
+2022-05-15 19:12:35,680 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
+2022-05-15 19:12:35,720 [INFO] [ParkerMotorController] [manager_thread] : Done setting up
+2022-05-15 19:12:35,730 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
+2022-05-15 19:12:41,621 [INFO] [ParkerMotorController] [ui_thread] : 0MA
+2022-05-15 19:12:41,631 [INFO] [ParkerMotorController] [ui_thread] : output = b'0MA\r\n'
+2022-05-15 19:12:41,661 [INFO] [ParkerMotorController] [ui_thread] : 2D387
+2022-05-15 19:12:41,661 [INFO] [ParkerMotorController] [ui_thread] : output = b'2D387\r\n'
+2022-05-15 19:12:41,701 [INFO] [ParkerMotorController] [ui_thread] : 2G
+2022-05-15 19:12:41,701 [INFO] [ParkerMotorController] [ui_thread] : output = b'2G\r\n'
+2022-05-15 19:12:42,261 [INFO] [ParkerMotorController] [ui_thread] : 2GH
+2022-05-15 19:12:42,261 [INFO] [ParkerMotorController] [ui_thread] : output = b'2GH\r\n'
+2022-05-15 19:12:45,302 [INFO] [ParkerMotorController] [ui_thread] : 2D-144
+2022-05-15 19:12:45,302 [INFO] [ParkerMotorController] [ui_thread] : output = b'2D-144\r\n'
+2022-05-15 19:12:45,332 [INFO] [ParkerMotorController] [ui_thread] : 2G
+2022-05-15 19:12:45,332 [INFO] [ParkerMotorController] [ui_thread] : output = b'2G\r\n'
