@@ -1,6 +1,6 @@
 def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c: float = 20):
     balance_reading_kg = balance_reading_g / 1000
-    g_m_per_s_per_s = 9.80665  # Source: [1] in the documentation
+    g_m_per_s_per_s = 9.810000  # Source: example data
 
     force_N = balance_reading_kg * g_m_per_s_per_s
     c_water = calculate_speed_of_sound_in_water(Temperature_c)
@@ -26,13 +26,12 @@ def calculate_total_uncertainty_percent(data_set: list) -> float:
 
     if len(data_set) == 0:
         return float("nan")
-    from numpy import mean, std
+    from numpy import mean
 
     mean = mean(data_set)
     if mean == 0:
         return float("nan")
-    return std(data_set) / mean * 100
-
+    return calculate_random_uncertainty_percent(data_set) + 6
 
 # returns the random uncertainty of a data set as a percentage
 # Todo: double check this formula
@@ -42,12 +41,24 @@ def calculate_random_uncertainty_percent(data_set: list) -> float:
 
     if len(data_set) == 0:
         return float("nan")
-    from numpy import mean, std
+    from numpy import mean
 
     mean = mean(data_set)
     if mean == 0:
         return float("nan")
-    return std(data_set) / mean * 100
+    return (max(data_set)-min(data_set))/2 / mean * 100
+
+
+# returns the standard deviation of a data set
+def calculate_standard_deviation(data_set: list) -> float:
+    if isinstance(data_set, float):
+        return 0
+
+    if len(data_set) == 0:
+        return float("nan")
+    from numpy import std
+
+    return std(data_set)
 
 
 # Test script

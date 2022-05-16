@@ -6,6 +6,7 @@ import re
 import sys
 import time as t
 from collections import OrderedDict
+from statistics import mean
 from typing import List
 
 import numpy as np
@@ -112,6 +113,7 @@ class Manager(QThread):
     def __init__(self, system_info, config: dict, parent=None):
         super().__init__(parent=parent)
         # Default to operator access
+        self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.access_level = "Operator"
         self.rfb_logger = None
@@ -300,18 +302,18 @@ class Manager(QThread):
         """
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
-        if info.oscilloscope_sn == None:
+        if info.oscilloscope_sn is None:
             self.sequence_pass_fail('Interrrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
-        if info.awg_sn == None:
+        if info.awg_sn is None:
             self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
-        if info.forward_power_sn == None:
+        if info.forward_power_sn is None:
             self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
         info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
         info.thermocouple_sn = self.thermocouple.get_serial_number()
         info.rf_balance_sn = self.Balance.get_serial_number()
-        if info.rf_balance_sn == None:
+        if info.rf_balance_sn is None:
             self.sequence_pass_fail('Interrrupt action', "Balance serial number not found")
         self.system_info_signal.emit(info)
 
@@ -373,7 +375,7 @@ class Manager(QThread):
             # Show script complete dialog whenever a script finishes
             if not self.scripting and self.was_scripting:
                 if self.taskNames is not None:
-                    finished = self.step_index == len(self.taskNames)-1
+                    finished = self.step_index == len(self.taskNames) - 1
                 else:
                     finished = False
                 self.script_complete(finished=finished)
@@ -387,8 +389,7 @@ class Manager(QThread):
 
     @pyqtSlot()
     def run_script(self):
-        if self.scripting:
-            self.abort_after_step()
+        self.abort_immediately()
         log_msg(self, root_logger, level="info", message="Running script")
         self.scripting = True
         self.was_scripting = True
@@ -441,7 +442,7 @@ class Manager(QThread):
 
     # noinspection PyUnresolvedReferences
     def capture_osc_and_plot(self):
-        # Do these things if a script is not being run
+        """Captures an oscilloscope trace and plots it to the scan tab, assuming the plot is ready"""
 
         if self.oscilloscope_averages != self.Oscilloscope.averages:
             self.Oscilloscope.SetAveraging(self.oscilloscope_averages)
@@ -721,8 +722,8 @@ class Manager(QThread):
 
     def __wait_for_cont(self):
         """
-            Sets continue variable to False and waits for it to be true, raising exceptions if the user
-            wants to abort or retry. Always handle these exceptions.
+        Sets continue variable to False and waits for it to be true, raising exceptions if the user
+        wants to abort or retry. Always handle these exceptions.
         """
         self.continue_clicked_var = False
         self.retry_clicked_var = False
@@ -783,7 +784,7 @@ class Manager(QThread):
         else:
             pass_list[10] = "FAIL"
 
-        #add the result for the device as a whole to the results_summary
+        # add the result for the device as a whole to the results_summary
         self.test_data.set_pass_result(11, device_result)
 
         self.script_complete_signal.emit(pass_list, description_list)
@@ -926,6 +927,7 @@ class Manager(QThread):
         self.test_data.high_frequency_MHz = test_data.high_frequency_MHz
         self.test_data.hardware_code = test_data.hardware_code
         self.test_data.test_date_time = test_data.test_date_time
+        self.test_data.schema = test_data.schema
         try:
             self.file_saver.create_folders(test_data=self.test_data)
         except PermissionError:
@@ -951,7 +953,7 @@ class Manager(QThread):
         XPts = int(var_dict["X #Pts."])
         thetaIncrDeg = float(var_dict["Theta Incr. (deg)"])
         thetaPts = int(var_dict["Theta #Pts."])
-        scope_channel = int(var_dict["Scope channel"][8:])
+        self.oscilloscope_channel = int(var_dict["Scope channel"][8:])
         acquisition_type = var_dict["Acquisition type"]
         averages = int(re.search(r"\d+", str(var_dict["Averages"])).group())
         data_storage = var_dict["Data storage"]
@@ -1081,7 +1083,7 @@ class Manager(QThread):
             self.Motors.go_to_position([axis_letter], [position])
             position = position + increment
 
-            times_s, voltages_v = self.capture_scope(channel=scope_channel)
+            times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
             if times_s == [] or voltages_v == []:
                 cont = self.sequence_pass_fail(action_type='Interrupt action',
                                                error_detail='Oscilloscope capture failed')
@@ -1204,12 +1206,11 @@ class Manager(QThread):
             if not cont:
                 return
 
-        # Todo: populate calibration data from test data in useful_methods
-        # calibration_data = generate_calibration_data(self.test_data)
-        # self.UAInterface.write_data(calibration_data)
-
         self.test_data.software_version = self.config["Software_Version"]
         self.test_data.calc_angle_average()
+
+        calibration_data = generate_calibration_data(self.test_data)
+        self.UAInterface.write_data(calibration_data)
 
         # Save results summary to results folder
         self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
@@ -1349,7 +1350,7 @@ class Manager(QThread):
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
             element_x_coordinate = self.element_x_coordinates[self.element]
-            element_r_coordinate = self.element_x_coordinates[self.element]
+            element_r_coordinate = self.element_r_coordinates[self.element]
 
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
@@ -1609,10 +1610,13 @@ class Manager(QThread):
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
-        if not self.rfb_data.data_is_valid():
+        data_is_valid, feedback = self.rfb_data.data_is_valid()
+
+        if not data_is_valid:
             cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                           error_detail=f'Element_{self.element:02} RFB did not complete due to sensor issue')
-            return self.abort_after_step()
+                                           error_detail=f'Element_{self.element:02} {feedback}')
+            if not cont:
+                return
 
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()
@@ -1663,25 +1667,55 @@ class Manager(QThread):
             self.rfb_logger.f_meter_readings_w,
             self.rfb_logger.r_meter_readings_w,
         ]
-        power_on_w = [self.rfb_data.acoustic_power_on_mean] * 3  # begin test code
-        power_off_w = [self.rfb_data.acoustic_power_off_mean] * 3
-        cumulative_results = (
-            [[self.rfb_data.acoustic_power_on_mean, self.rfb_data.acoustic_power_off_mean,
-              self.rfb_data.acoustic_power_mean],
-             [self.rfb_data.p_on_rand_unc, self.rfb_data.p_off_rand_unc, self.rfb_data.p_com_rand_unc],
-             [self.rfb_data.p_on_total_unc, self.rfb_data.p_off_total_unc, self.rfb_data.p_com_total_unc]]
-        )
+
         # Todo: hard coded, check on this later
         absorption = ["Off", 1.000690]
         transducer_size = ["Off", 1.013496]
-        focussing = ["Off", 1.000000]
-        # absorb_trans_focus_times/transition_amp_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
+        focusing = ["Off", 1.000000]
 
-        # todo:
-        absorb_trans_focus_times = [[9.784287, 30.010603, 50.511028], [11.048080, 31.280091, 51.729069],
-                                    [20.055610, 40.457604, 60.772845], [21.230248, 41.546669, 62.039609]]
-        transition_amp_times = [[0.004380, 0.016061, 0.018981], [1.372454, 1.362233, 1.369534],
-                                [1.389974, 1.394355, 1.401655], [0.043802, 0.045262, 0.037961]]  # end test data
+        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
+
+        # transition_times_s/transition_amp_w[0] = start on, [1] = end on, [2] = start off, [3] = end off
+        num_cycles = len(self.rfb_data.on_time_intervals_s)
+        transition_times_s = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
+                              [float('nan')] * num_cycles]
+        for i in range(num_cycles):
+            if not i == 0:
+                # Beginning of on transition
+                transition_times_s[0][i] = self.rfb_data.times_s[self.rfb_data.off_indices[i - 1][1]]
+            else:
+                # Beginning of on transition
+                transition_times_s[0][i] = self.rfb_data.times_s[self.rfb_data.awg_on_ray.index(True) - buffer]
+            # Beginning of off transition
+            transition_times_s[2][i] = self.rfb_data.times_s[self.rfb_data.on_indices[i][1]]
+
+            transition_times_s[1][i] = self.rfb_data.on_time_intervals_s[i][0]  # End of on transition
+            transition_times_s[3][i] = self.rfb_data.off_time_intervals_s[i][0]  # End of off transition
+
+        transition_amp_w = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
+                            [float('nan')] * num_cycles]
+        for i in range(num_cycles):
+            if not i == 0:
+                # Beginning of on transition
+                transition_amp_w[0][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.off_indices[i - 1][1]]
+            else:
+                # Beginning of on transition
+                transition_amp_w[0][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.awg_on_ray.index(True) - buffer]
+            # Beginning of off transition
+            transition_amp_w[2][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.on_indices[i][1]]
+
+            transition_amp_w[1][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.on_indices[i][0]]  # End of on transition
+            transition_amp_w[3][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.off_indices[i][0]]  # End of off transition
+
+        power_on_w = transition_amp_w[1]
+        power_off_w = transition_amp_w[2]
+        cumulative_results = (
+            [[mean(power_on_w), mean(power_off_w),
+              self.rfb_data.acoustic_power_on_mean],
+             [self.rfb_data.p_on_rand_unc, self.rfb_data.p_on_rand_unc, self.rfb_data.p_on_rand_unc],
+             [self.rfb_data.p_on_total_unc, self.rfb_data.p_on_total_unc, self.rfb_data.p_on_total_unc]]
+        )
+
         # todo: check that p_on_rand_unc is the one we want
         self.file_saver.store_measure_rfb_waveform_csv(
             element_number=self.element,
@@ -1696,7 +1730,6 @@ class Manager(QThread):
             power_ratio=1.000000,
             g_mpersecsqrd=9.810000,
             cal_fact=14600.571062,
-            points=3,
             power_on_w=power_on_w,
             power_off_w=power_off_w,
             cumulative_results=cumulative_results,
@@ -1704,9 +1737,9 @@ class Manager(QThread):
             offset_s=offset,
             absorption=absorption,
             transducer_size=transducer_size,
-            focussing=focussing,
-            absorb_trans_focus_times=absorb_trans_focus_times,
-            transition_amp_times=transition_amp_times,
+            focusing=focusing,
+            absorb_trans_times=transition_times_s,
+            transition_amps=transition_amp_w,
             raw_data=raw_data,
             frequency_range=frequency_range
         )

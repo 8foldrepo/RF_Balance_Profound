@@ -316,26 +316,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.AWG.frequency_signal.connect(self.update_frequency_field)
         self.manager.Balance.connected_signal.connect(self.rfb_indicator.setChecked)
         self.manager.AWG.connected_signal.connect(self.fgen_indicator.setChecked)
-        self.manager.thermocouple.connected_signal.connect(
-            self.tcouple_indicator.setChecked
-        )
-        self.manager.Oscilloscope.connected_signal.connect(
-            self.scope_indicator.setChecked
-        )
-        self.manager.UAInterface.connected_signal.connect(
-            self.wtfib_indicator.setChecked
-        )
+        self.manager.thermocouple.connected_signal.connect(self.tcouple_indicator.setChecked)
+        self.manager.Oscilloscope.connected_signal.connect(self.scope_indicator.setChecked)
+        self.manager.UAInterface.connected_signal.connect(self.wtfib_indicator.setChecked)
         self.manager.IO_Board.connected_signal.connect(self.dio_indicator.setChecked)
         self.manager.thermocouple.reading_signal.connect(self.update_temp_reading)
         self.manager.Motors.connected_signal.connect(self.motion_indicator.setChecked)
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_pos_field)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_theta_pos_field)
-        self.manager.Forward_Power_Meter.connected_signal.connect(
-            self.power_meter_indicator.setChecked
-        )
-        self.manager.UAInterface.cal_data_signal.connect(
-            self.ua_calibration_tab.populate_results_table
-        )
+        self.manager.Forward_Power_Meter.connected_signal.connect(self.power_meter_indicator.setChecked)
+        self.manager.UAInterface.cal_data_signal.connect(self.ua_calibration_tab.populate_results_table)
         self.manager.script_complete_signal.connect(self.show_script_complete_dialog)
         self.manager.user_prompt_signal.connect(self.show_user_prompt)
         self.manager.user_info_signal.connect(self.show_user_info_dialog)
@@ -626,7 +616,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             serial_no = None
 
-        dlg = PretestDialog(serial_no=serial_no)
+        dlg = PretestDialog(serial_no=serial_no, schema=UA_read_data[0], access_level=self.access_level_combo.currentText())
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)

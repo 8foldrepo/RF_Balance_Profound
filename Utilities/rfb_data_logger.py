@@ -1,7 +1,6 @@
 import time as t
 from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
-
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Utilities.formulas import calculate_power_from_balance_reading
@@ -82,9 +81,9 @@ class RFBDataLogger(QThread):
                 self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
                 current_time = t.time() - start_time
                 # print(f"current_time in rfb_data_logger.py is {current_time}")
-                self.trigger_capture_signal.emit()
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
+                self.trigger_capture_signal.emit()
                 self.update_realtime_data()
 
             if self.stay_alive is False:
@@ -135,7 +134,6 @@ class RFBDataLogger(QThread):
 
     @pyqtSlot(float)
     def log_f_meter(self, reading_w):
-
         #todo: remove this block
         if self.awg_on:
             reading_w = reading_w / 50 + 1
