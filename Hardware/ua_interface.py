@@ -108,6 +108,7 @@ class UAInterface(AbstractUAInterface):
         return calibration_data_list, status
 
     def write_data(self, ua_calibration_data=None):
+        print(ua_calibration_data)
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
@@ -121,20 +122,25 @@ class UAInterface(AbstractUAInterface):
 
         output = self.get_command_output()
 
-        if "status=0" in output:
-            self.log("UA write successful")
-            self.write_result = True
-            return 0
-
         if "status=-2" in output:
             self.log(level='error', message='wtfib is not connected (check power and ethernet connection)')
             self.write_result = False
             return -2
 
-        if "status=2" in output:
-            self.log(level="error", message="No UA connected, write failed")
+        if "status=-9" in output:
+            self.log(level='error', message='calibration data incomplete, invalid, or improperly formatted')
             self.write_result = False
-            return 2
+            return -9
+
+        # if "status=2" in output:
+        #     self.log(level="error", message="No UA connected, write failed")
+        #     self.write_result = False
+        #     return 2
+
+        if "status=0" in output:
+            self.log("UA write successful")
+            self.write_result = True
+            return 0
 
         self.log(level="error", message=f"Unrecognized write code: \n{output}")
         self.write_result = False
@@ -142,7 +148,7 @@ class UAInterface(AbstractUAInterface):
 
     def get_command_output(self):
         startTime = t.time()
-        # Try to get usable data until timeot occurs
+        # Try to get usable data until timeout occurs
         while t.time() - startTime < self.timeout_s:
             # Get command prompt output, if it is illegible, retry
             try:
@@ -159,3 +165,5 @@ class UAInterface(AbstractUAInterface):
 if __name__ == "__main__":
     wtf = UAInterface(config=None)
     print(wtf.read_data())
+    wtf.write_data(['1', 'LC0013', '20210922', '3', '4.29', '13.74', '-95.5', '42.8', '47.1', '63.6', '60.5', '54.2', '58.2', '57.1',
+       '76.8', '53.2', '75.3', '38.7', '38.3', '40.9', '40.5', '37.1', '40.4', '40.1', '40.0', '39.0', '36.9'])

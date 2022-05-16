@@ -23,6 +23,7 @@ class TestData(QObject):
     high_frequency_MHz: float
     hardware_code: str
     write_result: bool
+    schema: str
 
     def __init__(self):
         super().__init__()
@@ -46,6 +47,7 @@ class TestData(QObject):
         self.hardware_code = ""
         self.results_summary = list()
         self.write_result = False
+        self.schema = '1'
         hf = "NaN"
         lf = "NaN"
 

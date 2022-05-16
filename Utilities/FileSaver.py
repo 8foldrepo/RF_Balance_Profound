@@ -113,6 +113,7 @@ class FileSaver:
         for x in range(len(log_table)):
             f.write("\t".join(log_table[x]))
             f.write("\n")
+        f.close()
 
     def store_waveform(self, metadata: FileMetadata, times, voltages):  # assume single array every time
 
@@ -247,7 +248,6 @@ class FileSaver:
             power_ratio: float,
             g_mpersecsqrd: float,
             cal_fact,
-            points: int,
             power_on_w: list,
             power_off_w: list,
             cumulative_results: list,
@@ -255,12 +255,13 @@ class FileSaver:
             offset_s: float,
             absorption: list,
             transducer_size: list,
-            focussing: list,
-            absorb_trans_focus_times: list,
-            transition_amp_times: list,
+            focusing: list,
+            absorb_trans_times: list,
+            transition_amps: list,
             raw_data: list,
             frequency_range: FrequencyRange
     ):
+        points = len(power_on_w)
 
         path = check_directory(
             os.path.join(
@@ -325,47 +326,47 @@ class FileSaver:
 
         file.write("Absorption,Transducer Size,Focussing\n")
         file.write(
-            f"{absorption[0]}, {transducer_size[0]}, {focussing[0]}\n"
+            f"{absorption[0]}, {transducer_size[0]}, {focusing[0]}\n"
         )  # should be str of either 'on' or 'off'
         file.write(
-            f'{"%.6f" % absorption[1]}, {"%.6f" % transducer_size[1]}, {"%.6f" % focussing[1]}\n'
+            f'{"%.6f" % absorption[1]}, {"%.6f" % transducer_size[1]}, {"%.6f" % focusing[1]}\n'
         )  # should be floats
         file.write("Transition Times (s)\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
         # matches number of points to start on, end on, start off, and end off in absorb_trans_focus_times 2D list
         # absorb_trans_focus_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
-        if not points == len(absorb_trans_focus_times[0]) == len(absorb_trans_focus_times[1]) == \
-               len(absorb_trans_focus_times[2]) == len(absorb_trans_focus_times[3]):
+        if not points == len(absorb_trans_times[0]) == len(absorb_trans_times[1]) == \
+               len(absorb_trans_times[2]) == len(absorb_trans_times[3]):
             self.log('error: length mismatch between points parameter and absorb_trans_focus_times start/end '
                      'lists in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section')
         else:
             for x in range(points):
                 file.write(
-                    f'{"%.6f" % absorb_trans_focus_times[0][x]},{"%.6f" % absorb_trans_focus_times[1][x]},'
-                    f'{"%.6f" % absorb_trans_focus_times[2][x]},{"%.6f" % absorb_trans_focus_times[3][x]}\n')
+                    f'{"%.6f" % absorb_trans_times[0][x]},{"%.6f" % absorb_trans_times[1][x]},'
+                    f'{"%.6f" % absorb_trans_times[2][x]},{"%.6f" % absorb_trans_times[3][x]}\n')
 
         file.write("\nTransition Amp\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
         if (
                 not points
-                    == len(transition_amp_times[0])
-                    == len(transition_amp_times[1])
-                    == len(transition_amp_times[2])
-                    == len(transition_amp_times[3])
+                    == len(transition_amps[0])
+                    == len(transition_amps[1])
+                    == len(transition_amps[2])
+                    == len(transition_amps[3])
         ):
             self.log(
                 f"error: length mismatch between points ({points}) parameter and transition_amp_times start/end lists "
-                f"({len(transition_amp_times[0])}, {len(transition_amp_times[1])}, "
-                f"{len(transition_amp_times[2])}, {len(transition_amp_times[3])}) "
+                f"({len(transition_amps[0])}, {len(transition_amps[1])}, "
+                f"{len(transition_amps[2])}, {len(transition_amps[3])}) "
                 f"in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section"
             )
         else:
             for x in range(points):
                 file.write(
-                    f'{"%.6f" % transition_amp_times[0][x]},{"%.6f" % transition_amp_times[1][x]},'
-                    f'{"%.6f" % transition_amp_times[2][x]},{"%.6f" % transition_amp_times[3][x]}\n'
+                    f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
+                    f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n'
                 )
 
         file.write("\nRaw Data\n")

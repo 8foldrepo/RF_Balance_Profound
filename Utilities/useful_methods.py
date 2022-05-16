@@ -39,49 +39,24 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coords
 
 
-def generate_calibration_data(test_data: TestData):
+def generate_calibration_data(test_data: TestData) -> List[str]:
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
-    # Todo: populate this array according to the test_data
-    calibration_data = {
-        "cal_data_array": {
-            "schema": "",
-            "serial_no": "",
-            "production_date": "",
-            "hardware_code": "",
-            "common_lo_freq": "",
-            "common_hi_freq": "",
-            "beam_align": "",
-            "command": "",
-            "status": "",
-            "fwversion": "",
-            "efficiency_low_list": "",
-            "efficiency_high_list": "",
-        },
-        "low_freq": {
-            "schema": "",
-            "serial_no": "",
-            "production_date": "",
-            "hardware_code": "",
-            "common_lo_freq": "",
-            "common_hi_freq": "",
-            "beam_align": "",
-            "command": "",
-            "status": "",
-            "fwversion": "",
-        },
-        "high_freq": {
-            "schema": "",
-            "serial_no": "",
-            "production_date": "",
-            "hardware_code": "",
-            "common_lo_freq": "",
-            "common_hi_freq": "",
-            "beam_align": "",
-            "command": "",
-            "status": "",
-            "fwversion": "",
-        },
-    }
+    output = [None] * 27
+    output[0] = str(test_data.schema)
+    output[1] = str(test_data.serial_number)
+    date_str = test_data.test_date_time[0:4] + test_data.test_date_time[5:7] + test_data.test_date_time[8:10]
+    print(date_str)
+    output[2] = date_str
+    output[3] = str(test_data.hardware_code)
+    output[4] = str(test_data.low_frequency_MHz)
+    output[5] = str(test_data.high_frequency_MHz)
+    output[6] = str(test_data.results_summary[10][2])  # angle average
+    for i in range(10):
+        output[i + 7] = test_data.results_summary[i][7]  # LF efficiency percent
+    for i in range(10):
+        output[i + 17] = test_data.results_summary[i][11]  # LF efficiency percent
+
+    return output
 
 
 # Inverse of create coord_rays
@@ -155,7 +130,7 @@ def unique(list):
     return unique_list
 
 
-# DEPRECATED, use the get_on_interval_indicies and get_averages_from_interval_indicies methods in the rfb_data class
+# DEPRECATED, use the get_on_interval_indices and get_averages_from_interval_indices methods in the rfb_data class
 # # Additional feature: add smart transition detection
 # def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
 #     if len(acoustic_power_trace_w) == 0:
@@ -250,10 +225,8 @@ def search_for(filename):
     return file_path
 
 
-"""Saves the dictionary containing test info to a specified path, formatted as a results summary"""
-
-
 def create_test_results_summary_file(test_data: TestData, path):
+    """Saves the dictionary containing test info to a specified path, formatted as a results summary"""
     f = open(path, "w")
 
     f.write(test_data.serial_number + "-" + test_data.test_date_time + "\n")
@@ -286,6 +259,7 @@ def create_test_results_summary_file(test_data: TestData, path):
             f.write("\n")
         if x == 12:  # for the elements with manual HF...
             f.write("Elements with manual HF\t" + ",".join(element_data_list[x]))
+    f.close()
 
 
 def log_msg(self, root_logger, message: str, level: str = None) -> None:
