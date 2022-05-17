@@ -322,18 +322,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
         str = self.ask("*IDN?")
         return str.split(",")[2]
 
+    def get_rms(self) -> float:
+        rms = self.ask(":MEASure:VRMS?")
+        return float(rms)
+
 
 # Script/example code for testing out hardware class
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
-
-    start_time = t.time()
-    osc.setHorzScale_sec(.00001)
-    for x in range(10):
-        osc.capture(1)
-        # print(f"capture method called, {x}th time")
-    # print(f'elapsed time: {t.time() - start_time}')
-
-    # may not be run if script is terminated early
+    test = osc.get_rms()
+    print(type(test))
+    print(test)
     osc.disconnect_hardware()

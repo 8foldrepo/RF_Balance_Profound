@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from random import random
+
 
 import numpy as np
 
@@ -79,3 +81,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
 
     def autoset_timebase(self):
         return
+
+    def get_rms(self) -> float:
+        return random(0.0001, 0.9000)
