@@ -1,11 +1,11 @@
 import distutils.util
+import inspect
 import logging
 import os
 import re
 import sys
 import time as t
 from collections import OrderedDict
-from statistics import mean
 from typing import List
 
 import numpy as np
@@ -113,6 +113,8 @@ class Manager(QThread):
     def __init__(self, system_info, config: dict, parent=None):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.abort_guard = False
+        self.thread_cont_mutex = True
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.access_level = "Operator"  # Defaults to operator access
@@ -174,11 +176,11 @@ class Manager(QThread):
         self.was_scripting = False
 
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
-        self.continue_clicked = True
-        self.retry_clicked = False
-        self.abort_clicked = False
+        self.continue_clicked_variable = True
+        self.retry_clicked_variable = False
+        self.abort_clicked_variable = False
 
-        self.abort_immediately_var = False
+        self.abort_immediately_variable = False
 
         # Initializes the retry count for retry step functionality in scripts
         self.retry_count = 0
@@ -286,7 +288,7 @@ class Manager(QThread):
             if not connected:
                 self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", False)
                 try:
-                    self.__wait_for_cont()
+                    self.wait_for_cont()
                 except RetryException:
                     i = i - 1
                 except AbortException:
@@ -398,7 +400,7 @@ class Manager(QThread):
         log_msg(self, root_logger, level="info", message="Running script")
         self.currently_scripting = True
         self.was_scripting = True
-        self.abort_immediately_var = False
+        self.abort_immediately_variable = False
 
     def update_sensors(self):
         """Attempts to update the last sensor update time, the water level, thermocouple reading, and ua pump status.
@@ -589,9 +591,9 @@ class Manager(QThread):
             self.enable_ui_signal.emit(True)
             return
 
-        if self.retry_clicked is True:
+        if self.retry_clicked_variable is True:
             self.step_index = self.step_index - 1
-            self.retry_clicked = False  # sets the retry variable to false so the retry function can happen again
+            self.retry_clicked_variable = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
         self.step_index = self.step_index + 1
@@ -682,13 +684,17 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
-
+        print(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
+        while not self.thread_cont_mutex:
+            pass
+        if self.retry_clicked_variable:
+            return
         if log:
             self.log("Aborting script after step")
         # Reset script control variables
         self.currently_scripting = False
         self.step_index = -1
-        self.abort_immediately_var = False
+        self.abort_immediately_variable = False
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
         # Todo: add option to save before exiting
@@ -699,72 +705,93 @@ class Manager(QThread):
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
+        print(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
         log = True
         if log:
             self.log("Aborting script")
         # Reset script control variables
         self.currently_scripting = False
         self.step_index = -1
-        self.abort_immediately_var = True
+        self.abort_immediately_variable = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
         self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
-    def cont_if_cont_clicked(self) -> bool:
+    def cont_if_cont_clicked(self):
         """
         Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
         Call this method after showing a dialog, and return if the result is false.
         """
         try:
-            self.__wait_for_cont()
+            self.wait_for_cont()
             return True
         except AbortException as e:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
+            if self.abort_guard:
+                self.abort_immediately()
+                return False
             self.abort_after_step()
             return False
         except RetryException:
+            print("caught retry exception")  # works
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
             self.log("Retrying step")
-            self.retry_clicked = True
+            self.retry_clicked_variable = True
             return False
 
-    def __wait_for_cont(self):
+    def wait_for_cont(self):
         """
         Sets continue variable to False and waits for it to be true, raising exceptions if the user
         wants to abort or retry. Always handle these exceptions.
         """
-        self.continue_clicked = False
-        self.retry_clicked = False
-        self.abort_clicked = False
+        self.continue_clicked_variable = False
+        self.retry_clicked_variable = False
+        self.abort_clicked_variable = False
 
-        while not self.continue_clicked:
+        while not self.thread_cont_mutex:
+            pass
+
+        while not self.continue_clicked_variable:
             # check if script has been aborted
-            if self.retry_clicked:
-                self.retry_clicked = False
+            if self.retry_clicked_variable:
+                self.retry_clicked_variable = False
+                self.thread_cont_mutex = False
                 # Always handle this exception
                 raise RetryException
-            if self.abort_clicked:
-                self.abort_clicked = False
+            if self.abort_clicked_variable:
+                print("entering abort section in wait_for_cont")
+                self.abort_clicked_variable = False
+                self.thread_cont_mutex = False
                 # Always handle this exception
                 raise AbortException
-            if self.abort_immediately_var:
+            if self.abort_immediately_variable:
+                self.thread_cont_mutex = False
                 self.abort_immediately()
+                return False
+        self.thread_cont_mutex = False
+        return True
 
     @pyqtSlot()
     def continue_clicked(self):
         """Flags cont_clicked to continue the current step"""
-        self.continue_clicked = True
+        self.continue_clicked_variable = True
+        self.abort_clicked_variable = False
+        self.abort_immediately_variable = False
+        self.thread_cont_mutex = True
 
     @pyqtSlot()
     def retry_clicked(self):
         """Flags cont_clicked to retry the current step"""
-        self.retry_clicked = True
+        self.retry_clicked_variable = True
+        self.thread_cont_mutex = True
 
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        self.abort_clicked = True
+        print(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
+        self.abort_clicked_variable = True
+        self.thread_cont_mutex = True
 
     def write_calibration_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
@@ -822,7 +849,7 @@ class Manager(QThread):
                                            action_type="Interrupt action")
             if not cont:
                 return
-            self.retry_clicked = False
+            self.retry_clicked_variable = False
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
@@ -846,6 +873,8 @@ class Manager(QThread):
         else:
             self.test_data.log_script(['', "Home all", f"FAIL; X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}", ''])
+            if self.abort_guard:
+                return
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail='Home all has failed in pretest initialisation')
             if not cont:
@@ -873,6 +902,8 @@ class Manager(QThread):
 
         # Prompt user to turn on power amp
         while True:
+            if self.abort_immediately_variable:
+                return
             self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)
 
             cont = self.cont_if_cont_clicked()
@@ -1086,7 +1117,7 @@ class Manager(QThread):
         max_position = -1 * sys.float_info.max
 
         for i in range(num_points):
-            if self.abort_immediately_var:
+            if self.abort_immediately_variable:
                 # Stop the current method and any parent methods that called it
                 return False
 
@@ -1305,7 +1336,7 @@ class Manager(QThread):
         self.Oscilloscope.autoset_oscilloscope_timebase()
 
     def home_system(self, var_dict) -> bool:
-        """Return axis to zero coordinate, returns whether or not to continue the script"""
+        """Return axis to zero coordinate, returns whether to continue the script"""
         # TODO: have this be called in pretest_initialization and have it add to script log
         axis_to_home = var_dict["Axis to home"]
 
@@ -1335,7 +1366,9 @@ class Manager(QThread):
         if not successful_go_home:
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Go home failed')
             return cont
-        return True
+
+        successful_go_home = True
+        return successful_go_home
 
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
@@ -1499,7 +1532,7 @@ class Manager(QThread):
         threshold = float(var_dict["RFB.Threshold"])
         offset = float(var_dict["RFB.Offset"])
         set_frequency_options = var_dict["Set frequency options"]
-        frequency_MHz = float(var_dict["Frequency (MHz)"])
+        frequency_mhz = float(var_dict["Frequency (MHz)"])
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
@@ -1558,7 +1591,7 @@ class Manager(QThread):
         # Configure function generator
         awg_var_dict = dict()
         awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
-        awg_var_dict["Frequency (MHz)"] = frequency_MHz
+        awg_var_dict["Frequency (MHz)"] = frequency_mhz
         awg_var_dict["Mode"] = "Continous"
         awg_var_dict["Enable output"] = "False"
         awg_var_dict["#Cycles"] = ""
@@ -1648,13 +1681,13 @@ class Manager(QThread):
             if not cont:
                 return
         elif test_result.upper() == 'PASS':
-            self.log(f"test result for {self.element} has passed", self.info)
+            self.log(f"test result for {self.element} has passed", self.system_info)
         else:
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
             return self.abort_after_step()
 
-        self.retry_clicked = False
+        self.retry_clicked_variable = False
 
         self.test_data.update_results_summary_with_efficiency_results(
             frequency_range=frequency_range,
@@ -1670,94 +1703,9 @@ class Manager(QThread):
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 
-        ### Start block of code to move to file_saver class extract_file_data(test_data: TestData)
-
-        balance_readings_mg = [value * 1000 for value in self.rfb_logger.balance_readings_g]
-        # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
-        raw_data = [
-            self.rfb_logger.times_s,
-            balance_readings_mg,
-            self.rfb_logger.acoustic_powers_w,
-            self.rfb_logger.f_meter_readings_w,
-            self.rfb_logger.r_meter_readings_w,
-        ]
-
-        absorption = ["Off", 1.000690]
-        transducer_size = ["Off", 1.013496]
-        focusing = ["Off", 1.000000]
-
-        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
-
-        # transition_times_s/transition_amp_w[0] = start on, [1] = end on, [2] = start off, [3] = end off
-        num_cycles = len(self.rfb_data.on_time_intervals_s)
-        transition_times_s = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
-                              [float('nan')] * num_cycles]
-        for i in range(num_cycles):
-            if not i == 0:
-                # Beginning of on transition
-                transition_times_s[0][i] = self.rfb_data.times_s[self.rfb_data.off_indices[i - 1][1]]
-            else:
-                # Beginning of on transition
-                transition_times_s[0][i] = self.rfb_data.times_s[self.rfb_data.awg_on_ray.index(True) - buffer]
-            # Beginning of off transition
-            transition_times_s[2][i] = self.rfb_data.times_s[self.rfb_data.on_indices[i][1]]
-
-            transition_times_s[1][i] = self.rfb_data.on_time_intervals_s[i][0]  # End of on transition
-            transition_times_s[3][i] = self.rfb_data.off_time_intervals_s[i][0]  # End of off transition
-
-        transition_amp_w = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
-                            [float('nan')] * num_cycles]
-        for i in range(num_cycles):
-            if not i == 0:
-                # Beginning of on transition
-                transition_amp_w[0][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.off_indices[i - 1][1]]
-            else:
-                # Beginning of on transition
-                transition_amp_w[0][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.awg_on_ray.index(True) - buffer]
-            # Beginning of off transition
-            transition_amp_w[2][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.on_indices[i][1]]
-
-            transition_amp_w[1][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.on_indices[i][0]]  # End of on transition
-            transition_amp_w[3][i] = self.rfb_data.acoustic_powers_w[self.rfb_data.off_indices[i][0]]  # End of off transition
-
-        power_on_w = transition_amp_w[1]
-        power_off_w = transition_amp_w[2]
-        cumulative_results = (
-            [[mean(power_on_w), mean(power_off_w),
-              self.rfb_data.acoustic_power_on_mean],
-             [self.rfb_data.p_on_rand_unc, self.rfb_data.p_on_rand_unc, self.rfb_data.p_on_rand_unc],
-             [self.rfb_data.p_on_total_unc, self.rfb_data.p_on_total_unc, self.rfb_data.p_on_total_unc]]
-        )
-
-        # todo: check that p_on_rand_unc is the one we want
-        self.file_saver.store_measure_rfb_waveform_csv(
-            element_number=self.element,
-            ua_serial_number=self.test_data.serial_number,
-            freq_mhz=frequency_MHz,
-            diameter_mm=float(
-                self.system_info["Hydrophone system"]["Hydrophone Diameter"].split(" ")[0].replace('"', "")
-            ),
-            propagation_distance_mm=15.000000,
-            T_decC=self.rfb_data.water_temperature_c,
-            UC_percent=float(self.rfb_data.p_on_rand_unc),
-            power_ratio=1.000000,
-            g_mpersecsqrd=9.810000,
-            cal_fact=14600.571062,
-            power_on_w=power_on_w,
-            power_off_w=power_off_w,
-            cumulative_results=cumulative_results,
-            threshold=threshold,
-            offset_s=offset,
-            absorption=absorption,
-            transducer_size=transducer_size,
-            focusing=focusing,
-            absorb_trans_times=transition_times_s,
-            transition_amps=transition_amp_w,
-            raw_data=raw_data,
-            frequency_range=frequency_range
-        )
-
-        ### End extract_file_data
+        self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data, system_info=self.system_info,
+                                          element=self.element, frequency_mhz=frequency_mhz, threshold=threshold,
+                                          offset=offset, frequency_range=frequency_range)
 
         self.test_data.log_script(["", "End", "", ""])
 
@@ -1784,14 +1732,15 @@ class Manager(QThread):
         self.stay_alive = False
 
     def log(self, message, level="info"):
-        log_msg(self, root_logger=root_logger, message=message, level=level)
+        from inspect import getframeinfo, stack
+        log_msg(self, root_logger=root_logger, message=message, level=level, line_number=getframeinfo(stack()[1][0]).lineno)
 
     def refresh_rfb_tab(self) -> bool:
         """
         Helper function which retrieves data from the rfb_logger and tells the rfb tab to update
         returns a boolean indicating whether to continue the script
         """
-        if self.abort_immediately_var:
+        if self.abort_immediately_variable:
             # Stop the current method and any parent methods that called it
             return False
 
@@ -1847,6 +1796,8 @@ class Manager(QThread):
         # todo: make sure that ignoring errors and continuing is reserved for engineers and admin_pass_field
 
     def prompt_for_retry(self, error_detail: str) -> bool:
+        self.abort_clicked_variable = False
+        self.thread_cont_mutex = False
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
                                      F"Abort to end the UA testing sequence.\nRetry to re-run"
                                      F" this test.\nContinue to move to the next test in the "
@@ -1863,7 +1814,7 @@ class Manager(QThread):
 
         k1 = 'Sequence pass/fail'
 
-        self.retry_clicked = True
+        self.retry_clicked_variable = True
 
         try:
             max_retries = self.config[k1]['Retries']

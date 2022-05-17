@@ -651,7 +651,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """method to launch the ultrasound actuator retracting warning dialog """
         dlg = UARetractDialog(config=self.config)
         dlg.continue_signal.connect(self.manager.continue_clicked)
-        dlg.abort_signal.connect(self.manager.abort_clicked)
+        dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
     @pyqtSlot(list, list)
