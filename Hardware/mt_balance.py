@@ -1,4 +1,3 @@
-import time
 import time as t
 
 import serial
@@ -72,7 +71,6 @@ class MT_balance(AbstractBalance):
             return
         self.log("Zeroing Balance")
         self.ser.write(b"\nZ\n")
-        print("zero balance command sent")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
@@ -244,7 +242,6 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    # Todo: test
     def get_serial_number(self) -> str:
         if not self.connected:
             return None
@@ -283,15 +280,6 @@ class MT_balance(AbstractBalance):
 
 if __name__ == "__main__":
     balance = MT_balance(config=load_configuration())
-    # balance.connect_hardware()
-    # balance.test()
-    # print(balance.port)
-    # balance.start_continuous_reading()
-    # time_end = time.time() + 10
-    # while time.time() < time_end:
-    #     print(balance.get_reading())
-    # balance.stop_continuous_reading()
-    # print(balance.connected)
-    # input('press enter when weight is on scale')
-    # print(balance.get_reading())
-
+    balance.connect_hardware()
+    while True:
+        print(balance.get_reading())

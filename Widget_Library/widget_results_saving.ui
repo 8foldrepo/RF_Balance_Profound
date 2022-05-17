@@ -1,102 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>configure_results_saving</class>
- <widget class="QWidget" name="configure_results_saving">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>541</width>
-    <height>373</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
-  <widget class="QFrame" name="config_res_sav_frame">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>251</width>
-     <height>72</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background:rgb(220, 242, 255)</string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::Box</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QFrame" name="write_ua_subframe">
-    <property name="geometry">
-     <rect>
-      <x>-1</x>
-      <y>30</y>
-      <width>251</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>231</width>
-       <height>19</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horz_lyout_write_ua">
-      <item>
-       <widget class="QCheckBox" name="write_ua_calibration_checkbox">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
+    <class>configure_results_saving</class>
+    <widget class="QWidget" name="configure_results_saving">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>541</width>
+                <height>373</height>
+            </rect>
         </property>
-        <property name="text">
-         <string>Write UA Calibration</string>
+        <property name="windowTitle">
+            <string>Form</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="with_prompt_checkbox">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>With prompt</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+        <widget class="QFrame" name="config_res_sav_frame">
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>20</y>
+                    <width>251</width>
+                    <height>72</height>
+                </rect>
+            </property>
+            <property name="styleSheet">
+                <string notr="true">background:rgb(220, 242, 255)</string>
+            </property>
+            <property name="frameShape">
+                <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QFrame" name="write_ua_subframe">
+                <property name="geometry">
+                    <rect>
+                        <x>-1</x>
+                        <y>30</y>
+                        <width>251</width>
+                        <height>41</height>
+                    </rect>
+                </property>
+                <property name="frameShape">
+                    <enum>QFrame::Box</enum>
+                </property>
+                <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                </property>
+                <widget class="QWidget" name="layoutWidget">
+                    <property name="geometry">
+                        <rect>
+                            <x>10</x>
+                            <y>10</y>
+                            <width>231</width>
+                            <height>19</height>
+                        </rect>
+                    </property>
+                    <layout class="QHBoxLayout" name="horz_lyout_write_ua">
+                        <item>
+                            <widget class="QCheckBox" name="write_ua_calibration_checkbox">
+                                <property name="layoutDirection">
+                                    <enum>Qt::RightToLeft</enum>
+                                </property>
+                                <property name="text">
+                                    <string>Write UA Calibration</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QCheckBox" name="with_prompt_checkbox">
+                                <property name="layoutDirection">
+                                    <enum>Qt::RightToLeft</enum>
+                                </property>
+                                <property name="text">
+                                    <string>With prompt</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </widget>
+            <widget class="QCheckBox" name="sav_sum_file_chkbx">
+                <property name="geometry">
+                    <rect>
+                        <x>7</x>
+                        <y>10</y>
+                        <width>121</width>
+                        <height>20</height>
+                    </rect>
+                </property>
+                <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                </property>
+                <property name="text">
+                    <string>Save summary file</string>
+                </property>
+            </widget>
+        </widget>
     </widget>
-   </widget>
-   <widget class="QCheckBox" name="sav_sum_file_chkbx">
-    <property name="geometry">
-     <rect>
-      <x>7</x>
-      <y>10</y>
-      <width>121</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
-    </property>
-    <property name="text">
-     <string>Save summary file   </string>
-    </property>
-   </widget>
-  </widget>
- </widget>
- <resources/>
- <connections/>
+    <resources/>
+    <connections/>
 </ui>

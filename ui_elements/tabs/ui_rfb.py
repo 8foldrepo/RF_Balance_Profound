@@ -1,8 +1,9 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
+
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
-
+import time as t
 
 class RFB(MyQWidget, Ui_Form):
     def __init__(self, parent=None, manager=None, balance=None, config=None):
@@ -41,7 +42,12 @@ class RFB(MyQWidget, Ui_Form):
         """
         if not self.plot_ready:
             return
+
+        start_time = t.time()
+
+        #print("graphing")
         self.plot_ready = False
+        self.app.processEvents()
 
         rfb_data = self.manager.rfb_data
 

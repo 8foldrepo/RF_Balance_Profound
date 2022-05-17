@@ -1,10 +1,11 @@
-from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
 import time as t
+from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
+from PyQt5.QtWidgets import QApplication
 from Hardware.Abstract.abstract_balance import AbstractBalance
-from Utilities.sensor_thread import SensorThread
 from Hardware.Abstract.abstract_sensor import AbstractSensor
-from Utilities.useful_methods import trim
 from Utilities.formulas import calculate_power_from_balance_reading
+from Utilities.sensor_thread import SensorThread
+from Utilities.useful_methods import trim
 from data_structures.rfb_data import RFBData
 
 
@@ -15,12 +16,13 @@ class RFBDataLogger(QThread):
     Balance: AbstractBalance
     Forward_Power_Meter: AbstractSensor
     Reflected_Power_Meter: AbstractSensor
-
     rfb_data: RFBData
 
     def __init__(self, rfb_data, Balance: AbstractBalance, Forward_Power_Meter: AbstractSensor,
-                 Reflected_Power_Meter: AbstractSensor, parent=None):
+                 Reflected_Power_Meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
+        self.app = QApplication.instance()
+        self.config = config
         # Encapsulates all data relevent to the RFB efficiency test Polled by the manager and shared with the
         # Ui thread by reference
         self.rfb_data = rfb_data
@@ -47,9 +49,9 @@ class RFBDataLogger(QThread):
         self.f_meter_ready = True
         self.r_meter_ready = True
 
-        self.BalanceThread = SensorThread(sensor=Balance)
-        self.F_Meter_Thread = SensorThread(sensor=Forward_Power_Meter)
-        self.R_Meter_Thread = SensorThread(sensor=Reflected_Power_Meter)
+        self.BalanceThread = SensorThread(config=self.config, sensor=Balance)
+        self.F_Meter_Thread = SensorThread(config=self.config, sensor=Forward_Power_Meter)
+        self.R_Meter_Thread = SensorThread(config=self.config, sensor=Reflected_Power_Meter)
         self.thread_list = list()
         self.thread_list.append(self.BalanceThread)
         self.thread_list.append(self.F_Meter_Thread)
@@ -78,10 +80,10 @@ class RFBDataLogger(QThread):
             if self.sensors_ready():
                 self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
                 current_time = t.time() - start_time
-                #print(f"current_time in rfb_data_logger.py is {current_time}")
-                self.trigger_capture_signal.emit()
+                # print(f"current_time in rfb_data_logger.py is {current_time}")
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
+                self.trigger_capture_signal.emit()
                 self.update_realtime_data()
 
             if self.stay_alive is False:
@@ -132,22 +134,20 @@ class RFBDataLogger(QThread):
 
     @pyqtSlot(float)
     def log_f_meter(self, reading_w):
-
-        # todo: remove this block
+        #todo: remove this block
         if self.awg_on:
             reading_w = reading_w / 50 + 1
         else:
             reading_w = reading_w / 50
 
-        self.f_meter_readings_w.append(reading_w )
+        self.f_meter_readings_w.append(reading_w)
         self.f_meter_ready = True
 
     @pyqtSlot(float)
     def log_r_meter(self, reading_w):
-
         # todo: remove this block
         if self.awg_on:
-            reading_w = reading_w  / 50 + .4
+            reading_w = reading_w / 50 + .1
         else:
             reading_w = reading_w / 50
 
@@ -164,4 +164,3 @@ class RFBDataLogger(QThread):
             super().quit()
         except RuntimeError:
             pass
-        print("Done quiting thread")

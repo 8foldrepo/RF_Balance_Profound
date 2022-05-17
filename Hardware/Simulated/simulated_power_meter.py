@@ -6,8 +6,9 @@
 #      Note: - Windows may block the DLL file after download as a precaution
 #            - Right-click on the file, select properties, click "Unblock" (if shown
 import random
-import time as t
+
 from PyQt5.QtCore import pyqtSignal
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 

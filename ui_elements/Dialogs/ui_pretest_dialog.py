@@ -1,9 +1,11 @@
 from datetime import datetime
 from os.path import exists
+
 from PyQt5.QtCore import pyqtSignal
+
 from Utilities.useful_methods import is_number
-from data_structures.test_data import TestData
 from Widget_Library import dialog_pretest
+from data_structures.test_data import TestData
 from definitions import ROOT_DIR
 from ui_elements.Dialogs.my_qdialog import MyQDialog
 
@@ -12,20 +14,24 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     pretest_metadata_signal = pyqtSignal(TestData)  # signal from MainWindow to manager; operator, serial no., comment
     abort_signal = pyqtSignal()
 
-    def __init__(self, serial_no=None, parent=None, config=None):
+    def __init__(self, serial_no, schema, access_level, parent=None, config=None):
         super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
         self.test_data = TestData()
-
+        self.test_data.schema = schema
         # add formatted date
         now = datetime.now()
         formatted_date = now.strftime("%Y.%m.%d-%H.%M")
 
         # Get the current date, save it to the metadata dictionary, and show it in the UI
         self.ua_serial_no_inputline.setText(serial_no)
+        self.schema = schema
         self.lookup_clicked()
         self.date_output.setText(formatted_date)
+
+        if access_level.upper() == 'OPERATOR':
+            self.override_checkbox.setEnabled(False)
 
     def configure_signals(self):
         self.ok_button.clicked.connect(self.ok_clicked)
@@ -89,6 +95,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.test_data.high_frequency_MHz = float(self.hf_MHz_field.text())
         self.test_data.hardware_code = self.hardware_code_field.text()
         self.test_data.test_date_time = self.date_output.text()
+        self.test_data.schema = self.schema
 
         self.pretest_metadata_signal.emit(self.test_data)
         self.dialog_resolved = True

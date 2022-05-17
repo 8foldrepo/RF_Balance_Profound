@@ -44,7 +44,6 @@ class Position(MyQWidget, Ui_Form):
         self.com_port = None
         self.settings_ray = list()
 
-
     def set_config(self, config):
         self.config = config
 
@@ -79,7 +78,7 @@ class Position(MyQWidget, Ui_Form):
         self.steps_per_mm_sb.setValue(self.calibrate_ray[1])
         self.gearing_ray = self.config[self.motors.device_key]['gearing_ray']
         self.gearing_double_spinbox.setValue(self.gearing_ray[1])
-        self.encoder_ray = self.config[self.motors.device_key]['encoder_ray']
+        self.encoder_ray = self.config[self.motors.device_key]['encoder_installed_ray']
         self.encoded_indicator.setChecked(self.encoder_ray[1])
         self.rotational_ray = self.config[self.motors.device_key]['rotational_ray']
         if self.rotational_ray[1]:
@@ -144,7 +143,7 @@ class Position(MyQWidget, Ui_Form):
         self.reset_zero_button.setEnabled(enabled)
 
     def configure_signals(self):
-        #self.set_button.clicked.connect(self.set_clicked)
+        # self.set_button.clicked.connect(self.set_clicked)
         self.axis_spinbox.valueChanged.connect(self.axis_changed)
         self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
         # Hardware control signals
@@ -170,7 +169,7 @@ class Position(MyQWidget, Ui_Form):
 
     def axis_changed(self):
         """Change the settings displayed in the UI to reflect the current axis"""
-        axis = self.axis_spinbox.value()-1
+        axis = self.axis_spinbox.value() - 1
         self.steps_per_mm_sb.setValue(self.motors.calibrate_ray_steps_per[axis])
         self.gearing_double_spinbox.setValue(self.motors.gearing_ray[axis])
         self.encoded_indicator.setChecked(self.motors.encoder_ray[axis])
@@ -179,7 +178,7 @@ class Position(MyQWidget, Ui_Form):
         else:
             self.type_combobox.setCurrentText("Translational")
 
-    #todo: this is disabled in the UI
+    # todo: this is disabled in the UI
     # def set_clicked(self):
     #     """Update the motor settings to reflect the UI"""
     #     axis = self.axis_spinbox.value() - 1

@@ -44,8 +44,8 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
             self.access_level_signal.emit("Engineer")
             self.close()
         elif (
-            "Administrator".upper() in self.access_level_combo.currentText().upper()
-            and self.password_field.text() == self.config["User Accounts"]["Administrator"]
+                "Administrator".upper() in self.access_level_combo.currentText().upper()
+                and self.password_field.text() == self.config["User Accounts"]["Administrator"]
         ):
             self.dialog_resolved = True
             self.access_level_signal.emit("Administrator")

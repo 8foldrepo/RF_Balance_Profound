@@ -560,11 +560,13 @@ class Ui_Form(object):
         self.label_8.setText(_translate("Form", "Theta"))
         self.label_6.setText(_translate("Form", "Gearing"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), _translate("Form", "Move"))
-from ui_elements.switch import Switch
 
+
+from ui_elements.switch import Switch
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

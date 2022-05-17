@@ -15,13 +15,17 @@ class SimulatedMotorController(AbstractMotorController):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.fields_setup()
 
-    def go_home_1d(self, axis):
+    def go_home_1d(self, axis) -> bool:
+        if self.config['Debugging']['simulate_motor_error']:
+            return False
+
         if axis == "R":
             self.coords_mm[1] = -90
         elif axis == "X":
             self.coords_mm[0] = 273
         self.get_position()
         self.ready_signal.emit()
+        return True
 
     def fields_setup(self):
         self.ax_letters = self.config[self.device_key]["axes"]

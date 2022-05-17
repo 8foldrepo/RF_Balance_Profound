@@ -20,7 +20,6 @@ class KeysightAWG(AbstractAWG):
         self.state = dict()
         self.fields_setup()
 
-    # Todo: add default settings to config file and switch to them here
     def fields_setup(self):
         if self.config is None:
             self.config = load_configuration()
@@ -29,7 +28,7 @@ class KeysightAWG(AbstractAWG):
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],
-            burst=self.config[self.device_key]["burst"],
+            burst=self.config[self.device_key]["burst_on"],
             burst_cycles=self.config[self.device_key]["burst_cycles"],
             ext_trig=self.config[self.device_key]["trig_in"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
@@ -187,6 +186,7 @@ class KeysightAWG(AbstractAWG):
             self.command("OUTP:TRIG OFF")
 
     def SetBurst(self, on=True):
+        self.state["burst_on"] = on
         if "Phase_degrees" in self.state.keys():
             self.command(f"BURS:PHAS {self.state['Phase_degrees']}")
         if on:
@@ -194,9 +194,8 @@ class KeysightAWG(AbstractAWG):
         else:
             self.command("BURS OFF")
 
-    """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
-
     def GetBurst(self):
+        """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
         self.command(f"BURS?")
         self.state["burst_on"] = "1" in self.read()
         self.command(f"BURS:NCYC?")
@@ -277,12 +276,10 @@ class KeysightAWG(AbstractAWG):
     #     self.state['trig_period_s'] = float(self.read())
     #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
 
-    # todo: test
     def wrap_up(self):
         self.SetOutput(False)
         self.disconnect_hardware()
 
-    # Todo: make sure this saves correctly in the systeminfo.ini
     def get_serial_number(self) -> str:
         if not self.connected:
             return None

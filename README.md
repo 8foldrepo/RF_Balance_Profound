@@ -73,41 +73,41 @@ The output should resemble this:
 
 > packages in environment at C:\Users\8Fold\Anaconda3\envs\Scantry_Ultra:  \
 > \
-> Name                    Version                   Build  Channel \
-> ca-certificates           2021.10.26           haa95532_2 \
-> certifi                   2021.10.8        py38haa95532_0 \
-> console_shortcut          0.1.1                         4 \
-> cycler                    0.11.0                   pypi_0    pypi \
-> fonttools                 4.28.2                   pypi_0    pypi \
-> gclib                     1.0                      pypi_0    pypi \
-> h5py                      3.6.0                    pypi_0    pypi \
-> kiwisolver                1.3.2                    pypi_0    pypi \
-> matplotlib                3.5.0                    pypi_0    pypi \
-> numpy                     1.21.4                   pypi_0    pypi \
-> openssl                   1.1.1l               h2bbff1b_0 \
-> packaging                 21.3                     pypi_0    pypi \
-> picosdk                   1.0                      pypi_0    pypi \
-> pillow                    8.4.0                    pypi_0    pypi \
-> pip                       21.2.2           py38haa95532_0 \
-> pyparsing                 3.0.6                    pypi_0    pypi \
-> pyqt5                     5.15.6                   pypi_0    pypi \
-> pyqt5-qt5                 5.15.2                   pypi_0    pypi \
-> pyqt5-sip                 12.9.0                   pypi_0    pypi \
-> pyqtgraph                 0.12.3                   pypi_0    pypi \
-> python                    3.8.12               h6244533_0 \
-> python-dateutil           2.8.2                    pypi_0    pypi \
-> pyvisa                    1.11.3                   pypi_0    pypi \
-> pyyaml                    6.0                      pypi_0    pypi \
-> setuptools                58.0.4           py38haa95532_0 \
-> setuptools-scm            6.3.2                    pypi_0    pypi \
-> six                       1.16.0                   pypi_0    pypi \
-> sqlite                    3.36.0               h2bbff1b_0 \
-> tomli                     1.2.2                    pypi_0    pypi \
-> typing-extensions         4.0.1                    pypi_0    pypi
-> vc                        14.2                 h21ff451_1 \
-> vs2015_runtime            14.27.29016          h5e58377_2 \
-> wheel                     0.37.0             pyhd3eb1b0_1 \
-> wincertstore              0.2              py38haa95532_2
+> Name Version Build Channel \
+> ca-certificates 2021.10.26 haa95532_2 \
+> certifi 2021.10.8 py38haa95532_0 \
+> console_shortcut 0.1.1 4 \
+> cycler 0.11.0 pypi_0 pypi \
+> fonttools 4.28.2 pypi_0 pypi \
+> gclib 1.0 pypi_0 pypi \
+> h5py 3.6.0 pypi_0 pypi \
+> kiwisolver 1.3.2 pypi_0 pypi \
+> matplotlib 3.5.0 pypi_0 pypi \
+> numpy 1.21.4 pypi_0 pypi \
+> openssl 1.1.1l h2bbff1b_0 \
+> packaging 21.3 pypi_0 pypi \
+> picosdk 1.0 pypi_0 pypi \
+> pillow 8.4.0 pypi_0 pypi \
+> pip 21.2.2 py38haa95532_0 \
+> pyparsing 3.0.6 pypi_0 pypi \
+> pyqt5 5.15.6 pypi_0 pypi \
+> pyqt5-qt5 5.15.2 pypi_0 pypi \
+> pyqt5-sip 12.9.0 pypi_0 pypi \
+> pyqtgraph 0.12.3 pypi_0 pypi \
+> python 3.8.12 h6244533_0 \
+> python-dateutil 2.8.2 pypi_0 pypi \
+> pyvisa 1.11.3 pypi_0 pypi \
+> pyyaml 6.0 pypi_0 pypi \
+> setuptools 58.0.4 py38haa95532_0 \
+> setuptools-scm 6.3.2 pypi_0 pypi \
+> six 1.16.0 pypi_0 pypi \
+> sqlite 3.36.0 h2bbff1b_0 \
+> tomli 1.2.2 pypi_0 pypi \
+> typing-extensions 4.0.1 pypi_0 pypi
+> vc 14.2 h21ff451_1 \
+> vs2015_runtime 14.27.29016 h5e58377_2 \
+> wheel 0.37.0 pyhd3eb1b0_1 \
+> wincertstore 0.2 py38haa95532_2
 
 ### PYCHARM SETUP
 

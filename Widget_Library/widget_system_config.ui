@@ -149,7 +149,12 @@
       </item>
       <item>
        <property name="text">
-        <string>User prompt</string>
+        <string>Prompt for retry</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Retry automatically</string>
        </property>
       </item>
      </widget>
@@ -272,7 +277,12 @@
       </item>
       <item>
        <property name="text">
-        <string>User prompt</string>
+        <string>Prompt for retry</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Retry automatically</string>
        </property>
       </item>
      </widget>

@@ -1,7 +1,9 @@
 from datetime import date
 from typing import List
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog, QApplication
+
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -39,7 +41,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def set_tree_widget(self, treeWidget):
         self.treeWidget = treeWidget
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
-        self.delete_all()
+        if self.treeWidget.invisibleRootItem().childCount() > 0:
+            self.delete_all()
 
     def configure_signals(self):
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)
@@ -110,9 +113,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if not index + 1 >= len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
-    """Clear the ui script visual and clear the internal var_dicts variable"""
-
     def delete_all(self):
+        """Clear the ui script visual and clear the internal var_dicts variable"""
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -131,8 +133,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         value = item.text(1)
 
         is_task = (
-            item.parent() is self.treeWidget.invisibleRootItem()
-            or item.parent() is None
+                item.parent() is self.treeWidget.invisibleRootItem()
+                or item.parent() is None
         )
         if is_task:
             return
@@ -194,7 +196,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
                     # Discard the task type label and only show the task type itself
                     item = QTreeWidgetItem([parameter_pair[1]])
                 else:
-                    print(parameter_pair)
+                    parameter_pair[0] = str(parameter_pair[0])
+                    parameter_pair[1] = str(parameter_pair[1])
                     children.append(QTreeWidgetItem(parameter_pair))
 
             if item is None:
@@ -332,7 +335,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             new_var_dict = OrderedDict()
 
         # add the new dictionary to var_dicts at the correct index
-        self.list_of_var_dicts.insert(row + 1, new_var_dict)
+        if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:
+            self.list_of_var_dicts.insert(row + 1, new_var_dict)
+        else:
+            self.list_of_var_dicts.insert(row, new_var_dict)
+
         item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
@@ -347,8 +354,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.app.processEvents()
 
         path = QFileDialog.getSaveFileName(
-            parent=self, caption="Save script", directory=ROOT_DIR+"/Scripts", filter="Script files (*.wtf)"
+            parent=self, caption="Save script", directory=ROOT_DIR + "/Scripts", filter="Script files (*.wtf)"
         )[0]
+
+        if path == "":
+            return
 
         # remove existing header(s) if there is one
         for i in range(len(self.list_of_var_dicts)):
