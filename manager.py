@@ -1,5 +1,4 @@
 import distutils.util
-import inspect
 import logging
 import os
 import re
@@ -56,6 +55,7 @@ class Manager(QThread):
     Oscilloscope: AbstractOscilloscope
     Motors: AbstractMotorController
     UAInterface: AbstractUAInterface
+
     # Output file handler
     file_saver: FileSaver
     rfb_logger: RFBDataLogger
@@ -111,15 +111,15 @@ class Manager(QThread):
     # Global variables section
 
     def __init__(self, system_info, config: dict, parent=None):
+        """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
-        # Default to operator access
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
-        self.access_level = "Operator"
-        self.rfb_logger = None
-        self.warn = str(logging.WARNING)
-        self.error = str(logging.ERROR)
-        # decreasing these improves the refresh rate of the sensors, at the cost of responsiveness
+        self.access_level = "Operator"  # Defaults to operator access
+        self.rfb_logger = None  # TODO: should this be self.rfb_logger = RFBDataLogger?
+        self.warn = str(logging.WARNING)  # sets variable for shorter typing
+        self.error = str(logging.ERROR)  # sets variable for shorter typing
+        # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
         self.sensor_refresh_interval_s = 0.2
         self.last_sensor_update_time = 0.0
 
@@ -147,15 +147,15 @@ class Manager(QThread):
         self.motor_control_lock = QMutex()
         self.start_time = t.time()
         self.loops = []
-        self.freq_highlimit_hz = None
-        self.freq_lowlimit_hz = None
+        self.frequency_high_limit_Hz = None
+        self.frequency_low_limit_Hz = None
         self.parent = parent
         self.stay_alive = True
 
-        # Stores latest command to be executed in the event loop
-        self.cmd = ""
+        # Stores the latest command to be executed in the event loop
+        self.command = ""
 
-        # Event loop control vars
+        # Event loop control variables
         self.mutex = QMutex()
         self.condition = QWaitCondition()
 
@@ -163,23 +163,24 @@ class Manager(QThread):
         self.script = None
 
         # Script data
-        self.taskArgs = None
-        self.taskExecOrder = None
-        self.taskNames = None
+        self.task_arguments = None
+        self.task_execution_order = None
+        self.task_names = None
 
         self.element = 1
 
         # Tracks whether a script is being executed
-        self.scripting = False
+        self.currently_scripting = False
         self.was_scripting = False
 
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
-        self.continue_clicked_var = True
-        self.retry_clicked_var = False
-        self.abort_clicked_var = False
+        self.continue_clicked = True
+        self.retry_clicked = False
+        self.abort_clicked = False
 
         self.abort_immediately_var = False
 
+        # Initializes the retry count for retry step functionality in scripts
         self.retry_count = 0
 
         # Keeps track of script step in progress
@@ -276,6 +277,8 @@ class Manager(QThread):
 
     @pyqtSlot()
     def connect_hardware(self):
+        """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits for their
+        response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py"""
         i = 0
         while i < len(self.devices):
             device = self.devices[i]
@@ -303,18 +306,18 @@ class Manager(QThread):
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
         if info.oscilloscope_sn is None:
-            self.sequence_pass_fail('Interrrupt action', "Oscilloscope serial number not found")
+            self.sequence_pass_fail('Interrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
         if info.awg_sn is None:
             self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
         if info.forward_power_sn is None:
-            self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
+            self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
         info.thermocouple_sn = self.thermocouple.get_serial_number()
         info.rf_balance_sn = self.Balance.get_serial_number()
         if info.rf_balance_sn is None:
-            self.sequence_pass_fail('Interrrupt action', "Balance serial number not found")
+            self.sequence_pass_fail('Interrupt action', "Balance serial number not found")
         self.system_info_signal.emit(info)
 
     @pyqtSlot()
@@ -342,30 +345,30 @@ class Manager(QThread):
             if self.stay_alive is False:
                 break
 
-            self.cmd = self.cmd.upper()
-            cmd_ray = self.cmd.split(" ")
-            if cmd_ray[0] == "CLOSE":
+            # code block below checks the first part of the split command_ray to see what command is
+            self.command = self.command.upper()
+            command_ray = self.command.split(" ")
+            if command_ray[0] == "CLOSE":
                 self.wrap_up()
-            elif cmd_ray[0] == "CONNECT":
+            elif command_ray[0] == "CONNECT":
                 self.connect_hardware()
-            elif cmd_ray[0] == "CAPTURE":
-                self.capture_osc_and_plot()
-            elif cmd_ray[0] == "STEP":
+            elif command_ray[0] == "CAPTURE":
+                self.capture_oscilloscope_and_plot()
+            elif command_ray[0] == "STEP":
                 self.advance_script()
-            elif cmd_ray[0] == "ABORT":
+            elif command_ray[0] == "ABORT":
                 self.abort_after_step()
-            # What to do when there is no command
-            else:
+            else:  # What to do when there is no command
                 # If a script has just ended, show script_complete dialog
-                if self.scripting:
-                    if self.taskNames is None:
+                if self.currently_scripting:
+                    if self.task_names is None:
                         self.abort_after_step()
                         self.enable_ui_signal.emit(True)
                     else:
                         self.advance_script()
                 else:
                     if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
-                        self.capture_osc_and_plot()
+                        self.capture_oscilloscope_and_plot()
                     else:
                         pass
                     self.update_sensors()
@@ -373,15 +376,15 @@ class Manager(QThread):
                         self.thermocouple.get_reading()
 
             # Show script complete dialog whenever a script finishes
-            if not self.scripting and self.was_scripting:
-                if self.taskNames is not None:
-                    finished = self.step_index == len(self.taskNames) - 1
+            if not self.currently_scripting and self.was_scripting:
+                if self.task_names is not None:
+                    finished = self.step_index == len(self.task_names) - 1
                 else:
                     finished = False
                 self.script_complete(finished=finished)
-            self.was_scripting = self.scripting
+            self.was_scripting = self.currently_scripting
 
-            self.cmd = ""
+            self.command = ""
         self.wrap_up()
         self.mutex.unlock()
 
@@ -389,14 +392,17 @@ class Manager(QThread):
 
     @pyqtSlot()
     def run_script(self):
+        """Triggers when the user hits the run script button in the UI, sets various scripting variables to appropriate
+        values and logs"""
         self.abort_immediately()
         log_msg(self, root_logger, level="info", message="Running script")
-        self.scripting = True
+        self.currently_scripting = True
         self.was_scripting = True
         self.abort_immediately_var = False
 
     def update_sensors(self):
-        # Return if the user is not looking at positional feedback
+        """Attempts to update the last sensor update time, the water level, thermocouple reading, and ua pump status.
+        Returns if the user is not looking at positional feedback"""
         if self.parent is not None and not hasattr(self.parent, "tabWidget"):
             return
 
@@ -421,6 +427,8 @@ class Manager(QThread):
                     self.motor_control_lock.unlock()
 
     def capture_scope(self, channel=1, plot=True):
+        """captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
+        them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true"""
         try:
             time, voltage = self.Oscilloscope.capture(channel=channel)
             if plot:
@@ -433,6 +441,7 @@ class Manager(QThread):
         return [], []
 
     def plot_scope(self, time, voltage):
+        """takes the time and voltage data (lists) from the oscilloscope and sends a signal to main window to plot them"""
         time_elapsed = t.time() - self.start_time
         if time_elapsed == 0:
             return
@@ -441,11 +450,11 @@ class Manager(QThread):
         self.plot_signal.emit(time, voltage, refresh_rate)
 
     # noinspection PyUnresolvedReferences
-    def capture_osc_and_plot(self):
+    def capture_oscilloscope_and_plot(self):
         """Captures an oscilloscope trace and plots it to the scan tab, assuming the plot is ready"""
 
         if self.oscilloscope_averages != self.Oscilloscope.averages:
-            self.Oscilloscope.SetAveraging(self.oscilloscope_averages)
+            self.Oscilloscope.set_averaging(self.oscilloscope_averages)
 
         # Only capture if the scan tab is selected
         if not self.parent.scan_tab_widget.plot_ready:
@@ -460,6 +469,8 @@ class Manager(QThread):
 
     # noinspection PyUnresolvedReferences
     def load_script(self, path):
+        """takes the script file and parses the info within it into various lists and dictionaries so the program can
+         run the script, requires a path argument to the script"""
         self.abort_after_step(log=False)
 
         # Send name of script to UI
@@ -467,16 +478,16 @@ class Manager(QThread):
         self.test_data.script_name = split_path[len(split_path) - 1]
         self.script_name_signal.emit(self.test_data.script_name)
 
-        tasks = []  # the upper layer of our variable list
-        self.taskExecOrder = []
-        elementNamesForLoop = []
-        taskNoForLoop = []
-        currentLine = -1
+        tasks = []  # the upper layer of our task list
+        self.task_execution_order = []
+        element_names_for_loop = []
+        task_number_for_loop = []
+        current_line = -1
         loop_index_tracker = 0
-        addingElementsToLoop = False
-        buildingLoop = False
-        taskVars = OrderedDict()  # the list of variables for the individual task
-        taskNo = -2  # keeps track of the task number for indexing
+        adding_elements_to_loop = False
+        building_loop = False
+        task_variables = OrderedDict()  # the list of variables for the individual task
+        task_number = -2  # keeps track of the task number for indexing
         f = open(path, "r")
         for line in f:
             ray = line.split(" = ")
@@ -491,98 +502,96 @@ class Manager(QThread):
             elif ray[0].upper() == "DESCRIPTION":
                 self.description_signal.emit(ray[1].replace('"', ""))
 
-            currentLine = currentLine + 1
+            current_line = current_line + 1
             if line == '\n':
-                if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
-                    tasks.append(OrderedDict(taskVars))
-                    taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
-                if addingElementsToLoop:  # detects if we're done with the element name block for the loop in script
-                    addingElementsToLoop = False  # we're done with the block so set the flag to false
+                if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+                    tasks.append(OrderedDict(task_variables))
+                    task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
+                if adding_elements_to_loop:  # detects if we're done with the element name block for the loop in script
+                    adding_elements_to_loop = False  # we're done with the block so set the flag to false
                 continue  # move forward one line
             elif '[' in line:  # if the line we're on is a task line
-                taskNo = taskNo + 1  # increments the task number counter since we've moved to the next task
-                if "Task" in line and not buildingLoop:
-                    self.taskExecOrder.append(taskNo)  # adding task number to the execution list
+                task_number = task_number + 1  # increments the task number counter since we've moved to the next task
+                if "Task" in line and not building_loop:
+                    self.task_execution_order.append(task_number)  # adding task number to the execution list
             else:  # above ensures we're not parsing a task header nor blank line
                 x0 = ray[0].strip()  # remove trailing/leading spaces
                 x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
-                taskVars[x0] = x1  # add the temporary variable pair to the task's variable list
+                task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
 
                 if "# of Tasks" in x0:
-                    numberOfTasks = x1
+                    number_of_tasks = x1
 
                 if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
-                    buildingLoop = True  # set a flag that we're building a loop for the script
-                    addingElementsToLoop = True  # set a flag that we're adding element names from script for loop
+                    building_loop = True  # set a flag that we're building a loop for the script
+                    adding_elements_to_loop = True  # set a flag that we're adding element names from script for loop
 
                 # if we're on a line that adds an element name for the loop
-                if addingElementsToLoop and "Element" in x0:
+                if adding_elements_to_loop and "Element" in x0:
                     # split the left side of the variable assigner by space
-                    elementNamePre = x0.split(" ")
+                    element_name_to_split = x0.split(" ")
                     # retrieve the second word of the left side, that's the element name
-                    elementName = elementNamePre[1]
-                    elementNamesForLoop.append(int(elementName))
+                    element_name = element_name_to_split[1]
+                    element_names_for_loop.append(int(element_name))
 
                 if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
-                    buildingLoop = False  # set the building loop flag to false since the loop block is done
-                    self.loops.append(list([list(elementNamesForLoop), list(taskNoForLoop)]))
-                    elementNamesForLoop.clear()
-                    taskNoForLoop.clear()
-                    self.taskExecOrder.pop()
+                    building_loop = False  # set the building loop flag to false since the loop block is done
+                    self.loops.append(list([list(element_names_for_loop), list(task_number_for_loop)]))
+                    element_names_for_loop.clear()
+                    task_number_for_loop.clear()
+                    self.task_execution_order.pop()
 
                     # appends a 2 item list in taskExecOrder, the first part being the element within the loops
                     # sublist and the second item being the iteration number for that item in its loop
                     for i in range(len(self.loops[len(self.loops) - 1][0])):
                         for j in range(len(self.loops[len(self.loops) - 1][1])):
-                            self.taskExecOrder.append([self.loops[len(self.loops) - 1][1][j], i + 1,
-                                                       loop_index_tracker])
+                            self.task_execution_order.append([self.loops[len(self.loops) - 1][1][j], i + 1,
+                                                              loop_index_tracker])
                     loop_index_tracker = loop_index_tracker + 1
 
                 # if we're building a loop & are not in the name adding phase
-                if buildingLoop and not addingElementsToLoop:
+                if building_loop and not adding_elements_to_loop:
 
                     # ensure the task no. isn't already in the task list for the loop
-                    if taskNo not in taskNoForLoop:
+                    if task_number not in task_number_for_loop:
                         # add the current task no. to the list of tasks we need to run in loop
-                        taskNoForLoop.append(taskNo)
+                        task_number_for_loop.append(task_number)
         f.close()
 
-        if taskVars:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
-            tasks.append(OrderedDict(taskVars))
-            taskVars.clear()  # empties out variable list for task since we're ready to move to the next set
+        if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
+            tasks.append(OrderedDict(task_variables))
+            task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
 
-        for i in range(len(self.taskExecOrder)):
-            if not isinstance(self.taskExecOrder[i], list):
-                taskNoRemember = self.taskExecOrder[i]
-                toReplace = [taskNoRemember, None]
-                self.taskExecOrder[i] = toReplace
+        for i in range(len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
+            if not isinstance(self.task_execution_order[i], list):
+                self.task_execution_order[i] = [self.task_execution_order[i], None]
 
-        self.taskNames = list()
-        for i in range(len(self.taskExecOrder)):
-            if "Task type" in tasks[self.taskExecOrder[i][0] + 1].keys():
-                self.taskNames.append(tasks[self.taskExecOrder[i][0] + 1]["Task type"])
+        self.task_names = list()  # makes the task_names object into a list
+        for i in range(len(self.task_execution_order)):
+            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
+                self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
-        self.taskArgs = list()
-        for i in range(len(self.taskExecOrder)):
+        self.task_arguments = list()  # makes the task_arguments object into a list
+        for i in range(len(self.task_execution_order)):
             # tasks[self.taskExecOrder[i][0] + 1].pop("Task type", None)
-            self.taskArgs.append(tasks[self.taskExecOrder[i][0] + 1])
+            self.task_arguments.append(tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
         self.script_info_signal.emit(tasks)
-        self.num_tasks_signal.emit(len(self.taskNames))
+        self.num_tasks_signal.emit(len(self.task_names))
 
     # get UA serial no. and append behind date
 
-    # Updates script step and executes the next step if applicable, and implements abort, continue, and retry
     @pyqtSlot()
     def advance_script(self):
-        if self.taskNames is None:
+        """Updates script step and executes the next step if applicable, and implements abort, continue, and retry"""
+        if self.task_names is None:
             self.abort_after_step()
             self.enable_ui_signal.emit(True)
             return
 
-        if self.retry_clicked_var is True:
+        if self.retry_clicked is True:
             self.step_index = self.step_index - 1
-            self.retry_clicked_var = False  # sets the retry variable to false so the retry function can happen again
+            self.retry_clicked = False  # sets the retry variable to false so the retry function can happen again
 
         # advance to the next step if the previous has been completed
         self.step_index = self.step_index + 1
@@ -590,50 +599,50 @@ class Manager(QThread):
         # if a script is being executed, and the step index is valid, and the previous step is complete,
         # run the next script step
 
-        if self.step_index > len(self.taskNames):
-            self.scripting = False
+        if self.step_index > len(self.task_names):
+            self.currently_scripting = False
             return
 
-        if self.taskArgs is not None and self.taskNames is not None and self.taskExecOrder is not None:
-            if 0 <= self.step_index < len(self.taskNames):
+        if self.task_arguments is not None and self.task_names is not None and self.task_execution_order is not None:
+            if 0 <= self.step_index < len(self.task_names):
                 inside_iteration = False
                 iteration_number = None
 
                 if (
-                        len(self.taskExecOrder[self.step_index]) == 3
+                        len(self.task_execution_order[self.step_index]) == 3
                 ):  # elements that are a part of a loop will have a third sub element
                     # notating which loop it's from
                     self.test_data.log_script(
-                        [f"Iteration {self.taskExecOrder[self.step_index][1]} of "
-                         f"{len(self.loops[self.taskExecOrder[self.step_index][2]][0])}", "", "", "", ]
+                        [f"Iteration {self.task_execution_order[self.step_index][1]} of "
+                         f"{len(self.loops[self.task_execution_order[self.step_index][2]][0])}", "", "", "", ]
                     )
                     inside_iteration = True
-                    iteration_number = self.taskExecOrder[self.step_index][1]
+                    iteration_number = self.task_execution_order[self.step_index][1]
 
                 self.run_script_step()
                 if inside_iteration:
                     self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
                     inside_iteration = False
 
-        if not self.scripting:
+        if not self.currently_scripting:
             self.enable_ui_signal.emit(True)
 
     def run_script_step(self):
         """Executes script step with given step index in taskNames/taskArgs"""
-        if self.taskArgs is None or self.taskNames is None or self.taskExecOrder is None:
+        if self.task_arguments is None or self.task_names is None or self.task_execution_order is None:
             self.abort_after_step()
             self.enable_ui_signal.emit(True)
             return
 
-        name = self.taskNames[self.step_index]  # sets name (str) to current iteration in taskNames list
-        args = self.taskArgs[self.step_index]  # sets args (list) to current iteration in taskArgs list
+        name = self.task_names[self.step_index]  # sets name (str) to current iteration in taskNames list
+        args = self.task_arguments[self.step_index]  # sets args (list) to current iteration in taskArgs list
 
-        self.task_number_signal.emit(self.taskExecOrder[self.step_index][0])
+        self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        if self.taskExecOrder[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
+        if self.task_execution_order[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
-            args['Element'] = self.taskExecOrder[self.step_index][1]
+            args['Element'] = self.task_execution_order[self.step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
@@ -677,7 +686,7 @@ class Manager(QThread):
         if log:
             self.log("Aborting script after step")
         # Reset script control variables
-        self.scripting = False
+        self.currently_scripting = False
         self.step_index = -1
         self.abort_immediately_var = False
         self.task_number_signal.emit(0)
@@ -685,16 +694,16 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     @pyqtSlot()
-    def abort_immediately(self, log=True):
+    def abort_immediately(self):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
-
+        log = True
         if log:
             self.log("Aborting script")
         # Reset script control variables
-        self.scripting = False
+        self.currently_scripting = False
         self.step_index = -1
         self.abort_immediately_var = True
         self.task_number_signal.emit(0)
@@ -717,7 +726,7 @@ class Manager(QThread):
         except RetryException:
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
             self.log("Retrying step")
-            self.retry_clicked_var = True
+            self.retry_clicked = True
             return False
 
     def __wait_for_cont(self):
@@ -725,39 +734,39 @@ class Manager(QThread):
         Sets continue variable to False and waits for it to be true, raising exceptions if the user
         wants to abort or retry. Always handle these exceptions.
         """
-        self.continue_clicked_var = False
-        self.retry_clicked_var = False
-        self.abort_clicked_var = False
+        self.continue_clicked = False
+        self.retry_clicked = False
+        self.abort_clicked = False
 
-        while not self.continue_clicked_var:
+        while not self.continue_clicked:
             # check if script has been aborted
-            if self.retry_clicked_var:
-                self.retry_clicked_var = False
+            if self.retry_clicked:
+                self.retry_clicked = False
                 # Always handle this exception
                 raise RetryException
-            if self.abort_clicked_var:
-                self.abort_clicked_var = False
+            if self.abort_clicked:
+                self.abort_clicked = False
                 # Always handle this exception
                 raise AbortException
             if self.abort_immediately_var:
-                self.abort_immediately
+                self.abort_immediately()
 
     @pyqtSlot()
-    def cont_clicked(self):
+    def continue_clicked(self):
         """Flags cont_clicked to continue the current step"""
-        self.continue_clicked_var = True
+        self.continue_clicked = True
 
     @pyqtSlot()
     def retry_clicked(self):
         """Flags cont_clicked to retry the current step"""
-        self.retry_clicked_var = True
+        self.retry_clicked = True
 
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        self.abort_clicked_var = True
+        self.abort_clicked = True
 
-    def write_cal_data_to_ua_button(self):
+    def write_calibration_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
         pass
 
@@ -788,13 +797,14 @@ class Manager(QThread):
         self.test_data.set_pass_result(11, device_result)
 
         self.script_complete_signal.emit(pass_list, description_list)
-        self.scripting = False
+        self.currently_scripting = False
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
 
     def pretest_initialization(self, var_dict):
-        """Home the UA, perform hardware checks, and prompt the user until they pass"""
+        """Home the UA, perform hardware checks, and prompt the user until they pass,
+        takes in a variable dict as a parameter"""
 
         # add first 4 lines of scriptlog
         self.test_data.log_script([f"{self.test_data.serial_number}-{self.test_data.test_date_time}",
@@ -812,7 +822,7 @@ class Manager(QThread):
                                            action_type="Interrupt action")
             if not cont:
                 return
-            self.retry_clicked_var = False
+            self.retry_clicked = False
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
@@ -1036,7 +1046,7 @@ class Manager(QThread):
 
         self.home_system({"Axis to home": "Theta"})
 
-        self.AWG.SetOutput(False)
+        self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
         return True
@@ -1060,9 +1070,9 @@ class Manager(QThread):
             axis_label = "Distance (mm)"
 
         if acquisition_type.upper() == "N Averaged Waveform".upper():
-            self.Oscilloscope.SetAveraging(averages)
+            self.Oscilloscope.set_averaging(averages)
         else:
-            self.Oscilloscope.SetAveraging(1)
+            self.Oscilloscope.set_averaging(1)
 
         # Loop over x through a given range, move to the position where maximal RMS voltage was measured
         positions = list()
@@ -1186,7 +1196,7 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_measure_rfb_waveform_csv(
+        self.file_saver.store_measure_rfb_waveform_csv(  # TODO: you don't have forward_power, reflected_power, nor acoustic_power arguments in the store_measure_rfb_waveform_csv method
             metadata,
             forward_power=[f_time_s, f_power_w],
             reflected_power=[r_time_s, r_power_w],
@@ -1202,12 +1212,12 @@ class Manager(QThread):
         # Todo: test
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA", False)
-            cont = self.cont_if_cont_clicked()
-            if not cont:
+            cont = self.cont_if_cont_clicked()  # sets cont variable to true if user clicked continue
+            if not cont:  # if user did not click continue, return
                 return
 
         self.test_data.software_version = self.config["Software_Version"]
-        self.test_data.calc_angle_average()
+        self.test_data.calculate_angle_average()
 
         calibration_data = generate_calibration_data(self.test_data)
         self.UAInterface.write_data(calibration_data)
@@ -1228,43 +1238,45 @@ class Manager(QThread):
         else:
             self.user_prompt_signal.emit(prompt_type, False)
 
-        cont = self.cont_if_cont_clicked()
-        if not cont:
+        cont = self.cont_if_cont_clicked()  # waits for the user to click continue
+        if not cont:  # if the user did not click continue, return
             return
 
     def configure_function_generator(self, var_dict):
         """Set function generator to desired settings"""
         # todo: test
-        mVpp = int(var_dict["Amplitude (mVpp)"])
-        fMHz = float(var_dict["Frequency (MHz)"])
+        mVpp: int = int(var_dict["Amplitude (mVpp)"])
+        frequency_mhz: float = float(var_dict["Frequency (MHz)"])
         mode = var_dict["Mode"]
         output = bool(var_dict["Enable output"])
         frequency_options = var_dict["Set frequency options"]
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
-            fMHz = self.test_data.low_frequency_MHz
+            frequency_mhz = self.test_data.low_frequency_MHz
         elif frequency_options == "Common high frequency" or frequency_options == 'Element pk high frequency':
-            fMHz = self.test_data.high_frequency_MHz
+            frequency_mhz = self.test_data.high_frequency_MHz
         elif frequency_options == "From config cluster":
+            # TODO: what is config cluster?
+            # TODO: fill this part of the code
             pass
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
             return self.abort_after_step()
 
-        self.AWG.SetOutput(output)
-        self.AWG.SetFrequency_Hz(int(fMHz * 1000000))
+        self.AWG.set_output(output)
+        self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
         self.test_data.log_script(
-            ["", "Configure FGen+PwrMeters", f"Frequency set to {fMHz} MHz", "", ])
-        self.AWG.SetAmplitude_V(mVpp / 1000)
+            ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_mhz} MHz", "", ])
+        self.AWG.set_amplitude_v(mVpp / 1000)
 
         if mode == "N Cycle":
-            self.AWG.SetBurst(True)
+            self.AWG.set_burst(True)
             cycles = int(var_dict["#Cycles"])
-            self.AWG.SetCycles(cycles)
+            self.AWG.set_cycles(cycles)
         else:
-            self.AWG.SetBurst(False)
+            self.AWG.set_burst(False)
 
-        self.test_data.log_script(["", "Config FGen", f"{mVpp}mVpp;{fMHz}MHz,{mode}"])
+        self.test_data.log_script(["", "Config FGen", f"{mVpp}mVpp;{frequency_mhz}MHz,{mode}"])
 
     def configure_oscilloscope_channels(self, var_dict):
         # todo: test
@@ -1276,21 +1288,21 @@ class Manager(QThread):
         o1_mV = float(var_dict["Offset 1"])
         o2_mV = float(var_dict["Offset 2"])
         if c1_enabled:
-            self.Oscilloscope.setVertScale_V(g1_mV_div / 1000, 1)
-            self.Oscilloscope.setVertOffset_V(1, o1_mV / 1000)
+            self.Oscilloscope.set_vertical_scale_V(g1_mV_div / 1000, 1)
+            self.Oscilloscope.set_vertical_offset_V(1, o1_mV / 1000)
         if c2_enabled:
-            self.Oscilloscope.setVertScale_V(g2_mV_div / 1000, 2)
-            self.Oscilloscope.setVertOffset_V(2, o2_mV / 1000)
+            self.Oscilloscope.set_vertical_scale_V(g2_mV_div / 1000, 2)
+            self.Oscilloscope.set_vertical_offset_V(2, o2_mV / 1000)
 
     def configure_oscilloscope_timebase(self, var_dict):
         # todo: test
         timebase_us = float(var_dict["Timebase"])
         delay_us = float(var_dict["Delay"])
-        self.Oscilloscope.setHorzScale_sec(timebase_us / 1000000)
-        self.Oscilloscope.setHorzOffset_sec(delay_us / 1000000)
+        self.Oscilloscope.set_horizontal_scale_sec(timebase_us / 1000000)
+        self.Oscilloscope.set_horizontal_offset_sec(delay_us / 1000000)
 
     def autoset_timebase(self, var_dict):
-        self.Oscilloscope.autoset_timebase()
+        self.Oscilloscope.autoset_oscilloscope_timebase()
 
     def home_system(self, var_dict) -> bool:
         """Return axis to zero coordinate, returns whether or not to continue the script"""
@@ -1394,14 +1406,14 @@ class Manager(QThread):
         peak_VSI_threshold = var_dict["Peak VSI threshold"]
         include_test = var_dict["Include test"]
 
-        self.AWG.SetOutput(True)
-        self.AWG.SetAmplitude_V(amplitude_mVpp / 1000)
-        self.AWG.SetBurst(True)
+        self.AWG.set_output(True)
+        self.AWG.set_amplitude_v(amplitude_mVpp / 1000)
+        self.AWG.set_burst(True)
 
         if acquisition_type == "Single Waveform":
-            self.Oscilloscope.SetAveraging(1)
+            self.Oscilloscope.set_averaging(1)
         else:
-            self.Oscilloscope.SetAveraging(averages)
+            self.Oscilloscope.set_averaging(averages)
 
         coarse_freq_MHz_list, coarse_VSI_list = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz, coarse_incr_MHz,
                                                                          burst_count, channel=scope_channel)
@@ -1437,7 +1449,7 @@ class Manager(QThread):
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.SetFrequency_Hz(x * 1000000)  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.AWG.set_frequency_hz(x * 1000000)  # set frequency accoding to step (coarse/fine) and x incremenet
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
@@ -1504,7 +1516,7 @@ class Manager(QThread):
 
         # Warn the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
-        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:
+        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:  # TODO: these are identical, did you mean to put another condition?
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
                                          "specified in the config file. Either change it or load a different script",
                                          False)
@@ -1567,17 +1579,17 @@ class Manager(QThread):
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
-        # Begin multithreaded capture from the power meters and the balance and cycle the awg on and off
+        # Begin multi-threaded capture from the power meters and the balance and cycle the awg on and off
         self.__begin_rfb_logger_thread(self.rfb_data)
 
-        startTime = t.time()
+        start_time = t.time()
         current_cycle = 1
 
         # Extra off cycle at beginning
-        self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
-        self.AWG.SetOutput(False)
+        self.log(f"Turning off AWG T = {'%.2f' % (t.time() - start_time)}")
+        self.AWG.set_output(False)
         # for the duration of rfb off time
-        while t.time() - startTime < rfb_off_time:
+        while t.time() - start_time < rfb_off_time:
             cont = self.refresh_rfb_tab()
             if not cont:
                 return False
@@ -1586,8 +1598,8 @@ class Manager(QThread):
             cycle_start_time = t.time()
 
             #  turn on awg
-            self.log(f"Turning on AWG T = {'%.2f' % (t.time() - startTime)}")
-            self.AWG.SetOutput(True)
+            self.log(f"Turning on AWG T = {'%.2f' % (t.time() - start_time)}")
+            self.AWG.set_output(True)
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
                 cont = self.refresh_rfb_tab()
@@ -1595,8 +1607,8 @@ class Manager(QThread):
                     return
 
             # Turn off AWG
-            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - startTime)}")
-            self.AWG.SetOutput(False)
+            self.log(f"Turning off AWG T = {'%.2f' % (t.time() - start_time)}")
+            self.AWG.set_output(False)
             # for the duration of rfb off time
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
                 cont = self.refresh_rfb_tab()
@@ -1605,7 +1617,7 @@ class Manager(QThread):
 
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
 
-        startTime = t.time()
+        start_time = t.time()  # todo: variable is unused here, should this be self.start_time?
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
@@ -1636,13 +1648,13 @@ class Manager(QThread):
             if not cont:
                 return
         elif test_result.upper() == 'PASS':
-            pass
+            self.log(f"test result for {self.element} has passed", self.info)
         else:
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
             return self.abort_after_step()
 
-        self.retry_clicked_var = False
+        self.retry_clicked = False
 
         self.test_data.update_results_summary_with_efficiency_results(
             frequency_range=frequency_range,
@@ -1658,7 +1670,8 @@ class Manager(QThread):
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 
-        # todo: pass correct arrays instead of forward power 3 times
+        ### Start block of code to move to file_saver class extract_file_data(test_data: TestData)
+
         balance_readings_mg = [value * 1000 for value in self.rfb_logger.balance_readings_g]
         # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
         raw_data = [
@@ -1669,7 +1682,6 @@ class Manager(QThread):
             self.rfb_logger.r_meter_readings_w,
         ]
 
-        # Todo: hard coded, check on this later
         absorption = ["Off", 1.000690]
         transducer_size = ["Off", 1.013496]
         focusing = ["Off", 1.000000]
@@ -1744,6 +1756,9 @@ class Manager(QThread):
             raw_data=raw_data,
             frequency_range=frequency_range
         )
+
+        ### End extract_file_data
+
         self.test_data.log_script(["", "End", "", ""])
 
     def __begin_rfb_logger_thread(self, rfb_data: RFBData):
@@ -1790,7 +1805,7 @@ class Manager(QThread):
 
     @pyqtSlot(str)
     def exec_command(self, command):
-        self.cmd = command
+        self.command = command
         self.condition.wakeAll()
 
     def sequence_pass_fail(self, action_type: str, error_detail: str) -> bool:
@@ -1848,7 +1863,7 @@ class Manager(QThread):
 
         k1 = 'Sequence pass/fail'
 
-        self.retry_clicked_var = True
+        self.retry_clicked = True
 
         try:
             max_retries = self.config[k1]['Retries']

@@ -16,79 +16,105 @@ class AbstractOscilloscope(AbstractDevice):
         super().__init__(device_key=device_key, config=config, parent=parent)
 
     @abstractmethod
-    def reset(self):
+    def reset(self) -> None:
+        """sends the reset signal to the oscilloscope via calling the oscilloscope's "command" method"""
         ...
 
     @abstractmethod
-    def set_to_defaults(self):
+    def display_text(self, text: str) -> None:
+        """Method to display text on the oscilloscope display"""
+        ...
+
+    @abstractmethod
+    def set_to_defaults(self) -> None:
+        """Sets the oscilloscope's window values to default values specified in the inherited class. Other values
+        such as the average counts, time of flight, external trigger, and timeout are also set"""
         ...
 
     @abstractmethod
     def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
-              ext_trigger: bool, average_count: int):
+              ext_trigger: bool, average_count: int) -> None:
+        """Method to initialize various aspects of the oscilloscope window, such as the horizontal/vertical scales,
+        averaging value and trigger policy"""
         ...
 
     @abstractmethod
-    def SetTrigger(self, external):
-        """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+    def set_trigger(self, external: bool) -> None:
+        """Sets whether to capture when triggered. If false the oscilloscope will capture continuously."""
 
         ...
 
     @abstractmethod
-    def SetAveraging(self, averages: int):
+    def set_averaging(self, averages: int):
+        """Takes multiple captures triggered by something (e.g. a function generator), and averages them together
+        the "averages" parameter is the number of waveforms to average together, functionality is built into the
+        oscilloscope"""
         ...
 
     @abstractmethod
-    def getVertRange_V(self, channel: int, volts: float):
+    def get_vertical_range_V(self, channel: int) -> float:
+        """Method to get the vertical range of the oscilloscope window in volts (float) when given channel (int)
+        as a parameter"""
         ...
 
     @abstractmethod
-    def setVertRange_V(self, channel: int):
+    def set_vertical_range_V(self, channel: int, volts: float) -> None:
+        """Method to set the vertical offset of the oscilloscope window in float volts"""
         ...
 
     @abstractmethod
-    def getHorzScale_V(self):
+    def get_horizontal_scale_V(self) -> float:
+        """method that returns the horizontal scale of the oscilloscope, return value is voltage as a float"""
         ...
 
     @abstractmethod
-    def setHorzScale_sec(self, seconds: float):
+    def set_horizontal_scale_sec(self, seconds: float) -> None:
+        """Method to set the horizontal scale of the oscilloscope window when given the seconds as a float parameter"""
         ...
 
     @abstractmethod
-    def autoset_timebase(self):
+    def autoset_oscilloscope_timebase(self):
+        """Automatically sets the horizontal scale and range of the oscilloscope with a predetermined procedure"""
         ...
 
     @abstractmethod
-    def getVertScale_V(self, channel: int):
+    def get_vertical_scale_V(self, channel: int) -> float:
+        """Method to get the vertical scale of the oscilloscope window when given the channel number (int) as a parameter"""
         ...
 
     @abstractmethod
-    def setVertScale_V(self, volts_per_div: float, channel: int):
+    def set_vertical_scale_V(self, volts_per_div: float, channel: int):
         ...
 
     @abstractmethod
-    def getVertOffset(self, channel: int):
+    def get_vertical_offset_V(self, channel: int) -> float:
+        """Method to get the voltage float vertical offset of the oscilloscope window"""
         ...
 
     @abstractmethod
-    def setVertOffset_V(self, channel: int, offset: float):
+    def set_vertical_offset_V(self, channel: int, offset: float) -> None:
+        """Method to set the vertical offset of the oscilloscope window in voltage units as a parameter for given
+        channel parameter"""
         ...
 
     @abstractmethod
-    def setHorzRange_sec(self, seconds: float):
+    def set_horizontal_range_sec(self, seconds: float) -> None:
+        """Method that sets the horizontal range of the oscilloscope window when given seconds (float) as a parameter"""
         ...
 
     @abstractmethod
-    def getHorzOffset_sec(self):
+    def get_horizontal_offset_sec(self) -> float:
+        """Method to get the horizontal offset of the oscilloscope window in seconds"""
         ...
 
     @abstractmethod
-    def setHorzOffset_sec(self, offset: float):
+    def set_horizontal_offset_sec(self, offset: float) -> None:
+        """Method to set the horizontal offset of the oscilloscope window in seconds as a float parameter"""
         ...
 
     @abstractmethod
     def autoScale(self):
-        """Autoscales the oscilloscope's voltage range to fit the waveform"""
+        """Auto-scales the oscilloscope's voltage range to fit the waveform"""
 
         ...
 

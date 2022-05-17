@@ -14,6 +14,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
     averages: int
     range_s: float
     offset_s: float
+    
+    autoset_timebase = "Autoset_timebase"
 
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
@@ -85,42 +87,41 @@ class KeysightOscilloscope(AbstractOscilloscope):
             pass
         self.connected = False
         self.connected_signal.emit(False)
-        pass
+        pass  # todo: is this pass needed? sonarlint says otherwise
 
     def set_to_defaults(self):
         self.reset()
         self.channel = self.config[self.device_key]['channel']
-        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
-        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
-        self.range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
+        self.max_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Max time of flight (us)"]
+        self.min_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Min time of flight (us)"]
+        self.range_s = self.config[self.autoset_oscilloscope_timebase]["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         self.offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
-        autorange_V = self.config[self.device_key]["autorange_v_startup"]
+        autorange_v = self.config[self.device_key]["autorange_v_startup"]
         self.range_mV = self.config[self.device_key]["range_mV"]
         average_count = self.config[self.device_key]["averages"]
         external_trigger = self.config[self.device_key]["ext_trigger"]
         self.timeout_s = self.config[self.device_key]["timeout_s"]
 
-        self.setup(channel=self.channel, range_s=self.range_s, offset_s=self.offset_s, autorange_v=autorange_V,
+        self.setup(channel=self.channel, range_s=self.range_s, offset_s=self.offset_s, autorange_v=autorange_v,
                    range_v=self.range_mV / 1000,
                    ext_trigger=external_trigger, average_count=average_count)
 
     def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
-        self.setHorzRange_sec(range_s)
-        self.setHorzOffset_sec(offset_s)
+        self.set_horizontal_range_sec(range_s)
+        self.set_horizontal_offset_sec(offset_s)
         if autorange_v:
             self.autoScale()
         else:
-            self.setVertRange_V(channel=channel, volts=range_v)
+            self.set_vertical_range_V(channel=channel, volts=range_v)
 
         # Set averaging count
-        self.SetAveraging(averages=average_count)
+        self.set_averaging(averages=average_count)
 
         # Set trigger
-        self.SetTrigger(ext_trigger)
+        self.set_trigger(ext_trigger)
 
-    def SetTrigger(self, external):
-        """Sets whether or not to capture when triggered. If false the oscilloscope will capture continuously."""
+    def set_trigger(self, external):
 
         if external:
             self.command(":TRIG:MODE EDGE")
@@ -131,7 +132,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":TRIG:EDGE:SOUR CHAN1")
             self.command(":TRIG:EDGE:SLOP POS")
 
-    def SetAveraging(self, averages=1):
+    def set_averaging(self, averages=1):
         self.averages = averages
         if averages > 1:
             self.command(":ACQ:TYPE AVER")
@@ -139,63 +140,60 @@ class KeysightOscilloscope(AbstractOscilloscope):
         else:
             self.command(":ACQ:TYPE HRES")
 
-    def DisplayText(self, text: str):
-        """Shows text_item on the oscilloscope screen"""
+    def display_text(self, text: str):
         self.command(f":DISP:TEXT {text}")
 
-    def getVertScale_V(self, channel):
+    def get_vertical_scale_V(self, channel):
         return float(self.ask(f":CHAN{channel}:SCAL?"))
 
-    def setVertScale_V(self, volts_per_div, channel):
+    def set_vertical_scale_V(self, volts_per_div, channel: int) -> None:
         self.command(f":CHAN{channel}:SCAL {volts_per_div}")
 
-    def getVertRange_V(self, channel):
+    def get_vertical_range_V(self, channel):
         return float(self.ask(f":CHAN{channel}:RANG?"))
 
-    def setVertRange_V(self, channel, volts):
+    def set_vertical_range_V(self, channel: int, volts: float) -> None:
         self.range_mV = volts * 1000
         self.command(f":CHAN{channel}:RANG {volts}")
 
-    def getVertOffset(self, channel):
+    def get_vertical_offset_V(self, channel: int) -> float:
         return float(self.ask(f":CHAN{channel}:OFFS?"))
 
-    def setVertOffset_V(self, channel, offset):
+    def set_vertical_offset_V(self, channel: int, offset: float) -> None:
         self.command(f":CHAN{channel}:OFFS {offset}")
 
-    def getHorzScale_V(self):
+    def get_horizontal_scale_V(self) -> float:
         return float(self.ask(f":TIM:SCAL?"))
 
-    def setHorzScale_sec(self, seconds):
+    def set_horizontal_scale_sec(self, seconds: float) -> None:
         self.command(f":TIM:SCAL {seconds}")
 
-    def setHorzRange_sec(self, seconds):
+    def set_horizontal_range_sec(self, seconds: float) -> None:
         self.range_s = seconds
         command = f":TIM:RANG {seconds}"
         self.command(command)
 
-    def getHorzOffset_sec(self):
+    def get_horizontal_offset_sec(self) -> float:
         return float(self.ask(":TIM:POS?"))
 
-    def setHorzOffset_sec(self, offset):
+    def set_horizontal_offset_sec(self, offset: float) -> None:
         self.offset_s = offset
         self.command(f":TIM:POS {offset}")
 
     # stretch: add automatic waveform finding
-    def autoset_timebase(self):
-        """Automatically sets the horizontal scale and range of the oscilloscope with a predetermined procedure"""
-
-        self.max_time_of_flight = self.config["Autoset timebase"]["Max time of flight (us)"]
-        self.min_time_of_flight = self.config["Autoset timebase"]["Min time of flight (us)"]
-        range_s = self.config["Autoset timebase"]["Horizontal scale (us)"] * 10 ** -6
+    def autoset_oscilloscope_timebase(self):
+        self.max_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Max time of flight (us)"]
+        self.min_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Min time of flight (us)"]
+        range_s = self.config[self.autoset_oscilloscope_timebase]["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
-        self.setHorzRange_sec(range_s)
-        self.setHorzOffset_sec(offset_s)
+        self.set_horizontal_range_sec(range_s)
+        self.set_horizontal_offset_sec(offset_s)
 
-    def getFreq_Hz(self):
+    def get_frequency_Hz(self) -> float:
         return float(self.ask(":MEAS:FREQ?"))
 
-    def getAmp_V(self):
+    def get_amplitude_V(self) -> float:
         return float(self.ask(":MEAS:VAMP?"))
 
     def autoScale(self):
@@ -226,12 +224,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if preamble is None:
                 return
 
-            while not preamble[0] == "+4":
+            while preamble[0] != "+4":
                 self.command(f"WAV:FORM ASC")
 
             # Interpret preamble
             if preamble[1] == "+0":
-                mode = "normal"
+                mode = "normal"  # todo: mode is not being used, why is this here?
             elif preamble[1] == "+1":
                 mode = "peak"
             elif preamble[1] == "+2":
@@ -294,9 +292,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
     #     Cycl = "C" + channel + ":BTWV TIME," + self.cycles
     #     self.command(Cycl)
 
-    def command(self, command):
-        # self.log(
-        #     f"command method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, command is: {command}")
+    def command(self, command: str) -> None:
+        """Generic method that takes a command parameter and writes it to the oscilloscope, does not read the response,
+        handles device not being"""
         try:
             self.inst.write(command)
             # t.sleep(.03)
@@ -305,7 +303,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
 
     def read(self):
-        # self.log(f"read method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}")
+        """reads the current data that the oscilloscope has pending, handles device not being connected """
         try:
             return self.inst.read()
         except AttributeError as e:
@@ -313,6 +311,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 self.log(f"Could not read reply, {self.device_key} Not connected")
 
     def ask(self, command):
+        """generic method to send a command to the oscilloscope and return its response"""
         return self.inst.query(command)
 
     def get_serial_number(self) -> str:
@@ -323,6 +322,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return str.split(",")[2]
 
     def get_rms(self) -> float:
+        """asks the oscilloscope what the voltage root mean squared of the current window is and returns it as a
+        float"""
         rms = self.ask(":MEASure:VRMS?")
         return float(rms)
 
