@@ -1,37 +1,4 @@
-2022-05-16 18:25:46,783 [INFO] [ParkerMotorController] [manager_thread] : Connecting to motor controller...
-2022-05-16 18:25:46,903 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
-2022-05-16 18:25:46,903 [INFO] [ParkerMotorController] [manager_thread] : 2W(MS,10)
-2022-05-16 18:25:46,903 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
-2022-05-16 18:25:46,943 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(MS,10)\r\n'
-2022-05-16 18:25:46,983 [INFO] [ParkerMotorController] [manager_thread] : 1W(MS,50)
-2022-05-16 18:25:46,983 [INFO] [ParkerMotorController] [manager_thread] : output = b'1W(MS,50)\r\n'
-2022-05-16 18:25:47,023 [INFO] [ParkerMotorController] [manager_thread] : 0LIMITS(0,1,0,200)
-2022-05-16 18:25:47,023 [INFO] [ParkerMotorController] [manager_thread] : output = b'0LIMITS(0,1,0,200)\r\n'
-2022-05-16 18:25:47,063 [INFO] [ParkerMotorController] [manager_thread] : 1POSMAIN0(10)
-2022-05-16 18:25:47,063 [INFO] [ParkerMotorController] [manager_thread] : output = b'1POSMAIN0(10)\r\n'
-2022-05-16 18:25:47,103 [INFO] [ParkerMotorController] [manager_thread] : 2POSMAIN1(10)
-2022-05-16 18:25:47,103 [INFO] [ParkerMotorController] [manager_thread] : output = b'2POSMAIN1(10)\r\n'
-2022-05-16 18:25:47,143 [INFO] [ParkerMotorController] [manager_thread] : 0MC
-2022-05-16 18:25:47,143 [INFO] [ParkerMotorController] [manager_thread] : output = b'0MC\r\n'
-2022-05-16 18:25:47,183 [INFO] [ParkerMotorController] [manager_thread] : 0ON
-2022-05-16 18:25:47,183 [INFO] [ParkerMotorController] [manager_thread] : output = b'0ON\r\n'
-2022-05-16 18:25:47,223 [INFO] [ParkerMotorController] [manager_thread] : 1HOME1(+,1,-5,10,1)
-2022-05-16 18:25:47,223 [INFO] [ParkerMotorController] [manager_thread] : output = b'1HOME1(+,1,-5,10,1)\r\n'
-2022-05-16 18:25:47,263 [INFO] [ParkerMotorController] [manager_thread] : 2HOME1(+,0,-3,10,1)
-2022-05-16 18:25:47,263 [INFO] [ParkerMotorController] [manager_thread] : output = b'2HOME1(+,0,-3,10,1)\r\n'
-2022-05-16 18:25:47,303 [INFO] [ParkerMotorController] [manager_thread] : 2W(IC,7136)
-2022-05-16 18:25:47,303 [INFO] [ParkerMotorController] [manager_thread] : output = b'2W(IC,7136)\r\n'
-2022-05-16 18:25:47,343 [INFO] [ParkerMotorController] [manager_thread] : 1V4.0
-2022-05-16 18:25:47,343 [INFO] [ParkerMotorController] [manager_thread] : output = b'1V4.0\r\n'
-2022-05-16 18:25:47,383 [INFO] [ParkerMotorController] [manager_thread] : 1D100
-2022-05-16 18:25:47,383 [INFO] [ParkerMotorController] [manager_thread] : output = b'1D100\r\n'
-2022-05-16 18:25:47,423 [INFO] [ParkerMotorController] [manager_thread] : 2V5.0
-2022-05-16 18:25:47,423 [INFO] [ParkerMotorController] [manager_thread] : output = b'2V5.0\r\n'
-2022-05-16 18:25:47,463 [INFO] [ParkerMotorController] [manager_thread] : 2D360
-2022-05-16 18:25:47,463 [INFO] [ParkerMotorController] [manager_thread] : output = b'2D360\r\n'
-2022-05-16 18:25:47,503 [INFO] [ParkerMotorController] [manager_thread] : Done setting up
-2022-05-16 18:25:47,513 [INFO] [ParkerMotorController] [manager_thread] : Motor controller connected and set to default settings
-2022-05-16 18:25:50,704 [INFO] [ParkerMotorController] [ui_thread] : 1W(PT,263000)
-2022-05-16 18:25:50,704 [INFO] [ParkerMotorController] [ui_thread] : output = b'1W(PT,263000)\r\n'
-2022-05-16 18:25:50,814 [INFO] [ParkerMotorController] [ui_thread] : 2W(PT,375)
-2022-05-16 18:25:50,814 [INFO] [ParkerMotorController] [ui_thread] : output = b'2W(PT,375)\r\n'
+2022-05-17 11:26:56,000 [INFO] [ParkerMotorController] [manager_thread] : Connecting to motor controller...
+2022-05-17 11:26:56,000 [ERROR] [ParkerMotorController] [manager_thread] : VIX_Motors not connected because the COM port was not found. Check that it is plugged in and look at Device manager to determine which COM port to use. enter it into Local.yaml: 
+
+ could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
