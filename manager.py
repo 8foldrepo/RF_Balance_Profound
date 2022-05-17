@@ -460,7 +460,7 @@ class Manager(QThread):
 
     # noinspection PyUnresolvedReferences
     def load_script(self, path):
-        self.abort_after_step(log=False)
+        self.abort_immediately(log=False)
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -1083,18 +1083,23 @@ class Manager(QThread):
             self.Motors.go_to_position([axis_letter], [position])
             position = position + increment
 
-            times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
-            if times_s == [] or voltages_v == []:
-                cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                               error_detail='Oscilloscope capture failed')
-                if not cont:
-                    return False
+            if self.config["Analysis"]["capture_rms_only"]:
+                units_str = "RMS Voltage (V)"
+                vsi = self.Oscilloscope.get_rms()
+            else:
+                times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
+                if times_s == [] or voltages_v == []:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail='Oscilloscope capture failed')
+                    if not cont:
+                        return False
 
-            if 'Store entire waveform'.upper() in data_storage.upper():
-                self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                              voltages_v=voltages_v)
+                if 'entire waveform'.upper() in data_storage.upper():
+                    units_str = "Voltage Squared Integral"
+                    self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
+                                                  voltages_v=voltages_v)
 
-            vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
@@ -1130,7 +1135,7 @@ class Manager(QThread):
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
         if not 'Do not store'.upper() == data_storage.upper():
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis)
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis, units_str = units_str)
 
         return True
 
@@ -1153,7 +1158,7 @@ class Manager(QThread):
 
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
-    def save_scan_profile(self, axis, positions, vsi_values):
+    def save_scan_profile(self, axis, positions, vsi_values, units_str):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1169,7 +1174,8 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
+                                                  units_str = units_str)
 
     def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
         """Saves a voltage squared integral vs distance """
@@ -1304,6 +1310,7 @@ class Manager(QThread):
             if not cont:
                 return False
             successful_go_home = self.Motors.go_home()
+            print(f"successful_go_home: {successful_go_home}")
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])

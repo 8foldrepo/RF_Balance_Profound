@@ -1,7 +1,5 @@
 import time as t
-
 import pyvisa
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
@@ -323,7 +321,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return str.split(",")[2]
 
     def get_rms(self) -> float:
-        rms = self.ask(":MEASure:VRMS?")
+        rms = self.ask(":MEAS:VRMS?")
         return float(rms)
 
 
