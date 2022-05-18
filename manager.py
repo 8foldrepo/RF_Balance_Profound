@@ -1146,7 +1146,7 @@ class Manager(QThread):
                     self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
                                                   voltages_v=voltages_v, storage_location=storage_location)
 
-                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
