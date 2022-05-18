@@ -13,6 +13,7 @@ import pyvisa
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
+from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -695,10 +696,14 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
-        print(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
-        while not self.thread_cont_mutex:
+        print(
+            colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
+                    'red'))  # todo remove debug line
+        while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
             pass
+        print(colored('thread_cont_mutex is now true, proceeding with abort_after_step method'), 'red')  # todo remove debug line
         if self.retry_clicked_variable:
+            print(colored('retry_clicked_variable is true, returning from abort abort_after_step', 'red'))  # todo remove debug line
             return
         if log:
             self.log("Aborting script after step")
@@ -711,13 +716,12 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     @pyqtSlot()
-    def abort_immediately(self, log = True):
+    def abort_immediately(self, log=True):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
-        print(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
-        log = True
+        print(colored(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
         if log:
             self.log("Aborting script")
         # Reset script control variables
@@ -734,16 +738,23 @@ class Manager(QThread):
         Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
         Call this method after showing a dialog, and return if the result is false.
         """
+        print(colored(f'cont_if_cont_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}', 'red'))
         try:
             self.wait_for_cont()
             return True
         except AbortException as e:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
-            if self.abort_guard:
+            print(colored(f'abort exception called in cont_if_cont_clicked 736', 'red'))  # todo: debug line
+            if self.abort_immediately_variable:  # if abort immediately is true
+                print(
+                    colored(f'aborting immediately since abort_immediately_variable is {self.abort_immediately_variable}', 'red'))  # todo: debug line
                 self.abort_immediately()
                 return False
-            self.abort_after_step()
-            return False
+            else:  # if abort immediately is not true
+                print(
+                    colored(f'aborting after step since abort_immediately_variable is {self.abort_immediately_variable}', 'red'))  # todo: debug line
+                self.abort_after_step()
+                return False
         except RetryException:
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
             self.log("Retrying step")
@@ -759,26 +770,26 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
-        while not self.thread_cont_mutex:
+        while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
             pass
 
         while not self.continue_clicked_variable:
             # check if script has been aborted
             if self.retry_clicked_variable:
                 self.retry_clicked_variable = False
-                self.thread_cont_mutex = False
+                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
                 # Always handle this exception
                 raise RetryException
             if self.abort_clicked_variable:
                 self.abort_clicked_variable = False
-                self.thread_cont_mutex = False
+                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
                 # Always handle this exception
                 raise AbortException
             if self.abort_immediately_variable:
-                self.thread_cont_mutex = False
+                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
                 self.abort_immediately()
                 return False
-        self.thread_cont_mutex = False
+        self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
         return True
 
     @pyqtSlot()
@@ -787,20 +798,20 @@ class Manager(QThread):
         self.continue_clicked_variable = True
         self.abort_clicked_variable = False
         self.abort_immediately_variable = False
-        self.thread_cont_mutex = True
+        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def retry_clicked(self):
         """Flags cont_clicked to retry the current step"""
         self.retry_clicked_variable = True
-        self.thread_cont_mutex = True
+        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        print(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
+        print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
         self.abort_clicked_variable = True
-        self.thread_cont_mutex = True
+        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     def write_calibration_data_to_ua_button(self):
         # Todo: make this method write calibration data to UA
@@ -882,7 +893,7 @@ class Manager(QThread):
         else:
             self.test_data.log_script(['', "Home all", f"FAIL; X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}", ''])
-            if self.abort_guard:
+            if self.abort_immediately_variable:  # we want to abort immediately if the user clicks out of this prompt
                 return
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail='Home all has failed in pretest initialisation')
@@ -1170,7 +1181,8 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
-        self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
+        #  todo: uncomment line below in final version
+        #  self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
 
         if axis == "X":
             self.element_x_coordinates[self.element] = max_position
@@ -1184,7 +1196,7 @@ class Manager(QThread):
                      f'{"%.2f" % max_position} 'f'mm;'
 
         if go_to_peak:
-            status = self.Motors.go_to_position([axis_letter], [max_position])
+            status = self.Motors.go_to_position([axis_letter], [max_position])  # todo: what is status being used for?
             status_str = status_str + f" moved to {axis} = {max_position} {units_str}"
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
@@ -1215,7 +1227,8 @@ class Manager(QThread):
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
                                        storage_location=storage_location)
 
-    def save_scan_profile(self, axis, positions, vsi_values, storage_location):
+    def save_scan_profile(self, axis, positions, vsi_values,
+                          storage_location):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1481,7 +1494,7 @@ class Manager(QThread):
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x incremenet
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
@@ -1551,15 +1564,17 @@ class Manager(QThread):
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
 
-        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
         # Warn the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time <= settling_time * 2 or rfb_off_time <= settling_time * 2:
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
                                          "specified in the config file. Either change it or load a different script",
                                          True)
+            self.abort_immediately_variable = True
             cont = self.cont_if_cont_clicked()
+            print(colored(f'cont is {cont} for settling time error', 'red'))
             if not cont:
+                self.abort_immediately_variable = False
                 return
 
         # Create an empty RFB data structure
@@ -1805,7 +1820,7 @@ class Manager(QThread):
 
     def prompt_for_retry(self, error_detail: str) -> bool:
         self.abort_clicked_variable = False
-        self.thread_cont_mutex = False
+        self.thread_cont_mutex = False  # currently attaining user input, ensures appropriate methods do not overwrite user input
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
                                      F"Abort to end the UA testing sequence.\nRetry to re-run"
                                      F" this test.\nContinue to move to the next test in the "
