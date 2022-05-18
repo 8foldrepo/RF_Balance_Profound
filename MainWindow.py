@@ -638,6 +638,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.retry_signal.connect(self.manager.retry_clicked)
         dlg.continue_signal.connect(self.manager.continue_clicked)
+        if message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
+            print(colored('settling time prompt detected, abort should now abort immediately instead of after step', 'red'))  # todo remove debug line
+            dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
     @pyqtSlot(str)
