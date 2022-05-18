@@ -1095,12 +1095,12 @@ class Manager(QThread):
                     if not cont:
                         return False
 
-            if 'Store entire waveform'.upper() in data_storage.upper():
-                self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                              voltages_v=voltages_v, storage_location=storage_location)
 
+                if 'entire waveform'.upper() in data_storage.upper():
+                    self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
+                                                  voltages_v=voltages_v, storage_location=storage_location)
 
-                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
@@ -1141,7 +1141,7 @@ class Manager(QThread):
 
         return True
 
-    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location):
+    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1158,10 +1158,9 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v, storage_location=storage_location)
+        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
-
-    def save_scan_profile(self, axis, positions, vsi_values, storage_location):
+    def save_scan_profile(self, axis, positions, vsi_values):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1177,9 +1176,7 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
-                                                  storage_location=storage_location)
-
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
 
     def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
         """Saves a voltage squared integral vs distance """
@@ -1314,7 +1311,6 @@ class Manager(QThread):
             if not cont:
                 return False
             successful_go_home = self.Motors.go_home()
-            print(f"successful_go_home: {successful_go_home}")
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
