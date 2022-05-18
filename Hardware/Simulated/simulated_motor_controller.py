@@ -44,16 +44,18 @@ class SimulatedMotorController(AbstractMotorController):
         self.on_by_default = self.config[self.device_key]["on_by_default"]
         self.port = self.config[self.device_key]["port"]
 
-    """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+
 
     @pyqtSlot(dict)
     def setup(self, settings):
+        """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
         t.sleep(0.1)
         self.ready_signal.emit()
 
-    """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
+
 
     def setup_1d(self, axis, settings):
+        """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
         pass
 
     def command(self, command):

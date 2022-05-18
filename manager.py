@@ -1008,19 +1008,18 @@ class Manager(QThread):
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter", False)
             return self.abort_after_step()
-
         self.configure_function_generator(awg_var_dict)
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
-        # todo: populate var_dict and make sure method is implemented
+        # Set timebase
         autoset_var_dict = dict()
-        self.autoset_timebase(autoset_var_dict)  # script log updated in this method
+        self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
         cont = self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                               go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,
-                              averages=averages)
+                              averages=averages, storage_location=storage_location)
         if not cont:
             return False
 
@@ -1029,7 +1028,7 @@ class Manager(QThread):
             cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
                                   go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
-                                  averages=averages)
+                                  averages=averages, storage_location=storage_location)
 
             if not cont:
                 return False
@@ -1043,8 +1042,10 @@ class Manager(QThread):
 
     # Reference position is the center of the scan range
 
-    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
-                  acquisition_type='N Averaged Waveform', averages=1) -> bool:
+    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
+                  scope_channel=1,  acquisition_type='N Averaged Waveform',  averages=1) -> bool:
+        self.oscilloscope_channel = scope_channel
+
         if axis == 'X':
             axis_letter = 'X'
         elif axis == 'Theta':
@@ -1092,7 +1093,7 @@ class Manager(QThread):
 
             if 'Store entire waveform'.upper() in data_storage.upper():
                 self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                              voltages_v=voltages_v)
+                                              voltages_v=voltages_v, storage_location=storage_location)
 
             vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1130,11 +1131,11 @@ class Manager(QThread):
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
         if not 'Do not store'.upper() == data_storage.upper():
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis)
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis, storage_location=storage_location)
 
         return True
 
-    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v):
+    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1151,9 +1152,9 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
+        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v, storage_location=storage_location)
 
-    def save_scan_profile(self, axis, positions, vsi_values):
+    def save_scan_profile(self, axis, positions, vsi_values, storage_location):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1169,7 +1170,8 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
+                                                  storage_location=storage_location)
 
     def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
         """Saves a voltage squared integral vs distance """

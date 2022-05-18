@@ -1,4 +1,3 @@
-2022-05-17 11:26:56,000 [INFO] [ParkerMotorController] [manager_thread] : Connecting to motor controller...
-2022-05-17 11:26:56,000 [ERROR] [ParkerMotorController] [manager_thread] : VIX_Motors not connected because the COM port was not found. Check that it is plugged in and look at Device manager to determine which COM port to use. enter it into Local.yaml: 
-
- could not open port 'COM7': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2022-05-18 10:33:51,886 [INFO] [Manager] [ui_thread] : Aborting script
+2022-05-18 10:33:51,889 [INFO] [Manager] [ui_thread] : Running script
+2022-05-18 10:33:53,781 [INFO] [Manager] [manager_thread] : Aborting script after step
