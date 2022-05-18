@@ -598,7 +598,7 @@ class Manager(QThread):
     def advance_script(self):
         """Updates script step and executes the next step if applicable, and implements abort, continue, and retry"""
         if self.task_names is None:
-            self.abort_after_step()
+            self.abort_immediately()
             self.enable_ui_signal.emit(True)
             return
 
@@ -753,7 +753,7 @@ class Manager(QThread):
             else:  # if abort immediately is not true
                 print(
                     colored(f'aborting after step since abort_immediately_variable is {self.abort_immediately_variable}', 'red'))  # todo: debug line
-                self.abort_after_step()
+                self.abort_immediately()
                 return False
         except RetryException:
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
@@ -770,8 +770,8 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
-        while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
-            pass
+        # while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
+        #     pass
 
         while not self.continue_clicked_variable:
             # check if script has been aborted
@@ -789,7 +789,7 @@ class Manager(QThread):
                 self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
                 self.abort_immediately()
                 return False
-        self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
+        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
         return True
 
     @pyqtSlot()
@@ -1567,14 +1567,13 @@ class Manager(QThread):
         # Warn the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time <= settling_time * 2 or rfb_off_time <= settling_time * 2:
-            self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
-                                         "specified in the config file. Either change it or load a different script",
-                                         True)
-            self.abort_immediately_variable = True
-            cont = self.cont_if_cont_clicked()
-            print(colored(f'cont is {cont} for settling time error', 'red'))
+
+            cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail="Warning: the on or off "
+                                                                                        "intervals are less than the "
+                                                                                        "sensor settling time "
+                                         "specified in the config file. Either change it or load a different script")
+
             if not cont:
-                self.abort_immediately_variable = False
                 return
 
         # Create an empty RFB data structure
