@@ -262,7 +262,7 @@ def create_test_results_summary_file(test_data: TestData, path):
     f.close()
 
 
-def log_msg(self, root_logger, message: str, level: str = None) -> None:
+def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:
     from PyQt5.QtCore import QThread
 
     """
@@ -278,7 +278,7 @@ def log_msg(self, root_logger, message: str, level: str = None) -> None:
     """
 
     thread_name = QThread.currentThread().objectName()
-    log_entry = f"[{type(self).__name__}] [{thread_name}] : {message}"
+    log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
     if level == "debug":
         root_logger.debug(log_entry)
     elif level == "error":

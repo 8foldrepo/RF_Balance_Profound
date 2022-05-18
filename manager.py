@@ -295,6 +295,13 @@ class Manager(QThread):
         self.update_system_info()
         self.enable_ui_signal.emit(True)
 
+        # Get the position of the motors
+        if self.Motors.connected:
+             lock_aquired = self.motor_control_lock.tryLock()
+             if lock_aquired:
+                 self.Motors.get_position(mutex_locked=True)
+                 self.motor_control_lock.unlock()
+
     def update_system_info(self):
         """
         Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
@@ -390,7 +397,7 @@ class Manager(QThread):
     @pyqtSlot()
     def run_script(self):
         self.abort_immediately()
-        log_msg(self, root_logger, level="info", message="Running script")
+        log_msg(self, root_logger, message="Running script", level="info")
         self.scripting = True
         self.was_scripting = True
         self.abort_immediately_var = False
@@ -413,12 +420,12 @@ class Manager(QThread):
                 self.thermocouple.get_reading()
 
             # TODO: uncomment if continuous position feedback this is deemed useful
-            # Only refresh motor position if they are connected
-            if self.Motors.connected:
-                lock_aquired = self.motor_control_lock.tryLock()
-                if lock_aquired:
-                    self.Motors.get_position(mutex_locked=True)
-                    self.motor_control_lock.unlock()
+            # # Only refresh motor position if they are connected
+            # if self.Motors.connected:
+            #     lock_aquired = self.motor_control_lock.tryLock()
+            #     if lock_aquired:
+            #         self.Motors.get_position(mutex_locked=True)
+            #         self.motor_control_lock.unlock()
 
     def capture_scope(self, channel=1, plot=True):
         try:
@@ -1323,6 +1330,7 @@ class Manager(QThread):
         if not successful_go_home:
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Go home failed')
             return cont
+
         return True
 
     def retract_ua_warning(self):
