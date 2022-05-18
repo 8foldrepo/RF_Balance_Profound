@@ -46,8 +46,31 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.averages_spin_box.valueChanged.connect(self.averages_spin_box_changed)
         self.acquisition_type_combo_box.currentTextChanged.connect(self.aquisition_type_combo_changed)
         self.index_spinbox.valueChanged.connect(self.show_data_point)
+        self.start_scan_button.clicked.connect(self.scan_clicked)
+
+    def scan_clicked(self):
+        """Retrieve scan settings from the UI and tell the manager to begin a 1d scan with those settings"""
+
+        command_ray = [""] * 13
+        command_ray[0] = "SCAN"
+        command_ray[1] = self.axis_combo.currentText()
+        command_ray[2] = str(self.pts_spin.value())
+        command_ray[3] = str(self.increment_spin.value())
+        command_ray[4] = self.ref_pos_combo.currentText()
+        command_ray[5] = self.end_pos_combo.currentText()
+        command_ray[6] = self.comments_input.text()
+        command_ray[7] = self.filename_stub_input.text()
+        command_ray[8] = self.data_directory_input.text()
+        command_ray[9] = self.acquisition_type_combo.currentText()
+        command_ray[10] = self.source_channel_combo.currentText()
+        command_ray[11] = str(self.averages_spin_box.value())
+
+        command_string = "_".join(command_ray)
+        self.command_signal.emit(command_string)
 
     def show_data_point(self):
+        """Display the waveform data at a specified index to the UI"""
+
         index = self.index_spinbox.value()
         if not index > len(self.x_data):
             self.x_data_view.setText("{:.4e}".format(self.x_data[index]))
@@ -84,6 +107,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager = manager
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
+        self.command_signal.connect(self.manager.exec_command)
 
     def set_tabWidget(self, tabWidget):
         self.tabWidget = tabWidget

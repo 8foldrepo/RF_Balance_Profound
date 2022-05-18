@@ -160,4 +160,4 @@ Analysis:
   settling_time_s: 1
   samples_to_remove_at_end: 3
   max_standard_deviation_w: .1
-  capture_rms_only: True
+  capture_rms_only: False
