@@ -55,7 +55,6 @@ class Manager(QThread):
     Oscilloscope: AbstractOscilloscope
     Motors: AbstractMotorController
     UAInterface: AbstractUAInterface
-
     # Output file handler
     file_saver: FileSaver
     rfb_logger: RFBDataLogger
@@ -67,7 +66,8 @@ class Manager(QThread):
     # Signal section
     # Dialog signals
     user_prompt_signal = pyqtSignal(str,
-                                    bool)  # str is message for user to read, bool is whether or not to restrict the continue button
+                                    bool)  # str is message for user to read, bool is whether or not to restrict the
+    # continue button
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = pyqtSignal()
@@ -110,15 +110,15 @@ class Manager(QThread):
 
     # Global variables section
 
-    def __init__(self, system_info, config: dict, parent=None):
+    def __init__(self, system_info, parent, config: dict):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.oscilloscope_averages = 1
         self.abort_guard = False
         self.thread_cont_mutex = True
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.access_level = "Operator"  # Defaults to operator access
-        self.rfb_logger = None  # TODO: should this be self.rfb_logger = RFBDataLogger?
         self.warn = str(logging.WARNING)  # sets variable for shorter typing
         self.error = str(logging.ERROR)  # sets variable for shorter typing
         # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
@@ -279,8 +279,8 @@ class Manager(QThread):
 
     @pyqtSlot()
     def connect_hardware(self):
-        """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits for their
-        response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py"""
+        """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits
+        for their response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py """
         i = 0
         while i < len(self.devices):
             device = self.devices[i]
@@ -475,7 +475,6 @@ class Manager(QThread):
          run the script, requires a path argument to the script"""
         self.abort_immediately(log=False)
 
-
         # Send name of script to UI
         split_path = path.split("/")
         self.test_data.script_name = split_path[len(split_path) - 1]
@@ -565,19 +564,22 @@ class Manager(QThread):
             tasks.append(OrderedDict(task_variables))
             task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
 
-        for i in range(len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
+        for i in range(
+                len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
             if not isinstance(self.task_execution_order[i], list):
                 self.task_execution_order[i] = [self.task_execution_order[i], None]
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
+            if "Task type" in tasks[
+                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
         for i in range(len(self.task_execution_order)):
             # tasks[self.taskExecOrder[i][0] + 1].pop("Task type", None)
-            self.task_arguments.append(tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
+            self.task_arguments.append(
+                tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
@@ -643,7 +645,8 @@ class Manager(QThread):
         self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        if self.task_execution_order[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
+        if self.task_execution_order[self.step_index][
+            1] is not None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
             args['Element'] = self.task_execution_order[self.step_index][1]
 
@@ -701,7 +704,7 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     @pyqtSlot()
-    def abort_immediately(self):
+    def abort_immediately(self, log = True):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
@@ -1009,6 +1012,11 @@ class Manager(QThread):
         amplitude_mVpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
 
+        if storage_location == 'UA Results Directory' or data_directory == '':
+            storage_location = ''
+        else:
+            storage_location = data_directory
+
         # If on the first element, set the tab to the scan tab
         if self.element == 1:
             self.set_tab_signal.emit("Scan")
@@ -1084,7 +1092,7 @@ class Manager(QThread):
     # Reference position is the center of the scan range
 
     def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
-                  scope_channel=1,  acquisition_type='N Averaged Waveform',  averages=1) -> bool:
+                  scope_channel=1, acquisition_type='N Averaged Waveform', averages=1) -> bool:
         self.oscilloscope_channel = scope_channel
 
         if axis == 'X':
@@ -1136,12 +1144,11 @@ class Manager(QThread):
                     if not cont:
                         return False
 
-
                 if 'entire waveform'.upper() in data_storage.upper():
                     self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
                                                   voltages_v=voltages_v, storage_location=storage_location)
 
-                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
@@ -1177,12 +1184,12 @@ class Manager(QThread):
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
         if not 'Do not store'.upper() == data_storage.upper():
-
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis, storage_location=storage_location)
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values,
+                                   axis=axis, storage_location=storage_location)
 
         return True
 
-    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v):
+    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1199,9 +1206,10 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
+        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
+                                       storage_location=storage_location)
 
-    def save_scan_profile(self, axis, positions, vsi_values):
+    def save_scan_profile(self, axis, positions, vsi_values, storage_location):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1217,29 +1225,8 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
-
-    def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
-        """Saves a voltage squared integral vs distance """
-        metadata = FileMetadata()
-        metadata.element_number = self.element
-        metadata.serial_number = self.test_data.serial_number
-        metadata.X = self.Motors.coords_mm[0]
-        metadata.Theta = self.Motors.coords_mm[1]
-        metadata.frequency_MHz = self.AWG.state["frequency_Hz"] / 1000000
-        metadata.amplitude_mVpp = self.AWG.state["amplitude_V"] * 1000
-        if self.AWG.state["burst_on"]:
-            metadata.source_signal_type = "Toneburst"
-        else:
-            metadata.source_signal_type = "Continuous"
-        metadata.num_cycles = self.AWG.state["burst_cycles"]
-
-        self.file_saver.store_measure_rfb_waveform_csv(  # TODO: you don't have forward_power, reflected_power, nor acoustic_power arguments in the store_measure_rfb_waveform_csv method
-            metadata,
-            forward_power=[f_time_s, f_power_w],
-            reflected_power=[r_time_s, r_power_w],
-            acoustic_power=[a_time_s, a_power_w],
-        )
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
+                                                  storage_location=storage_location)
 
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
@@ -1550,6 +1537,11 @@ class Manager(QThread):
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
 
+        if storage_location == 'UA Results Directory' or data_directory == '':
+            storage_location = ''
+        else:
+            storage_location = data_directory
+
         test_result = "DNF"
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
@@ -1710,9 +1702,11 @@ class Manager(QThread):
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 
-        self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data, system_info=self.system_info,
+        self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data,
+                                          system_info=self.system_info,
                                           element=self.element, frequency_mhz=frequency_mhz, threshold=threshold,
-                                          offset=offset, frequency_range=frequency_range)
+                                          offset=offset, frequency_range=frequency_range,
+                                          storage_location=storage_location)
 
         self.test_data.log_script(["", "End", "", ""])
 
@@ -1740,7 +1734,8 @@ class Manager(QThread):
 
     def log(self, message, level="info"):
         from inspect import getframeinfo, stack
-        log_msg(self, root_logger=root_logger, message=message, level=level, line_number=getframeinfo(stack()[1][0]).lineno)
+        log_msg(self, root_logger=root_logger, message=message, level=level,
+                line_number=getframeinfo(stack()[1][0]).lineno)
 
     def refresh_rfb_tab(self) -> bool:
         """

@@ -118,10 +118,28 @@ class FileSaver:
             f.write("\n")
         f.close()
 
-    def store_waveform(self, metadata: FileMetadata, times, voltages):  # assume single array every time
+    def store_waveform(self, metadata: FileMetadata, times, voltages,
+                       storage_location):  # assume single array every time
 
-        path = check_directory(os.path.join(self.waveform_data_path, 'ElementScans',
-                                            f"E{metadata.element_number:02}"))
+        if storage_location != '':
+            try:
+                path = check_directory(
+                    os.path.join(
+                        storage_location, "EfficiencyTest", 'ElementScans',
+                        f"E{metadata.element_number:02}")
+                )
+            except PermissionError:
+                path = check_directory(
+                    os.path.join(
+                        self.waveform_data_path, "EfficiencyTest", 'ElementScans',
+                        f"E{metadata.element_number:02}")
+                )
+        else:
+            path = check_directory(
+                os.path.join(
+                    self.waveform_data_path, "EfficiencyTest", 'ElementScans',
+                    f"E{metadata.element_number:02}")
+            )
 
         file = open(
             os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}_"
@@ -159,84 +177,6 @@ class FileSaver:
                 formatted_voltage = "{:.6e}".format(voltages[x])
                 file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
-        # the three lists are 2D, first col in sub list is time second is voltage
-        # todo: add a more specific filename and match the format of the example files
-        def store_measure_rfb_waveform(self, metadata: FileMetadata, forward_power, reflected_power, acoustic_power):
-            path = check_directory(os.path.join(self.power_data_path, 'EfficiencyTest',
-                                                f"E{metadata.element_number:02}"))
-            file_path = os.path.join(path, f"MeasureRFB_E{metadata.element_number:02}.csv")
-
-            self.log(f"Saving waveform data to: {file_path}")
-            file = open(file_path, "w+")
-            file.write(f"UASerialNumber={self.test_data.serial_number}\n")
-            file.write("[File Format]\n")
-            file.write(f"Version={self.config['Software_Version']}\n")
-            file.write(f"# Arrays=3\n")
-            file.write("[Position]\n")
-            file.write(f"X={f'%.2f' % metadata.X}\n")
-            file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
-            file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
-            file.write(f"Source Signal Amplitude={f'%.2f' % metadata.amplitude_mVpp}mVpp\n")
-            file.write(f"Source Signal Type={metadata.source_signal_type}\n")
-            file.write(f"# Cycles={metadata.num_cycles}\n")
-            file.write("[Array 1]\n")
-            file.write('Label="Forward Power (W)"\n')
-            file.write('X Data Type="Time (s)"\n')
-            file.write('Y Data Type="Wattage (W)"\n')
-            file.write("[Array 2]\n")
-            file.write('Label="Reflected Power (W)"\n')
-            file.write('X Data Type="Time (s)"\n')
-            file.write('Y Data Type="Wattage (W)"\n')
-            file.write("[Array 3]\n")
-            file.write('Label="Acoustic Power (W)"\n')
-            file.write('X Data Type="Time (s)"\n')
-            file.write('Y Data Type="Wattage (W)"\n')
-            file.write("[Data]\n")
-            file.write(
-                "Format=\"Cols arranged <FPX0>, <FPY0>, <RPX0>, <RPY0>, <APX0>, <APY0> ... <FPXn>, <FPYn>, <RPXn>, "
-                "<RPYn>, <APXn>, <APYn>\"\n")
-            file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
-
-            if len(forward_power) != len(reflected_power) != len(acoustic_power):
-                # self.log(level="error", message=f"length of forward_power = {len(forward_power)}, reflected_power = {
-                # len(reflected_power)}, and acoustic_power = {len(acoustic_power)} mismatch in
-                # store_measure_rfb_waveform()")
-                print(
-                    f"length of forward_power = {len(forward_power)}, reflected_power = {len(reflected_power)}, and "
-                    f"acoustic_power = {len(acoustic_power)} mismatch in store_measure_rfb_waveform()")
-                return
-            else:
-                if len(forward_power[0]) != len(forward_power[1]):
-                    # self.log(level="error", message=f"in forward_power length of times = {forward_power[0]}, wattages =
-                    # {forward_power[1]}") mismatch in store_find_element_waveform()")
-                    print(
-                        f"length of times = {len(forward_power[0])} ; length of wattages = {len(forward_power[1])} size "
-                        f"mismatch in forward_power in store_find_element_waveform()")
-                elif len(reflected_power[0]) != len(reflected_power[1]):
-                    # self.log(level="error", message=f"in reflected_power length of times = {reflected_power[0]},
-                    # wattages = {reflected_power[1]}") mismatch in store_find_element_waveform()")
-                    print(
-                        f"length of times = {len(reflected_power[0])} ; length of wattages = {len(reflected_power[1])} size"
-                        f" mismatch in reflected_power in store_find_element_waveform()")
-                elif len(acoustic_power[0]) != len(acoustic_power[1]):
-                    # self.log(level="error", message=f"in acoustic_power length of times = {acoustic_power[0]}, wattages
-                    # = {acoustic_power[1]}") mismatch in store_find_element_waveform()")
-                    print(
-                        f"length of times = {len(acoustic_power[0])} ; length of wattages = {len(acoustic_power[1])} size"
-                        f" mismatch in acoustic_power in store_find_element_waveform()")
-                else:
-                    for x in range(len(forward_power[0])):
-                        forward_formatted_time = "{:.6e}".format(forward_power[0][x])
-                        forward_formatted_wattage = "{:.6e}".format(forward_power[1][x])
-                        reflected_formatted_time = "{:.6e}".format(reflected_power[0][x])
-                        reflected_formatted_wattage = "{:.6e}".format(reflected_power[1][x])
-                        acoustic_formatted_time = "{:.6e}".format(acoustic_power[0][x])
-                        acoustic_formatted_wattage = "{:.6e}".format(acoustic_power[1][x])
-
-                        file.write(
-                            f"{forward_formatted_time}\t{forward_formatted_wattage}\t{reflected_formatted_time}\t"
-                            f"{reflected_formatted_wattage}\t{acoustic_formatted_time}\t{acoustic_formatted_wattage}\n")
-
     # the three lists are 2D, first col in sub list is time second is voltage
     # todo: add a more specific filename and match the format of the example files
     def store_measure_rfb_waveform_csv(
@@ -262,15 +202,30 @@ class FileSaver:
             absorb_trans_times: list,
             transition_amps: list,
             raw_data: list,
-            frequency_range: FrequencyRange
+            frequency_range: FrequencyRange,
+            storage_location: str
     ):
         points = len(power_on_w)
 
-        path = check_directory(
-            os.path.join(
-                self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
+        if storage_location != '':
+            try:
+                path = check_directory(
+                    os.path.join(
+                        storage_location, "EfficiencyTest", f"E{element_number:02}"
+                    )
+                )
+            except PermissionError:
+                path = check_directory(
+                    os.path.join(
+                        self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
+                    )
+                )
+        else:
+            path = check_directory(
+                os.path.join(
+                    self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
+                )
             )
-        )
 
         if frequency_range == FrequencyRange.high_frequency:
             file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
@@ -383,14 +338,28 @@ class FileSaver:
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
 
-    def save_find_element_profile(self, metadata, positions, vsi_values, units_str = "Voltage Squared Integral"):
-        path = check_directory(
-            os.path.join(
-                self.waveform_data_path,
-                "ElementScans",
-                f"E{metadata.element_number:02}",
+    def save_find_element_profile(self, metadata, positions, vsi_values, storage_location,
+                                  units_str="Voltage Squared Integral"):
+
+        if storage_location != '':
+            try:
+                path = check_directory(
+                    os.path.join(
+                        storage_location, "EfficiencyTest", f"E{metadata.element_number:02}"
+                    )
+                )
+            except PermissionError:
+                path = check_directory(
+                    os.path.join(
+                        self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
+                    )
+                )
+        else:
+            path = check_directory(
+                os.path.join(
+                    self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
+                )
             )
-        )
 
         file = open(
             os.path.join(
@@ -448,7 +417,7 @@ class FileSaver:
         log_msg(self, root_logger, message=message, level=level)
 
     def extract_file_data(self, rfb_logger: RFBDataLogger, rfb_data: RFBData, system_info, element: int,
-                          frequency_mhz: float, threshold, offset, frequency_range):
+                          frequency_mhz: float, threshold, offset, frequency_range, storage_location: str):
         balance_readings_mg = [value * 1000 for value in rfb_logger.balance_readings_g]
         # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
         raw_data = [
@@ -545,7 +514,8 @@ class FileSaver:
             absorb_trans_times=transition_times_s,
             transition_amps=transition_amp_w,
             raw_data=raw_data,
-            frequency_range=frequency_range
+            frequency_range=frequency_range,
+            storage_location=storage_location
         )
 
 # def test_store_find_element_waveform(file_saver):

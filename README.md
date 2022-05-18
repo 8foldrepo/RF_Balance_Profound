@@ -55,8 +55,10 @@ run the following commands
 > pip install pyvisa\
 > pip install pyyaml\
 > pip install scipy\
+> pip install termcolor\
 > pip install pyserial\
 > python -m pip install nidaqmx
+
 
 Method 2: Create automatically from environment.yml
 

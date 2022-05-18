@@ -1,0 +1,33 @@
+2022-05-18 12:28:40,946 [INFO] [Manager] [715] [ui_thread] : Aborting script
+2022-05-18 12:28:43,511 [INFO] [Manager] [715] [ui_thread] : Aborting script
+2022-05-18 12:28:43,512 [INFO] [Manager] [None] [ui_thread] : Running script
+2022-05-18 12:28:49,166 [INFO] [Manager] [925] [manager_thread] : Checking ability to log
+2022-05-18 12:28:55,180 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.8713925405577618 @ X = 2.625 RMS Voltage (V)
+2022-05-18 12:28:55,183 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9949563941345176 @ Theta = -185.8000000000002 RMS Voltage (V)
+2022-05-18 12:28:55,465 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.8553607752763009 @ X = 2.1249999999999996 RMS Voltage (V)
+2022-05-18 12:28:55,479 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9946387336979259 @ Theta = -183.00000000000017 RMS Voltage (V)
+2022-05-18 12:28:55,558 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.8926282166994569 @ X = 5.500000000000002 RMS Voltage (V)
+2022-05-18 12:28:55,576 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9950136527788914 @ Theta = -173.40000000000003 RMS Voltage (V)
+2022-05-18 12:28:55,672 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9614134217315278 @ X = 12.099999999999985 RMS Voltage (V)
+2022-05-18 12:28:55,701 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9899071608365444 @ Theta = -175.00000000000006 RMS Voltage (V)
+2022-05-18 12:28:55,782 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9451040579695416 @ X = 16.09999999999999 RMS Voltage (V)
+2022-05-18 12:28:55,804 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9754796226583443 @ Theta = -175.80000000000007 RMS Voltage (V)
+2022-05-18 12:28:55,876 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9586736192400993 @ X = 18.699999999999996 RMS Voltage (V)
+2022-05-18 12:28:55,902 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9779887372494912 @ Theta = -177.4000000000001 RMS Voltage (V)
+2022-05-18 12:28:55,992 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9907623242898185 @ X = 24.099999999999994 RMS Voltage (V)
+2022-05-18 12:28:56,014 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9701946808031229 @ Theta = -175.40000000000006 RMS Voltage (V)
+2022-05-18 12:28:56,141 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.8767101078167241 @ X = 29.099999999999994 RMS Voltage (V)
+2022-05-18 12:28:56,169 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9957370201285161 @ Theta = -176.20000000000007 RMS Voltage (V)
+2022-05-18 12:28:56,297 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9112902986497962 @ X = 34.50000000000002 RMS Voltage (V)
+2022-05-18 12:28:56,328 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9857101445466304 @ Theta = -175.80000000000007 RMS Voltage (V)
+2022-05-18 12:28:56,443 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9760976184822333 @ X = 41.50000000000005 RMS Voltage (V)
+2022-05-18 12:28:56,467 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9558872128950447 @ Theta = -180.20000000000013 RMS Voltage (V)
+2022-05-18 12:28:56,595 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9244575538571225 @ X = 45.70000000000004 RMS Voltage (V)
+2022-05-18 12:28:56,618 [INFO] [Manager] [1167] [manager_thread] : Maximum of 0.9977825521738843 @ Theta = -173.40000000000003 RMS Voltage (V)
+2022-05-18 12:28:56,728 [INFO] [Manager] [1406] [manager_thread] : Moved to 1, at coordinate x=2.12, r=-183.0
+2022-05-18 12:28:56,732 [INFO] [SimulatedBalance] [None] [manager_thread] : Zeroing Balance
+2022-05-18 12:28:56,733 [INFO] [SimulatedBalance] [None] [manager_thread] : Zeroing Balance, Please wait
+2022-05-18 12:28:56,733 [INFO] [SimulatedBalance] [None] [manager_thread] : Balance Zeroed
+2022-05-18 12:28:56,742 [INFO] [Manager] [1621] [manager_thread] : Turning off AWG T = 0.00
+2022-05-18 12:29:06,742 [INFO] [Manager] [1633] [manager_thread] : Turning on AWG T = 10.00
+2022-05-18 12:29:16,743 [INFO] [Manager] [1642] [manager_thread] : Turning off AWG T = 20.00
