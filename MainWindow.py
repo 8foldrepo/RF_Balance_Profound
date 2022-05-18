@@ -776,6 +776,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.update_system_status("BUSY")
 
         self.position_tab.set_buttons_enabled(enabled)
+        #todo: add more calls to tabs' set buttons enabled
+
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
         self.run_button.setEnabled(enabled and not self.script_changed)
