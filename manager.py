@@ -473,7 +473,8 @@ class Manager(QThread):
     def load_script(self, path):
         """takes the script file and parses the info within it into various lists and dictionaries so the program can
          run the script, requires a path argument to the script"""
-        self.abort_after_step(log=False)
+        self.abort_immediately(log=False)
+
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -1047,19 +1048,18 @@ class Manager(QThread):
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter", False)
             return self.abort_after_step()
-
         self.configure_function_generator(awg_var_dict)
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
-        # todo: populate var_dict and make sure method is implemented
+        # Set timebase
         autoset_var_dict = dict()
-        self.autoset_timebase(autoset_var_dict)  # script log updated in this method
+        self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
         cont = self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
                               go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,
-                              averages=averages)
+                              averages=averages, storage_location=storage_location)
         if not cont:
             return False
 
@@ -1068,7 +1068,7 @@ class Manager(QThread):
             cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
                                   go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
-                                  averages=averages)
+                                  averages=averages, storage_location=storage_location)
 
             if not cont:
                 return False
@@ -1082,8 +1082,10 @@ class Manager(QThread):
 
     # Reference position is the center of the scan range
 
-    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, scope_channel=1,
-                  acquisition_type='N Averaged Waveform', averages=1) -> bool:
+    def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
+                  scope_channel=1,  acquisition_type='N Averaged Waveform',  averages=1) -> bool:
+        self.oscilloscope_channel = scope_channel
+
         if axis == 'X':
             axis_letter = 'X'
         elif axis == 'Theta':
@@ -1122,18 +1124,23 @@ class Manager(QThread):
             self.Motors.go_to_position([axis_letter], [position])
             position = position + increment
 
-            times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
-            if times_s == [] or voltages_v == []:
-                cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                               error_detail='Oscilloscope capture failed')
-                if not cont:
-                    return False
+            if self.config["Analysis"]["capture_rms_only"]:
+                units_str = "RMS Voltage (V)"
+                vsi = self.Oscilloscope.get_rms()
+            else:
+                times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
+                if times_s == [] or voltages_v == []:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail='Oscilloscope capture failed')
+                    if not cont:
+                        return False
 
-            if 'Store entire waveform'.upper() in data_storage.upper():
-                self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                              voltages_v=voltages_v)
 
-            vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                if 'entire waveform'.upper() in data_storage.upper():
+                    self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
+                                                  voltages_v=voltages_v, storage_location=storage_location)
+
+                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
@@ -1169,7 +1176,8 @@ class Manager(QThread):
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
         if not 'Do not store'.upper() == data_storage.upper():
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis)
+
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis, storage_location=storage_location)
 
         return True
 

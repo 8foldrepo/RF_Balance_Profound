@@ -383,7 +383,7 @@ class FileSaver:
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
 
-    def save_find_element_profile(self, metadata, positions, vsi_values):
+    def save_find_element_profile(self, metadata, positions, vsi_values, units_str = "Voltage Squared Integral"):
         path = check_directory(
             os.path.join(
                 self.waveform_data_path,
@@ -416,7 +416,7 @@ class FileSaver:
             file.write('X Data Type="Position (deg)"\n')
         else:
             file.write('X Data Type="Distance (mm)"\n')
-        file.write('Y Data Type="Voltage Squared Integral"\n')
+        file.write(f'Y Data Type="{units_str}"\n')
         file.write("[Data]\n")
         file.write(
             'Format="Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>"\n'

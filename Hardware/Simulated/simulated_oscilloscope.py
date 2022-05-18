@@ -1,14 +1,12 @@
 from abc import abstractmethod
-from random import random
 
+import random
 import numpy as np
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
-
-"""Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):
+    """Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
     def __init__(self, config: dict, device_key="Keysight_Oscilloscope", parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
@@ -82,4 +80,4 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         return
 
     def get_rms(self) -> float:
-        return random(0.0001, 0.9000)
+        return random.random()
