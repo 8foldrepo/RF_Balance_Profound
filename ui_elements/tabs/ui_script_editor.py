@@ -1,8 +1,9 @@
 from datetime import date
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog, QApplication
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QApplication as QApp
 
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
@@ -36,13 +37,24 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.list_of_var_dicts = list()
         self.setupUi(self)
         self.configure_signals()
-        self.app = QApplication.instance()
+        self.app = QApp.instance()
 
     def set_tree_widget(self, treeWidget):
         self.treeWidget = treeWidget
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
         if self.treeWidget.invisibleRootItem().childCount() > 0:
             self.delete_all()
+
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        self.script_cmd_dropdown.setEnabled(enabled)
+        self.add_cmd_to_script_button.setEnabled(enabled)
+        self.update_tree_button.setEnabled(enabled)
+        self.save_script_button.setEnabled(enabled)
+        self.move_cmd_up_button.setEnabled(enabled)
+        self.move_cmd_down_button.setEnabled(enabled)
+        self.delete_step_button.setEnabled(enabled)
+        self.delete_all_button.setEnabled(enabled)
 
     def configure_signals(self):
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)

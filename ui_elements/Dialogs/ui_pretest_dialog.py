@@ -33,6 +33,8 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if access_level.upper() == 'OPERATOR':
             self.override_checkbox.setEnabled(False)
 
+        self.test_operator_inputline.setFocus()
+
     def configure_signals(self):
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.cancel_clicked)
