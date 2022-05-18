@@ -1,4 +1,5 @@
 from abc import abstractmethod
+
 import random
 import numpy as np
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
@@ -46,7 +47,7 @@ class SimulatedOscilloscope(AbstractOscilloscope):
             if key == 'delay_cycles':
                 self.delay_cycles = parameters[key]
 
-    def SetAveraging(self, averages=1):
+    def set_averaging(self, averages=1):
         pass
 
     def connect_hardware(self):
@@ -75,7 +76,7 @@ class SimulatedOscilloscope(AbstractOscilloscope):
     def get_serial_number(self) -> str:
         return '"Simulated"'
 
-    def autoset_timebase(self):
+    def autoset_oscilloscope_timebase(self):
         return
 
     def get_rms(self) -> float:

@@ -75,31 +75,31 @@ class KeysightAWG(AbstractAWG):
 
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50, trigger_out=True):
-        self.SetOutput(output)
-        self.SetFrequency_Hz(frequency_Hz)
-        self.SetAmplitude_V(amplitude_V)
-        self.SetCycles(burst_cycles)
-        self.SetBurst(burst)
+        self.set_output(output)
+        self.set_frequency_hz(frequency_Hz)
+        self.set_amplitude_v(amplitude_V)
+        self.set_cycles(burst_cycles)
+        self.set_burst(burst)
         self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
-        self.SetTriggerOutput(trigger_out=trigger_out)
-        self.SetOffset_V(offset_V)
-        self.SetOutputImpedance(output_Impedance)
+        self.set_trigger_output(trigger_out=trigger_out)
+        self.set_offset_v(offset_V)
+        self.set_output_impedance(output_Impedance)
 
         self.wait_til_complete()
 
     """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
 
     def get_state(self):
-        self.Get_Output()
-        self.GetFrequency_Hz()
-        self.GetAmplitude_V()
-        self.GetBurst()
+        self.get_output()
+        self.get_frequency_hz()
+        self.get_amplitude_v()
+        self.get_burst()
         self.GetTriggerInput()
-        self.GetOffset_V()
-        self.GetOutputImpedance()
+        self.get_offset_v()
+        self.get_output_impedance()
         return self.state
 
-    def Reset(self):
+    def reset(self):
         self.command(f"*RST")
         self.wait_til_complete()
 
@@ -109,7 +109,7 @@ class KeysightAWG(AbstractAWG):
 
     """Turns the output on or off"""
 
-    def SetOutput(self, on: bool):
+    def set_output(self, on: bool):
         if on:
             self.command("OUTP ON")
             self.output_signal.emit(True)
@@ -117,7 +117,7 @@ class KeysightAWG(AbstractAWG):
             self.command("OUTP OFF")
             self.output_signal.emit(False)
 
-    def Get_Output(self):
+    def get_output(self):
         self.command("OUTP?")
         reply = self.read()
         self.state["output"] = "1" in reply
@@ -126,16 +126,16 @@ class KeysightAWG(AbstractAWG):
 
     """Sets the frequency of the signal"""
 
-    def SetFrequency_Hz(self, frequency):
+    def set_frequency_hz(self, frequency):
         self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
 
-        if not self.GetFrequency_Hz() == frequency:
+        if not self.get_frequency_hz() == frequency:
             self.log(level="error", message="frequency not set")
             return False
         return True
 
-    def GetFrequency_Hz(self):
+    def get_frequency_hz(self):
         self.command(f"FREQ?")
         self.state["frequency_Hz"] = float(self.read())
         self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)
@@ -143,25 +143,25 @@ class KeysightAWG(AbstractAWG):
 
     """Sets the peak to peak amplitude of the waveform in volts"""
 
-    def SetAmplitude_V(self, amplitude):
+    def set_amplitude_v(self, amplitude):
         self.command(f"VOLT {amplitude}")
-        if not self.GetAmplitude_V() == amplitude:
+        if not self.get_amplitude_v() == amplitude:
             self.log(level="error", message="frequency not set")
             return False
         return True
 
-    def GetAmplitude_V(self):
+    def get_amplitude_v(self):
         self.command(f"VOLT?")
         self.state["amplitude_V"] = float(self.read())
         return self.state["amplitude_V"]
 
     """Sets the dc offset of the waveform in volts"""
 
-    def SetOffset_V(self, offset):
+    def set_offset_v(self, offset):
         self.state["offset_V"] = offset
         self.command(f"VOLT:OFFS {offset}")
 
-    def GetOffset_V(self):
+    def get_offset_v(self):
         self.command(f"VOLT:OFFS?")
         self.state["offset_V"] = float(self.read())
         return self.state["offset_V"]
@@ -178,14 +178,14 @@ class KeysightAWG(AbstractAWG):
         self.command(f"FUNC?")
         return self.read()
 
-    def SetTriggerOutput(self, trigger_out=True):
+    def set_trigger_output(self, trigger_out=True):
         if trigger_out:
             self.command("OUTP:TRIG ON")
             self.command("OUTP:TRIG:SLOP POS")
         else:
             self.command("OUTP:TRIG OFF")
 
-    def SetBurst(self, on=True):
+    def set_burst(self, on=True):
         self.state["burst_on"] = on
         if "Phase_degrees" in self.state.keys():
             self.command(f"BURS:PHAS {self.state['Phase_degrees']}")
@@ -194,7 +194,7 @@ class KeysightAWG(AbstractAWG):
         else:
             self.command("BURS OFF")
 
-    def GetBurst(self):
+    def get_burst(self):
         """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
         self.command(f"BURS?")
         self.state["burst_on"] = "1" in self.read()
@@ -202,33 +202,33 @@ class KeysightAWG(AbstractAWG):
         self.state["burst_cycles"] = int(float(self.read()))
         return self.state["burst_on"], self.state["burst_cycles"]
 
-    def SetOutputImpedance(self, impedance_ohms=50, HiZ=False):
+    def set_output_impedance(self, impedance_ohms=50, HiZ=False):
         if HiZ:
             self.command("OUTP:LOAD INF")
         else:
             self.command(f"OUTP:LOAD {impedance_ohms}")
 
-    def GetOutputImpedance(self):
+    def get_output_impedance(self):
         self.command(f"OUTP:LOAD?")
         return float(self.read())
 
-    def SetPhaseDegrees(self, phase_degrees=0):
+    def set_phase_degrees(self, phase_degrees=0):
         self.command(f"UNIT:ANGL DEG")
         self.command(f"SOUR:PHASE{phase_degrees}")
-        return self.GetPhaseDegrees() == phase_degrees
+        return self.get_phase_degrees() == phase_degrees
 
-    def GetPhaseDegrees(self):
+    def get_phase_degrees(self):
         self.command(f"UNIT:ANGL DEG")
         self.command(f"SOUR:PHASE?")
         self.state["phase degrees"] = self.read()
         return self.state["phase degrees"]
 
-    def SetCycles(self, cycles):
+    def set_cycles(self, cycles):
         self.state["burst_cycles"] = cycles
         self.command(f"BURS:NCYC {cycles}")
-        return self.GetCycles == cycles
+        return self.get_cycles == cycles
 
-    def GetCycles(self):
+    def get_cycles(self):
         self.command(f"BURS:NCYC?")
         self.state["burst_cycles"] = self.read()
         return self.state["burst_cycles"]
@@ -277,7 +277,7 @@ class KeysightAWG(AbstractAWG):
     #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
 
     def wrap_up(self):
-        self.SetOutput(False)
+        self.set_output(False)
         self.disconnect_hardware()
 
     def get_serial_number(self) -> str:

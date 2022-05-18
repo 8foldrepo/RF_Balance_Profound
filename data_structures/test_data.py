@@ -132,7 +132,7 @@ class TestData(QObject):
 
         self.show_results_summary.emit(self.results_summary)
 
-    def calc_angle_average(self):
+    def calculate_angle_average(self):
         angle_sum = 0
         count = 0
         for i in range(10):

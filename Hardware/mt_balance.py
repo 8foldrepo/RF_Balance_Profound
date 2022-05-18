@@ -1,4 +1,5 @@
 import time as t
+from typing import Union
 
 import serial
 from PyQt5.QtCore import pyqtSignal
@@ -77,7 +78,7 @@ class MT_balance(AbstractBalance):
             for item in y:
                 # print(item)
                 # For some reason when debugging these can also appear as b'ES'. that is normal.
-                if item == b"ZI D" or b"ZI S":
+                if item == b"ZI D" or item == b"ZI S":
                     self.log(level="info", message="Balance Zeroed")
                     return
                 else:
@@ -205,7 +206,7 @@ class MT_balance(AbstractBalance):
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                if not item == b"":
+                if item != b"":
                     self.log("Reset")
                     return
         self.log(level="error", message=f"{self.device_key} timed out")
@@ -242,7 +243,7 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def get_serial_number(self) -> str:
+    def get_serial_number(self) -> Union[str, None]:
         if not self.connected:
             return None
 

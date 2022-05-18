@@ -23,69 +23,75 @@ class AbstractAWG(AbstractDevice):
     def setup(self, frequency_Hz: float, amplitude_V: float, burst: bool, ext_trig: bool, burst_period_s: float,
               burst_cycles: int, output: bool, output_Impedance: int, offset_V: float):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
-        self.SetOutput(output)
-        self.SetFrequency_Hz(frequency_Hz)
-        self.SetAmplitude_V(amplitude_V)
-        self.SetCycles(burst_cycles)
-        self.SetBurst(burst)
+        self.set_output(output)
+        self.set_frequency_hz(frequency_Hz)
+        self.set_amplitude_v(amplitude_V)
+        self.set_cycles(burst_cycles)
+        self.set_burst(burst)
         self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
-        self.SetOffset_V(offset_V)
-        self.SetOutputImpedance(output_Impedance, HiZ=False)
+        self.set_offset_v(offset_V)
+        self.set_output_impedance(output_Impedance, HiZ=False)
 
     @abstractmethod
     def get_state(self):
         """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
-        self.Get_Output()
-        self.GetFrequency_Hz()
-        self.GetAmplitude_V()
-        self.GetBurst()
+        self.get_output()
+        self.get_frequency_hz()
+        self.get_amplitude_v()
+        self.get_burst()
         self.GetTriggerInput()
-        self.GetOffset_V()
-        self.GetOutputImpedance()
+        self.get_offset_v()
+        self.get_output_impedance()
         return self.state
 
     @abstractmethod
-    def Reset(self):
+    def reset(self) -> None:
+        """Sends the reset signal to the acoustic wave generator"""
         ...
 
     @abstractmethod
-    def wait_til_complete(self):
+    def wait_til_complete(self) -> None:
+        """Sends the identify signal to the AWG and attempts to read the response"""
         ...
 
     @abstractmethod
-    def SetOutput(self, on: bool):
+    def set_output(self, on: bool) -> None:
         """Turns the output on or off"""
         ...
 
     @abstractmethod
-    def Get_Output(self):
+    def get_output(self) -> str:
+        """Returns the pending output data from the AWG"""
         ...
 
     @abstractmethod
-    def SetFrequency_Hz(self, frequency: float):
+    def set_frequency_hz(self, frequency: float):
         """Sets the frequency of the signal"""
         ...
 
     @abstractmethod
-    def GetFrequency_Hz(self) -> float:
+    def get_frequency_hz(self) -> float:
+        """Retrieves the frequency of the AWG in hertz (float)"""
         ...
 
     @abstractmethod
-    def SetAmplitude_V(self, amplitude: float):
+    def set_amplitude_v(self, amplitude: float) -> None:
         """Sets the peak to peak amplitude of the waveform in volts"""
         ...
 
     @abstractmethod
-    def GetAmplitude_V(self) -> float:
+    def get_amplitude_v(self) -> float:
         """Sets the dc offset of the waveform in volts"""
         ...
 
     @abstractmethod
-    def SetOffset_V(self, offset: float):
+    def set_offset_v(self, offset: float) -> None:
+        """sets the vertical offset of the AWG in volts"""
         ...
 
     @abstractmethod
-    def GetOffset_V(self) -> float:
+    def get_offset_v(self) -> float:
+        """retrieves the vertical offset of the AWG in volts (float)"""
         ...
 
     @abstractmethod
@@ -99,40 +105,45 @@ class AbstractAWG(AbstractDevice):
         ...
 
     @abstractmethod
-    def SetBurst(self, on: bool):
+    def set_burst(self, on: bool) -> None:
+        """Simple method to toggle the burst mode of the AWG when given a boolean parameter"""
         self.state["burst_on"] = on
 
     @abstractmethod
-    def GetBurst(self) -> Tuple[bool, int]:
+    def get_burst(self) -> Tuple[bool, int]:
         """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
         return self.state["burst_on"], self.state["burst_cycles"]
 
     @abstractmethod
-    def SetOutputImpedance(self, impedance_ohms: int, HiZ: bool):
+    def set_output_impedance(self, impedance_ohms: int, HiZ: bool) -> None:
+        """Sets the impedance (resistance in ohms) of the AWG when given an int value and boolean float for infinite resistance"""
         ...
 
     @abstractmethod
-    def GetOutputImpedance(self) -> int:
+    def get_output_impedance(self) -> int:
+        """Retrieves the output impedance (resistance in ohms) of the AWG as an int"""
         ...
 
     @abstractmethod
-    def SetPhaseDegrees(self, phase_degrees: int):
+    def set_phase_degrees(self, phase_degrees: int) -> None:
         ...
 
     @abstractmethod
-    def GetPhaseDegrees(self) -> int:
+    def get_phase_degrees(self) -> int:
         ...
 
     @abstractmethod
-    def SetCycles(self, cycles: int):
+    def set_cycles(self, cycles: int) -> None:
+        """Sets the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each burst, assuming it's in burst mode)"""
         ...
 
     @abstractmethod
-    def GetCycles(self) -> int:
+    def get_cycles(self) -> int:
+        """Retrieves the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each burst, assuming it's in burst mode)"""
         ...
 
     @abstractmethod
-    def SetTriggerOutput(self, trigger_out: bool):
+    def set_trigger_output(self, trigger_out: bool) -> None:
         """Enables or disables the AWG trigger output signal"""
         ...
 

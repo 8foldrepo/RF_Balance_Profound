@@ -88,7 +88,7 @@ class Position(MyQWidget, Ui_Form):
 
     # Enable ui to control motors unless the manager is running a script
     def motors_ready(self):
-        if not self.manager.scripting:
+        if not self.manager.currently_scripting:
             self.set_buttons_enabled_signal.emit(True)
 
     def setup_pressed(self):

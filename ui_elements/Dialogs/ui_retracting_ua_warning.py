@@ -18,6 +18,7 @@ class UARetractDialog(MyQDialog, retracting_ua_warning.Ui_retracting_ua_warn):
         self.cancel_button.clicked.connect(self.cancel_clicked)
 
     def continue_clicked(self):
+        self.dialog_resolved = True
         self.continue_signal.emit()
         self.close()
 
