@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
+from termcolor import colored
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
@@ -370,6 +371,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def upon_script_changed(self):
         self.script_changed = True
         self.run_button.setEnabled(False)
+        print(colored('run button is now disabled via upon_script_changed method', 'red'))
         self.run_button.setStyleSheet("background-color:red")
         self.run_button.setText("RUN SCRIPT (Reload)")
 
@@ -624,6 +626,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
         dlg.abort_signal.connect(self.manager.abort_clicked)
+        dlg.abort_signal.connect(lambda: self.set_buttons_enabled(True))
         dlg.exec()
 
     @pyqtSlot(str, bool)

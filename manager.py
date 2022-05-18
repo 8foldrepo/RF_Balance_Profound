@@ -13,6 +13,7 @@ import pyvisa
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
+from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -113,6 +114,7 @@ class Manager(QThread):
     def __init__(self, system_info, config: dict, parent=None):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.rfb_data = None
         self.abort_guard = False
         self.thread_cont_mutex = True
         self.oscilloscope_channel = 1
@@ -473,8 +475,7 @@ class Manager(QThread):
     def load_script(self, path):
         """takes the script file and parses the info within it into various lists and dictionaries so the program can
          run the script, requires a path argument to the script"""
-        self.abort_immediately(log=False)
-
+        self.abort_immediately(log=True)
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -565,19 +566,22 @@ class Manager(QThread):
             tasks.append(OrderedDict(task_variables))
             task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
 
-        for i in range(len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
+        for i in range(
+                len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
             if not isinstance(self.task_execution_order[i], list):
                 self.task_execution_order[i] = [self.task_execution_order[i], None]
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
+            if "Task type" in tasks[
+                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
         for i in range(len(self.task_execution_order)):
             # tasks[self.taskExecOrder[i][0] + 1].pop("Task type", None)
-            self.task_arguments.append(tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
+            self.task_arguments.append(
+                tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
@@ -643,7 +647,8 @@ class Manager(QThread):
         self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        if self.task_execution_order[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
+        if self.task_execution_order[self.step_index][
+            1] is not None:  # if the element in the self.taskExecOrder isn't None
             # below: set the element to be operated on to the one in self.taskExecOrder
             args['Element'] = self.task_execution_order[self.step_index][1]
 
@@ -685,7 +690,9 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
-        print(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
+        print(
+            colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
+                    'red'))
         while not self.thread_cont_mutex:
             pass
         if self.retry_clicked_variable:
@@ -701,13 +708,12 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     @pyqtSlot()
-    def abort_immediately(self):
+    def abort_immediately(self, log=True):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
-        print(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
-        log = True
+        print(colored(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
         if log:
             self.log("Aborting script")
         # Reset script control variables
@@ -729,9 +735,12 @@ class Manager(QThread):
             return True
         except AbortException as e:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
-            if self.abort_guard:
+            print(colored(f'abort exception called in cont_if_cont_clicked 736', 'red'))
+            if not self.abort_guard:
+                print(colored(f'aborting immediately since abort_guard is {self.abort_guard}', 'red'))
                 self.abort_immediately()
                 return False
+            print(colored(f'aborting after step since abort_guard is {self.abort_guard}', 'red'))
             self.abort_after_step()
             return False
         except RetryException:
@@ -788,7 +797,7 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        print(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}")
+        print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
         self.abort_clicked_variable = True
         self.thread_cont_mutex = True
 
@@ -1083,7 +1092,7 @@ class Manager(QThread):
     # Reference position is the center of the scan range
 
     def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
-                  scope_channel=1,  acquisition_type='N Averaged Waveform',  averages=1) -> bool:
+                  scope_channel=1, acquisition_type='N Averaged Waveform', averages=1) -> bool:
         self.oscilloscope_channel = scope_channel
 
         if axis == 'X':
@@ -1135,12 +1144,11 @@ class Manager(QThread):
                     if not cont:
                         return False
 
-
                 if 'entire waveform'.upper() in data_storage.upper():
                     self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
                                                   voltages_v=voltages_v, storage_location=storage_location)
 
-                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             try:
                 if vsi > max_vsi:
@@ -1156,7 +1164,8 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
-        self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
+        #  todo: uncomment line below in final version
+        #  self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
 
         if axis == "X":
             self.element_x_coordinates[self.element] = max_position
@@ -1170,14 +1179,14 @@ class Manager(QThread):
                      f'{"%.2f" % max_position} 'f'mm;'
 
         if go_to_peak:
-            status = self.Motors.go_to_position([axis_letter], [max_position])
+            status = self.Motors.go_to_position([axis_letter], [max_position])  # todo: what is status being used for?
             status_str = status_str + f" moved to {axis} = {max_position} {units_str}"
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
-        if not 'Do not store'.upper() == data_storage.upper():
-
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis, storage_location=storage_location)
+        if 'Do not store'.upper() != data_storage.upper():
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis,
+                                   storage_location=storage_location)
 
         return True
 
@@ -1200,7 +1209,8 @@ class Manager(QThread):
 
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
 
-    def save_scan_profile(self, axis, positions, vsi_values):
+    def save_scan_profile(self, axis, positions, vsi_values,
+                          storage_location=None):  # todo: add storage_location functionality to this method
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1233,7 +1243,8 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_measure_rfb_waveform_csv(  # TODO: you don't have forward_power, reflected_power, nor acoustic_power arguments in the store_measure_rfb_waveform_csv method
+        self.file_saver.store_measure_rfb_waveform_csv(
+            # TODO: you don't have forward_power, reflected_power, nor acoustic_power arguments in the store_measure_rfb_waveform_csv method
             metadata,
             forward_power=[f_time_s, f_power_w],
             reflected_power=[r_time_s, r_power_w],
@@ -1488,7 +1499,7 @@ class Manager(QThread):
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency accoding to step (coarse/fine) and x incremenet
+            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x incremenet
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
@@ -1553,7 +1564,6 @@ class Manager(QThread):
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
 
-        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
         # Warn the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time <= settling_time * 2 or rfb_off_time <= settling_time * 2:
@@ -1561,6 +1571,7 @@ class Manager(QThread):
                                          "specified in the config file. Either change it or load a different script",
                                          True)
             cont = self.cont_if_cont_clicked()
+            print(colored(f'cont is {cont}', 'red'))
             if not cont:
                 return
 
@@ -1710,7 +1721,8 @@ class Manager(QThread):
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 
-        self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data, system_info=self.system_info,
+        self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data,
+                                          system_info=self.system_info,
                                           element=self.element, frequency_mhz=frequency_mhz, threshold=threshold,
                                           offset=offset, frequency_range=frequency_range)
 
@@ -1740,7 +1752,8 @@ class Manager(QThread):
 
     def log(self, message, level="info"):
         from inspect import getframeinfo, stack
-        log_msg(self, root_logger=root_logger, message=message, level=level, line_number=getframeinfo(stack()[1][0]).lineno)
+        log_msg(self, root_logger=root_logger, message=message, level=level,
+                line_number=getframeinfo(stack()[1][0]).lineno)
 
     def refresh_rfb_tab(self) -> bool:
         """
