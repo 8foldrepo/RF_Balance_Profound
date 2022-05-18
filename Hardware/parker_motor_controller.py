@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QApplication
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Utilities.useful_methods import create_coord_rays, is_number
 
-
 class ParkerMotorController(AbstractMotorController):
     """Class providing functionality for one or more Parker VIX-250 IM drives"""
 
@@ -28,6 +27,10 @@ class ParkerMotorController(AbstractMotorController):
     # Axis must be 'x' , 'y' , 'z' , or 'r'
     @pyqtSlot(list, list)
     def go_to_position(self, axes: list, coords_mm: list) -> bool:
+        #self.command("0SV")
+        #self.command("0Z")
+        #t.sleep(0.25)
+
         if not self.connected:
             self.ready_signal.emit()
             return False
@@ -70,6 +73,8 @@ class ParkerMotorController(AbstractMotorController):
 
         while self.moving:
             self.get_position()
+            t.sleep(.1)
+
         # Wait for motion to be over
         # t.sleep(2)
         # Check position
@@ -170,7 +175,7 @@ class ParkerMotorController(AbstractMotorController):
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
                            reference_edge='+', normally_closed=True, speed=-5, mode=1)
         self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
-                           reference_edge='+', normally_closed=False, speed=-3, mode=1)
+                           reference_edge='+', normally_closed=True, speed=-3, mode=1)
 
     def setup_home_1d(self, axis, enabled=True, reference_edge='+', normally_closed=False, speed=-5, mode=1,
                       acceleration=10):
@@ -206,6 +211,7 @@ class ParkerMotorController(AbstractMotorController):
             startTime = t.time()
             while t.time()-startTime < self.time_limit_s:
                 self.ser.write(b"1R(BD)")
+                t.sleep(0.1)
                 reply = self.ser.read()
                 if not reply == '':
                     self.connected = True
@@ -249,6 +255,8 @@ class ParkerMotorController(AbstractMotorController):
     def command(self, command, retry=True, time_limit=None, mutex_locked=False, log=True):
         """Attempt to send command until it is faithfully echoed by the controller, or else return false"""
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
+        import inspect
+        print(f"method command in parker_motor_controller called by {inspect.stack()[1].function}")
         if self.lock is not None and not mutex_locked:
             self.lock.lock()
 
@@ -268,7 +276,8 @@ class ParkerMotorController(AbstractMotorController):
             time_limit = self.time_limit_s
 
         while t.time() - start_time < time_limit:
-            start_time = t.time()
+            print(f"t.time = {t.time()}, start_time = {start_time}, time_limit = {time_limit} ; t.time() - start_time = {t.time() - start_time}")  # debug line
+            # start_time = t.time()
             bites = command.encode("utf-8")
             output = bites + b"\r\n"
 
@@ -281,11 +290,11 @@ class ParkerMotorController(AbstractMotorController):
                 self.log(f"output = {output}")
 
             self.ser.write(output)
-            t.sleep(0.03)
+            #t.sleep(0.1)
             # Listen for echo twice
             for i in range(2):
                 echo = self.ser.readline().strip(b"\r\n")
-
+                #t.sleep(0.1)
                 # Keep track of the previous few echos for debugging purposes
                 self.echo_history.append(output)
                 if len(self.echo_history) > self.history_length:
@@ -372,7 +381,7 @@ class ParkerMotorController(AbstractMotorController):
 
         return reply
 
-    def ask(self, command, retries=5, mutex_locked=False, log=False):
+    def ask(self, command, retries=5, mutex_locked=False, log=True):
         for i in range(retries):
             self.command(command, mutex_locked=mutex_locked, log=log)
             response = self.get_response(mutex_locked=mutex_locked)

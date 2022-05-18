@@ -64,7 +64,8 @@ class AbstractDevice(QObject):
 
     def log(self, message, level="info"):
         """Log a message to the WTF.log file (the hardware log)"""
-        log_msg(self, self.root_logger, message=message, level=level)
+        from inspect import getframeinfo, stack
+        log_msg(self, self.root_logger, message=message, level=level, line_number=getframeinfo(stack()[1][0]).lineno)
 
 
 # Script/example code for testing

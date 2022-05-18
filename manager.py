@@ -300,6 +300,13 @@ class Manager(QThread):
         self.update_system_info()
         self.enable_ui_signal.emit(True)
 
+        # Get the position of the motors
+        if self.Motors.connected:
+             lock_aquired = self.motor_control_lock.tryLock()
+             if lock_aquired:
+                 self.Motors.get_position(mutex_locked=True)
+                 self.motor_control_lock.unlock()
+
     def update_system_info(self):
         """
         Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
@@ -421,12 +428,12 @@ class Manager(QThread):
                 self.thermocouple.get_reading()
 
             # TODO: uncomment if continuous position feedback this is deemed useful
-            # Only refresh motor position if they are connected
-            if self.Motors.connected:
-                lock_aquired = self.motor_control_lock.tryLock()
-                if lock_aquired:
-                    self.Motors.get_position(mutex_locked=True)
-                    self.motor_control_lock.unlock()
+            # # Only refresh motor position if they are connected
+            # if self.Motors.connected:
+            #     lock_aquired = self.motor_control_lock.tryLock()
+            #     if lock_aquired:
+            #         self.Motors.get_position(mutex_locked=True)
+            #         self.motor_control_lock.unlock()
 
     def capture_scope(self, channel=1, plot=True):
         """captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
@@ -738,7 +745,6 @@ class Manager(QThread):
             self.abort_after_step()
             return False
         except RetryException:
-            print("caught retry exception")  # works
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
             self.log("Retrying step")
             self.retry_clicked_variable = True
@@ -1361,8 +1367,7 @@ class Manager(QThread):
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Go home failed')
             return cont
 
-        successful_go_home = True
-        return successful_go_home
+        return True
 
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
@@ -1546,12 +1551,13 @@ class Manager(QThread):
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
 
+        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
         # Warn the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
-        if rfb_on_time <= settling_time or rfb_on_time <= settling_time:  # TODO: these are identical, did you mean to put another condition?
+        if rfb_on_time <= settling_time * 2 or rfb_off_time <= settling_time * 2:
             self.user_prompt_signal.emit("Warning: the on or off intervals are less than the sensor settling time "
                                          "specified in the config file. Either change it or load a different script",
-                                         False)
+                                         True)
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return
