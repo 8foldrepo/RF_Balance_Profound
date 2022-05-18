@@ -162,7 +162,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
             item.setText(1, value)
 
             #  Get the task index
-            task_index = self.get_parent_item_index(item) + 1
+            task_index = self.get_parent_item_index(item)
 
             # Update the parameter in the dictionary
             try:

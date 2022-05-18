@@ -14,6 +14,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
 from termcolor import colored
+from pprint import pprint
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -170,6 +171,7 @@ class Manager(QThread):
 
         # Script data
         self.task_arguments = None
+        # structure of 2D task_execution_order list is [[task number, element_number, loop_number]...]
         self.task_execution_order = None
         self.task_names = None
 
@@ -549,7 +551,8 @@ class Manager(QThread):
                     element_name_to_split = x0.split(" ")
                     # retrieve the second word of the left side, that's the element name
                     element_name = element_name_to_split[1]
-                    element_names_for_loop.append(int(element_name))
+                    if x1.upper() == 'TRUE':  # we only want to add elements in the loop if it equals "True"
+                        element_names_for_loop.append(int(element_name))
 
                 if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
                     building_loop = False  # set the building loop flag to false since the loop block is done
@@ -558,11 +561,13 @@ class Manager(QThread):
                     task_number_for_loop.clear()
                     self.task_execution_order.pop()
 
-                    # appends a 2 item list in taskExecOrder, the first part being the element within the loops
-                    # sublist and the second item being the iteration number for that item in its loop
+                    # appends a 3 item list in taskExecOrder, the first part being the task number
+                    # the second item being the element number and the third is the loop number
+                    # print('loops list: ')
+                    # pprint(self.loops)
                     for i in range(len(self.loops[len(self.loops) - 1][0])):
                         for j in range(len(self.loops[len(self.loops) - 1][1])):
-                            self.task_execution_order.append([self.loops[len(self.loops) - 1][1][j], i + 1,
+                            self.task_execution_order.append([self.loops[len(self.loops) - 1][1][j], self.loops[len(self.loops) - 1][0][i],
                                                               loop_index_tracker])
                     loop_index_tracker = loop_index_tracker + 1
 
@@ -586,8 +591,7 @@ class Manager(QThread):
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[
-                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
+            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -596,6 +600,7 @@ class Manager(QThread):
             self.task_arguments.append(
                 tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
+        # print("task_names: ", task_names)
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
@@ -705,9 +710,9 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
-        print(
-            colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
-                    'yellow'))  # todo remove debug line
+        # print(
+        #     colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
+        #             'yellow'))  # todo remove debug line
         while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
             pass
         print(colored('thread_cont_mutex is now true, proceeding with abort_after_step method', 'yellow') )  # todo remove debug line
