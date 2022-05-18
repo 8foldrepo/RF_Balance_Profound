@@ -760,7 +760,6 @@ class Manager(QThread):
                 # Always handle this exception
                 raise RetryException
             if self.abort_clicked_variable:
-                print("entering abort section in wait_for_cont")
                 self.abort_clicked_variable = False
                 self.thread_cont_mutex = False
                 # Always handle this exception

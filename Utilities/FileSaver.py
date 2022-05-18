@@ -475,6 +475,7 @@ class FileSaver:
                 try:
                     transition_times_s[0][i] = rfb_data.times_s[rfb_data.off_indices[i - 1][1]]
                 except IndexError:
+                    print("encountered index error exception 478")
                     transition_times_s[0][i] = float("NaN")  # todo: find out why IndexError is occurring here
             else:
                 # Beginning of on transition
@@ -486,6 +487,7 @@ class FileSaver:
             try:
                 transition_times_s[3][i] = rfb_data.off_time_intervals_s[i][0]  # End of off transition
             except IndexError:
+                print("encountered index error 490")
                 transition_times_s[3][i] = float("NaN")
             # todo: for some reason, rfb_data.off_time_intervals_s[2][0] does not exist
 
@@ -506,6 +508,7 @@ class FileSaver:
                 transition_amp_w[3][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i][0]]  # End of off transition
             except IndexError:
                 transition_amp_w[3][i] = float("NaN")
+                print("encountered index error 511")
             # todo: for some reason, line in try block above hits index error exception
 
         power_on_w = transition_amp_w[1]
