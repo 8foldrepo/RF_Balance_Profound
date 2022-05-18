@@ -707,7 +707,7 @@ class Manager(QThread):
         # Todo: add option to save before exiting
 
     @pyqtSlot()
-    def abort_immediately(self):
+    def abort_immediately(self, log = True):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true

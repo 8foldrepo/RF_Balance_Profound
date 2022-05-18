@@ -1,0 +1,32 @@
+2022-05-18 11:23:57,553 [INFO] [ParkerMotorController] [201] [manager_thread] : Connecting to motor controller...
+2022-05-18 11:23:57,777 [INFO] [ParkerMotorController] [419] [manager_thread] : Motor controller connected and set to default settings
+2022-05-18 11:23:57,787 [INFO] [ParkerMotorController] [265] [manager_thread] : 2W(MS,10)
+2022-05-18 11:23:57,791 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:58,009 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:58,229 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:58,439 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:58,652 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:58,852 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:59,062 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:59,275 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:59,475 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:59,687 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'2W(MS,10)\r\n'
+2022-05-18 11:23:59,905 [ERROR] [ParkerMotorController] [310] [manager_thread] : command not sent successfully: 2W(MS,10)
+2022-05-18 11:23:59,914 [INFO] [ParkerMotorController] [265] [manager_thread] : 1W(MS,50)
+2022-05-18 11:23:59,920 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:00,128 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:00,341 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:00,561 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:00,775 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:00,991 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:01,212 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:01,431 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:01,633 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:01,845 [INFO] [ParkerMotorController] [290] [manager_thread] : output = b'1W(MS,50)\r\n'
+2022-05-18 11:24:02,055 [ERROR] [ParkerMotorController] [310] [manager_thread] : command not sent successfully: 1W(MS,50)
+2022-05-18 11:24:02,055 [ERROR] [ParkerMotorController] [437] [manager_thread] : failed to setup, check that drivers are powered on and try again
+2022-05-18 11:24:02,268 [INFO] [ParkerMotorController] [218] [manager_thread] : Motor controller connected and set to default settings
+2022-05-18 11:24:04,456 [ERROR] [ParkerMotorController] [310] [manager_thread] : command not sent successfully: 1R(PT)
+2022-05-18 11:24:04,677 [INFO] [ParkerMotorController] [572] [manager_thread] : Failed to get X position
+2022-05-18 11:24:06,860 [ERROR] [ParkerMotorController] [310] [manager_thread] : command not sent successfully: 2R(PT)
+2022-05-18 11:24:07,073 [INFO] [ParkerMotorController] [572] [manager_thread] : Failed to get R position
