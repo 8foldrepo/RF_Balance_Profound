@@ -1,6 +1,6 @@
 [Top Level]
 # of Tasks = "12"
-Createdon = "27/04/2022"
+Createdon = "18/05/2022"
 Createdby = "IJB"
 Description = ""
 
@@ -47,7 +47,7 @@ Element 10 = "TRUE"
 
 [Task3]
 Task type = "Find element n_1"
-Element = "Current"
+Element = "10"
 X Incr. (mm) = "0.200000"
 X #Pts. = "21"
 Theta Incr. (deg) = "-0.400000"
@@ -88,11 +88,11 @@ Element 10 = "TRUE"
 
 [Task6]
 Task type = "Measure element efficiency (RFB)"
-Element = "Current"
+Element = "1"
 Frequency range = "Low frequency"
-RFB.#on/off cycles = "3"
-RFB.On time (s) = ".1"
-RFB.Off time (s) = ".1"
+RFB.#on/off cycles = "2"
+RFB.On time (s) = "2"
+RFB.Off time (s) = "2"
 RFB.Threshold = "0.050000"
 RFB.Offset = "0.500000"
 Set frequency options = "Common peak frequency"
