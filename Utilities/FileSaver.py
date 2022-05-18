@@ -2,9 +2,12 @@ import logging
 import os
 import shutil
 from datetime import datetime
+from statistics import mean
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
+from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
+from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata
 from definitions import ROOT_DIR, FrequencyRange
@@ -380,7 +383,7 @@ class FileSaver:
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
 
-    def save_find_element_profile(self, metadata, positions, vsi_values):
+    def save_find_element_profile(self, metadata, positions, vsi_values, units_str = "Voltage Squared Integral"):
         path = check_directory(
             os.path.join(
                 self.waveform_data_path,
@@ -413,7 +416,7 @@ class FileSaver:
             file.write('X Data Type="Position (deg)"\n')
         else:
             file.write('X Data Type="Distance (mm)"\n')
-        file.write('Y Data Type="Voltage Squared Integral"\n')
+        file.write(f'Y Data Type="{units_str}"\n')
         file.write("[Data]\n")
         file.write(
             'Format="Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>"\n'
@@ -443,6 +446,107 @@ class FileSaver:
 
     def log(self, message, level="info"):
         log_msg(self, root_logger, message=message, level=level)
+
+    def extract_file_data(self, rfb_logger: RFBDataLogger, rfb_data: RFBData, system_info, element: int,
+                          frequency_mhz: float, threshold, offset, frequency_range):
+        balance_readings_mg = [value * 1000 for value in rfb_logger.balance_readings_g]
+        # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
+        raw_data = [
+            rfb_logger.times_s,
+            balance_readings_mg,
+            rfb_logger.acoustic_powers_w,
+            rfb_logger.f_meter_readings_w,
+            rfb_logger.r_meter_readings_w,
+        ]
+
+        absorption = ["Off", 1.000690]
+        transducer_size = ["Off", 1.013496]
+        focusing = ["Off", 1.000000]
+
+        buffer = self.config["Analysis"]["samples_to_remove_at_end"]
+
+        # transition_times_s/transition_amp_w[0] = start on, [1] = end on, [2] = start off, [3] = end off
+        num_cycles = len(rfb_data.on_time_intervals_s)
+        transition_times_s = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
+                              [float('nan')] * num_cycles]
+        for i in range(num_cycles):
+            if i != 0:
+                # Beginning of on transition
+                try:
+                    transition_times_s[0][i] = rfb_data.times_s[rfb_data.off_indices[i - 1][1]]
+                except IndexError:
+                    print("encountered index error exception 478")
+                    transition_times_s[0][i] = float("NaN")  # todo: find out why IndexError is occurring here
+            else:
+                # Beginning of on transition
+                transition_times_s[0][i] = rfb_data.times_s[rfb_data.awg_on_ray.index(True) - buffer]
+            # Beginning of off transition
+            transition_times_s[2][i] = rfb_data.times_s[rfb_data.on_indices[i][1]]
+
+            transition_times_s[1][i] = rfb_data.on_time_intervals_s[i][0]  # End of on transition
+            try:
+                transition_times_s[3][i] = rfb_data.off_time_intervals_s[i][0]  # End of off transition
+            except IndexError:
+                print("encountered index error 490")
+                transition_times_s[3][i] = float("NaN")
+            # todo: for some reason, rfb_data.off_time_intervals_s[2][0] does not exist
+
+        transition_amp_w = [[float('nan')] * num_cycles, [float('nan')] * num_cycles, [float('nan')] * num_cycles,
+                            [float('nan')] * num_cycles]
+        for i in range(num_cycles):
+            if i != 0:
+                # Beginning of on transition
+                transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i - 1][1]]
+            else:
+                # Beginning of on transition
+                transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.awg_on_ray.index(True) - buffer]
+            # Beginning of off transition
+            transition_amp_w[2][i] = rfb_data.acoustic_powers_w[rfb_data.on_indices[i][1]]
+
+            transition_amp_w[1][i] = rfb_data.acoustic_powers_w[rfb_data.on_indices[i][0]]  # End of on transition
+            try:
+                transition_amp_w[3][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i][0]]  # End of off transition
+            except IndexError:
+                transition_amp_w[3][i] = float("NaN")
+                print("encountered index error 511")
+            # todo: for some reason, line in try block above hits index error exception
+
+        power_on_w = transition_amp_w[1]
+        power_off_w = transition_amp_w[2]
+        cumulative_results = (
+            [[mean(power_on_w), mean(power_off_w),
+              rfb_data.acoustic_power_on_mean],
+             [rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc],
+             [rfb_data.p_on_total_unc, rfb_data.p_on_total_unc, rfb_data.p_on_total_unc]]
+        )
+
+        # todo: check that p_on_rand_unc is the one we want
+        self.store_measure_rfb_waveform_csv(
+            element_number=element,
+            ua_serial_number=self.test_data.serial_number,
+            freq_mhz=frequency_mhz,
+            diameter_mm=float(
+                system_info["Hydrophone system"]["Hydrophone Diameter"].split(" ")[0].replace('"', "")
+            ),
+            propagation_distance_mm=15.000000,
+            T_decC=rfb_data.water_temperature_c,
+            UC_percent=float(rfb_data.p_on_rand_unc),
+            power_ratio=1.000000,
+            g_mpersecsqrd=9.810000,
+            cal_fact=14600.571062,
+            power_on_w=power_on_w,
+            power_off_w=power_off_w,
+            cumulative_results=cumulative_results,
+            threshold=threshold,
+            offset_s=offset,
+            absorption=absorption,
+            transducer_size=transducer_size,
+            focusing=focusing,
+            absorb_trans_times=transition_times_s,
+            transition_amps=transition_amp_w,
+            raw_data=raw_data,
+            frequency_range=frequency_range
+        )
 
 # def test_store_find_element_waveform(file_saver):
 #     from numpy.random import uniform

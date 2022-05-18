@@ -42,64 +42,64 @@ class SimulatedAWG(AbstractAWG):
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
-        self.SetOutput(output)
-        self.SetFrequency_Hz(frequency_Hz)
-        self.SetAmplitude_V(amplitude_V)
-        self.SetCycles(burst_cycles)
-        self.SetBurst(burst)
+        self.set_output(output)
+        self.set_frequency_hz(frequency_Hz)
+        self.set_amplitude_v(amplitude_V)
+        self.set_cycles(burst_cycles)
+        self.set_burst(burst)
         self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
-        self.SetOffset_V(offset_V)
-        self.SetOutputImpedance(output_Impedance)
+        self.set_offset_v(offset_V)
+        self.set_output_impedance(output_Impedance)
 
         self.wait_til_complete()
 
     def get_state(self):
         """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
-        self.Get_Output()
-        self.GetFrequency_Hz()
-        self.GetAmplitude_V()
-        self.GetBurst()
+        self.get_output()
+        self.get_frequency_hz()
+        self.get_amplitude_v()
+        self.get_burst()
         self.GetTriggerInput()
-        self.GetOffset_V()
-        self.GetOutputImpedance()
+        self.get_offset_v()
+        self.get_output_impedance()
         return self.state
 
-    def Reset(self):
+    def reset(self):
         self.set_to_defaults()
         self.wait_til_complete()
 
     def wait_til_complete(self):
         pass
 
-    def SetOutput(self, on: bool):
+    def set_output(self, on: bool):
         """Turns the output on or off"""
         self.state["on"] = on
         self.output_signal.emit(on)
 
-    def Get_Output(self):
+    def get_output(self):
         self.output_signal.emit(self.state["on"])
         return self.state["on"]
 
-    def SetFrequency_Hz(self, frequency_Hz):
+    def set_frequency_hz(self, frequency_Hz):
         """Sets the frequency of the signal"""
         self.state["frequency_Hz"] = frequency_Hz
         self.frequency_signal.emit(frequency_Hz / 1000000)
 
-    def GetFrequency_Hz(self):
+    def get_frequency_hz(self):
         return self.state["frequency_Hz"]
 
-    def SetAmplitude_V(self, amplitude):
+    def set_amplitude_v(self, amplitude):
         """Sets the peak to peak amplitude of the waveform in volts"""
         self.state["amplitude_V"] = amplitude
 
-    def GetAmplitude_V(self):
+    def get_amplitude_v(self):
         return self.state["amplitude_V"]
 
-    def SetOffset_V(self, offset):
+    def set_offset_v(self, offset):
         """Sets the dc offset of the waveform in volts"""
         pass
 
-    def GetOffset_V(self):
+    def get_offset_v(self):
         pass
 
     def SetFunction(self, func="SIN"):
@@ -117,36 +117,36 @@ class SimulatedAWG(AbstractAWG):
 
         pass
 
-    def SetBurst(self, on=True):
+    def set_burst(self, on=True):
         self.state["burst_on"] = on
 
-    def GetBurst(self):
+    def get_burst(self):
         """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
 
         return self.state["burst_on"], self.state["burst_cycles"]
 
-    def SetOutputImpedance(self, impedance_ohms=50, HiZ=False):
+    def set_output_impedance(self, impedance_ohms=50, HiZ=False):
         if HiZ:
             self.state["output impedance"] = impedance_ohms
         else:
             self.state["output impedance"] = 10000000
 
-    def GetOutputImpedance(self):
+    def get_output_impedance(self):
         return self.state["output impedance"]
 
-    def SetPhaseDegrees(self, phase_degrees=0):
+    def set_phase_degrees(self, phase_degrees=0):
         self.state["phase degrees"] = phase_degrees
 
-    def GetPhaseDegrees(self):
+    def get_phase_degrees(self):
         return self.state["phase degrees"]
 
-    def SetCycles(self, cycles):
+    def set_cycles(self, cycles):
         self.state["burst_cycles"] = cycles
 
-    def GetCycles(self):
+    def get_cycles(self):
         return self.state["burst_cycles"]
 
-    def SetTriggerOutput(self, trigger_out: bool):
+    def set_trigger_output(self, trigger_out: bool):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
 
         pass
@@ -155,7 +155,7 @@ class SimulatedAWG(AbstractAWG):
         return '"Simulated"'
 
     def wrap_up(self):
-        self.SetOutput(False)
+        self.set_output(False)
         self.disconnect_hardware()
 
     def __str__(self):
@@ -166,7 +166,7 @@ class SimulatedAWG(AbstractAWG):
 if __name__ == "__main__":
     awg = SimulatedAWG()
     awg.connect_hardware()
-    awg.Reset()
+    awg.reset()
     print(awg)
     awg.setup(frequency_Hz=4290000, amplitude_V=.2, burst=False, burst_cycles=50, ext_trig=False,
               burst_period_s=.10, offset_V=0, output=True, output_Impedance=50)

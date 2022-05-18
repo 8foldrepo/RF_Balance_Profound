@@ -1,15 +1,12 @@
 from abc import abstractmethod
-from random import random
 
-
+import random
 import numpy as np
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
-
-"""Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):
+    """Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
     def __init__(self, config: dict, device_key="Keysight_Oscilloscope", parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
@@ -50,7 +47,7 @@ class SimulatedOscilloscope(AbstractOscilloscope):
             if key == 'delay_cycles':
                 self.delay_cycles = parameters[key]
 
-    def SetAveraging(self, averages=1):
+    def set_averaging(self, averages=1):
         pass
 
     def connect_hardware(self):
@@ -79,8 +76,8 @@ class SimulatedOscilloscope(AbstractOscilloscope):
     def get_serial_number(self) -> str:
         return '"Simulated"'
 
-    def autoset_timebase(self):
+    def autoset_oscilloscope_timebase(self):
         return
 
     def get_rms(self) -> float:
-        return random(0.0001, 0.9000)
+        return random.random()

@@ -359,6 +359,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.theta_pos_field.setText("%.2f" % position_mm)
 
     def run_button_clicked(self):
+        """sets the """
         self.set_buttons_enabled(False)
         self.show_pretest_dialog()
 
@@ -595,10 +596,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.exec()
 
     @pyqtSlot(str)
-    def show_pretest_dialog(self):
+    def show_pretest_dialog(self) -> None:
+        """Launches the pretest initialisation dialog where the user may input their operator name, UA serial number
+        with the option to look it up and auto-populate the LF, HF, and hardware code with an optional
+        override tick, and an optional comment (hence the str in the pyqtSlot)"""
         # Read UA serial number
-        UA_read_data, status = self.UAInterface.read_data()
-
+        ua_read_data, status = self.UAInterface.read_data()
         # If their access level is operator, do not proceed with the script unless the read was successful.
 
         if status != 0:
@@ -611,12 +614,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                     "UA Read failed, aborting test. Disable end_script_on_errors in the "
                     "config if you wish to continue"
                 )
-        if UA_read_data != []:
-            serial_no = UA_read_data[1]
+        if ua_read_data:  # ua_read_data != [] is just "ua_read_data"
+            serial_no = ua_read_data[1]
         else:
             serial_no = None
 
-        dlg = PretestDialog(serial_no=serial_no, schema=UA_read_data[0], access_level=self.access_level_combo.currentText())
+        dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0], access_level=self.access_level_combo.currentText())
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
@@ -624,37 +627,46 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.exec()
 
     @pyqtSlot(str, bool)
-    def show_user_prompt(self, message, restrict_continue):
+    def show_user_prompt(self, message: str, restrict_continue: bool) -> None:
+        """Method to launch the user prompt dialog where the user can select between continue, retry, and abort.
+        Method takes message and restrict continue as parameters"""
         dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.retry_signal.connect(self.manager.retry_clicked)
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.exec()
 
     @pyqtSlot(str)
-    def show_user_info_dialog(self, message):
+    def show_user_info_dialog(self, message: str) -> None:
+        """Method to show the user a simple information dialog, the user can only click continue and a message is to
+        be passed as a string parameter."""
         dlg = WTFUserInfo(config=self.config)
         dlg.user_prompt_output.setText(message)
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_ua_retract_warn_prompt(self):
+        """method to launch the ultrasound actuator retracting warning dialog """
         dlg = UARetractDialog(config=self.config)
-        dlg.continue_signal.connect(self.manager.cont_clicked)
-        dlg.abort_signal.connect(self.manager.abort_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
+        dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
     @pyqtSlot(list, list)
-    def show_script_complete_dialog(self, passed_ray, description_ray):
+    def show_script_complete_dialog(self, passed_ray: list, description_ray: list) -> None:
+        """Launches the script complete message that shows the various details of the tests for all the elements
+        and connects various """
         dlg = ScriptCompleteDialog(
             passed_ray=passed_ray, description_ray=description_ray, config=self.config
         )
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
 
-    def dialog_critical(self, text):
+    def dialog_critical(self, text: str) -> None:
+        """Method to show a customizable critical error dialog for the user. Sets text of dialog to string text parameter,
+        and sets the buttons and icon of the dialog popup."""
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Error")
         dlg.setText(text)
@@ -664,9 +676,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     # todo: test
     @pyqtSlot()
-    def show_write_cal_data_prompt(
-            self, calibration_data
-    ):  # calibration data var is 2d list
+    def show_write_cal_data_prompt(self, calibration_data):
+        """Shows the user a prompt to write the calibration data to the ultrasound actuator and connects various signals.
+         Calibration data parameter is a 2d list"""
         dlg = WriteCalDataToUA()
         dlg.schema.setText(calibration_data[0][0])
         dlg.serial_no.setText(calibration_data[0][1])
@@ -701,47 +713,57 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.status_hi.setText(calibration_data[2][8])
         dlg.fw_version_hi.setText(calibration_data[2][9])
 
-        dlg.write_ua_signal.connect(self.manager.write_cal_data_to_ua_button)
+        dlg.write_ua_signal.connect(self.manager.write_calibration_data_to_ua_button)
         dlg.abort_signal.connect(self.manager.abort_after_step)
         dlg.exec()
 
     @pyqtSlot(str)
     def show_user_prompt_pump_not_running(self, pump_status):
+        """Shows the user a warning that the ultrasound actuator pump is not running. Waits for the user's response
+        and connects the dialog's continue and abort signals to the manager's respective internal variables"""
         dlg = WTFUserPromptPumpNotRunning(config=self.config)
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_user_prompt_water_too_low(self):
+        """Shows the user a warning that the water level is too low and waits for their response to the dialog via connecting
+        the dialog's continue and abort buttons to the manager's internal respective variables"""
         dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot()
     def show_user_prompt_water_too_high(self):
+        """Shows the user a warning that the water level is too high, connects the 'continue' and 'abort' signal from the
+        dialog to the manager's respective variables via a signal connect relay."""
         dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):
+        """Shows the script complete dialog when test is finished (either via aborting or normal completion.) Connects
+        the abort and continue signals from the dialog to the managers respective variables. Takes two arrays as parameters
+        that are used to fill script results information."""
         dlg = ScriptCompleteDialog(
             config=self.config, passed_ray=passed_ray, description_ray=description_ray
         )
-        dlg.abort_signal.connect(self.manager.cont_clicked)
-        dlg.continue_signal.connect(self.manager.cont_clicked)
+        dlg.abort_signal.connect(self.manager.continue_clicked)
+        dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.exec()
 
     @pyqtSlot(bool)
-    def set_buttons_enabled(self, enabled):
-        # Todo: make this ebable/disable all buttons of all tabs that could interfere with operations in progress
+    def set_buttons_enabled(self, enabled: bool) -> None:
+        # Todo: make this enable/disable all buttons of all tabs that could interfere with operations in progress
+        """Enables/disables various buttons in the UI depending on the boolean parameter 'enabled'"""
         if enabled:
             self.update_system_status("IDLE")
         else:
@@ -752,12 +774,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.retract_button.setEnabled(enabled)
         self.run_button.setEnabled(enabled and not self.script_changed)
         self.load_button.setEnabled(enabled)
-        if self.access_level_combo.currentText().upper() != "Operator".upper():
+        if self.access_level_combo.currentText().upper() != "Operator".upper():  # user must be above operator permissions to run individual steps
             self.run_step_button.setEnabled(enabled)
         else:
             self.run_step_button.setEnabled(False)
 
-    def log(self, message, level="info"):
+    def log(self, message, level="info") -> None:
+        """helper method to write log commands faster, takes the message and log level as arguments"""
         log_msg(self, root_logger, message=message, level=level)
 
 
