@@ -56,7 +56,6 @@ class Manager(QThread):
     Oscilloscope: AbstractOscilloscope
     Motors: AbstractMotorController
     UAInterface: AbstractUAInterface
-
     # Output file handler
     file_saver: FileSaver
     rfb_logger: RFBDataLogger
@@ -68,7 +67,8 @@ class Manager(QThread):
     # Signal section
     # Dialog signals
     user_prompt_signal = pyqtSignal(str,
-                                    bool)  # str is message for user to read, bool is whether or not to restrict the continue button
+                                    bool)  # str is message for user to read, bool is whether or not to restrict the
+    # continue button
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = pyqtSignal()
@@ -111,16 +111,15 @@ class Manager(QThread):
 
     # Global variables section
 
-    def __init__(self, system_info, config: dict, parent=None):
+    def __init__(self, system_info, parent, config: dict):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
-        self.rfb_data = None
-        self.thread_cont_mutex = True  # this variable ensures the wait_for_cont and abort_after_step methods do not set
-        # the continue, retry, or abort variables after the dialog/prompt sets them appropriately, preventing an infinite loop
+        self.oscilloscope_averages = 1
+        self.abort_guard = False
+        self.thread_cont_mutex = True
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.access_level = "Operator"  # Defaults to operator access
-        self.rfb_logger = None  # TODO: should this be self.rfb_logger = RFBDataLogger?
         self.warn = str(logging.WARNING)  # sets variable for shorter typing
         self.error = str(logging.ERROR)  # sets variable for shorter typing
         # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
@@ -281,8 +280,8 @@ class Manager(QThread):
 
     @pyqtSlot()
     def connect_hardware(self):
-        """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits for their
-        response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py"""
+        """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits
+        for their response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py """
         i = 0
         while i < len(self.devices):
             device = self.devices[i]
@@ -301,6 +300,13 @@ class Manager(QThread):
         self.oscilloscope_channel = self.Oscilloscope.channel
         self.update_system_info()
         self.enable_ui_signal.emit(True)
+
+        # Get the position of the motors
+        if self.Motors.connected:
+             lock_aquired = self.motor_control_lock.tryLock()
+             if lock_aquired:
+                 self.Motors.get_position(mutex_locked=True)
+                 self.motor_control_lock.unlock()
 
     def update_system_info(self):
         """
@@ -423,12 +429,12 @@ class Manager(QThread):
                 self.thermocouple.get_reading()
 
             # TODO: uncomment if continuous position feedback this is deemed useful
-            # Only refresh motor position if they are connected
-            if self.Motors.connected:
-                lock_aquired = self.motor_control_lock.tryLock()
-                if lock_aquired:
-                    self.Motors.get_position(mutex_locked=True)
-                    self.motor_control_lock.unlock()
+            # # Only refresh motor position if they are connected
+            # if self.Motors.connected:
+            #     lock_aquired = self.motor_control_lock.tryLock()
+            #     if lock_aquired:
+            #         self.Motors.get_position(mutex_locked=True)
+            #         self.motor_control_lock.unlock()
 
     def capture_scope(self, channel=1, plot=True):
         """captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
@@ -475,7 +481,7 @@ class Manager(QThread):
     def load_script(self, path):
         """takes the script file and parses the info within it into various lists and dictionaries so the program can
          run the script, requires a path argument to the script"""
-        self.abort_immediately(log=True)
+        self.abort_immediately(log=False)
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -1023,6 +1029,11 @@ class Manager(QThread):
         amplitude_mVpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
 
+        if storage_location == 'UA Results Directory' or data_directory == '':
+            storage_location = ''
+        else:
+            storage_location = data_directory
+
         # If on the first element, set the tab to the scan tab
         if self.element == 1:
             self.set_tab_signal.emit("Scan")
@@ -1190,13 +1201,13 @@ class Manager(QThread):
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
-        if 'Do not store'.upper() != data_storage.upper():
-            self.save_scan_profile(positions=positions, vsi_values=vsi_values, axis=axis,
-                                   storage_location=storage_location)
+        if not 'Do not store'.upper() == data_storage.upper():
+            self.save_scan_profile(positions=positions, vsi_values=vsi_values,
+                                   axis=axis, storage_location=storage_location)
 
         return True
 
-    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v):
+    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1213,10 +1224,11 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v)
+        self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
+                                       storage_location=storage_location)
 
     def save_scan_profile(self, axis, positions, vsi_values,
-                          storage_location=None):  # todo: add storage_location functionality to this method
+                          storage_location):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1232,30 +1244,8 @@ class Manager(QThread):
             metadata.source_signal_type = "Continuous"
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
-        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values)
-
-    def save_efficiency_test_data(self, f_time_s, f_power_w, r_time_s, r_power_w, a_time_s, a_power_w):
-        """Saves a voltage squared integral vs distance """
-        metadata = FileMetadata()
-        metadata.element_number = self.element
-        metadata.serial_number = self.test_data.serial_number
-        metadata.X = self.Motors.coords_mm[0]
-        metadata.Theta = self.Motors.coords_mm[1]
-        metadata.frequency_MHz = self.AWG.state["frequency_Hz"] / 1000000
-        metadata.amplitude_mVpp = self.AWG.state["amplitude_V"] * 1000
-        if self.AWG.state["burst_on"]:
-            metadata.source_signal_type = "Toneburst"
-        else:
-            metadata.source_signal_type = "Continuous"
-        metadata.num_cycles = self.AWG.state["burst_cycles"]
-
-        self.file_saver.store_measure_rfb_waveform_csv(
-            # TODO: you don't have forward_power, reflected_power, nor acoustic_power arguments in the store_measure_rfb_waveform_csv method
-            metadata,
-            forward_power=[f_time_s, f_power_w],
-            reflected_power=[r_time_s, r_power_w],
-            acoustic_power=[a_time_s, a_power_w],
-        )
+        self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
+                                                  storage_location=storage_location)
 
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
@@ -1390,8 +1380,7 @@ class Manager(QThread):
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Go home failed')
             return cont
 
-        successful_go_home = True
-        return successful_go_home
+        return True
 
     def retract_ua_warning(self):
         """Warn the user that the UA is being retracted in x"""
@@ -1566,6 +1555,11 @@ class Manager(QThread):
         Pf_max = var_dict["Pf max (limit, W)"]
         reflection_limit = var_dict["Reflection limit (%)"]
 
+        if storage_location == 'UA Results Directory' or data_directory == '':
+            storage_location = ''
+        else:
+            storage_location = data_directory
+
         test_result = "DNF"
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
@@ -1732,7 +1726,8 @@ class Manager(QThread):
         self.file_saver.extract_file_data(rfb_logger=self.rfb_logger, rfb_data=self.rfb_data,
                                           system_info=self.system_info,
                                           element=self.element, frequency_mhz=frequency_mhz, threshold=threshold,
-                                          offset=offset, frequency_range=frequency_range)
+                                          offset=offset, frequency_range=frequency_range,
+                                          storage_location=storage_location)
 
         self.test_data.log_script(["", "End", "", ""])
 
