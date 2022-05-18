@@ -730,7 +730,7 @@ class Manager(QThread):
         self.abort_immediately_variable = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.enable_ui_signal.emit(True)
+        #self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
     def cont_if_cont_clicked(self):
