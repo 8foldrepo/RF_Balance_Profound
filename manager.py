@@ -1923,6 +1923,7 @@ class Manager(QThread):
     # todo: add an element spinbox to the scan setup tab
     def command_scan(self, command: str):
         """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
+        #self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.file_saver = FileSaver(self.config)
