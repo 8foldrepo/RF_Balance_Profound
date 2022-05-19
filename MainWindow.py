@@ -4,7 +4,6 @@ import sys
 import time as t
 import webbrowser
 from typing import List
-
 from PyQt5.QtCore import QThread
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
@@ -12,10 +11,9 @@ from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
 from termcolor import colored
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
-from Utilities.useful_methods import log_msg
+from Utilities.useful_methods import log_msg, tab_text_to_index
 from Widget_Library import window_wet_test
 from data_structures.test_data import TestData
 from definitions import ROOT_DIR, WaterLevel
@@ -66,6 +64,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     command_signal = QtCore.pyqtSignal(str)
     abort_instantly_signal = QtCore.pyqtSignal()
     load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
+    set_scan_tab_signal = QtCore.pyqtSignal(list) # list containing one str element matching the text of the scan subtab
     num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
     progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
     script_changed = False  # prevents user from running a script if it has been modified and not reloaded
@@ -208,10 +207,20 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 if var_name == "Element" and ("Current" in var_value):
                     var.setText(1, f"Current: {self.live_element_field.text()}")
 
-    @pyqtSlot(str)
-    def set_tab_slot(self, text):
-        index = self.tab_text_to_index(text)
+    @pyqtSlot(list)
+    def set_tab_slot(self, tab_ray):
+        if len(tab_ray)<1:
+            return
+        index = tab_text_to_index(tab_ray[0], self.tabWidget)
+        if index == -1:
+            return
         self.tabWidget.setCurrentIndex(index)
+
+        if tab_ray[0].upper() == "SCAN":
+            if len(tab_ray) < 2:
+                return
+
+            self.set_scan_tab_signal.emit([tab_ray[1]])
 
     @pyqtSlot(int)
     def expand_step(self, step_index):  # current_step should match "Task type" from above
@@ -255,15 +264,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             sys.exit()
 
-    def tab_text_to_index(self, text):
-        """
-        Returns the index of the tab with specified text in the main tabwidget.
-        If no match exists, returns -1. Not case sensitive.
-        """
-        for i in range(self.tabWidget.count()):
-            if self.tabWidget.tabText(i).upper() == text.upper():
-                return i
-        return -1
 
     # signal connections
     def configure_non_manager_signals(self):
@@ -282,6 +282,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_calibration_tab.set_buttons_enabled_signal.connect(
             self.set_buttons_enabled
         )
+        self.set_scan_tab_signal.connect(self.scan_tab_widget.set_tab_slot)
 
     def configure_manager_signals(self):
         self.abort_button.clicked.connect(self.manager.abort_after_step)
@@ -436,10 +437,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.ua_pump_indicator.setStyleSheet("background-color: grey")
             self.ua_pump_indicator.setText("UA PUMP OFF")
 
-    """Command the motors to go to the insertion point"""
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
+        """Command the motors to go to the insertion point"""
         self.temp_field.setText(
             "%.1f" % (temp / 50)
         )  # todo: remove /50 its for demo purposes

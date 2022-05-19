@@ -139,9 +139,6 @@ class SimulatedMotorController(AbstractMotorController):
         self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("X")])
         self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("R")])
 
-    def wrap_up(self):
-        self.disconnect_hardware()
-
     def get_serial_number(self) -> str:
         return '"Simulated"'
 

@@ -4,6 +4,7 @@ import os
 from typing import Tuple, List
 
 import numpy as np
+from PyQt5.QtWidgets import QTabWidget
 
 from data_structures.test_data import TestData
 
@@ -129,37 +130,15 @@ def unique(list):
 
     return unique_list
 
-
-# DEPRECATED, use the get_on_interval_indices and get_averages_from_interval_indices methods in the rfb_data class
-# # Additional feature: add smart transition detection
-# def get_awg_on_values(acoustic_power_trace_w, awg_on_ray):
-#     if len(acoustic_power_trace_w) == 0:
-#         return [float("nan")]
-#     if len(acoustic_power_trace_w) != len(awg_on_ray):
-#         return [float("nan")]
-#     acoustic_power_on_data = list()
-#
-#     for i in range(len(acoustic_power_trace_w)):
-#         if awg_on_ray[i]:
-#             acoustic_power_on_data.append(acoustic_power_trace_w[i])
-#
-#     return acoustic_power_on_data
-#
-#
-# # Additional feature: add smart transition detection
-# def get_awg_off_values(acoustic_power_trace_w, awg_on_ray):
-#     if len(acoustic_power_trace_w) == 0:
-#         return [float("nan")]
-#     if len(acoustic_power_trace_w) != len(awg_on_ray):
-#         return [float("nan")]
-#
-#     acoustic_power_off_data = list()
-#
-#     for i in range(len(acoustic_power_trace_w)):
-#         if not awg_on_ray[i]:
-#             acoustic_power_off_data.append(acoustic_power_trace_w[i])
-#
-#     return acoustic_power_off_data
+def tab_text_to_index(text:str, tab_widget:QTabWidget) -> int:
+    """
+    Returns the index of the tab with specified text in the main tabwidget.
+    If no match exists, returns -1. Not case sensitive.
+    """
+    for i in range(tab_widget.count()):
+        if tab_widget.tabText(i).upper() == text.upper():
+            return i
+    return -1
 
 
 def clearLayout(layout):

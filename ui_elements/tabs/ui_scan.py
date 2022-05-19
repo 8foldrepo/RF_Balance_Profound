@@ -1,14 +1,15 @@
 from typing import List
-
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
-
+import time as t
 from Utilities.formulas import calculate_random_uncertainty_percent
+from Utilities.useful_methods import tab_text_to_index
 from Widget_Library.widget_scan import Ui_scan_tab_widget
 from manager import Manager
+from ui_elements.my_qwidget import MyQWidget
 
 
-class Scan(QWidget, Ui_scan_tab_widget):
+class Scan(MyQWidget, Ui_scan_tab_widget):
     command_signal = pyqtSignal(str)
     manager: Manager
 
@@ -65,12 +66,14 @@ class Scan(QWidget, Ui_scan_tab_widget):
         command_ray[9] = self.acquisition_type_combo.currentText()
         command_ray[10] = self.source_channel_combo.currentText()
         command_ray[11] = str(self.averages_spin_box.value())
+        command_ray[12] = str(self.element_spinbox.value())
 
         command_string = "_".join(command_ray)
         self.command_signal.emit(command_string)
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
+        """Enables or disables UI elements that could interfere with a script being run"""
         self.acquire_scope_trace_button.setEnabled(enabled)
         # Acquire waveform tab
         # Acquisition arg. box
@@ -198,30 +201,38 @@ class Scan(QWidget, Ui_scan_tab_widget):
         # Cancel if this widget is not plot ready
         if not self.profile_plot_ready:
             return
+        self.profile_plot_ready = False
 
         # Cancel if the current tab is not visible
         if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
+            self.profile_plot_ready = True
             return
-
-        tabs = self.scan_tabs
-
-        if not tabs.tabText(tabs.currentIndex()) == "1D Scan":
-            return
-
         if x is None or y is None:
+            self.profile_plot_ready = True
             return
         if len(x) == 0 or len(x) != len(y):
+            self.profile_plot_ready = True
             return
 
         self.profile_plot.setLabel("bottom", axis_label, **self.profile_plot.styles)
-
-        self.profile_plot_ready = False
-        try:
-            self.profile_plot.refresh(x, y, pen="k", clear=True)
-            self.app.processEvents()
-        except Exception:
-            self.profile_plot_ready = True
+        self.profile_plot.refresh(x, y, pen="k", clear=True)
+        self.app.processEvents()
         self.profile_plot_ready = True
+
+    @pyqtSlot(list)
+    def set_tab_slot(self, tab_ray):
+        if len(tab_ray) < 1:
+            return
+        index = tab_text_to_index(tab_ray[0], self.scan_tabs)
+        if index == -1:
+            return
+        self.scan_tabs.setCurrentIndex(index)
+
+        if tab_ray[0].upper() == "SCAN":
+            if len(tab_ray) < 2:
+                return
+
+            self.set_scan_tab_signal.emit([tab_ray[1]])
 
 
 if __name__ == "__main__":

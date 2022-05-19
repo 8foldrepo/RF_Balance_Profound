@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1055</width>
+    <width>898</width>
     <height>730</height>
    </rect>
   </property>
@@ -478,7 +478,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>320</x>
-       <y>170</y>
+       <y>150</y>
        <width>57</width>
        <height>13</height>
       </rect>
@@ -491,9 +491,9 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>320</x>
-       <y>190</y>
-       <width>231</width>
-       <height>310</height>
+       <y>169</y>
+       <width>241</width>
+       <height>361</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -511,7 +511,7 @@ p, li { white-space: pre-wrap; }
         <x>0</x>
         <y>0</y>
         <width>231</width>
-        <height>101</height>
+        <height>131</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -528,8 +528,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>211</width>
-         <height>81</height>
+         <width>224</width>
+         <height>111</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="axis_pts_inc_form">
@@ -539,14 +539,14 @@ p, li { white-space: pre-wrap; }
         <property name="verticalSpacing">
          <number>10</number>
         </property>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="label_46">
           <property name="text">
            <string>Axis</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="1">
          <widget class="QComboBox" name="axis_combo">
           <property name="styleSheet">
            <string notr="true">background:white</string>
@@ -558,19 +558,19 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <property name="text">
-            <string>Θ</string>
+            <string>Theta</string>
            </property>
           </item>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_47">
           <property name="text">
            <string># of Pts.</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QSpinBox" name="pts_spin">
           <property name="styleSheet">
            <string notr="true">background:white</string>
@@ -581,16 +581,19 @@ p, li { white-space: pre-wrap; }
           <property name="maximum">
            <number>500000</number>
           </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_48">
-          <property name="text">
-           <string>Increment (mm)</string>
+          <property name="value">
+           <number>40</number>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_48">
+          <property name="text">
+           <string>Increment  (deg or mm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
          <widget class="QDoubleSpinBox" name="increment_spin">
           <property name="styleSheet">
            <string notr="true">background:white</string>
@@ -599,10 +602,33 @@ p, li { white-space: pre-wrap; }
            <number>2</number>
           </property>
           <property name="minimum">
-           <double>-9999.000000000000000</double>
+           <double>-99999.000000000000000</double>
           </property>
           <property name="maximum">
            <double>99999.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.400000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Element</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSpinBox" name="element_spinbox">
+          <property name="styleSheet">
+           <string notr="true">background:white</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>10</number>
           </property>
          </widget>
         </item>
@@ -613,7 +639,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>260</y>
+        <y>310</y>
         <width>69</width>
         <height>13</height>
        </rect>
@@ -626,10 +652,13 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>190</x>
-        <y>260</y>
+        <y>310</y>
         <width>31</width>
         <height>20</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background:white</string>
       </property>
       <property name="text">
        <string>📁</string>
@@ -642,7 +671,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>280</y>
+        <y>330</y>
         <width>211</width>
         <height>20</height>
        </rect>
@@ -658,7 +687,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>110</y>
+        <y>160</y>
         <width>181</width>
         <height>39</height>
        </rect>
@@ -718,7 +747,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>160</y>
+        <y>210</y>
         <width>211</width>
         <height>41</height>
        </rect>
@@ -744,7 +773,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>210</y>
+        <y>260</y>
         <width>131</width>
         <height>41</height>
        </rect>
