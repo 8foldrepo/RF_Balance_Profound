@@ -482,12 +482,15 @@ class FileSaver:
 
         power_on_w = transition_amp_w[1]
         power_off_w = transition_amp_w[2]
-        cumulative_results = (
-            [[mean(power_on_w), mean(power_off_w),
-              rfb_data.acoustic_power_on_mean],
-             [rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc],
-             [rfb_data.p_on_total_unc, rfb_data.p_on_total_unc, rfb_data.p_on_total_unc]]
-        )
+        if len(power_on_w) > 0 and len(power_off_w) > 0:
+            cumulative_results = (
+                [[mean(power_on_w), mean(power_off_w),
+                  rfb_data.acoustic_power_on_mean],
+                 [rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc, rfb_data.p_on_rand_unc],
+                 [rfb_data.p_on_total_unc, rfb_data.p_on_total_unc, rfb_data.p_on_total_unc]]
+            )
+        else:
+            self.log(level='error', message='Missing power data')
 
         # todo: check that p_on_rand_unc is the one we want
         self.store_measure_rfb_waveform_csv(

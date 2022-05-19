@@ -998,6 +998,10 @@ class Manager(QThread):
         self.run_script()
 
     def element_str_to_int(self, element_str):
+        element_str = str(element_str)
+        if element_str.upper() == "current".upper():
+            return self.element
+
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
         except:
