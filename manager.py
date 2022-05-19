@@ -802,7 +802,24 @@ class Manager(QThread):
                 self.abort_after_step(save_prompt_var=True)
                 return False
 
+        def wait_for_answer(self):
+        """
+        Sets answer variables to false and waits for user to make selection
+        """
+        self.yes_clicked_variable = False
+        self.no_clicked_variable = False
 
+        while not self.yes_clicked_variable and not self.no_clicked_variable:
+            if self.yes_clicked_variable:
+                self.yes_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
+                return True
+            if self.no_clicked_variable:
+                self.no_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
+                return False
+        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
+        return True
 
     @pyqtSlot()
     def continue_clicked(self):
