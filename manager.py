@@ -1009,6 +1009,10 @@ class Manager(QThread):
 
     def element_str_to_int(self, element_str):
         """Looks for an integer in the string, otherwise returns the current element"""
+        element_str = str(element_str)
+        if element_str.upper() == "current".upper():
+            return self.element
+
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
         except Exception:
