@@ -721,15 +721,12 @@ class Manager(QThread):
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
 
-
     @pyqtSlot()
     def abort_immediately(self, log=True, save_prompt_var=False):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
-        print(
-            colored(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         if log:
             self.log("Aborting script")
         # Reset script control variables
@@ -802,7 +799,21 @@ class Manager(QThread):
                 self.abort_after_step(save_prompt_var=True)
                 return False
 
+    def wait_for_answer(self):
+        """
+        Sets answer variables to false and waits for user to make selection
+        """
+        self.yes_clicked_variable = False
+        self.no_clicked_variable = False
 
+        while not self.yes_clicked_variable and not self.no_clicked_variable:
+            if self.yes_clicked_variable:
+                self.yes_clicked_variable = False
+                return True
+            if self.no_clicked_variable:
+                self.no_clicked_variable = False
+                return False
+        return True
 
     @pyqtSlot()
     def continue_clicked(self):
@@ -810,7 +821,6 @@ class Manager(QThread):
         self.continue_clicked_variable = True
         self.abort_clicked_variable = False
         self.abort_immediately_variable = False
-        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def retry_clicked(self):
@@ -820,7 +830,6 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         self.abort_clicked_variable = True
 
     @pyqtSlot()
@@ -1115,17 +1124,20 @@ class Manager(QThread):
         self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
-        cont = self.scan_axis(self.element, axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage,update_element_position=True, acquisition_type=acquisition_type,
+        cont = self.scan_axis(self.element, axis='X', num_points=XPts, increment=x_increment_MM,
+                              ref_position=element_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
+                              acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
             return False
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
-            cont = self.scan_axis(self.element,axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+            cont = self.scan_axis(self.element, axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                                  go_to_peak=False,update_element_position=True, data_storage=data_storage, acquisition_type=acquisition_type,
+                                  go_to_peak=False, update_element_position=True, data_storage=data_storage,
+                                  acquisition_type=acquisition_type,
                                   averages=averages, storage_location=storage_location)
 
             if not cont:
@@ -1140,7 +1152,8 @@ class Manager(QThread):
 
     # Reference position is the center of the scan range
 
-    def scan_axis(self, element:int, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
+    def scan_axis(self, element: int, axis, num_points, increment, ref_position, data_storage, go_to_peak,
+                  storage_location,
                   update_element_position: bool, scope_channel=1, acquisition_type='N Averaged Waveform', averages=1,
                   filename_stub="FindElement") -> bool:
         """
@@ -1164,9 +1177,8 @@ class Manager(QThread):
 
         """
 
-
         self.element = element
-        #todo: call select element
+        # todo: call select element
 
         self.oscilloscope_channel = scope_channel
 
@@ -1330,6 +1342,7 @@ class Manager(QThread):
         self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
                                                   storage_location=storage_location, filename_stub=filename_stub)
 
+    pyqtSlot(dict)
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
@@ -1930,7 +1943,7 @@ class Manager(QThread):
     # todo: add an element spinbox to the scan setup tab
     def command_scan(self, command: str):
         """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
-        #self.test_data.set_blank_values()
+        # self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.file_saver = FileSaver(self.config)
@@ -1980,10 +1993,10 @@ class Manager(QThread):
 
         self.test_data.test_comment = comments
 
-        #todo: implement end position
+        # todo: implement end position
 
         self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory, data_directory, False,
-                       source_channel,acquisition_type,averages, filename_stub)
+                       source_channel, acquisition_type, averages, filename_stub)
 
         self.enable_ui_signal.emit(True)
 
