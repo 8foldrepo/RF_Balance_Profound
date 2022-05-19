@@ -106,9 +106,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.action_widget_layout.addWidget(self.edit_menu, 0, 0)
 
-    """Delete the step at the given index"""
+
 
     def delete_step(self):
+        """Delete the step at the given index"""
         if len(self.list_of_var_dicts) == 0:
             return
 
@@ -164,11 +165,21 @@ class ScriptEditor(MyQWidget, Ui_Form):
             #  Get the task index
             task_index = self.get_parent_item_index(item)
 
+
+
             # Update the parameter in the dictionary
-            try:
-                self.list_of_var_dicts[task_index][parameter_key] = value
-            except IndexError:
-                pass
+
+            # add the new dictionary to var_dicts at the correct index
+            if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:
+                try:
+                    self.list_of_var_dicts[task_index+1][parameter_key] = value
+                except IndexError:
+                    pass
+            else:
+                try:
+                    self.list_of_var_dicts[task_index][parameter_key] = value
+                except IndexError:
+                    pass
 
     def get_parent_item_index(self, item):
         try:
@@ -275,6 +286,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def move_selection_down(self):
         # If there is no selection, try to set selection to the first item
+        # todo: actually have the task within the script moved instead of just moving the task cursor
         if self.treeWidget.currentItem() is None:
             first_item = self.treeWidget.invisibleRootItem().child(0)
             if first_item is not None:
@@ -288,6 +300,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def move_selection_up(self):
         # If there is no selection, try to set selection to the last item
+        # todo: actually have the task within the script moved instead of just moving the task cursor
         if self.treeWidget.currentItem() is None:
             child_count = self.treeWidget.invisibleRootItem().childCount()
             last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)

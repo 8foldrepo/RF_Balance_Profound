@@ -14,6 +14,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
 from termcolor import colored
+from pprint import pprint
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -66,7 +67,7 @@ class Manager(QThread):
     # Signal section
     # Dialog signals
     user_prompt_signal = pyqtSignal(str,
-                                    bool)  # str is message for user to read, bool is whether or not to restrict the
+                                    bool)  # str is message for user to read, bool is whether to restrict the
     # continue button
     user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
@@ -75,6 +76,7 @@ class Manager(QThread):
     retracting_ua_warning_signal = pyqtSignal()
     script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
     user_info_signal = pyqtSignal(str)
+    user_question_signal = pyqtSignal(str)  # str is question to be asked
 
     system_info_signal = pyqtSignal(SystemInfo)
 
@@ -116,10 +118,10 @@ class Manager(QThread):
     def __init__(self, system_info, parent, config: dict):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
-
+        self.no_clicked_variable = None
+        self.yes_clicked_variable = None
         self.oscilloscope_averages = 1
         self.abort_guard = False
-        self.thread_cont_mutex = True
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.last_profile_update_time = t.time()
@@ -480,10 +482,11 @@ class Manager(QThread):
         self.plot_scope(time, voltage)
         self.start_time = t.time()
 
+    # noinspection PyUnresolvedReferences
     def load_script(self, path):
         """takes the script file and parses the info within it into various lists and dictionaries so the program can
          run the script, requires a path argument to the script"""
-        self.abort_immediately(log=False)
+        self.abort_immediately(log=False, save_prompt_var=False)  # we don't want the save prompt for this use of abort
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -557,8 +560,6 @@ class Manager(QThread):
 
                     # appends a 3 item list in taskExecOrder, the first part being the task number
                     # the second item being the element number and the third is the loop number
-                    # print('loops list: ')
-                    # pprint(self.loops)
                     for i in range(len(self.loops[len(self.loops) - 1][0])):
                         for j in range(len(self.loops[len(self.loops) - 1][1])):
                             self.task_execution_order.append(
@@ -587,8 +588,8 @@ class Manager(QThread):
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order
-                # are # offset by 1
+            if "Task type" in tasks[
+                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -597,7 +598,6 @@ class Manager(QThread):
             self.task_arguments.append(
                 tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
-        # print("task_names: ", task_names)
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
@@ -706,12 +706,8 @@ class Manager(QThread):
         #     [self.step_index][1]} from loop {self.loops[self.taskExecOrder[self.step_index][2]]}")
 
     @pyqtSlot()
-    def abort_after_step(self, log=True):
+    def abort_after_step(self, log=True, save_prompt_var=False):
         """Aborts script when current step is done running"""
-
-        while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue
-            # variables appropriately
-            pass
 
         if self.retry_clicked_variable:
             return
@@ -724,10 +720,10 @@ class Manager(QThread):
         self.abort_immediately_variable = False
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        # Todo: add option to save before exiting
+
 
     @pyqtSlot()
-    def abort_immediately(self, log=True):
+    def abort_immediately(self, log=True, save_prompt_var=False):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
@@ -744,26 +740,22 @@ class Manager(QThread):
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
         # self.enable_ui_signal.emit(True)
-        # Todo: add option to save before exiting
 
     def cont_if_cont_clicked(self):
         """
         Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
         Call this method after showing a dialog, and return if the result is false.
         """
-        print(
-            colored(f'cont_if_cont_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}', 'red'))
         try:
             self.wait_for_cont()
             return True
         except AbortException as e:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:  # if abort immediately is true
-
-                self.abort_immediately()
+                self.abort_immediately(save_prompt_var=True)
                 return False
             else:  # if abort immediately is not true
-                self.abort_immediately()
+                self.abort_after_step(save_prompt_var=True)
                 return False
         except RetryException:
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
@@ -780,27 +772,51 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
-        # while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue
-        # variables appropriately pass
-
         while not self.continue_clicked_variable:
             # check if script has been aborted
             if self.retry_clicked_variable:
                 self.retry_clicked_variable = False
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
-                # Always handle this exception
                 raise RetryException
             if self.abort_clicked_variable:
                 self.abort_clicked_variable = False
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
-                # Always handle this exception
                 raise AbortException
             if self.abort_immediately_variable:
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
                 self.abort_immediately()
+                return False
+        return True
+
+    def cont_if_answer_clicked(self):
+        """
+        Waits and returns true if the user presses continue. Returns false if the user clicks close window button.
+        Call this method after showing a dialog, and return if the result is false.
+        """
+        try:
+            self.wait_for_answer()
+            return True
+        except AbortException as e:
+            self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
+            if self.abort_immediately_variable:  # if abort immediately is true
+                self.abort_immediately(save_prompt_var=True)
+                return False
+            else:  # if abort immediately is not true
+                self.abort_after_step(save_prompt_var=True)
+                return False
+
+        def wait_for_answer(self):
+        """
+        Sets answer variables to false and waits for user to make selection
+        """
+        self.yes_clicked_variable = False
+        self.no_clicked_variable = False
+
+        while not self.yes_clicked_variable and not self.no_clicked_variable:
+            if self.yes_clicked_variable:
+                self.yes_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
+                return True
+            if self.no_clicked_variable:
+                self.no_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
         # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
         return True
@@ -817,14 +833,28 @@ class Manager(QThread):
     def retry_clicked(self):
         """Flags cont_clicked to retry the current step"""
         self.retry_clicked_variable = True
-        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
         print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         self.abort_clicked_variable = True
-        self.thread_cont_mutex = True  # user input attained, lock no longer needed
+
+    @pyqtSlot()
+    def yes_clicked(self):
+        """Flags yes_selected to allow user to consent to question"""
+        self.yes_clicked_variable = True
+        self.no_clicked_variable = False
+
+    @pyqtSlot()
+    def no_clicked(self):
+        """Flags yes_selected to allow user to consent to question"""
+        self.no_clicked_variable = True
+        self.yes_clicked_variable = False
+
+    def write_calibration_data_to_ua_button(self):
+        # Todo: make this method write calibration data to UA
+        pass
 
     def script_complete(self, finished=False):
         """Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI"""
@@ -1009,13 +1039,9 @@ class Manager(QThread):
 
     def element_str_to_int(self, element_str):
         """Looks for an integer in the string, otherwise returns the current element"""
-        element_str = str(element_str)
-        if element_str.upper() == "current".upper():
-            return self.element
-
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
-        except Exception:
+        except:
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
@@ -1106,18 +1132,18 @@ class Manager(QThread):
         self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
-        cont = self.scan_axis(element=self.element, axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,
-                              averages=averages, storage_location=storage_location, update_element_position=True)
+        cont = self.scan_axis(self.element, axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage,update_element_position=True, acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
         if not cont:
             return False
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
-            cont = self.scan_axis(element=self.element, axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+            cont = self.scan_axis(self.element,axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                                  go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
-                                  averages=averages, storage_location=storage_location, update_element_position=True)
+                                  go_to_peak=False,update_element_position=True, data_storage=data_storage, acquisition_type=acquisition_type,
+                                  averages=averages, storage_location=storage_location)
 
             if not cont:
                 return False
@@ -1226,19 +1252,19 @@ class Manager(QThread):
 
             positions.append(position)
             vsi_values.append(vsi)
-            self.refresh_profile_plot(positions, vsi_values, axis_label)
-            self.app.processEvents()
+            self.profile_plot_signal.emit(positions, vsi_values, axis_label)
 
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
-        self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
+        #  todo: uncomment line below in final version
+        #  self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
 
         if update_element_position:
             if axis == "X":
                 self.element_x_coordinates[self.element] = max_position
             else:
-                self.element_r_coordinates[self.element] = max_position
+                self.element_r_coordinates[self.element] = max_position + 90
 
         self.test_data.set_max_position(axis, self.element, max_position)
 
@@ -1264,6 +1290,21 @@ class Manager(QThread):
         self.refresh_profile_plot(positions, vsi_values, axis_label)
         self.app.processEvents()
 
+        return True
+
+    def refresh_profile_plot(self, x_data, y_data, y_label) -> bool:
+        """
+        Helper function which refreshes the profile plot tab but not too often to bog down the thread
+        """
+        if self.abort_immediately_variable:
+            # Stop the current method and any parent methods that called it
+            return False
+
+        profile_cooldown_s = .05
+        if t.time() - self.last_profile_update_time > profile_cooldown_s:
+            self.profile_plot_signal.emit(x_data, y_data, y_label)
+            self.last_profile_update_time = t.time()
+        self.app.processEvents()
         return True
 
     def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub):
@@ -1312,21 +1353,21 @@ class Manager(QThread):
         write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
         prompt_for_calibration_write = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
 
-        # Todo: test
-        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
+        self.test_data.software_version = self.config["Software_Version"]
+        self.test_data.calculate_angle_average()
+        # Save results summary to results folder
+        if save_summary_file:  # ask for this in the abort methods
+            self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
+
+        # Todo: abort script will not perform this section, it will not write uac calibration, prompts occur in the abort method
+        if write_uac_calibration and prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA", False)
+            # todo: change options from continue/abort to yes/no
             cont = self.cont_if_cont_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return
-
-        self.test_data.software_version = self.config["Software_Version"]
-        self.test_data.calculate_angle_average()
-
-        calibration_data = generate_calibration_data(self.test_data)
-        self.UAInterface.write_data(calibration_data)
-
-        # Save results summary to results folder
-        self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
+            calibration_data = generate_calibration_data(self.test_data)
+            self.UAInterface.write_data(calibration_data)
 
     def prompt_user_for_action(self, var_dict):
         """Prompt user for action"""
@@ -1549,7 +1590,7 @@ class Manager(QThread):
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x increment
+            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x incremenet
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
@@ -1565,7 +1606,7 @@ class Manager(QThread):
 
         assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
 
-        self.refresh_profile_plot(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
+        self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
         return (list_of_frequencies_MHz, list_of_VSIs)
@@ -1827,21 +1868,6 @@ class Manager(QThread):
         self.app.processEvents()
         return True
 
-    def refresh_profile_plot(self, x_data, y_data, y_label) -> bool:
-        """
-        Helper function which refreshes the profile plot tab but not too often to bog down the thread
-        """
-        if self.abort_immediately_variable:
-            # Stop the current method and any parent methods that called it
-            return False
-
-        profile_cooldown_s = .05
-        if t.time() - self.last_profile_update_time > profile_cooldown_s:
-            self.profile_plot_signal.emit(x_data, y_data, y_label)
-            self.last_profile_update_time = t.time()
-        self.app.processEvents()
-        return True
-
     @pyqtSlot(str)
     def exec_command(self, command):
         self.command = command
@@ -1878,8 +1904,7 @@ class Manager(QThread):
                     return False
             else:
                 self.log(
-                    "invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt "
-                    "user",
+                    "invalid setting for Sequence pass/fail : interrupt action in config file; defaulting to prompt user",
                     self.warn)
                 self.prompt_for_retry(error_detail)
         return True
@@ -1888,7 +1913,6 @@ class Manager(QThread):
 
     def prompt_for_retry(self, error_detail: str) -> bool:
         self.abort_clicked_variable = False
-        self.thread_cont_mutex = False  # currently attaining user input, ensures appropriate methods do not overwrite user input
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
                                      F"Abort to end the UA testing sequence.\nRetry to re-run"
                                      F" this test.\nContinue to move to the next test in the "
@@ -1918,7 +1942,7 @@ class Manager(QThread):
             return
         else:
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
-            self.abort_after_step()
+            self.abort_after_step(save_prompt_var=True)
 
     # todo: add an element spinbox to the scan setup tab
     def command_scan(self, command: str):
@@ -1932,7 +1956,7 @@ class Manager(QThread):
         pts = int(command_ray[2])
         increment = float(command_ray[3])
         ref_pos = command_ray[4]
-        self.element = 1  # hard coded, todo: retrieve from UI
+
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
         if "Hydrophone" in ref_pos:
