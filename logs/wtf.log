@@ -1,9 +1,0 @@
-2022-05-19 15:53:11,591 [INFO] [Manager] [734] [ui_thread] : Aborting script
-2022-05-19 15:53:11,593 [INFO] [Manager] [None] [ui_thread] : Running script
-2022-05-19 15:53:16,590 [INFO] [Manager] [966] [manager_thread] : Checking ability to log
-2022-05-19 15:53:23,572 [INFO] [Manager] [1504] [manager_thread] : Moved to 1, at coordinate x=-2.57, r=-90.2
-2022-05-19 15:53:23,576 [INFO] [SimulatedBalance] [60] [manager_thread] : Zeroing Balance
-2022-05-19 15:53:23,595 [INFO] [SimulatedBalance] [66] [manager_thread] : Zeroing Balance, Please wait
-2022-05-19 15:53:23,614 [INFO] [SimulatedBalance] [73] [manager_thread] : Balance Zeroed
-2022-05-19 15:53:23,617 [INFO] [Manager] [1719] [manager_thread] : Turning off AWG T = 0.00
-2022-05-19 15:53:33,617 [INFO] [Manager] [1731] [manager_thread] : Turning on AWG T = 10.00

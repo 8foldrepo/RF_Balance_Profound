@@ -783,7 +783,6 @@ class Manager(QThread):
             if self.abort_immediately_variable:
                 self.abort_immediately()
                 return False
-        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
         return True
 
     def cont_if_answer_clicked(self):
@@ -803,6 +802,8 @@ class Manager(QThread):
                 self.abort_after_step(save_prompt_var=True)
                 return False
 
+
+
     @pyqtSlot()
     def continue_clicked(self):
         """Flags cont_clicked to continue the current step"""
@@ -815,14 +816,12 @@ class Manager(QThread):
     def retry_clicked(self):
         """Flags cont_clicked to retry the current step"""
         self.retry_clicked_variable = True
-        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
         print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         self.abort_clicked_variable = True
-        self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
     @pyqtSlot()
     def yes_clicked(self):
@@ -1897,7 +1896,6 @@ class Manager(QThread):
 
     def prompt_for_retry(self, error_detail: str) -> bool:
         self.abort_clicked_variable = False
-        self.thread_cont_mutex = False  # currently attaining user input, ensures appropriate methods do not overwrite user input
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
                                      F"Abort to end the UA testing sequence.\nRetry to re-run"
                                      F" this test.\nContinue to move to the next test in the "
