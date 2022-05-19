@@ -1,6 +1,7 @@
 import os
 
 import yaml
+from PyQt5.QtCore import pyqtSlot
 
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
@@ -18,6 +19,51 @@ class SystemConfig(MyQWidget, Ui_Form):
     def configure_signals(self):
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
+
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        # User accounts box
+        self.operator_pass_field.setEnabled(enabled)
+        self.engineer_pass_field.setEnabled(enabled)
+        self.admin_pass_field.setEnabled(enabled)
+        # WTF_DIO box
+        self.daq_devicename.setEnabled(enabled)
+        self.water_timeout.setEnabled(enabled)
+        self.fill_mode.setEnabled(enabled)
+        # WTF position parameters box
+        self.x_homecoord.setEnabled(enabled)
+        self.theta_homecoord.setEnabled(enabled)
+        self.x_insertionpoint.setEnabled(enabled)
+        self.x_element1.setEnabled(enabled)
+        self.x_elementpitch.setEnabled(enabled)
+        self.theta_prehomemove.setEnabled(enabled)
+        self.thetaloadenc.setEnabled(enabled)
+        self.centerhometheta.setEnabled(enabled)
+        # Directories
+        self.ua_results_directory.setEnabled(enabled)
+        self.ua_serial_numbers_path.setEnabled(enabled)
+        # Sequence pass/fail
+        self.retries.setEnabled(enabled)
+        self.pass_fail_action.setEnabled(enabled)
+        self.interrupt_action.setEnabled(enabled)
+        self.dialog_timeout.setEnabled(enabled)
+        # Autoset timebase
+        self.min_time_of_flight.setEnabled(enabled)
+        self.max_time_of_flight.setEnabled(enabled)
+        # Frequency parameters
+        self.lf_lowlimit.setEnabled(enabled)
+        self.lf_highlimit.setEnabled(enabled)
+        self.lf_amplitude.setEnabled(enabled)
+        self.lf_burstcount.setEnabled(enabled)
+        self.hf_lowlimit.setEnabled(enabled)
+        self.hf_highlimit.setEnabled(enabled)
+        self.hf_amplitude.setEnabled(enabled)
+        self.hf_burstcount.setEnabled(enabled)
+        self.search_coarseincr.setEnabled(enabled)
+        self.search_fineincr.setEnabled(enabled)
+        # Buttons
+        # self.show_config_button.setEnabled(enabled)
+        self.save_config_button.setEnabled(enabled)
 
     def set_config(self, config):
         self.config = config

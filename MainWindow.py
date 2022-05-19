@@ -1,9 +1,11 @@
 import logging
 import os
+import sys
 import time as t
 import webbrowser
 from typing import List
 
+from PyQt5.QtCore import QThread
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
@@ -15,6 +17,7 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg
 from Widget_Library import window_wet_test
+from data_structures.test_data import TestData
 from definitions import ROOT_DIR, WaterLevel
 from manager import Manager
 from ui_elements.Dialogs.draining_dialog import DrainingDialog
@@ -38,10 +41,6 @@ wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 log_formatter = logging.Formatter(LOGGER_FORMAT)
-
-import sys
-
-from PyQt5.QtCore import QThread
 
 
 class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
@@ -76,6 +75,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def __init__(self):
         # Load default.yaml file to self.config as a python dictionary
         super(MainWindow, self).__init__()
+        self.UAInterface = None
         self.access_level = None
         self.thread_list = list()
         self.list_of_var_dicts = list()
@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.setWindowIcon(QIcon("resources/8foldlogo.ico"))
         self.tabWidget.setCurrentIndex(0)
 
-        # Format treewidget
+        # Format tree widget
         self.script_step_view.setColumnCount(2)
         self.script_step_view.setHeaderLabels(["Task", "Arguments"])
         self.script_step_view.header().resizeSection(0, 220)
@@ -346,6 +346,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Manager communication signals
         self.load_script_signal.connect(self.manager.load_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
+        self.manager.button_enable_toggle_for_scripting.connect(self.set_buttons_enabled)
 
     @pyqtSlot(float)
     def update_frequency_field(self, frequency_MHz):
@@ -621,7 +622,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             serial_no = None
 
-        dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0], access_level=self.access_level_combo.currentText())
+        dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0],
+                            access_level=self.access_level_combo.currentText(), config=self.config)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
         dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
@@ -639,7 +641,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.retry_signal.connect(self.manager.retry_clicked)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         if message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
-            print(colored('settling time prompt detected, abort should now abort immediately instead of after step', 'red'))  # todo remove debug line
+            print(colored('settling time prompt detected, abort should now abort immediately instead of after step',
+                          'red'))  # todo remove debug line
             dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
@@ -775,9 +778,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             self.update_system_status("BUSY")
 
+        # section for tabs
+        # todo: add more calls to tabs' set buttons enabled
         self.position_tab.set_buttons_enabled(enabled)
-        #todo: add more calls to tabs' set buttons enabled
+        self.scan_tab_widget.set_buttons_enabled(enabled)
+        self.results_tab.set_buttons_enabled(enabled)
+        self.ua_calibration_tab.set_buttons_enabled(enabled)
+        self.system_config.set_buttons_enabled(enabled)
+        self.system_info_tab.set_buttons_enabled(enabled)
+        self.rfb.set_buttons_enabled(enabled)
+        self.script_editor.set_buttons_enabled(enabled)
 
+        # main window buttons
         self.insert_button.setEnabled(enabled)
         self.retract_button.setEnabled(enabled)
         self.run_button.setEnabled(enabled and not self.script_changed)

@@ -1,9 +1,11 @@
+import time as t
+
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
 
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
-import time as t
+
 
 class RFB(MyQWidget, Ui_Form):
     def __init__(self, parent=None, manager=None, balance=None, config=None):
@@ -25,6 +27,11 @@ class RFB(MyQWidget, Ui_Form):
 
     def set_balance(self, balance):
         self.balance = balance
+
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        # all buttons are already disabled by default
+        pass
 
     def style_ui(self):
         # add default data to plots

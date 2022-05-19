@@ -7,8 +7,6 @@ from data_structures.test_data import TestData
 from ui_elements.my_qwidget import MyQWidget
 
 
-
-
 class Results(MyQWidget, Ui_Form):
     """This widget visualizes scan_data[results_summary], which is a 2d list of lists containing strings."""
     test_data: TestData
@@ -101,6 +99,11 @@ class Results(MyQWidget, Ui_Form):
 
     def set_config(self, config):
         self.config = config
+
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        # UA results table
+        self.save_button.setEnabled(enabled)
 
     def load_test_results(self, path=None):
         """header of the table starts at 0th row so start populating it at row 1 and down"""
