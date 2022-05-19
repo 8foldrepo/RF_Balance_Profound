@@ -1116,17 +1116,17 @@ class Manager(QThread):
         self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
-        cont = self.scan_axis(axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage, acquisition_type=acquisition_type,
+        cont = self.scan_axis(self.element, axis='X', num_points=XPts, increment=x_increment_MM, ref_position=element_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage,update_element_position=True, acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
             return False
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
-            cont = self.scan_axis(axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+            cont = self.scan_axis(self.element,axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                                  go_to_peak=False, data_storage=data_storage, acquisition_type=acquisition_type,
+                                  go_to_peak=False,update_element_position=True, data_storage=data_storage, acquisition_type=acquisition_type,
                                   averages=averages, storage_location=storage_location)
 
             if not cont:
