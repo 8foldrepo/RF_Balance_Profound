@@ -1946,10 +1946,8 @@ class Manager(QThread):
 
     # todo: add an element spinbox to the scan setup tab
     def command_scan(self, command: str):
-        """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
-        #self.test_data.set_blank_values()
-        self.enable_ui_signal.emit(False)
-        self.set_tab_signal.emit(["Scan", "1D Scan"])
+        ''''Activated by the scan setup tab when start scan is clicked.
+            Extracts parameters and initiates a 1D scan'''''
 
         command_ray = command.split("_")
         axis = str(command_ray[1])
@@ -1992,16 +1990,15 @@ class Manager(QThread):
         data_storage = command_ray[13]
         serial_number = command_ray[14]
 
+        #self.test_data.set_blank_values()
+        self.enable_ui_signal.emit(False)
+        self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.test_data.serial_number = " " + str(serial_number)
         self.file_saver = FileSaver(self.config)
-          # todo
+        # TODO: Undocumented
         self.file_saver.create_folders(self.test_data)
-
-
-
         self.test_data.test_comment = comments
-
-        #todo: implement end position
+        # todo: implement end position
 
         self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory,
                        data_directory, False, source_channel, acquisition_type, averages, filename_stub)
