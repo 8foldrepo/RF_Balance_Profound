@@ -89,8 +89,8 @@ Daq_Power_Relay:
   timeout_s: 1
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: No dialog (abort) #No dialog (abort), Prompt for retry, Retry automatically
-  Pass fail action: No dialog (abort) #No dialog (abort), Prompt for retry, Retry automatically
+  Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
+  Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
   Retries: 0
 Software_Version: '1.0'
 UAInterface:
@@ -157,7 +157,7 @@ WTF_PositionParameters:
   X-TankInsertionPoint: 108
   XHomeCoord: 263
 Analysis:
-  settling_time_s: 1
+  settling_time_s: .001
   samples_to_remove_at_end: 3
   max_standard_deviation_w: .1
   capture_rms_only: False
