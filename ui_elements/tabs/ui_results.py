@@ -95,16 +95,6 @@ class Results(MyQWidget, Ui_Form):
         answer = dlg.question(self, '', "Would you like to save the results summary and script log?", dlg.Yes | dlg.No)
         if answer == dlg.Yes:
             self.save_summary_log_signal.emit({'Save summary file': 'True', 'Write UA Calibration': 'False', 'PromptForCalWrite': 'False'})
-            # try:
-            #     if not self.test_data:  # if dictionary is empty return
-            #         self.log(level='error', message='No test results to save')
-            #         return
-            # except AttributeError:
-            #     return
-            #
-            # path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
-            #
-            # create_test_results_summary_file(self.test_data, path)
         elif answer == dlg.No:
             return
 
