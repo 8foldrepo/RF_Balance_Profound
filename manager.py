@@ -1134,6 +1134,30 @@ class Manager(QThread):
     def scan_axis(self, element:int, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
                   update_element_position: bool, scope_channel=1, acquisition_type='N Averaged Waveform', averages=1,
                   filename_stub="FindElement") -> bool:
+        """
+
+        Args:
+            element:
+            axis:
+            num_points:
+            increment:
+            ref_position:
+            data_storage: "do not store", "Store entire waveform", "store profiles only"
+            go_to_peak:
+            storage_location:
+            update_element_position:
+            scope_channel:
+            acquisition_type:
+            averages:
+            filename_stub:
+
+        Returns:
+
+        """
+
+
+        self.element = element
+        #todo: call select element
 
         self.oscilloscope_channel = scope_channel
 
@@ -1945,10 +1969,13 @@ class Manager(QThread):
         source_channel = self.channel_str_to_int(command_ray[10])
         averages = int(command_ray[11])
         element = int(command_ray[12])
+        data_storage = command_ray[13]
 
         self.test_data.test_comment = comments
 
-        self.scan_axis(element, axis, pts, increment, ref_pos, end_pos, data_directory, data_directory, False,
+        #todo: implement end position
+
+        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory, data_directory, False,
                        source_channel,acquisition_type,averages, filename_stub)
 
         self.enable_ui_signal.emit(True)

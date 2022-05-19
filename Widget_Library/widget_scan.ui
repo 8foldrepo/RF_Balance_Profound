@@ -493,7 +493,7 @@ p, li { white-space: pre-wrap; }
        <x>320</x>
        <y>169</y>
        <width>241</width>
-       <height>361</height>
+       <height>401</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -639,7 +639,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>310</y>
+        <y>350</y>
         <width>69</width>
         <height>13</height>
        </rect>
@@ -652,7 +652,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>190</x>
-        <y>310</y>
+        <y>350</y>
         <width>31</width>
         <height>20</height>
        </rect>
@@ -671,7 +671,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>330</y>
+        <y>370</y>
         <width>211</width>
         <height>20</height>
        </rect>
@@ -797,6 +797,47 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QComboBox" name="store_state_combo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>330</y>
+        <width>131</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background:white</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Store entire waveform</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Store profiles only</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Do not store</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_59">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>310</y>
+        <width>129</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Save Type</string>
+      </property>
      </widget>
     </widget>
     <widget class="QPushButton" name="start_scan_button">
