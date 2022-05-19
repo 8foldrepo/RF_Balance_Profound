@@ -1069,7 +1069,7 @@ class Manager(QThread):
 
         # If on the first element, set the tab to the scan tab
         if self.element == 1:
-            self.set_tab_signal.emit("Scan")
+            self.set_tab_signal.emit(["Scan"])
 
         self.test_data.log_script(['Find element "n"', "OK", "", ""])
 
@@ -1274,6 +1274,21 @@ class Manager(QThread):
         self.refresh_profile_plot(positions, vsi_values, axis_label)
         self.app.processEvents()
 
+        return True
+
+    def refresh_profile_plot(self, x_data, y_data, y_label) -> bool:
+        """
+        Helper function which refreshes the profile plot tab but not too often to bog down the thread
+        """
+        if self.abort_immediately_variable:
+            # Stop the current method and any parent methods that called it
+            return False
+
+        profile_cooldown_s = .05
+        if t.time() - self.last_profile_update_time > profile_cooldown_s:
+            self.profile_plot_signal.emit(x_data, y_data, y_label)
+            self.last_profile_update_time = t.time()
+        self.app.processEvents()
         return True
 
     def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub):
@@ -1650,7 +1665,7 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
         # If on the first element, set the tab to the rfb tab
         if self.element == 1:
-            self.set_tab_signal.emit("RFB")
+            self.set_tab_signal.emit(["RFB"])
 
         # todo: replace this with an insert at the end to check if the step finished successfully
         self.test_data.log_script(["Measure element efficiency (RFB)", "OK", "", ""])

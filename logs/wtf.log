@@ -1,4 +1,3 @@
-2022-05-19 15:21:27,965 [INFO] [Manager] [738] [ui_thread] : Aborting script
-2022-05-19 15:21:27,966 [INFO] [Manager] [None] [ui_thread] : Running script
-2022-05-19 15:21:27,974 [INFO] [Manager] [719] [manager_thread] : Aborting script after step
-2022-05-19 15:21:43,692 [INFO] [ui_thread] : app exited with code 0
+2022-05-19 15:50:24,463 [INFO] [Manager] [734] [ui_thread] : Aborting script
+2022-05-19 15:50:24,466 [INFO] [Manager] [None] [ui_thread] : Running script
+2022-05-19 15:50:28,848 [INFO] [Manager] [966] [manager_thread] : Checking ability to log
