@@ -802,7 +802,7 @@ class Manager(QThread):
                 self.abort_after_step(save_prompt_var=True)
                 return False
 
-        def wait_for_answer(self):
+    def wait_for_answer(self):
         """
         Sets answer variables to false and waits for user to make selection
         """
