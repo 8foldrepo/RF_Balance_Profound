@@ -508,13 +508,13 @@ class Manager(QThread):
             ray = line.split(" = ")
 
             # Populate script metadata to UI using signals
-            if ray[0].upper() == "# OF TASKS":
+            if "# OF TASKS" in ray[0].upper():
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
-            elif ray[0].upper() == "CREATEDON":
+            elif "CREATEDON" in ray[0].upper():
                 self.created_on_signal.emit(ray[1].replace('"', ""))
-            if ray[0].upper() == "CREATEDBY":
+            if "CREATEDBY" in ray[0].upper():
                 self.created_by_signal.emit(ray[1].replace('"', ""))
-            elif ray[0].upper() == "DESCRIPTION":
+            elif "DESCRIPTION" in ray[0].upper():
                 self.description_signal.emit(ray[1].replace('"', ""))
 
             current_line = current_line + 1
@@ -672,13 +672,13 @@ class Manager(QThread):
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
-        elif name.upper() == "Pre-test initialisation".upper():
+        elif "Pre-test initialisation".upper() in name.upper():
             self.pretest_initialization(args)
         elif "Find element".upper() in name.upper():
             self.find_element(args)
-        elif name.upper() == "Save results".upper():
+        elif "Save results".upper() in name.upper():
             self.save_results(args)
-        elif name.upper() == "Prompt user for action".upper():
+        elif "Prompt user for action".upper() in name.upper():
             self.prompt_user_for_action(args)
         elif "Home system".upper() in name.upper():
             self.home_system(args)

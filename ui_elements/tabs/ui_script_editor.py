@@ -73,29 +73,29 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         task_type = self.script_cmd_dropdown.currentText()
 
-        if task_type == 'Find element "n"':
+        if 'Find element "n"' in task_type:
             self.edit_menu = FindElement()
-        elif task_type == "Loop over elements":
+        elif "Loop over elements" in task_type:
             self.edit_menu = LoopOverElements()
-        elif task_type == "Measure element efficiency (RFB)":
+        elif "Measure element efficiency (RFB)" in task_type:
             self.edit_menu = MeasureElementEfficiency()
-        elif task_type == "Save results":
+        elif "Save results" in task_type:
             self.edit_menu = SaveResults()
-        elif task_type == "Prompt user for action":
+        elif "Prompt user for action" in task_type:
             self.edit_menu = PromptUserForAction()
-        elif task_type == "Home system":
+        elif "Home system" in task_type:
             self.edit_menu = HomeSystem()
-        elif task_type == "Frequency sweep":
+        elif "Frequency sweep" in task_type:
             self.edit_menu = FrequencySweep()
-        elif task_type == "Configure oscilloscope channels":
+        elif "Configure oscilloscope channels" in task_type:
             self.edit_menu = OscilloscopeChannels()
-        elif task_type == "Configure oscilloscope timebase":
+        elif "Configure oscilloscope timebase" in task_type:
             self.edit_menu = OscilloscopeTimebase()
-        elif task_type == "Move system":
+        elif "Move system" in task_type:
             self.edit_menu = MoveSystem()
-        elif task_type == "Configure function generator":
+        elif "Configure function generator" in task_type:
             self.edit_menu = FunctionGenerator()
-        elif task_type == "Select UA channel":
+        elif "Select UA channel" in task_type:
             self.edit_menu = SelectUAChannel()
         # elif task_type == ""
         # elif task_type == ""
