@@ -687,7 +687,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>160</y>
+        <y>140</y>
         <width>181</width>
         <height>39</height>
        </rect>
@@ -747,7 +747,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>210</y>
+        <y>180</y>
         <width>211</width>
         <height>41</height>
        </rect>
@@ -773,7 +773,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>260</y>
+        <y>230</y>
         <width>131</width>
         <height>41</height>
        </rect>
@@ -803,7 +803,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>10</x>
         <y>330</y>
-        <width>131</width>
+        <width>141</width>
         <height>18</height>
        </rect>
       </property>
@@ -829,8 +829,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_59">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>310</y>
+        <x>11</x>
+        <y>320</y>
         <width>129</width>
         <height>13</height>
        </rect>
@@ -838,6 +838,32 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Save Type</string>
       </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_9">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>211</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="comments_vert_2">
+       <item>
+        <widget class="QLabel" name="label_61">
+         <property name="text">
+          <string>Serial Number</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="serial_input">
+         <property name="styleSheet">
+          <string notr="true">background:white</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QPushButton" name="start_scan_button">

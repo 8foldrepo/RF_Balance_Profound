@@ -1926,19 +1926,15 @@ class Manager(QThread):
         #self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
-        self.file_saver = FileSaver(self.config)
-        self.test_data.serial_number = "Unknown"  # todo
-        self.file_saver.create_folders(self.test_data)
+
         command_ray = command.split("_")
         axis = str(command_ray[1])
         pts = int(command_ray[2])
         increment = float(command_ray[3])
         ref_pos = command_ray[4]
-
         self.element = 1  # hard coded, todo: retrieve from UI
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-
         if "Hydrophone" in ref_pos:
             self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
             if axis == 'X':
@@ -1957,7 +1953,6 @@ class Manager(QThread):
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = -90
-
         end_pos = command_ray[5]
         comments = command_ray[6]
         filename_stub = command_ray[7]
@@ -1971,13 +1966,21 @@ class Manager(QThread):
         averages = int(command_ray[11])
         element = int(command_ray[12])
         data_storage = command_ray[13]
+        serial_number = command_ray[14]
+
+        self.test_data.serial_number = " " + str(serial_number)
+        self.file_saver = FileSaver(self.config)
+          # todo
+        self.file_saver.create_folders(self.test_data)
+
+
 
         self.test_data.test_comment = comments
 
         #todo: implement end position
 
-        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory, data_directory, False,
-                       source_channel,acquisition_type,averages, filename_stub)
+        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory,
+                       data_directory, False, source_channel, acquisition_type, averages, filename_stub)
 
         self.enable_ui_signal.emit(True)
 
