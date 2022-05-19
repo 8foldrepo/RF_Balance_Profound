@@ -125,19 +125,19 @@ class FileSaver:
             try:
                 path = check_directory(
                     os.path.join(
-                        storage_location, "EfficiencyTest", 'ElementScans',
+                        storage_location, self.folder_name, 'ElementScans',
                         f"E{metadata.element_number:02}")
                 )
             except PermissionError:
                 path = check_directory(
                     os.path.join(
-                        self.waveform_data_path, "EfficiencyTest", 'ElementScans',
+                        self.waveform_data_path, 'ElementScans',
                         f"E{metadata.element_number:02}")
                 )
         else:
             path = check_directory(
                 os.path.join(
-                    self.waveform_data_path, "EfficiencyTest", 'ElementScans',
+                    self.waveform_data_path, 'ElementScans',
                     f"E{metadata.element_number:02}")
             )
 
@@ -211,7 +211,7 @@ class FileSaver:
             try:
                 path = check_directory(
                     os.path.join(
-                        storage_location, "EfficiencyTest", f"E{element_number:02}"
+                        storage_location, self.folder_name, "EfficiencyTest", f"E{element_number:02}"
                     )
                 )
             except PermissionError:
@@ -345,7 +345,7 @@ class FileSaver:
             try:
                 path = check_directory(
                     os.path.join(
-                        storage_location, "EfficiencyTest", f"E{metadata.element_number:02}"
+                        storage_location, self.folder_name, "EfficiencyTest", f"E{metadata.element_number:02}"
                     )
                 )
             except PermissionError:
