@@ -64,6 +64,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     command_signal = QtCore.pyqtSignal(str)
     abort_instantly_signal = QtCore.pyqtSignal()
     load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
+    yes_signal = QtCore.pyqtSignal()
+    no_signal = QtCore.pyqtSignal()
     set_scan_tab_signal = QtCore.pyqtSignal(list) # list containing one str element matching the text of the scan subtab
     num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
     progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
@@ -172,11 +174,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.list_of_var_dicts = var_dicts
 
         task_dict = {}
-        for i in range(len(self.list_of_var_dicts)):
-            if not "# of Tasks" in self.list_of_var_dicts[i].keys():
+        for i in range(len(self.list_of_var_dicts)):  # go through every entry in list_of_var_dicts
+            if "# of Tasks" not in self.list_of_var_dicts[i].keys():
                 arg_list = list()
                 for key in self.list_of_var_dicts[i]:
-                    if not key == "Task type":
+                    if key != "Task type":  # if key does not equal "Task type"
                         arg_list.append([key, self.list_of_var_dicts[i][key]])
 
                 task_dict[self.list_of_var_dicts[i]["Task type"]] = arg_list
@@ -264,6 +266,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             sys.exit()
 
+    def tab_text_to_index(self, text):
+        """
+        Returns the index of the tab with specified text in the main tabwidget.
+        If no match exists, returns -1. Not case sensitive.
+        """
+        for i in range(self.tabWidget.count()):
+            if self.tabWidget.tabText(i).upper() == text.upper():
+                return i
+        return -1
 
     # signal connections
     def configure_non_manager_signals(self):
@@ -289,6 +300,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.abort_immediately_button.clicked.connect(self.manager.abort_immediately)
 
         self.command_signal.connect(self.manager.exec_command)
+        self.yes_signal.connect(self.manager.yes_clicked)
+        self.no_signal.connect(self.manager.no_clicked)
         self.manager.enable_ui_signal.connect(self.set_buttons_enabled)
 
         # Script metadata signals
@@ -343,6 +356,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
         self.manager.system_info_signal.connect(self.system_info_tab.system_info_slot)
+        self.manager.user_question_signal.connect(self.dialog_question)
 
         # Manager communication signals
         self.load_script_signal.connect(self.manager.load_script)
@@ -362,7 +376,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.theta_pos_field.setText("%.2f" % position_mm)
 
     def run_button_clicked(self):
-        """sets the """
+        """sets the buttons to disabled once a script is running"""
         self.set_buttons_enabled(False)
         self.show_pretest_dialog()
 
@@ -373,7 +387,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def upon_script_changed(self):
         self.script_changed = True
         self.run_button.setEnabled(False)
-        print(colored('run button is now disabled via upon_script_changed method', 'red'))
         self.run_button.setStyleSheet("background-color:red")
         self.run_button.setText("RUN SCRIPT (Reload)")
 
@@ -642,8 +655,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.retry_signal.connect(self.manager.retry_clicked)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         if message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
-            print(colored('settling time prompt detected, abort should now abort immediately instead of after step',
-                          'red'))  # todo remove debug line
             dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
@@ -683,6 +694,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         dlg.setIcon(QMessageBox.Critical)
         dlg.exec()
+
+    @pyqtSlot(str)
+    def dialog_question(self, question_str: str) -> None:
+        """Method to ask the user a question and record the response via GUI"""
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Question")
+        dlg.setIcon(QMessageBox.Question)
+        answer = dlg.question(self, '', question_str, dlg.Yes | dlg.No)
+        if answer == dlg.Yes:
+            self.yes_signal.emit()
+        elif answer == dlg.No:
+            self.no_signal.emit()
 
     # todo: test
     @pyqtSlot()
