@@ -86,8 +86,11 @@ class Results(MyQWidget, Ui_Form):
 
     def save_test_results_summary(self):
         """saves the results as a text file with a path specified in the config file."""
-        if not self.test_data:  # if dictionary is empty return
-            self.log(level='error', message='No test results to save')
+        try:
+            if not self.test_data:  # if dictionary is empty return
+                self.log(level='error', message='No test results to save')
+                return
+        except AttributeError:
             return
 
         path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")

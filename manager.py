@@ -751,8 +751,6 @@ class Manager(QThread):
         Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
         Call this method after showing a dialog, and return if the result is false.
         """
-        print(
-            colored(f'cont_if_cont_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}', 'red'))
         try:
             self.wait_for_cont()
             return True
@@ -780,29 +778,17 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
-        # while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue
-        # variables appropriately pass
-
         while not self.continue_clicked_variable:
             # check if script has been aborted
             if self.retry_clicked_variable:
                 self.retry_clicked_variable = False
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
-                # Always handle this exception
                 raise RetryException
             if self.abort_clicked_variable:
                 self.abort_clicked_variable = False
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
-                # Always handle this exception
                 raise AbortException
             if self.abort_immediately_variable:
-                self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for
-                # input
                 self.abort_immediately()
                 return False
-        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
         return True
 
     @pyqtSlot()

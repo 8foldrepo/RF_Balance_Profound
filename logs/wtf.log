@@ -1,2 +1,4 @@
-2022-05-19 14:56:01,641 [INFO] [Manager] [1211] [manager_thread] : Maximum of 1197.5205447122873 @ X = 2.0000000000000027 mm
-2022-05-19 14:56:15,874 [INFO] [Manager] [1211] [manager_thread] : Maximum of 1201.3717229884187 @ X = 4.000000000000003 mm
+2022-05-19 15:21:27,965 [INFO] [Manager] [738] [ui_thread] : Aborting script
+2022-05-19 15:21:27,966 [INFO] [Manager] [None] [ui_thread] : Running script
+2022-05-19 15:21:27,974 [INFO] [Manager] [719] [manager_thread] : Aborting script after step
+2022-05-19 15:21:43,692 [INFO] [ui_thread] : app exited with code 0
