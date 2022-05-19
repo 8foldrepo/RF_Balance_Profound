@@ -119,7 +119,7 @@ class FileSaver:
         f.close()
 
     def store_waveform(self, metadata: FileMetadata, times, voltages,
-                       storage_location):  # assume single array every time
+                       storage_location, filename_stub):  # assume single array every time
 
         if storage_location != '':
             try:
@@ -142,7 +142,7 @@ class FileSaver:
             )
 
         file = open(
-            os.path.join(path, f"FindElement{metadata.element_number:02}_{metadata.axis}_"
+            os.path.join(path, f"{filename_stub}{metadata.element_number:02}_{metadata.axis}_"
                                f"{metadata.waveform_number}.txt"), 'w+')
 
         file.write(f"UASerialNumber={self.test_data.serial_number}\n")
@@ -339,9 +339,9 @@ class FileSaver:
         file.close()
 
     def save_find_element_profile(self, metadata, positions, vsi_values, storage_location,
-                                  units_str="Voltage Squared Integral"):
+                                  units_str="Voltage Squared Integral", filename_stub="FindElement"):
 
-        if storage_location != '':
+        if storage_location != '' and storage_location != None:
             try:
                 path = check_directory(
                     os.path.join(
@@ -358,13 +358,13 @@ class FileSaver:
             path = check_directory(
                 os.path.join(
                     self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
-                )
+                 )
             )
 
         file = open(
             os.path.join(
                 path,
-                f"FindElement{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt",
+                f"{filename_stub}{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt",
             ),
             "w+",
         )
@@ -520,121 +520,3 @@ class FileSaver:
             frequency_range=frequency_range,
             storage_location=storage_location
         )
-
-# def test_store_find_element_waveform(file_saver):
-#     from numpy.random import uniform
-#     metadata = dict()
-#     metadata['element_number'] = 1
-#     metadata['axis'] = "Th"
-#     metadata['waveform_number'] = "Theta000"
-#     metadata['serial_number'] = 'GH1214'
-#     metadata['version'] = 1.0
-#     metadata['X'] = 0.750
-#     metadata['Theta'] = -171.198
-#     metadata['calibration_frequency_(MHz)'] = '4'
-#     metadata['source_signal_amplitude_(mVpp)'] = '50'
-#     metadata['source_signal_type'] = 'Toneburst'
-#     metadata['num_cycles'] = 0
-#
-#     times = list()
-#     voltages = list()
-#
-#     for x in range(100):
-#         times.append(uniform(4.14, 4.64))
-#         voltages.append(uniform(-9, 7))
-#
-#     times.sort()
-#
-#     file_saver.store_waveform(metadata, times, voltages)
-#
-#
-# def test_store_measure_rfb_waveform(file_saver):
-#     from numpy.random import uniform
-#     metadata = dict()
-#     metadata['element_number'] = 1
-#     metadata['axis'] = "Th"
-#     metadata['waveform_number'] = "Theta000"
-#     metadata['serial_number'] = 'GH1214'
-#     metadata['version'] = 1.0
-#     metadata['X'] = 0.750
-#     metadata['Theta'] = -171.198
-#     metadata['calibration_frequency_(MHz)'] = '4'
-#     metadata['source_signal_amplitude_(mVpp)'] = '50'
-#     metadata['source_signal_type'] = 'Toneburst'
-#     metadata['num_cycles'] = 0
-#
-#     forward_power = list()
-#     reflected_power = list()
-#     acoustic_power = list()
-#
-#     times = list()
-#     voltages = list()
-#
-#     for x in range(20):
-#         times.append(uniform(4.14, 4.64))
-#         voltages.append(uniform(-9, 7))
-#
-#     times.sort()
-#     forward_power.append(times)
-#     forward_power.append(voltages)
-#
-#     times.clear()
-#     voltages.clear()
-#
-#     for x in range(20):
-#         times.append(uniform(4.14, 4.64))
-#         voltages.append(uniform(-9, 7))
-#
-#     times.sort()
-#     reflected_power.append(times)
-#     reflected_power.append(voltages)
-#
-#     times.clear()
-#     voltages.clear()
-#
-#     for x in range(20):
-#         times.append(uniform(4.14, 4.64))
-#         voltages.append(uniform(-9, 7))
-#
-#     times.sort()
-#     acoustic_power.append(times)
-#     acoustic_power.append(voltages)
-#
-#     file_saver.store_measure_rfb_waveform(metadata, forward_power, reflected_power, acoustic_power)
-#
-#
-# def main():
-#     from Utilities.data_structures import TestData
-#
-#     test_data = TestData()
-#     test_data.serial_number = 'GH1214'
-#     test_data.script_log = []
-#     test_data.script_log.append(["", "test", "log", ""])
-#
-#     metadata = dict()
-#     metadata['element_number'] = 1
-#     metadata['axis'] = "Th"
-#     metadata['waveform_number'] = "Theta000"
-#     metadata['serial_number'] = 'GH1214'
-#     metadata['version'] = 1.0
-#     metadata['X'] = 0.750
-#     metadata['Theta'] = -171.198
-#     metadata['calibration_frequency_(MHz)'] = '4'
-#     metadata['source_signal_amplitude_(mVpp)'] = '50'
-#     metadata['source_signal_type'] = 'Toneburst'
-#     metadata['num_cycles'] = 0
-#
-#     file_saver = FileSaver(config=None, test_data=test_data)
-#     file_saver.copy_system_info()
-#     test_store_find_element_waveform(file_saver=file_saver)
-#     distances = range(100)
-#     vsi = range(100)
-#     file_saver.save_find_element_profile(metadata=metadata, distances=distances, vsi=vsi)
-#     file_saver.save_frequency_sweep()
-#     fw_power = [range(100), range(1, 101)]
-#     ref_power = [range(100, 200), range(101, 201)]
-#     acou_power = [range(200, 300), range(301, 401)]
-#     file_saver.store_measure_rfb_waveform(metadata=metadata, forward_power=fw_power, reflected_power=ref_power,
-#                                              acoustic_power=acou_power)
-#     file_saver.save_test_results_summary_and_log(test_data=test_data)
-#

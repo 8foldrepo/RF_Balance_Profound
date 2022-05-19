@@ -309,10 +309,10 @@ class Manager(QThread):
 
         # Get the position of the motors
         if self.Motors.connected:
-             lock_aquired = self.motor_control_lock.tryLock()
-             if lock_aquired:
-                 self.Motors.get_position(mutex_locked=True)
-                 self.motor_control_lock.unlock()
+            lock_aquired = self.motor_control_lock.tryLock()
+            if lock_aquired:
+                self.Motors.get_position(mutex_locked=True)
+                self.motor_control_lock.unlock()
 
     def update_system_info(self):
         """
@@ -362,8 +362,8 @@ class Manager(QThread):
                 break
 
             # code block below checks the first part of the split command_ray to see what command is
-            self.command = self.command.upper()
-            command_ray = self.command.split(" ")
+            command = self.command.upper()
+            command_ray = command.split(" ")
             if command_ray[0] == "CLOSE":
                 self.wrap_up()
             elif command_ray[0] == "CONNECT":
@@ -374,6 +374,8 @@ class Manager(QThread):
                 self.advance_script()
             elif command_ray[0] == "ABORT":
                 self.abort_after_step()
+            elif command[0:4] == "SCAN":
+                self.command_scan(self.command)
             else:  # What to do when there is no command
                 # If a script has just ended, show script_complete dialog
                 if self.currently_scripting:
@@ -436,14 +438,6 @@ class Manager(QThread):
 
             if self.thermocouple.connected:
                 self.thermocouple.get_reading()
-
-            # TODO: uncomment if continuous position feedback this is deemed useful
-            # # Only refresh motor position if they are connected
-            # if self.Motors.connected:
-            #     lock_aquired = self.motor_control_lock.tryLock()
-            #     if lock_aquired:
-            #         self.Motors.get_position(mutex_locked=True)
-            #         self.motor_control_lock.unlock()
 
     def capture_scope(self, channel=1, plot=True):
         """captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
@@ -585,7 +579,8 @@ class Manager(QThread):
             task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
 
         for i in range(
-                len(self.task_execution_order)):  # if the task step does not have element, set the element to "None" type in order to make it a list
+                len(self.task_execution_order)):  # if the task step does not have element, set the element to "None"
+            # type in order to make it a list
             if not isinstance(self.task_execution_order[i], list):
                 self.task_execution_order[i] = [self.task_execution_order[i], None]
 
@@ -715,9 +710,11 @@ class Manager(QThread):
         #             'yellow'))  # todo remove debug line
         while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
             pass
-        print(colored('thread_cont_mutex is now true, proceeding with abort_after_step method', 'yellow') )  # todo remove debug line
+        print(colored('thread_cont_mutex is now true, proceeding with abort_after_step method'),
+              'red')  # todo remove debug line
         if self.retry_clicked_variable:
-            print(colored('retry_clicked_variable is true, returning from abort abort_after_step', 'yellow'))  # todo remove debug line
+            print(colored('retry_clicked_variable is true, returning from abort abort_after_step',
+                          'red'))  # todo remove debug line
             return
         if log:
             self.log("Aborting script after step")
@@ -746,7 +743,7 @@ class Manager(QThread):
         self.abort_immediately_variable = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
-        self.enable_ui_signal.emit(True)
+        # self.enable_ui_signal.emit(True)
         # Todo: add option to save before exiting
 
     def cont_if_cont_clicked(self):
@@ -754,7 +751,8 @@ class Manager(QThread):
         Waits and returns true if the user presses continue. Returns false if the user clicks abort or retry.
         Call this method after showing a dialog, and return if the result is false.
         """
-        print(colored(f'cont_if_cont_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}', 'yellow'))
+        print(
+            colored(f'cont_if_cont_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}', 'red'))
         try:
             self.wait_for_cont()
             return True
@@ -763,12 +761,16 @@ class Manager(QThread):
             print(colored(f'abort exception called in cont_if_cont_clicked 736', 'yellow'))  # todo: debug line
             if self.abort_immediately_variable:  # if abort immediately is true
                 print(
-                    colored(f'aborting immediately since abort_immediately_variable is {self.abort_immediately_variable}', 'yellow'))  # todo: debug line
+                    colored(
+                        f'aborting immediately since abort_immediately_variable is {self.abort_immediately_variable}',
+                        'red'))  # todo: debug line
                 self.abort_immediately()
                 return False
             else:  # if abort immediately is not true
                 print(
-                    colored(f'aborting after step since abort_immediately_variable is {self.abort_immediately_variable}', 'yellow'))  # todo: debug line
+                    colored(
+                        f'aborting after step since abort_immediately_variable is {self.abort_immediately_variable}',
+                        'red'))  # todo: debug line
                 self.abort_immediately()
                 return False
         except RetryException:
@@ -1015,10 +1017,19 @@ class Manager(QThread):
         self.run_script()
 
     def element_str_to_int(self, element_str):
+        """Looks for an integer in the string, otherwise returns the current element"""
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
         except:
             self.log(f"Element number not given, using previous element: {self.element}")
+        return self.element
+
+    def channel_str_to_int(self, channel_str):
+        """Looks for an integer in the string, otherwise returns the current channel"""
+        try:
+            self.element = int(re.search(r"\d+", str(channel_str)).group())
+        except:
+            self.log(f"Element number not given, using previous element: {self.oscilloscope_channel}")
         return self.element
 
     def find_element(self, var_dict):
@@ -1126,7 +1137,8 @@ class Manager(QThread):
     # Reference position is the center of the scan range
 
     def scan_axis(self, axis, num_points, increment, ref_position, data_storage, go_to_peak, storage_location,
-                  scope_channel=1, acquisition_type='N Averaged Waveform', averages=1) -> bool:
+                  scope_channel=1, acquisition_type='N Averaged Waveform', averages=1,
+                  filename_stub="FindElement") -> bool:
         self.oscilloscope_channel = scope_channel
 
         if axis == 'X':
@@ -1174,13 +1186,14 @@ class Manager(QThread):
                 times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
                 if times_s == [] or voltages_v == []:
                     cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                                   error_detail='Oscilloscope capture failed')
+                                                   error_detail='Oscilloscope capture failed', )
                     if not cont:
                         return False
 
                 if 'entire waveform'.upper() in data_storage.upper():
                     self.save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                                  voltages_v=voltages_v, storage_location=storage_location)
+                                                  voltages_v=voltages_v, storage_location=storage_location,
+                                                  filename_stub=filename_stub)
 
                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1220,11 +1233,11 @@ class Manager(QThread):
 
         if not 'Do not store'.upper() == data_storage.upper():
             self.save_scan_profile(positions=positions, vsi_values=vsi_values,
-                                   axis=axis, storage_location=storage_location)
+                                   axis=axis, storage_location=storage_location, filename_stub=filename_stub)
 
         return True
 
-    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location):
+    def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1242,10 +1255,10 @@ class Manager(QThread):
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
-                                       storage_location=storage_location)
+                                       storage_location=storage_location, filename_stub=filename_stub)
 
     def save_scan_profile(self, axis, positions, vsi_values,
-                          storage_location):
+                          storage_location, filename_stub):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1262,7 +1275,7 @@ class Manager(QThread):
         metadata.num_cycles = self.AWG.state["burst_cycles"]
 
         self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
-                                                  storage_location=storage_location)
+                                                  storage_location=storage_location, filename_stub=filename_stub)
 
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
@@ -1588,7 +1601,7 @@ class Manager(QThread):
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail="Warning: the on or off "
                                                                                         "intervals are less than the "
                                                                                         "sensor settling time "
-                                         "specified in the config file. Either change it or load a different script")
+                                                                                        "specified in the config file. Either change it or load a different script")
 
             if not cont:
                 return
@@ -1867,6 +1880,65 @@ class Manager(QThread):
         else:
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
             self.abort_after_step()
+
+    #todo: add an element spinbox to the scan setup tab
+    def command_scan(self, command: str):
+        """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
+        self.file_saver = FileSaver(self.config)
+        self.test_data.serial_number = "Unknown" #todo
+        self.file_saver.create_folders(self.test_data)
+        command_ray = command.split("_")
+        axis = str(command_ray[1])
+        pts = int(command_ray[2])
+        increment = float(command_ray[3])
+        ref_pos = command_ray[4]
+
+        self.element = 1 #hard coded, todo: retrieve from UI
+        element_x_coordinate = self.element_x_coordinates[self.element]
+        element_r_coordinate = self.element_r_coordinates[self.element]
+
+        if "Hydrophone" in ref_pos:
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
+            if axis == 'X':
+                ref_pos = element_x_coordinate
+            else:
+                ref_pos = -180
+        elif "RFB" in ref_pos:
+            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
+            if axis == 'X':
+                ref_pos = element_x_coordinate
+            else:
+                ref_pos = element_r_coordinate
+        elif "Down" in ref_pos:
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90])
+            if axis == 'X':
+                ref_pos = element_x_coordinate
+            else:
+                ref_pos = -90
+
+        end_pos = command_ray[5]
+        comments = command_ray[6]
+        filename_stub = command_ray[7]
+        data_directory = command_ray[8]
+
+
+
+        if data_directory == "UA Results Directory":
+            data_directory = ""
+
+        acquisition_type = command_ray[9]
+        source_channel = self.channel_str_to_int(command_ray[10])
+        averages = int(command_ray[11])
+
+        self.test_data.test_comment = comments
+
+        self.enable_ui_signal.emit(False)
+
+        self.scan_axis(axis, pts, increment, ref_pos, end_pos, data_directory, data_directory, source_channel,
+                       acquisition_type,
+                       averages, filename_stub)
+
+        self.enable_ui_signal.emit(True)
 
 
 class AbortException(Exception):
