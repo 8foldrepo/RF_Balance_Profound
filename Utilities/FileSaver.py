@@ -79,7 +79,7 @@ class FileSaver:
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
     def save_test_results_summary_and_log(self, test_data: TestData):
-        """Save the test data (shared with the manager) to the results folder in the form of a  results summary"""
+        """Save the test data (shared with the manager) to the "results" folder in the form of a results summary"""
         if not test_data:  # if dictionary is empty return
             self.log(level="error", message="No results to save")
             return
