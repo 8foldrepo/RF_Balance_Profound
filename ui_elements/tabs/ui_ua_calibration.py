@@ -34,7 +34,12 @@ class UACalibration(MyQWidget, Ui_Form):
         except:
             self.main_window = self
 
-    def get_high_frequecy_Mhz(self) -> float:
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        self.read_from_ua_button.setEnabled(enabled)
+        self.tableWidget.setEnabled(enabled)  # todo: see if this interferes with program writing data to table
+
+    def get_high_frequency_Mhz(self) -> float:
         return float(self.tableWidget.item(5, 0).text())
 
     def get_low_frequecy_Mhz(self) -> float:
@@ -50,7 +55,7 @@ class UACalibration(MyQWidget, Ui_Form):
                 level="Error", message="No UA connected, plug one in and try again"
             )
             return
-        # data, status = self.ua_interface.read_data()
+        # data, status = self.ua_interface.read_data() #todo is this line needed?
         if status == -2:
             self.main_window.dialog_critical(
                 "wtfib is not connected (check power and ethernet connection)"

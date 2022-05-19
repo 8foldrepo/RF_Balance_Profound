@@ -14,6 +14,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
 from termcolor import colored
+from pprint import pprint
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -107,6 +108,9 @@ class Manager(QThread):
     # sets the current tab text of the main window (must match a tab name of the main window
     set_tab_signal = pyqtSignal(str)
 
+    # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice versa
+    button_enable_toggle_for_scripting = pyqtSignal(bool)
+
     Motors = None
 
     # Global variables section
@@ -167,6 +171,7 @@ class Manager(QThread):
 
         # Script data
         self.task_arguments = None
+        # structure of 2D task_execution_order list is [[task number, element_number, loop_number]...]
         self.task_execution_order = None
         self.task_names = None
 
@@ -174,6 +179,7 @@ class Manager(QThread):
 
         # Tracks whether a script is being executed
         self.currently_scripting = False
+        self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields
         self.was_scripting = False
 
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
@@ -373,6 +379,7 @@ class Manager(QThread):
             else:  # What to do when there is no command
                 # If a script has just ended, show script_complete dialog
                 if self.currently_scripting:
+                    self.button_enable_toggle_for_scripting.emit(False)  # disable buttons/fields
                     if self.task_names is None:
                         self.abort_after_step()
                         self.enable_ui_signal.emit(True)
@@ -389,6 +396,7 @@ class Manager(QThread):
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
+                self.button_enable_toggle_for_scripting.emit(True)  # enabled fields/buttons
                 if self.task_names is not None:
                     finished = self.step_index == len(self.task_names) - 1
                 else:
@@ -409,6 +417,7 @@ class Manager(QThread):
         self.abort_immediately()
         log_msg(self, root_logger, level="info", message="Running script")
         self.currently_scripting = True
+        self.button_enable_toggle_for_scripting.emit(False)  # disables main window fields/buttons during test
         self.was_scripting = True
         self.abort_immediately_variable = False
 
@@ -536,7 +545,8 @@ class Manager(QThread):
                     element_name_to_split = x0.split(" ")
                     # retrieve the second word of the left side, that's the element name
                     element_name = element_name_to_split[1]
-                    element_names_for_loop.append(int(element_name))
+                    if x1.upper() == 'TRUE':  # we only want to add elements in the loop if it equals "True"
+                        element_names_for_loop.append(int(element_name))
 
                 if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
                     building_loop = False  # set the building loop flag to false since the loop block is done
@@ -545,11 +555,13 @@ class Manager(QThread):
                     task_number_for_loop.clear()
                     self.task_execution_order.pop()
 
-                    # appends a 2 item list in taskExecOrder, the first part being the element within the loops
-                    # sublist and the second item being the iteration number for that item in its loop
+                    # appends a 3 item list in taskExecOrder, the first part being the task number
+                    # the second item being the element number and the third is the loop number
+                    # print('loops list: ')
+                    # pprint(self.loops)
                     for i in range(len(self.loops[len(self.loops) - 1][0])):
                         for j in range(len(self.loops[len(self.loops) - 1][1])):
-                            self.task_execution_order.append([self.loops[len(self.loops) - 1][1][j], i + 1,
+                            self.task_execution_order.append([self.loops[len(self.loops) - 1][1][j], self.loops[len(self.loops) - 1][0][i],
                                                               loop_index_tracker])
                     loop_index_tracker = loop_index_tracker + 1
 
@@ -574,8 +586,7 @@ class Manager(QThread):
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[
-                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are offset by 1
+            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -584,6 +595,7 @@ class Manager(QThread):
             self.task_arguments.append(
                 tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
+        # print("task_names: ", task_names)
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
@@ -609,6 +621,7 @@ class Manager(QThread):
 
         if self.step_index > len(self.task_names):
             self.currently_scripting = False
+            self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields in main window
             return
 
         if self.task_arguments is not None and self.task_names is not None and self.task_execution_order is not None:
@@ -634,6 +647,7 @@ class Manager(QThread):
 
         if not self.currently_scripting:
             self.enable_ui_signal.emit(True)
+            self.button_enable_toggle_for_scripting.emit(True)
 
     def run_script_step(self):
         """Executes script step with given step index in taskNames/taskArgs"""
@@ -691,9 +705,9 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
-        print(
-            colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
-                    'red'))  # todo remove debug line
+        # print(
+        #     colored(f"abort_after_step in manager called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}",
+        #             'yellow'))  # todo remove debug line
         while not self.thread_cont_mutex:  # this waits for the prompt/dialog to set the abort/retry/continue variables appropriately
             pass
         print(colored('thread_cont_mutex is now true, proceeding with abort_after_step method'),
@@ -706,6 +720,7 @@ class Manager(QThread):
             self.log("Aborting script after step")
         # Reset script control variables
         self.currently_scripting = False
+        self.button_enable_toggle_for_scripting.emit(True)  # turn on fields/buttons in main window
         self.step_index = -1
         self.abort_immediately_variable = False
         self.task_number_signal.emit(0)
@@ -718,11 +733,12 @@ class Manager(QThread):
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
         """
-        print(colored(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
+        print(colored(f"abort_immediately called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         if log:
             self.log("Aborting script")
         # Reset script control variables
         self.currently_scripting = False
+        self.button_enable_toggle_for_scripting.emit(True)  # we are not scripting, enable buttons/fields
         self.step_index = -1
         self.abort_immediately_variable = True
         self.task_number_signal.emit(0)
@@ -742,7 +758,7 @@ class Manager(QThread):
             return True
         except AbortException as e:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
-            print(colored(f'abort exception called in cont_if_cont_clicked 736', 'red'))  # todo: debug line
+            print(colored(f'abort exception called in cont_if_cont_clicked 736', 'yellow'))  # todo: debug line
             if self.abort_immediately_variable:  # if abort immediately is true
                 print(
                     colored(
@@ -811,7 +827,7 @@ class Manager(QThread):
     @pyqtSlot()
     def abort_clicked(self):
         """Flags cont_clicked to abort the current step"""
-        print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'red'))
+        print(colored(f"abort_clicked called by {inspect.stack()[1].function} {inspect.stack()[1].lineno}", 'yellow'))
         self.abort_clicked_variable = True
         self.thread_cont_mutex = True  # user input attained, lock no longer needed
 
@@ -847,6 +863,7 @@ class Manager(QThread):
 
         self.script_complete_signal.emit(pass_list, description_list)
         self.currently_scripting = False
+        self.button_enable_toggle_for_scripting.emit(True)  # not scripting, turn on buttons/fields
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])

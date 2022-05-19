@@ -19,6 +19,7 @@ class Scan(QWidget, Ui_scan_tab_widget):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.filename = None
         self.app = QApplication.instance()
         self.setupUi(self)
         self.x_data = []
@@ -41,10 +42,10 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.file_browser_button.clicked.connect(self.browse_clicked)
         # Tell the manager to capture a scope trace and emit back the plot data. This uses a command not a direct call
         # or a signal so it runs in the manager thread.
-        self.acquire_scope_trace_button.clicked.connect(self.aquire_scope_trace_button_clicked)
+        self.acquire_scope_trace_button.clicked.connect(self.acquire_scope_trace_button_clicked)
         self.source_channel_combo_box.currentTextChanged.connect(self.source_channel_combo_changed)
         self.averages_spin_box.valueChanged.connect(self.averages_spin_box_changed)
-        self.acquisition_type_combo_box.currentTextChanged.connect(self.aquisition_type_combo_changed)
+        self.acquisition_type_combo_box.currentTextChanged.connect(self.acquisition_type_combo_changed)
         self.index_spinbox.valueChanged.connect(self.show_data_point)
         self.start_scan_button.clicked.connect(self.scan_clicked)
 
@@ -68,6 +69,35 @@ class Scan(QWidget, Ui_scan_tab_widget):
         command_string = "_".join(command_ray)
         self.command_signal.emit(command_string)
 
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        self.acquire_scope_trace_button.setEnabled(enabled)
+        # Acquire waveform tab
+        # Acquisition arg. box
+        self.acquisition_type_combo_box.setEnabled(enabled)
+        self.source_channel_combo_box.setEnabled(enabled)
+        self.averages_spin_box.setEnabled(enabled)
+        # Waveform data out box
+        self.index_spinbox.setEnabled(enabled)
+        # Scan setup tab
+        # Scan details box
+        self.axis_combo.setEnabled(enabled)
+        self.pts_spin.setEnabled(enabled)
+        self.increment_spin.setEnabled(enabled)
+        self.ref_pos_combo.setEnabled(enabled)
+        self.end_pos_combo.setEnabled(enabled)
+        self.comments_input.setEnabled(enabled)
+        self.filename_stub_input.setEnabled(enabled)
+        self.data_directory_input.setEnabled(enabled)
+        self.file_browser_button.setEnabled(enabled)
+        # Acquisition settings
+        self.acquisition_type_combo.setEnabled(enabled)
+        self.source_channel_combo_box.setEnabled(enabled)
+        self.window_combo_box_2.setEnabled(enabled)
+        self.averages_spin_box_2.setEnabled(enabled)
+        self.start_scan_button.setEnabled(enabled)
+        self.source_channel_combo.setEnabled(enabled)
+
     def show_data_point(self):
         """Display the waveform data at a specified index to the UI"""
 
@@ -85,14 +115,14 @@ class Scan(QWidget, Ui_scan_tab_widget):
         self.manager.oscilloscope_averages = self.averages_spin_box.value()
         print(self.manager.oscilloscope_averages)
 
-    def aquisition_type_combo_changed(self):
+    def acquisition_type_combo_changed(self):
         if self.acquisition_type_combo_box.currentText() == "Single Waveform":
             self.manager.oscilloscope_averages = 1
             self.averages_spin_box.setEnabled(False)
         else:
             self.averages_spin_box.setEnabled(True)
 
-    def aquire_scope_trace_button_clicked(self):
+    def acquire_scope_trace_button_clicked(self):
         self.command_signal.emit("CAPTURE")
 
     def browse_clicked(self):

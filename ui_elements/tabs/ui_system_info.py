@@ -95,6 +95,12 @@ class SystemInfo(MyQWidget, Ui_Form):
         with open(SYSTEM_INFO_INI_PATH, 'w') as configfile:
             self.parser.write(configfile)
 
+    @pyqtSlot(bool)
+    def set_buttons_enabled(self, enabled):
+        self.HYDRO_TYPE_FIELD.setEnabled(enabled)
+        self.HYDR_DIAM_FIELD.setEnabled(enabled)
+        # all other buttons are disabled by default
+
 
 if __name__ == "__main__":
     import sys

@@ -465,7 +465,10 @@ class FileSaver:
         for i in range(num_cycles):
             if i != 0:
                 # Beginning of on transition
-                transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i - 1][1]]
+                if 0 < i < len(rfb_data.off_indices)+1 and i < len(transition_amp_w[0]):
+                    transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i - 1][1]]
+                else:
+                    transition_amp_w[0][i] = float("NaN")
             else:
                 # Beginning of on transition
                 transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.awg_on_ray.index(True) - buffer]
