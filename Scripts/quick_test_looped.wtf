@@ -47,7 +47,7 @@ Element 10 = "TRUE"
 
 [Task3]
 Task type = "Find element n_1"
-Element = "10"
+Element = "Current"
 X Incr. (mm) = "0.200000"
 X #Pts. = "21"
 Theta Incr. (deg) = "-0.400000"
@@ -88,7 +88,7 @@ Element 10 = "TRUE"
 
 [Task6]
 Task type = "Measure element efficiency (RFB)"
-Element = "1"
+Element = "Current"
 Frequency range = "Low frequency"
 RFB.#on/off cycles = "2"
 RFB.On time (s) = "2"

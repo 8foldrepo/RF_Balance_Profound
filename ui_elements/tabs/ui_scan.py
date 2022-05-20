@@ -53,7 +53,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
     def scan_clicked(self):
         """Retrieve scan settings from the UI and tell the manager to begin a 1d scan with those settings"""
 
-        command_ray = [""] * 14
+        command_ray = [""] * 15
         command_ray[0] = "SCAN"
         command_ray[1] = self.axis_combo.currentText()
         command_ray[2] = str(self.pts_spin.value())
@@ -68,6 +68,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         command_ray[11] = str(self.averages_spin_box.value())
         command_ray[12] = str(self.element_spinbox.value())
         command_ray[13] = self.store_state_combo.currentText()
+        command_ray[14] = self.serial_input.text()
 
         command_string = "_".join(command_ray)
         self.command_signal.emit(command_string)
