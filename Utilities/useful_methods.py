@@ -9,24 +9,7 @@ from PyQt5.QtWidgets import QTabWidget
 from data_structures.test_data import TestData
 
 
-def create_coord_rays(coords: str, ax_letters: list):
-    """
-    Inputs:
-    A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
-    A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
-    Output:
-    A list containing the axis letters of the coordinates provided, and a list of equal length containing the
-    coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
-    """
-    axes = list()
-    coords = coords.split(",")
-    for i in range(len(coords)):
-        if not coords[i] == "":
-            axes.append(ax_letters[i])
 
-    # Remove empty elements
-    coords = list(filter(lambda val: val != "", coords))
-    return axes, coords
 
 
 def get_element_distances(element_1_index, element_pitch):
@@ -60,8 +43,27 @@ def generate_calibration_data(test_data: TestData) -> List[str]:
     return output
 
 
-# Inverse of create coord_rays
+def create_coord_rays(coords: str, ax_letters: list):
+    """
+    Inputs:
+    A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+    A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+    Output:
+    A list containing the axis letters of the coordinates provided, and a list of equal length containing the
+    coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
+    """
+    axes = list()
+    coords = coords.split(",")
+    for i in range(len(coords)):
+        if not coords[i] == "":
+            axes.append(ax_letters[i])
+
+    # Remove empty elements
+    coords = list(filter(lambda val: val != "", coords))
+    return axes, coords
+
 def create_comma_string(axes: list, coords: list, ax_letters: list):
+    """Inverse of create coord_rays"""
     answer = ""
     for i in range(len(ax_letters)):
         if ax_letters[i] in axes:

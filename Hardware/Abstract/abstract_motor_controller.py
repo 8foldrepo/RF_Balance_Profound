@@ -12,18 +12,18 @@ class AbstractMotorController(AbstractDevice):
     # These lists will all be the same length when populated from the config file
     coords_mm = list()
     home_coords = list()
-    reverse_ray = List[bool]
-    ax_letters = List[str]
-    calibrate_ray_steps_per = List[float]
-    rotational_ray = List[bool]
-    speeds_ray = List[float]
-    increment_ray = List[float]
+    reverse_ray: List[bool]
+    ax_letters: List[str]
+    calibrate_ray_steps_per: List[float]
+    rotational_ray: List[bool]
+    speeds_ray: List[float]
+    increment_ray: List[float]
 
-    movement_mode = List[str]
-    timeout_s = List[float]
-    time_limit_s = List[float]
-    on_by_default = List[bool]
-    port = List[str]
+    movement_mode: List[str]
+    timeout_s: List[float]
+    time_limit_s: List[float]
+    on_by_default: List[bool]
+    port: str
 
     moving = False
 
@@ -139,7 +139,7 @@ class AbstractMotorController(AbstractDevice):
 
         ...
 
-    def get_ax_number(self, axis):
+    def __get_ax_number(self, axis):
         """return the motor controller driver number of the axis with the specified letter"""
 
         if axis.upper() in self.ax_letters:
