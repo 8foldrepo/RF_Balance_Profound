@@ -89,7 +89,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.pass_config_and_ui_elements_to_tabs()
         self.style_ui()
         self.configure_non_manager_signals()
-        self.pass_config_and_ui_elements_to_tabs()
 
     def connect_ui_thread_devices(self):
         # Note: the UA interface box is instantiated in both the manager and the UI thread.
@@ -165,6 +164,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_calibration_tab.set_manager(self.manager)
         self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
         self.scan_tab_widget.set_manager(self.manager)
+        self.results_tab.set_manager(self.manager)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, var_dicts: list):

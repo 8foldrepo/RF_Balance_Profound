@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QHeaderView
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QHeaderView, QMessageBox
 
 from Utilities.useful_methods import create_test_results_summary_file
 from Widget_Library.widget_results import Ui_Form
@@ -10,9 +10,11 @@ from ui_elements.my_qwidget import MyQWidget
 class Results(MyQWidget, Ui_Form):
     """This widget visualizes scan_data[results_summary], which is a 2d list of lists containing strings."""
     test_data: TestData
+    save_summary_log_signal = pyqtSignal(dict)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.manager = None
         self.setupUi(self)
         self.config = None
         self.style_ui()
@@ -83,25 +85,27 @@ class Results(MyQWidget, Ui_Form):
         self.script_log_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.script_log_table.verticalHeader().setDefaultSectionSize(1)  # minimum height
 
-
     def save_test_results_summary(self):
         """saves the results as a text file with a path specified in the config file."""
-        try:
-            if not self.test_data:  # if dictionary is empty return
-                self.log(level='error', message='No test results to save')
-                return
-        except AttributeError:
+
+        self.save_summary_log_signal.connect(self.manager.save_results)
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Question")
+        dlg.setIcon(QMessageBox.Question)
+        answer = dlg.question(self, '', "Would you like to save the results summary and script log?", dlg.Yes | dlg.No)
+        if answer == dlg.Yes:
+            self.save_summary_log_signal.emit({'Save summary file': 'True', 'Write UA Calibration': 'False', 'PromptForCalWrite': 'False'})
+        elif answer == dlg.No:
             return
-
-        path, _ = QFileDialog.getSaveFileName(self, "Choose save file location: ", "", "Results files (*.txt)")
-
-        create_test_results_summary_file(self.test_data, path)
 
     def configure_signals(self):
         self.save_button.clicked.connect(self.save_test_results_summary)
 
     def set_config(self, config):
         self.config = config
+
+    def set_manager(self, manager):
+        self.manager = manager
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
@@ -112,7 +116,6 @@ class Results(MyQWidget, Ui_Form):
         """header of the table starts at 0th row so start populating it at row 1 and down"""
         if path is None:
             path, _ = QFileDialog.getOpenFileName(self, "Open file", "", "Results files (*.txt)")
-
 
         if path == "":
             return

@@ -239,6 +239,7 @@ def create_test_results_summary_file(test_data: TestData, path):
         if x == 12:  # for the elements with manual HF...
             f.write("Elements with manual HF\t" + ",".join(element_data_list[x]))
     f.close()
+    print(f'wrote to {path}')
 
 
 def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:
