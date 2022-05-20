@@ -1,7 +1,6 @@
 from typing import List
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
-import time as t
 from Utilities.formulas import calculate_random_uncertainty_percent
 from Utilities.useful_methods import tab_text_to_index
 from Widget_Library.widget_scan import Ui_scan_tab_widget
@@ -9,6 +8,7 @@ from manager import Manager
 from ui_elements.my_qwidget import MyQWidget
 
 
+# noinspection PyUnresolvedReferences
 class Scan(MyQWidget, Ui_scan_tab_widget):
     command_signal = pyqtSignal(str)
     manager: Manager
@@ -53,7 +53,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
     def scan_clicked(self):
         """Retrieve scan settings from the UI and tell the manager to begin a 1d scan with those settings"""
 
-        command_ray = [""] * 14
+        command_ray = [""] * 15
         command_ray[0] = "SCAN"
         command_ray[1] = self.axis_combo.currentText()
         command_ray[2] = str(self.pts_spin.value())
@@ -68,6 +68,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         command_ray[11] = str(self.averages_spin_box.value())
         command_ray[12] = str(self.element_spinbox.value())
         command_ray[13] = self.store_state_combo.currentText()
+        command_ray[14] = self.serial_input.text()
 
         command_string = "_".join(command_ray)
         self.command_signal.emit(command_string)

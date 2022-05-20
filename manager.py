@@ -508,13 +508,13 @@ class Manager(QThread):
             ray = line.split(" = ")
 
             # Populate script metadata to UI using signals
-            if ray[0].upper() == "# OF TASKS":
+            if "# OF TASKS" in ray[0].upper():
                 self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
-            elif ray[0].upper() == "CREATEDON":
+            elif "CREATEDON" in ray[0].upper():
                 self.created_on_signal.emit(ray[1].replace('"', ""))
-            if ray[0].upper() == "CREATEDBY":
+            if "CREATEDBY" in ray[0].upper():
                 self.created_by_signal.emit(ray[1].replace('"', ""))
-            elif ray[0].upper() == "DESCRIPTION":
+            elif "DESCRIPTION" in ray[0].upper():
                 self.description_signal.emit(ray[1].replace('"', ""))
 
             current_line = current_line + 1
@@ -672,13 +672,13 @@ class Manager(QThread):
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
-        elif name.upper() == "Pre-test initialisation".upper():
+        elif "Pre-test initialisation".upper() in name.upper():
             self.pretest_initialization(args)
         elif "Find element".upper() in name.upper():
             self.find_element(args)
-        elif name.upper() == "Save results".upper():
+        elif "Save results".upper() in name.upper():
             self.save_results(args)
-        elif name.upper() == "Prompt user for action".upper():
+        elif "Prompt user for action".upper() in name.upper():
             self.prompt_user_for_action(args)
         elif "Home system".upper() in name.upper():
             self.home_system(args)
@@ -809,10 +809,14 @@ class Manager(QThread):
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
                 self.yes_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return True
             if self.no_clicked_variable:
                 self.no_clicked_variable = False
+                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
+        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
+
         return True
 
     @pyqtSlot()
@@ -1957,7 +1961,6 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
-
         if "Hydrophone" in ref_pos:
             self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
             if axis == 'X':
@@ -1976,7 +1979,6 @@ class Manager(QThread):
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = -90
-
         end_pos = command_ray[5]
         comments = command_ray[6]
         filename_stub = command_ray[7]
@@ -1990,13 +1992,20 @@ class Manager(QThread):
         averages = int(command_ray[11])
         element = int(command_ray[12])
         data_storage = command_ray[13]
+        serial_number = command_ray[14]
 
+        #self.test_data.set_blank_values()
+        self.enable_ui_signal.emit(False)
+        self.set_tab_signal.emit(["Scan", "1D Scan"])
+        self.test_data.serial_number = " " + str(serial_number)
+        self.file_saver = FileSaver(self.config)
+        # TODO: Undocumented
+        self.file_saver.create_folders(self.test_data)
         self.test_data.test_comment = comments
-
         # todo: implement end position
 
-        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory, data_directory, False,
-                       source_channel, acquisition_type, averages, filename_stub)
+        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory,
+                       data_directory, False, source_channel, acquisition_type, averages, filename_stub)
 
         self.enable_ui_signal.emit(True)
 
