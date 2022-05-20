@@ -1,7 +1,11 @@
 from datetime import date
+from pprint import pprint
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+import PyQt5
+from PyQt5 import QtCore, Qt
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QModelIndex, QItemSelectionModel, QEvent, QPoint
+from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from PyQt5.QtWidgets import QApplication as QApp
 
@@ -27,7 +31,7 @@ from ui_elements.script_editor_menus.ui_select_ua_channel import SelectUAChannel
 class ScriptEditor(MyQWidget, Ui_Form):
     # This will be the menu for changing parameters of the current task type
     edit_menu: AbstractEditMenu
-    script_changed_signal = pyqtSignal()
+    script_changed_signal = QtCore.pyqtSignal()
     treeWidget: QTreeWidget
     list_of_var_dicts: List[dict]
 
@@ -59,9 +63,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def configure_signals(self):
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
-        self.move_cmd_down_button.clicked.connect(self.move_selection_down)
-        self.move_cmd_up_button.clicked.connect(self.move_selection_up)
-        self.update_tree_button.clicked.connect(self.updateTree)
+        self.move_cmd_down_button.clicked.connect(self.move_selected_item_down)
+        self.move_cmd_up_button.clicked.connect(self.move_selected_item_up)
+        self.update_tree_button.clicked.connect(self.update_tree)
         self.save_script_button.clicked.connect(self.save_script)
         self.delete_step_button.clicked.connect(self.delete_step)
         self.delete_all_button.clicked.connect(self.delete_all)
@@ -106,8 +110,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.action_widget_layout.addWidget(self.edit_menu, 0, 0)
 
-
-
     def delete_step(self):
         """Delete the step at the given index"""
         if len(self.list_of_var_dicts) == 0:
@@ -120,10 +122,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.script_changed_signal.emit()
 
         index = self.treeWidget.currentIndex().row()
-        if not self.treeWidget.currentItem().text(1) == 0:
+        if self.treeWidget.currentItem().text(1) != 0:
             self.treeWidget.takeTopLevelItem(index)
 
-        if not index + 1 >= len(self.list_of_var_dicts):
+        if index + 1 < len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
     def delete_all(self):
@@ -131,48 +133,48 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
-        self.treeWidget.clear()
+        self.treeWidget.clear()  # clears the treeWidget of all nodes
         self.list_of_var_dicts = list()
 
         self.add_empty_item_at_end()
 
     def on_item_clicked(self):
-        index = self.treeWidget.currentIndex()
-        if 1 != index.column():
-            return
+        """"""
+        index = self.treeWidget.currentIndex()  # set index variable to currently selected index
+        if index.column() != 1:  # if the user clicked on the variable name
+            return  # do not do anything
         # Click is in the variable column
-        item = self.treeWidget.currentItem()
-        parameter_key = item.text(0)
-        value = item.text(1)
+        item = self.treeWidget.currentItem()  # set the local item variable to the currently selected item
+        parameter_key = item.text(0)  # get the variable name for the task
+        value = item.text(1)  # get the variable value for the task
 
-        is_task = (
+        # QUESTION: shouldn't this check happen before the variable assignment statements above?
+        is_task = (  # check to see if selected item is a top-level task node
                 item.parent() is self.treeWidget.invisibleRootItem()
                 or item.parent() is None
         )
-        if is_task:
-            return
+        if is_task:  # if it is a top-level task node
+            return  # don't do anything
 
         # Clicked cell contains a variable value
         # Prompt user to edit value
         value = QInputDialog.getText(self, "Change Variable", f"Previous value: {value}")[0]
-        if value is not None and value != "":
+        if value is not None and value != "":  # ensures user entered a variable value
             # Prevent user from running the script until it is saved and reloaded
             self.script_changed_signal.emit()
 
-            # Update the parameter in the treewidget
+            # Update the parameter in the tree widget
             item.setText(1, value)
 
             #  Get the task index
             task_index = self.get_parent_item_index(item)
-
-
 
             # Update the parameter in the dictionary
 
             # add the new dictionary to var_dicts at the correct index
             if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:
                 try:
-                    self.list_of_var_dicts[task_index+1][parameter_key] = value
+                    self.list_of_var_dicts[task_index + 1][parameter_key] = value
                 except IndexError:
                     pass
             else:
@@ -236,6 +238,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
     def add_empty_item_at_end(self):
         # Add invisible item to allow inserting at the end
         empty_item = QTreeWidgetItem([])
+        empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)  # should prevent user from selecting this item
+        empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEnabled)  # should prevent user from interacting with this item
         self.treeWidget.invisibleRootItem().addChild(empty_item)
         self.treeWidget.setCurrentItem(empty_item)
 
@@ -257,7 +261,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         return item
 
-    def updateTree(self):
+    def update_tree(self):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -284,9 +288,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # Refresh the visualizer
         self.visualize_script(list_of_var_dicts_copy)
 
-    def move_selection_down(self):
+    def move_selected_down(self):
         # If there is no selection, try to set selection to the first item
-        # todo: actually have the task within the script moved instead of just moving the task cursor
         if self.treeWidget.currentItem() is None:
             first_item = self.treeWidget.invisibleRootItem().child(0)
             if first_item is not None:
@@ -298,20 +301,102 @@ class ScriptEditor(MyQWidget, Ui_Form):
         index = self.treeWidget.currentIndex()
         self.treeWidget.setCurrentIndex(index.sibling(index.row() + 1, index.column()))
 
-    def move_selection_up(self):
-        # If there is no selection, try to set selection to the last item
-        # todo: actually have the task within the script moved instead of just moving the task cursor
-        if self.treeWidget.currentItem() is None:
-            child_count = self.treeWidget.invisibleRootItem().childCount()
-            last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)
-            if last_item is not None:
-                self.treeWidget.setCurrentItem(last_item)
-                return
-            else:
-                return
+    def move_selected_item_down(self):
+        # todo: perform move extensive testing with this function
+        if self.treeWidget.currentItem().parent():  # if selected element is a child
+            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+        current_index = self.treeWidget.currentIndex()  # QModelIndex object
+        current_index_row = current_index.row()  # index of the selected item in tree
+        number_of_items_in_tree = self.treeWidget.invisibleRootItem().childCount()-2  # total number of items in tree
 
-        index = self.treeWidget.currentIndex()
-        self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))
+        # error/exception prevention measures
+        if self.treeWidget.currentItem() is None:  # if nothing is selected  #todo check to see what this does exactly
+            return  # exit this method, nothing will happen, an item needs to be selected
+        elif current_index_row >= number_of_items_in_tree:  # if the selected item is at the end of the list
+            self.log("you are trying to move an item that is at the end of the list downwards, that is not possible")
+            return
+
+        # if an item is selected
+        list_of_var_dicts_copy = list(self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
+
+        if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
+            current_index_row = current_index_row + 1  # offset to account for header
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row+1]  # since moving item "down," it's actually moving up in the list, save the next item
+            list_of_var_dicts_copy[current_index_row+1] = list_of_var_dicts_copy[current_index_row]  # set next item in list to previous item
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save  # restore previous contents of next item to current index (swapping)
+        else:  # if script does not have a header, no offset is needed
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row+1]
+            list_of_var_dicts_copy[current_index_row+1] = list_of_var_dicts_copy[current_index_row]
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
+
+        self.list_of_var_dicts = list(list_of_var_dicts_copy)  # the changes applied to the copy will now be reflected onto the real list
+        self.update_tree()  # update the tree
+        if self.check_if_script_has_header(list_of_var_dicts_copy):
+            a = self.treeWidget.invisibleRootItem().child(current_index_row)
+        else:
+            a = self.treeWidget.invisibleRootItem().child(current_index_row + 1)
+
+        self.treeWidget.setCurrentItem(a)
+
+    def move_selection_up(self):
+        if self.treeWidget.currentItem() is None:  # if there is no selection, try to set selection to the last item
+            child_count = self.treeWidget.invisibleRootItem().childCount()  # attain how many nodes there are in the tree
+            last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)  # attain the last item of the tree widget
+            if last_item is not None:  # checks to make sure the last item actually exists (tree is not empty)
+                self.treeWidget.setCurrentItem(last_item)  # sets the selected item to the last node in tree
+                return  # exit function
+            else:  # tree is empty
+                return  # exit function
+
+        index = self.treeWidget.currentIndex()  # if there is a currently selected item in the tree, copy its index
+        self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))  # move the selection based on the previously attained index position
+
+    def move_selected_item_up(self):
+        # todo: perform move extensive testing with this function
+        if self.treeWidget.currentItem().parent():  # if selected element is a child
+            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+        current_index_row = self.treeWidget.currentIndex().row()  # index of the selected item in tree
+        last_invisible_item_index = self.treeWidget.invisibleRootItem().childCount()  # index of the blank item that can be selected at end of tree list
+
+        # error/exception prevention measures
+        if self.treeWidget.currentItem() is None:  # if nothing is selected  #todo check to see what this does exactly
+            return  # exit this method, nothing will happen, an item needs to be selected
+        elif current_index_row <= 0:  # if the selected item is at the beginning of the list
+            self.log("you are trying to move an item that is at the beginning of the list upwards, that is not possible")
+            return
+        elif current_index_row == last_invisible_item_index-1:
+            self.log("you are trying to move a non-item in the list upwards, this is not possible")
+
+        # if an item is selected
+        list_of_var_dicts_copy = list(self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
+
+        if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
+            current_index_row = current_index_row + 1  # offset to account for header
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]  # since moving item "up," it's actually moving down in the list, save the previous item
+            list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]  # set next item in list to previous item
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save  # restore previous contents of previous item to current index (swapping)
+        else:  # if script does not have a header, no offset is needed
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
+            list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
+
+        self.list_of_var_dicts = list(list_of_var_dicts_copy)  # the changes applied to the copy will now be reflected onto the real list
+        self.update_tree()  # update the tree
+
+        if self.check_if_script_has_header(list_of_var_dicts_copy):
+            a = self.treeWidget.invisibleRootItem().child(current_index_row - 2)
+        else:
+            a = self.treeWidget.invisibleRootItem().child(current_index_row - 1)
+
+        self.treeWidget.setCurrentItem(a)
+
+    def check_if_script_has_header(self, list_of_var_dicts: list) -> bool:
+        """Checks to see if script has a header when passed a list of variable dictionaries.
+        Returns true if there is a header and false if otherwise"""
+        if '# of Tasks' in list_of_var_dicts[0]:
+            return True  # this script has a header
+        else:
+            return False
 
     def add_cmd_to_script_clicked(self):
         self.script_changed_signal.emit()
@@ -368,14 +453,14 @@ class ScriptEditor(MyQWidget, Ui_Form):
         item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
-        self.move_selection_down()
+        self.move_selected_item_down()
 
         # If the item we added was the first item
         if self.treeWidget.invisibleRootItem().childCount() == 1:
-            self.add_empty_item_at_end()
+            self.add_empty_item_at_end()  # QUESTION: why do we need to add an empty item?
 
     def save_script(self):
-        self.updateTree()
+        self.update_tree()
         self.app.processEvents()
 
         path = QFileDialog.getSaveFileName(

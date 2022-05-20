@@ -9,40 +9,40 @@ from PyQt5.QtWidgets import QTabWidget
 from data_structures.test_data import TestData
 
 
-def create_coord_rays(coords: str, ax_letters: list):
+def create_coord_rays(coordinates: str, ax_letters: list):
     """
     Inputs:
-    A string containing comma delimited coordinates, some of which may be empty, for example ,,3,2
+    A string containing comma delimited coordinates, some of which may be empty, for example [,,3,2]
     A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
     Output:
     A list containing the axis letters of the coordinates provided, and a list of equal length containing the
-    coordinates. With the given inputs the output should be axes: [Z,R] coords [3,2]
+    coordinates. With the given inputs the output should be axes: [Z,R] coordinates [3,2]
     """
     axes = list()
-    coords = coords.split(",")
-    for i in range(len(coords)):
-        if not coords[i] == "":
+    coordinates = coordinates.split(",")
+    for i in range(len(coordinates)):
+        if coordinates[i] != "":
             axes.append(ax_letters[i])
 
     # Remove empty elements
-    coords = list(filter(lambda val: val != "", coords))
-    return axes, coords
+    coordinates = list(filter(lambda val: val != "", coordinates))
+    return axes, coordinates
 
 
 def get_element_distances(element_1_index, element_pitch):
     """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
-    element_coords = [None, None, None, None, None, None, None, None, None, None, None]
+    element_coordinates = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
         offset = i * element_pitch
-        element_coords[i + 1] = element_1_index + offset
+        element_coordinates[i + 1] = element_1_index + offset
 
-    return element_coords
+    return element_coordinates
 
 
-def generate_calibration_data(test_data: TestData) -> List[str]:
+def generate_calibration_data(test_data: TestData) -> list[str]:
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
-    output = [None] * 27
+    output = [] * 27
     output[0] = str(test_data.schema)
     output[1] = str(test_data.serial_number)
     date_str = test_data.test_date_time[0:4] + test_data.test_date_time[5:7] + test_data.test_date_time[8:10]
@@ -60,35 +60,28 @@ def generate_calibration_data(test_data: TestData) -> List[str]:
     return output
 
 
-# Inverse of create coord_rays
-def create_comma_string(axes: list, coords: list, ax_letters: list):
+def create_comma_string(axes: list, coordinates: list, ax_letters: list):
+    """
+    Inverse of create coord_rays
+    """
     answer = ""
     for i in range(len(ax_letters)):
         if ax_letters[i] in axes:
             index = axes.index(ax_letters[i])
-            if len(coords) == len(axes):
-                answer = answer + str((coords[index]))
+            if len(coordinates) == len(axes):
+                answer = answer + str((coordinates[index]))
 
         answer = answer + ","
     return answer
 
 
-def update(d, u):
-    for k, v in u.items():
-        if isinstance(v, collections.abc.Mapping):
-            d[k] = update(d.get(k, {}), v)
+def update(dictionary: dict, u):
+    for key, value in u.items():
+        if isinstance(value, collections.abc.Mapping):
+            dictionary[key] = update(dictionary.get(key, {}), value)
         else:
-            d[k] = v
-    return d
-
-
-def printList(self, list2):
-    for x in range(len(list2)):
-        print(list2[x])
-
-
-def printList2(self, list2):
-    print(str(list2)[1:-1])
+            dictionary[key] = value
+    return dictionary
 
 
 def is_number(s):
@@ -100,39 +93,54 @@ def is_number(s):
 
 
 def check_directory(path):
-    # Check whether the specified path exists or not
+    """
+    Check whether the specified path exists or not,
+    create a new directory because it does not exist
+    """
     if not os.path.exists(path):
-        # Create a new directory because it does not exist
         os.makedirs(path)
     return path
 
 
-def precision_round(number, digits=3):
+def precision_round(number: float, digits: int = 3) -> float:
+    """
+    takes a float number and the number of precision digits, then
+    returns the float rounded to the specified precision
+    """
     power = "{:e}".format(number).split("e")[1]
     return round(number, -(int(power) - digits))
 
 
-def bound(x):
+def bound(x: float) -> float:
+    """
+    If passed int x is between -.001 and .001, it turns x to 0 and returns it,
+    otherwise, returns x as is
+    """
     if -0.001 < x < 0.001:
         x = 0
     return x
 
 
-def unique(list):
-    # intilize a null list
+def unique(list_to_analyze: list) -> list:
+    """
+    Takes a list that might have duplicate elements in it and returns
+    a list with the duplicates removed
+    """
+    # initialize a null list
     unique_list = []
 
     # traverse for all elements
-    for x in list:
+    for x in list_to_analyze:
         # check if exists in unique_list or not
         if x not in unique_list:
             unique_list.append(x)
 
     return unique_list
 
-def tab_text_to_index(text:str, tab_widget:QTabWidget) -> int:
+
+def tab_text_to_index(text: str, tab_widget: QTabWidget) -> int:
     """
-    Returns the index of the tab with specified text in the main tabwidget.
+    Returns the index of the tab with specified text in the main tab widget.
     If no match exists, returns -1. Not case sensitive.
     """
     for i in range(tab_widget.count()):
@@ -141,7 +149,7 @@ def tab_text_to_index(text:str, tab_widget:QTabWidget) -> int:
     return -1
 
 
-def clearLayout(layout):
+def clear_layout(layout):
     while layout.count():
         child = layout.takeAt(0)
         if child.edit_menu():
@@ -149,12 +157,12 @@ def clearLayout(layout):
 
 
 def trim(lists: List[List]) -> Tuple:
-    """Cut a tuple of lists to a their minimum length, removing elements at the end"""
-    lengths = [None] * len(lists)
+    """Cut a tuple of lists to their minimum length, removing elements at the end"""
+    lengths = [] * len(lists)
     trimmed_lists = [None] * len(lists)
 
     for i in range(len(lists)):
-        lengths[i] = len(lists[i])
+        lengths[i: int] = len(lists[i])
 
     # Ensure that every list had its length checked
     assert None not in lengths
@@ -170,26 +178,28 @@ def trim(lists: List[List]) -> Tuple:
     return tuple(trimmed_lists)
 
 
-def listToRay(xCoords, yCoords, zCoords, Intensity):
-    unique_xCoords = unique(list=xCoords)
-    unique_yCoords = unique(list=yCoords)
-    unique_zCoords = unique(list=zCoords)
+def list_to_ray(x_coordinates, y_coordinates, z_coordinates, intensity):
+    unique_x_coordinates = unique(list_to_analyze=x_coordinates)
+    unique_y_coordinates = unique(list_to_analyze=y_coordinates)
+    unique_z_coordinates = unique(list_to_analyze=z_coordinates)
 
-    coordinates = (unique_xCoords, unique_yCoords, unique_zCoords)
-    map = np.zeros((len(unique_xCoords), len(unique_yCoords), len(unique_zCoords)))
+    coordinates = (unique_x_coordinates, unique_y_coordinates, unique_z_coordinates)
+    coordinate_map = np.zeros((len(unique_x_coordinates), len(unique_y_coordinates), len(unique_z_coordinates)))
 
-    for i in range(len(xCoords)):
-        x = unique_xCoords.index(xCoords[i])
-        y = unique_yCoords.index(yCoords[i])
-        z = unique_zCoords.index(zCoords[i])
+    for i in range(len(x_coordinates)):
+        x = unique_x_coordinates.index(x_coordinates[i])
+        y = unique_y_coordinates.index(y_coordinates[i])
+        z = unique_z_coordinates.index(z_coordinates[i])
 
-        map[x][y][z] = Intensity[i]
+        coordinate_map[x][y][z] = intensity[i]
 
-    return map, coordinates
+    return coordinate_map, coordinates
 
 
-# Searches from current directory to grandparent directory for the specified file
 def search_for(filename):
+    """
+    Searches from current directory to grandparent directory for the specified file
+    """
     # This program configures all rigols to settings from a csv file
     current_directory = os.path.dirname(__file__)
     parent_directory = os.path.split(current_directory)[0]  # Repeat as needed
@@ -270,14 +280,21 @@ def log_msg(self, root_logger, message: str, level: str = None, line_number=None
     print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{level}] {log_entry}")
 
 
-def printList(list2):
+def print_list(list2):
+    """
+    Prints a list using a for range loop
+    """
     for x in range(len(list2)):
         print(list2[x])
 
 
-def printList2(list2):
+def print_list_2(list2):
+    """
+    prints a list using the built-in print method and casts
+    what ever is inside the list to a string
+    """
     print(str(list2)[1:-1])
 
 
-if __name__ == "__main__":
-    pass
+# if __name__ == "__main__":
+#     pass
