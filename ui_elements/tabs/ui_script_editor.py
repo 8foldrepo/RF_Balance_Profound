@@ -261,7 +261,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
-        var_dict_copy = list(self.list_of_var_dicts)
+        list_of_var_dicts_copy = list(self.list_of_var_dicts)
 
         # remove quotes
         task_names = [self.script_cmd_dropdown.itemText(i).replace('\"', '') for i in
@@ -271,18 +271,18 @@ class ScriptEditor(MyQWidget, Ui_Form):
         for task_name in task_names:
             # Count the occurrences of that task name,
             counter = 0
-            for i in range(len(var_dict_copy)):
-                if "Task type" in var_dict_copy[i].keys():
-                    if task_name in var_dict_copy[i]["Task type"]:
+            for i in range(len(list_of_var_dicts_copy)):
+                if "Task type" in list_of_var_dicts_copy[i].keys():
+                    if task_name in list_of_var_dicts_copy[i]["Task type"]:
                         if counter == 0:
-                            var_dict_copy[i]["Task type"] = f"{task_name}"
+                            list_of_var_dicts_copy[i]["Task type"] = f"{task_name}"
                         else:
                             # And number each one after the first one
-                            var_dict_copy[i]["Task type"] = f"{task_name}_{counter}"
+                            list_of_var_dicts_copy[i]["Task type"] = f"{task_name}_{counter}"
                         counter = counter + 1
 
         # Refresh the visualizer
-        self.visualize_script(var_dict_copy)
+        self.visualize_script(list_of_var_dicts_copy)
 
     def move_selection_down(self):
         # If there is no selection, try to set selection to the first item
