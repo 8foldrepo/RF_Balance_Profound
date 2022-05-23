@@ -1,11 +1,12 @@
+import typing
 from datetime import date
-from pprint import pprint
+# from pprint import pprint
 from typing import List
 
-import PyQt5
+# import PyQt5
 from PyQt5 import QtCore, Qt
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QModelIndex, QItemSelectionModel, QEvent, QPoint
-from PyQt5.QtGui import QFocusEvent
+# from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from PyQt5.QtWidgets import QApplication as QApp
 
@@ -43,14 +44,22 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.configure_signals()
         self.app = QApp.instance()
 
-    def set_tree_widget(self, treeWidget):
-        self.treeWidget = treeWidget
+    def set_tree_widget(self, tree_widget: QTreeWidget) -> None:
+        """
+        Method to be used by the MainWindow class so that the instantiation
+        of this class in it can have access to its tree widget
+        """
+        self.treeWidget = tree_widget
         self.treeWidget.itemClicked.connect(self.on_item_clicked)
         if self.treeWidget.invisibleRootItem().childCount() > 0:
             self.delete_all()
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
+        """
+        Simple method to either enable or disable all the appropriate buttons in this
+        widget with signal capabilities
+        """
         self.script_cmd_dropdown.setEnabled(enabled)
         self.add_cmd_to_script_button.setEnabled(enabled)
         self.update_tree_button.setEnabled(enabled)
@@ -61,6 +70,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.delete_all_button.setEnabled(enabled)
 
     def configure_signals(self):
+        """
+        Method to connect various buttons in this to backend methods so that they
+        may have actual functionality
+        """
         self.script_cmd_dropdown.currentIndexChanged.connect(self.show_task_type_widget)
         self.add_cmd_to_script_button.clicked.connect(self.add_cmd_to_script_clicked)
         self.move_cmd_down_button.clicked.connect(self.move_selected_item_down)
@@ -101,7 +114,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.edit_menu = FunctionGenerator()
         elif "Select UA channel" in task_type:
             self.edit_menu = SelectUAChannel()
-        # elif task_type == ""
+        # elif task_type == ""  # todo: fill these in
         # elif task_type == ""
         # elif task_type == ""
         # elif task_type == ""
@@ -110,7 +123,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.action_widget_layout.addWidget(self.edit_menu, 0, 0)
 
-    def delete_step(self):
+    def delete_step(self) -> None:
         """Delete the step at the given index"""
         if len(self.list_of_var_dicts) == 0:
             return
@@ -128,7 +141,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if index + 1 < len(self.list_of_var_dicts):
             self.list_of_var_dicts.pop(index + 1)  # account for header
 
-    def delete_all(self):
+    def delete_all(self) -> None:
         """Clear the ui script visual and clear the internal var_dicts variable"""
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
@@ -138,8 +151,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.add_empty_item_at_end()
 
-    def on_item_clicked(self):
-        """"""
+    def on_item_clicked(self) -> None:
+        """
+        If the value of an item in the task tree view is clicked, gives the user an
+        opportunity to change the value of that individual variable for the task
+        """
         index = self.treeWidget.currentIndex()  # set index variable to currently selected index
         if index.column() != 1:  # if the user clicked on the variable name
             return  # do not do anything
@@ -183,10 +199,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 except IndexError:
                     pass
 
-    def get_parent_item_index(self, item):
+    def get_parent_item_index(self, item: QTreeWidgetItem) -> typing.Union[int, QTreeWidgetItem]:
+        """
+        Simple helper method to retrieve the item's parent index or return -1 if there is no parent
+        """
         try:
             parent = item.parent()
-        except Exception:
+        except Exception:  # todo: try to figure out what specific exception names could be
             return -1
 
         # Temporarily switch to the parent item, get the index row, and switch back
@@ -197,8 +216,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         return parent_row
 
-    # Display the task names and arguments from the script parser with a QTreeView
-    def visualize_script(self, var_dicts: list):
+    def visualize_script(self, var_dicts: list) -> None:
+        """
+        Display the task names and arguments from the script parser with a QTreeView
+        """
+        item = None  # initialize the variable to None, as it will be (un)changed appropriately via the following lines of codes
         self.list_of_var_dicts = var_dicts
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.treeWidget.clear()
@@ -235,15 +257,22 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.invisibleRootItem().addChildren(tree_items)
         self.add_empty_item_at_end()
 
-    def add_empty_item_at_end(self):
-        # Add invisible item to allow inserting at the end
+    def add_empty_item_at_end(self) -> None:
+        """
+        Add invisible item to allow inserting at the end
+        """
         empty_item = QTreeWidgetItem([])
         empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)  # should prevent user from selecting this item
         empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEnabled)  # should prevent user from interacting with this item
         self.treeWidget.invisibleRootItem().addChild(empty_item)
         self.treeWidget.setCurrentItem(empty_item)
 
-    def dict_to_tree_item(self, task_dict):
+    def dict_to_tree_item(self, task_dict: dict) -> QTreeWidgetItem:
+        """
+        Reads the task dictionary entry and imports the task name (parent node) all of its
+        variables (children nodes), and turns them into a QTreeWidgetItem to be added to
+        the tree view
+        """
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -251,7 +280,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         arg_list = list()
         for key in task_dict:
-            if not key == "Task type":
+            if key != "Task type":
                 arg_list.append([key, task_dict[key]])
 
         # Add parameters as child items
@@ -262,6 +291,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         return item
 
     def update_tree(self):
+        """
+        Refreshes the tree view to account for the naming convention of duplicate task names
+        """
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
@@ -289,6 +321,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.visualize_script(list_of_var_dicts_copy)
 
     def move_selected_down(self):
+        """Moves the highlight cursor in the tree view down"""
         # If there is no selection, try to set selection to the first item
         if self.treeWidget.currentItem() is None:
             first_item = self.treeWidget.invisibleRootItem().child(0)
@@ -302,6 +335,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.setCurrentIndex(index.sibling(index.row() + 1, index.column()))
 
     def move_selected_item_down(self):
+        """
+        Moves the actual task itself downwards in the tree so that it runs after the task
+        that was previously below it. User must save and reload script for this chang to
+        take effect
+        """
         # todo: perform move extensive testing with this function
         if self.treeWidget.currentItem().parent():  # if selected element is a child
             self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
@@ -339,6 +377,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.setCurrentItem(a)
 
     def move_selection_up(self):
+        """
+        Moves the highlight cursor in the tree view up
+        """
         if self.treeWidget.currentItem() is None:  # if there is no selection, try to set selection to the last item
             child_count = self.treeWidget.invisibleRootItem().childCount()  # attain how many nodes there are in the tree
             last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)  # attain the last item of the tree widget
@@ -352,6 +393,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))  # move the selection based on the previously attained index position
 
     def move_selected_item_up(self):
+        """
+        Moves the actual task itself upwards, so the task will actually run before the task that
+        was previously ahead of it. User will have to save and reload script for this change to
+        take effect
+        """
         # todo: perform move extensive testing with this function
         if self.treeWidget.currentItem().parent():  # if selected element is a child
             self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
@@ -390,7 +436,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         self.treeWidget.setCurrentItem(a)
 
-    def check_if_script_has_header(self, list_of_var_dicts: list) -> bool:
+    @staticmethod
+    def check_if_script_has_header(list_of_var_dicts: list) -> bool:
         """Checks to see if script has a header when passed a list of variable dictionaries.
         Returns true if there is a header and false if otherwise"""
         if '# of Tasks' in list_of_var_dicts[0]:
@@ -399,6 +446,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             return False
 
     def add_cmd_to_script_clicked(self):
+        """
+        Function to allow a user to add a selected task in the script editor into the treeview,
+        the user must manually click the save script button to keep the changes and reload the
+        script.
+        """
         self.script_changed_signal.emit()
         row = self.treeWidget.currentIndex().row()
         task_name = self.script_cmd_dropdown.currentText()
@@ -411,36 +463,35 @@ class ScriptEditor(MyQWidget, Ui_Form):
             index = row
             # Insert @ selection, shifting items down
 
-        # if the widget has a ui_to_orderedDict method
+        # if the widget has an ui_to_orderedDict method
         new_var_dict = self.edit_menu.ui_to_orderedDict()
 
         if new_var_dict is not None:
-            pass
-        elif task_name == "Pre-test initialisation":
-            new_var_dict = pre_test_dict()
-        elif task_name == 'Find element "n"':
-            new_var_dict = self.find_element_dict()
-        elif task_name == "Loop over elements":
-            new_var_dict = self.loop_over_elements_dict()
-        elif task_name == "End loop":
-            new_var_dict = end_loop_dict()
-        elif task_name == "Frequency sweep":
-            new_var_dict = frequency_sweep_dict()
-        elif task_name == "Configure oscilloscope channels":
-            new_var_dict = oscilloscope_channel_dict()
-        elif task_name == "Configure oscilloscope timebase":
-            new_var_dict = oscilloscope_timebase_dict()
-        elif task_name == "Move system":
-            new_var_dict = move_system_dict()
-        elif task_name == "Configure function generator":
-            new_var_dict = function_generator_dict()
-        elif task_name == "Select UA channel":
-            new_var_dict = select_UA_channel_dict()
-        elif task_name == 'Run "Auto Gain Control"':
-            new_var_dict = auto_gain_control_dict()
-        elif task_name == "Autoset timebase":
-            new_var_dict = autoset_timebase_dict()
-        # todo: add more methods
+            if task_name == "Pre-test initialisation":
+                new_var_dict = pre_test_dict()
+            elif task_name == 'Find element "n"':
+                new_var_dict = self.find_element_dict()
+            elif task_name == "Loop over elements":
+                new_var_dict = self.loop_over_elements_dict()
+            elif task_name == "End loop":
+                new_var_dict = end_loop_dict()
+            elif task_name == "Frequency sweep":
+                new_var_dict = frequency_sweep_dict()
+            elif task_name == "Configure oscilloscope channels":
+                new_var_dict = oscilloscope_channel_dict()
+            elif task_name == "Configure oscilloscope timebase":
+                new_var_dict = oscilloscope_timebase_dict()
+            elif task_name == "Move system":
+                new_var_dict = move_system_dict()
+            elif task_name == "Configure function generator":
+                new_var_dict = function_generator_dict()
+            elif task_name == "Select UA channel":
+                new_var_dict = select_UA_channel_dict()
+            elif task_name == 'Run "Auto Gain Control"':
+                new_var_dict = auto_gain_control_dict()
+            elif task_name == "Autoset timebase":
+                new_var_dict = autoset_timebase_dict()
+            # todo: add more methods
         else:
             new_var_dict = OrderedDict()
 
@@ -457,7 +508,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         # If the item we added was the first item
         if self.treeWidget.invisibleRootItem().childCount() == 1:
-            self.add_empty_item_at_end()  # QUESTION: why do we need to add an empty item?
+            self.add_empty_item_at_end()
 
     def save_script(self):
         self.update_tree()
@@ -486,11 +537,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             today = date.today()
             self.list_of_var_dicts[0]["Createdon"] = today.strftime("%d/%m/%Y")
 
-            Createdby = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
-            self.list_of_var_dicts[0]["Createdby"] = Createdby
+            created_by = QInputDialog.getText(self, "Save script metadata", f"Enter operator name:")[0]
+            self.list_of_var_dicts[0]["Createdby"] = created_by
 
-            Description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
-            self.list_of_var_dicts[0]["Description"] = Description
+            description = QInputDialog.getText(self, "Save script metadata", f"Enter script description:")[0]
+            self.list_of_var_dicts[0]["Description"] = description
 
             # Write header info
             f.write("[Top Level]\n")

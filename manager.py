@@ -693,6 +693,8 @@ class Manager(QThread):
             self.select_ua_channel(args)
         else:
             self.log("Invalid task name in script, aborting immediately", "error")
+            self.abort_immediately_variable = True
+            self.abort_immediately()  # todo: test this to make sure it does not cause any issues
 
         self.task_index_signal.emit(self.step_index + 1)
 
@@ -953,49 +955,53 @@ class Manager(QThread):
         self.configure_function_generator(func_var_dict)
 
         # Prompt user to turn on power amp
-        if self.abort_immediately_variable:
-            return
-        self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)
-        cont = self.cont_if_cont_clicked()
-        if not cont:
-            return
-        self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])
+        # INFO: previously, the bottom code block was in a while true loop with a break in the end...
+        # INFO: ...negating the entire purpose of a while loop block because it will only run once.
+        # todo: ensure this change does not break the code, if does, revert it via the commit history
+        if self.abort_immediately_variable:  # if the abort_immediately_variable is on at this point
+            return  # exit the pretest_initialization method
+        self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)  # this task cannot be automated
+        cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
+        if not cont:  # if the user did not click continue
+            return  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
+        self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])  # at this point, the prompt ran successfully
 
-        if self.file_saver.directories_created:
-            self.test_data.log_script(["", "CreateDataDirectories", "OK", ""])
+        if self.file_saver.directories_created:  # check if the saving directories were successfully created
+            self.test_data.log_script(["", "CreateDataDirectories", "OK", ""])  # write result to the log script
         else:
             self.test_data.log_script(["", "CreateDataDirectories", f"FAIL", ""])
 
-        try:
+        try:  # checking the self.log() functionality
             self.log("Checking ability to log")
             self.test_data.log_script(["", "Create h/w log", "OK", ""])
-        except Exception as e:
+        except Exception as e:  # self.log() doesn't work if this block is ran, report issue to user
             self.test_data.log_script(["", "Create h/w log", f"FAIL {e}", ""])
 
         self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
         self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
-        while True:
-            water_level = self.IO_Board.get_water_level()
+        while True:  # QUESTION: why is this coding block in a while true loop? All code paths from this point either return or break anyway
+            water_level = self.IO_Board.get_water_level()  # attain the water level from the hardware variable
 
-            if water_level == WaterLevel.below_level:  # if the water level is not level
+            if water_level == WaterLevel.below_level:  # if the water level is below level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return
 
-                self.IO_Board.fill_tank()
-            elif water_level == WaterLevel.above_level:  # if the water level is not level
+                self.IO_Board.fill_tank()  # if user clicked continue, send the fill tank command
+            elif water_level == WaterLevel.above_level:  # if the water level is above level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return
 
+                # QUESTION: if this code block is for water being above level, shouldn't we drain the tank, not fill it?
                 self.IO_Board.fill_tank()
             else:
-                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
+                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])  # log successful water level test if we've reached this point in the code
                 break
 
     @pyqtSlot(TestData)
@@ -1029,7 +1035,7 @@ class Manager(QThread):
         """Looks for an integer in the string, otherwise returns the current element"""
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
-        except:
+        except:  # todo: figure out what the exception name would be for this situation
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
@@ -1037,7 +1043,7 @@ class Manager(QThread):
         """Looks for an integer in the string, otherwise returns the current channel"""
         try:
             self.element = int(re.search(r"\d+", str(channel_str)).group())
-        except:
+        except:  # todo: figure out what the exception name would be for this situation
             self.log(f"Element number not given, using previous element: {self.oscilloscope_channel}")
         return self.element
 
@@ -1057,9 +1063,9 @@ class Manager(QThread):
         data_storage = var_dict["Data storage"]
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        # max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])  # QUESTION: do we need these three unused variables in this method?
-        # element_position_test = bool(var_dict["ElementPositionTest"])
-        # max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
+        max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])  # QUESTION: do we need these three unused variables in this method?
+        element_position_test = bool(var_dict["ElementPositionTest"])
+        max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
         frequency_mhz = float(var_dict["Frequency (MHz)"])
@@ -1089,8 +1095,8 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
 
         element_x_coordinate = self.element_x_coordinates[self.element]
-        # element_r_coordinate = self.element_r_coordinates[self.element]  # QUESTION: do we need this variable?
-        # self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        element_r_coordinate = self.element_r_coordinates[self.element]  # QUESTION: do we need this variable?
+        self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
@@ -1397,7 +1403,7 @@ class Manager(QThread):
             frequency_mhz: float = float(var_dict["Frequency (MHz)"])
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
-            return self.abort_after_step()
+            return self.abort_after_step()  # QUESTION: should this be abort_immediately()?
 
         self.AWG.set_output(output)
         self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
@@ -1416,7 +1422,7 @@ class Manager(QThread):
 
     def configure_oscilloscope_channels(self, var_dict):
         c1_enabled = bool(var_dict["Channel 1 Enabled"])
-        # todo: implement capture from channel 2 (stretch), must also enable the menu options in qtdesigner
+        # todo: implement capture from channel 2 (stretch), must also enable the menu options in QT designer
         c2_enabled = bool(var_dict["Channel 2 Enabled"])
         g1_mV_div = float(var_dict["Gain 1"])
         g2_mV_div = float(var_dict["Gain 2"])
@@ -1523,6 +1529,8 @@ class Manager(QThread):
     def frequency_sweep(self, var_dict):
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
+
+        # todo: look into unused variables and see if we can/should use them in this method, if not, remove them
         frequency_range = FrequencyRange[var_dict["Frequency range"].lower().replace(" ", "_")]
         start_freq_MHz = var_dict["Start frequency (MHz)"]
         end_freq_MHz = var_dict["Start frequency (MHz)"]
