@@ -1,5 +1,5 @@
 import distutils.util
-import inspect
+# import inspect
 import logging
 import os
 import re
@@ -10,11 +10,12 @@ from typing import List
 
 import numpy as np
 import pyvisa
-from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSignal, pyqtSlot
+from PyQt5 import QtCore
+from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
-from termcolor import colored
-from pprint import pprint
+# from termcolor import colored
+# from pprint import pprint
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -66,50 +67,49 @@ class Manager(QThread):
 
     # Signal section
     # Dialog signals
-    user_prompt_signal = pyqtSignal(str,
-                                    bool)  # str is message for user to read, bool is whether to restrict the
+    user_prompt_signal = QtCore.pyqtSignal(str, bool)  # str is message for user to read, bool is whether to restrict the user from clicking continue/ignore
     # continue button
-    user_prompt_pump_not_running_signal = pyqtSignal(str)  # str is pump status
-    user_prompt_signal_water_too_low_signal = pyqtSignal()  # str is water level
-    user_prompt_signal_water_too_high_signal = pyqtSignal()
-    write_cal_data_to_ua_signal = pyqtSignal(list)  # list is 2d array of calibration data
-    retracting_ua_warning_signal = pyqtSignal()
-    script_complete_signal = pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
-    user_info_signal = pyqtSignal(str)
-    user_question_signal = pyqtSignal(str)  # str is question to be asked
+    user_prompt_pump_not_running_signal = QtCore.pyqtSignal(str)  # str is pump status
+    user_prompt_signal_water_too_low_signal = QtCore.pyqtSignal()  # str is water level
+    user_prompt_signal_water_too_high_signal = QtCore.pyqtSignal()
+    write_cal_data_to_ua_signal = QtCore.pyqtSignal(list)  # list is 2d array of calibration data
+    retracting_ua_warning_signal = QtCore.pyqtSignal()
+    script_complete_signal = QtCore.pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
+    user_info_signal = QtCore.pyqtSignal(str)
+    user_question_signal = QtCore.pyqtSignal(str)  # str is question to be asked
 
-    system_info_signal = pyqtSignal(SystemInfo)
+    system_info_signal = QtCore.pyqtSignal(SystemInfo)
 
     # Script metadata
-    description_signal = pyqtSignal(str)
-    created_on_signal = pyqtSignal(str)
-    created_by_signal = pyqtSignal(str)
-    num_tasks_signal = pyqtSignal(int)
-    script_name_signal = pyqtSignal(str)
+    description_signal = QtCore.pyqtSignal(str)
+    created_on_signal = QtCore.pyqtSignal(str)
+    created_by_signal = QtCore.pyqtSignal(str)
+    num_tasks_signal = QtCore.pyqtSignal(int)
+    script_name_signal = QtCore.pyqtSignal(str)
 
     # Emits the number of the task as shown in the .wtf file, not including repeats. Pretest_initialization should be 0
-    task_number_signal = pyqtSignal(int)
+    task_number_signal = QtCore.pyqtSignal(int)
     # Tracks the index of the task in the order it is executed, including repeats. Pretest_initialization should be 0
-    task_index_signal = pyqtSignal(int)
+    task_index_signal = QtCore.pyqtSignal(int)
 
-    element_number_signal = pyqtSignal(str)
-    script_info_signal = pyqtSignal(list)
+    element_number_signal = QtCore.pyqtSignal(str)
+    script_info_signal = QtCore.pyqtSignal(list)
 
-    logger_signal = pyqtSignal(str)
-    enable_ui_signal = pyqtSignal(bool)
+    logger_signal = QtCore.pyqtSignal(str)
+    enable_ui_signal = QtCore.pyqtSignal(bool)
 
     # Tab signal
-    profile_plot_signal = pyqtSignal(list, list, str)
-    plot_signal = pyqtSignal(list, list, float)  # float is refresh rate
+    profile_plot_signal = QtCore.pyqtSignal(list, list, str)
+    plot_signal = QtCore.pyqtSignal(list, list, float)  # float is refresh rate
 
-    update_rfb_tab_signal = pyqtSignal()
+    update_rfb_tab_signal = QtCore.pyqtSignal()
     # contains
 
     # sets the current tab text of the main window (must match a tab name of the main window
-    set_tab_signal = pyqtSignal(list)
+    set_tab_signal = QtCore.pyqtSignal(list)
 
     # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice versa
-    button_enable_toggle_for_scripting = pyqtSignal(bool)
+    button_enable_toggle_for_scripting = QtCore.pyqtSignal(bool)
 
     Motors = None
 
@@ -118,6 +118,8 @@ class Manager(QThread):
     def __init__(self, system_info, parent, config: dict):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.thread_cont_mutex = None
+        self.rfb_data = None
         self.no_clicked_variable = None
         self.yes_clicked_variable = None
         self.oscilloscope_averages = 1
@@ -147,7 +149,7 @@ class Manager(QThread):
         # put a none at position zero because there is no element zero
         self.element_r_coordinates = [None]
         # fill in default theta home coordinates
-        for i in range(10):
+        for _ in range(10):
             self.element_r_coordinates.append(
                 self.config["WTF_PositionParameters"]["ThetaHomeCoord"]
             )
@@ -358,7 +360,7 @@ class Manager(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            self.condition.wait(self.mutex, 50)
 
             if self.stay_alive is False:
                 break
@@ -390,8 +392,6 @@ class Manager(QThread):
                 else:
                     if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
                         self.capture_oscilloscope_and_plot()
-                    else:
-                        pass
                     self.update_sensors()
                     if self.thermocouple.connected:
                         self.thermocouple.get_reading()
@@ -482,7 +482,6 @@ class Manager(QThread):
         self.plot_scope(time, voltage)
         self.start_time = t.time()
 
-    # noinspection PyUnresolvedReferences
     def load_script(self, path):
         """takes the script file and parses the info within it into various lists and dictionaries so the program can
          run the script, requires a path argument to the script"""
@@ -535,9 +534,6 @@ class Manager(QThread):
                 x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
                 task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
 
-                if "# of Tasks" in x0:
-                    number_of_tasks = x1
-
                 if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
                     building_loop = True  # set a flag that we're building a loop for the script
                     adding_elements_to_loop = True  # set a flag that we're adding element names from script for loop
@@ -588,8 +584,7 @@ class Manager(QThread):
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[
-                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
+            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -606,14 +601,14 @@ class Manager(QThread):
     @pyqtSlot()
     def advance_script(self):
         """Updates script step and executes the next step if applicable, and implements abort, continue, and retry"""
-        if self.task_names is None:
-            self.abort_immediately()
-            self.enable_ui_signal.emit(True)
-            return
+        if self.task_names is None:  # we need a task name, otherwise the script cannot continue
+            self.abort_immediately()  # abort the script immediately
+            self.enable_ui_signal.emit(True)  # re-enable various buttons in the main window
+            return  # exit this method
 
-        if self.retry_clicked_variable is True:
-            self.step_index = self.step_index - 1
-            self.retry_clicked_variable = False  # sets the retry variable to false so the retry function can happen
+        if self.retry_clicked_variable is True:  # if the user clicked retry on a prompt
+            self.step_index = self.step_index - 1  # retry the step via decrementing the step index
+            self.retry_clicked_variable = False  # sets the retry variable to false so the retry function may happen
             # again
 
         # advance to the next step if the previous has been completed
@@ -665,9 +660,9 @@ class Manager(QThread):
         self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        if self.task_execution_order[self.step_index][
-            1] is not None:  # if the element in the self.taskExecOrder isn't None
-            # below: set the element to be operated on to the one in self.taskExecOrder
+        # if the element in the self.taskExecOrder isn't None
+        if self.task_execution_order[self.step_index][1] is not None:
+            # set the element to be operated on to the one in self.taskExecOrder
             args['Element'] = self.task_execution_order[self.step_index][1]
 
         if "Measure element efficiency (RFB)".upper() in name.upper():
@@ -696,7 +691,10 @@ class Manager(QThread):
             self.move_system(args)
         elif "Select Channel".upper() in name.upper():
             self.select_ua_channel(args)
-            raise Exception
+        else:
+            self.log("Invalid task name in script, aborting immediately", "error")
+            self.abort_immediately_variable = True
+            self.abort_immediately()  # todo: test this to make sure it does not cause any issues
 
         self.task_index_signal.emit(self.step_index + 1)
 
@@ -746,7 +744,7 @@ class Manager(QThread):
         try:
             self.wait_for_cont()
             return True
-        except AbortException as e:
+        except AbortException:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:  # if abort immediately is true
                 self.abort_immediately(save_prompt_var=True)
@@ -790,7 +788,7 @@ class Manager(QThread):
         try:
             self.wait_for_answer()
             return True
-        except AbortException as e:
+        except AbortException:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:  # if abort immediately is true
                 self.abort_immediately(save_prompt_var=True)
@@ -889,14 +887,14 @@ class Manager(QThread):
         """Home the UA, perform hardware checks, and prompt the user until they pass,
         takes in a variable dict as a parameter"""
 
-        # add first 4 lines of scriptlog
+        # add first 4 lines of script log
         self.test_data.log_script([f"{self.test_data.serial_number}-{self.test_data.test_date_time}",
                                    '', '', ''])  # this is the first line
         self.test_data.log_script(["Running script: ", self.test_data.script_name, '', '', ''])
         self.test_data.log_script(["Pretest_initialization", '', '', ''])
         self.test_data.log_script(['', "Prompt username+UA serial", 'OK', ''])
 
-        # Check if wtfib is connected and add that to the script log
+        # Check if WTF-IB is connected and add that to the script log
         if self.test_data.serial_number != "":
             self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
         else:
@@ -957,53 +955,53 @@ class Manager(QThread):
         self.configure_function_generator(func_var_dict)
 
         # Prompt user to turn on power amp
-        while True:
-            if self.abort_immediately_variable:
-                return
-            self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)
+        # INFO: previously, the bottom code block was in a while true loop with a break in the end...
+        # INFO: ...negating the entire purpose of a while loop block because it will only run once.
+        # todo: ensure this change does not break the code, if does, revert it via the commit history
+        if self.abort_immediately_variable:  # if the abort_immediately_variable is on at this point
+            return  # exit the pretest_initialization method
+        self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)  # this task cannot be automated
+        cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
+        if not cont:  # if the user did not click continue
+            return  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
+        self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])  # at this point, the prompt ran successfully
 
-            cont = self.cont_if_cont_clicked()
-            if not cont:
-                return
-
-            self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])
-            break
-
-        if self.file_saver.directories_created:
-            self.test_data.log_script(["", "CreateDataDirectories", "OK", ""])
+        if self.file_saver.directories_created:  # check if the saving directories were successfully created
+            self.test_data.log_script(["", "CreateDataDirectories", "OK", ""])  # write result to the log script
         else:
             self.test_data.log_script(["", "CreateDataDirectories", f"FAIL", ""])
 
-        try:
+        try:  # checking the self.log() functionality
             self.log("Checking ability to log")
             self.test_data.log_script(["", "Create h/w log", "OK", ""])
-        except Exception as e:
+        except Exception as e:  # self.log() doesn't work if this block is ran, report issue to user
             self.test_data.log_script(["", "Create h/w log", f"FAIL {e}", ""])
 
         self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
         self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
-        while True:
-            water_level = self.IO_Board.get_water_level()
+        while True:  # QUESTION: why is this coding block in a while true loop? All code paths from this point either return or break anyway
+            water_level = self.IO_Board.get_water_level()  # attain the water level from the hardware variable
 
-            if water_level == WaterLevel.below_level:  # if the water level is not level
+            if water_level == WaterLevel.below_level:  # if the water level is below level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_low_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return
 
-                self.IO_Board.fill_tank()
-            elif water_level == WaterLevel.above_level:  # if the water level is not level
+                self.IO_Board.fill_tank()  # if user clicked continue, send the fill tank command
+            elif water_level == WaterLevel.above_level:  # if the water level is above level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return
 
+                # QUESTION: if this code block is for water being above level, shouldn't we drain the tank, not fill it?
                 self.IO_Board.fill_tank()
             else:
-                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
+                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])  # log successful water level test if we've reached this point in the code
                 break
 
     @pyqtSlot(TestData)
@@ -1037,7 +1035,7 @@ class Manager(QThread):
         """Looks for an integer in the string, otherwise returns the current element"""
         try:
             self.element = int(re.search(r"\d+", str(element_str)).group())
-        except:
+        except:  # todo: figure out what the exception name would be for this situation
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
@@ -1045,7 +1043,7 @@ class Manager(QThread):
         """Looks for an integer in the string, otherwise returns the current channel"""
         try:
             self.element = int(re.search(r"\d+", str(channel_str)).group())
-        except:
+        except:  # todo: figure out what the exception name would be for this situation
             self.log(f"Element number not given, using previous element: {self.oscilloscope_channel}")
         return self.element
 
@@ -1055,23 +1053,23 @@ class Manager(QThread):
         returns a boolean indicating whether to continue the script
         """
         self.element = self.element_str_to_int(var_dict["Element"])
-        x_increment_MM = float(var_dict["X Incr. (mm)"])
-        XPts = int(var_dict["X #Pts."])
-        thetaIncrDeg = float(var_dict["Theta Incr. (deg)"])
-        thetaPts = int(var_dict["Theta #Pts."])
+        x_increment_mm = float(var_dict["X Incr. (mm)"])
+        x_points = int(var_dict["X #Pts."])
+        theta_increment_degrees = float(var_dict["Theta Incr. (deg)"])
+        theta_points = int(var_dict["Theta #Pts."])
         self.oscilloscope_channel = int(var_dict["Scope channel"][8:])
         acquisition_type = var_dict["Acquisition type"]
         averages = int(re.search(r"\d+", str(var_dict["Averages"])).group())
         data_storage = var_dict["Data storage"]
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        maxPosErrMM = float(var_dict["Max. position error (+/- mm)"])
-        elemPosTest = bool(var_dict["ElementPositionTest"])
-        max_angle_variation_Deg = float(var_dict["Max angle variation (deg)"])
+        max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])  # QUESTION: do we need these three unused variables in this method?
+        element_position_test = bool(var_dict["ElementPositionTest"])
+        max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
-        frequency_MHz = float(var_dict["Frequency (MHz)"])
-        amplitude_mVpp = float(var_dict["Amplitude (mV)"])
+        frequency_mhz = float(var_dict["Frequency (MHz)"])
+        amplitude_mvpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
 
         if storage_location == 'UA Results Directory' or data_directory == '':
@@ -1097,16 +1095,16 @@ class Manager(QThread):
         self.element_number_signal.emit(str(self.element))
 
         element_x_coordinate = self.element_x_coordinates[self.element]
-        element_r_coordinate = self.element_r_coordinates[self.element]
-        # self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        element_r_coordinate = self.element_r_coordinates[self.element]  # QUESTION: do we need this variable?
+        self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
 
         # Configure function generator
         awg_var_dict = dict()
-        awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
-        awg_var_dict["Frequency (MHz)"] = frequency_MHz
+        awg_var_dict["Amplitude (mVpp)"] = amplitude_mvpp
+        awg_var_dict["Frequency (MHz)"] = frequency_mhz
         awg_var_dict["Mode"] = "Toneburst"
         awg_var_dict["Enable output"] = "False"
         awg_var_dict["#Cycles"] = burst_count
@@ -1128,7 +1126,7 @@ class Manager(QThread):
         self.autoset_timebase(autoset_var_dict)
 
         self.Motors.go_to_position(['R'], [-180])
-        cont = self.scan_axis(self.element, axis='X', num_points=XPts, increment=x_increment_MM,
+        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                               ref_position=element_x_coordinate,
                               go_to_peak=True, data_storage=data_storage, update_element_position=True,
                               acquisition_type=acquisition_type,
@@ -1138,7 +1136,7 @@ class Manager(QThread):
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
-            cont = self.scan_axis(self.element, axis='Theta', num_points=thetaPts, increment=thetaIncrDeg,
+            cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points, increment=theta_increment_degrees,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
                                   go_to_peak=False, update_element_position=True, data_storage=data_storage,
                                   acquisition_type=acquisition_type,
@@ -1269,7 +1267,7 @@ class Manager(QThread):
 
         status_str = f'Start {axis} {"%.2f" % self.element_x_coordinates[self.element]} mm; Incr {axis} ' \
                      f'{increment} {units_str}; #Points {num_points}; Peak {axis} = ' \
-                     f'{"%.2f" % max_position} 'f'mm;'
+                     f'{"%.2f" % max_position} mm;'
 
         if go_to_peak:
             status = self.Motors.go_to_position([axis_letter], [max_position])
@@ -1280,7 +1278,7 @@ class Manager(QThread):
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
-        if not 'Do not store'.upper() == data_storage.upper():
+        if 'Do not store'.upper() != data_storage.upper():
             self.save_scan_profile(positions=positions, vsi_values=vsi_values,
                                    axis=axis, storage_location=storage_location, filename_stub=filename_stub)
 
@@ -1347,6 +1345,7 @@ class Manager(QThread):
                                                   storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
+
     def save_results(self, var_dict):
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
@@ -1359,18 +1358,18 @@ class Manager(QThread):
         if save_summary_file:  # ask for this in the abort methods
             self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
 
-        # Todo: abort script will not perform this section, it will not write uac calibration, prompts occur in the abort method
         if write_uac_calibration and prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Write calibration data to UA", False)
-            # todo: change options from continue/abort to yes/no
             cont = self.cont_if_cont_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return
             calibration_data = generate_calibration_data(self.test_data)
             self.UAInterface.write_data(calibration_data)
 
-    def prompt_user_for_action(self, var_dict):
-        """Prompt user for action"""
+    def prompt_user_for_action(self, var_dict: dict) -> None:
+        """Waits for the user select continue, abort or retry via sending a signal
+        to the main window. It extracts the Prompt type and message from the passed
+        dict"""
         prompt_type = var_dict["Prompt type"]
         if "Other".upper() in prompt_type.upper():
             try:
@@ -1386,30 +1385,31 @@ class Manager(QThread):
         if not cont:  # if the user did not click continue, return
             return
 
-    def configure_function_generator(self, var_dict):
-        """Set function generator to desired settings"""
-        mVpp: int = int(var_dict["Amplitude (mVpp)"])
-        frequency_mhz: float = float(var_dict["Frequency (MHz)"])
+    def configure_function_generator(self, var_dict: dict):
+        """
+        Set function generator to various desired settings, such as the mVpp, frequency, etc.
+        from the passed variable dictionary.
+        """
+        mvpp: int = int(var_dict["Amplitude (mVpp)"])
         mode = var_dict["Mode"]
         output = bool(var_dict["Enable output"])
-        frequency_options = var_dict["Set frequency options"]
+        frequency_options: str = var_dict["Set frequency options"]
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
             frequency_mhz = self.test_data.low_frequency_MHz
         elif frequency_options == "Common high frequency" or frequency_options == 'Element pk high frequency':
             frequency_mhz = self.test_data.high_frequency_MHz
         elif frequency_options == "From config cluster":
-            frequency_mhz = frequency_mhz
-            pass
+            frequency_mhz: float = float(var_dict["Frequency (MHz)"])
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
-            return self.abort_after_step()
+            return self.abort_after_step()  # QUESTION: should this be abort_immediately()?
 
         self.AWG.set_output(output)
         self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
         self.test_data.log_script(
             ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_mhz} MHz", "", ])
-        self.AWG.set_amplitude_v(mVpp / 1000)
+        self.AWG.set_amplitude_v(mvpp / 1000)
 
         if mode == "N Cycle":
             self.AWG.set_burst(True)
@@ -1418,11 +1418,11 @@ class Manager(QThread):
         else:
             self.AWG.set_burst(False)
 
-        self.test_data.log_script(["", "Config FGen", f"{mVpp}mVpp;{frequency_mhz}MHz,{mode}"])
+        self.test_data.log_script(["", "Config FGen", f"{mvpp}mVpp;{frequency_mhz}MHz,{mode}"])
 
     def configure_oscilloscope_channels(self, var_dict):
         c1_enabled = bool(var_dict["Channel 1 Enabled"])
-        # todo: implement capture from channel 2 (stretch), must also enable the menu options in qtdesigner
+        # todo: implement capture from channel 2 (stretch), must also enable the menu options in QT designer
         c2_enabled = bool(var_dict["Channel 2 Enabled"])
         g1_mV_div = float(var_dict["Gain 1"])
         g2_mV_div = float(var_dict["Gain 2"])
@@ -1446,7 +1446,6 @@ class Manager(QThread):
 
     def home_system(self, var_dict) -> bool:
         """Return axis to zero coordinate, returns whether to continue the script"""
-        # TODO: have this be called in pretest_initialization and have it add to script log
         axis_to_home = var_dict["Axis to home"]
 
         successful_go_home = False
@@ -1492,14 +1491,14 @@ class Manager(QThread):
             theta_pos = float(var_dict["Theta POS"])
             move_theta = bool(var_dict["Move Theta"])
             axes = []
-            coords = []
+            coordinates = []
             if move_x:
                 axes.append("X")
-                coords.append(x_pos)
+                coordinates.append(x_pos)
             if move_theta:
                 axes.append("R")
-                coords.append(theta_pos)
-            self.Motors.go_to_position(axes, coords)
+                coordinates.append(theta_pos)
+            self.Motors.go_to_position(axes, coordinates)
         else:
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
@@ -1530,6 +1529,8 @@ class Manager(QThread):
     def frequency_sweep(self, var_dict):
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
+
+        # todo: look into unused variables and see if we can/should use them in this method, if not, remove them
         frequency_range = FrequencyRange[var_dict["Frequency range"].lower().replace(" ", "_")]
         start_freq_MHz = var_dict["Start frequency (MHz)"]
         end_freq_MHz = var_dict["Start frequency (MHz)"]
@@ -1616,7 +1617,7 @@ class Manager(QThread):
         dx = 0
         for i in range(1, len(times_s)):
             dx = times_s[i] - times_s[i - 1]
-            if not dx == 0:
+            if dx != 0:
                 break
 
         voltages_v_squared = np.square(voltages_v)
@@ -1660,7 +1661,7 @@ class Manager(QThread):
         # Show in the results summary that the test has begun by showing DNF
         self.test_data.set_pass_result(self.element, test_result)
 
-        # Warn the user if the test time is too short to analyze properly
+        # Warns the user if the test time is too short to analyze properly
         settling_time = self.config["Analysis"]['settling_time_s']
         if rfb_on_time < settling_time * 2 or rfb_off_time < settling_time * 2:
             error_detail = "Warning: the on or off intervals are less than the sensor settling time specified in the " \
@@ -1832,21 +1833,36 @@ class Manager(QThread):
         self.rfb_logger.start(priority=QThread.HighPriority)
 
     def __wrap_up_rfb_logger(self):
+        """
+        This method calls the balance's logger's quit function to close
+        the logger thread. Sleeps to .1 seconds to prevent issues
+        """
         self.rfb_logger.quit()
         t.sleep(0.1)
 
-    # calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
     def write_cal_data_to_ua_dialog(self, calibration_data):
+        """
+        calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
+        , relays this data to the main window to open a GUI dialog to save calibration data.
+        """
         # todo: check that a dialog appears
         self.write_cal_data_to_ua_signal.emit(calibration_data)
 
     # todo: test that this turns off and disconnects all devices
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """
+        This method disconnects all devices from the program when called,
+        and sets the stay alive flag to false.
+        """
         for device in self.devices:
             device.wrap_up()
         self.stay_alive = False
 
     def log(self, message, level="info"):
+        """
+        Relays to the log_msg method in useful_methods.py, simply pass the message to be logged and
+        a string representing the log level ("info," "debug," "error," or "warning")
+        """
         from inspect import getframeinfo, stack
         log_msg(self, root_logger=root_logger, message=message, level=level,
                 line_number=getframeinfo(stack()[1][0]).lineno)
@@ -1994,7 +2010,7 @@ class Manager(QThread):
         data_storage = command_ray[13]
         serial_number = command_ray[14]
 
-        #self.test_data.set_blank_values()
+        # self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.test_data.serial_number = " " + str(serial_number)

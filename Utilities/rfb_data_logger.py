@@ -1,5 +1,7 @@
 import time as t
-from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QWaitCondition, pyqtSlot
+
+from PyQt5 import QtCore
+from PyQt5.QtCore import QThread, QMutex, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_sensor import AbstractSensor
@@ -11,19 +13,20 @@ from data_structures.rfb_data import RFBData
 
 class RFBDataLogger(QThread):
     # Trigger a capture from all sensors at once
-    trigger_capture_signal = pyqtSignal()
+    trigger_capture_signal = QtCore.pyqtSignal()
 
     Balance: AbstractBalance
     Forward_Power_Meter: AbstractSensor
     Reflected_Power_Meter: AbstractSensor
     rfb_data: RFBData
 
-    def __init__(self, rfb_data, Balance: AbstractBalance, Forward_Power_Meter: AbstractSensor,
-                 Reflected_Power_Meter: AbstractSensor, config, parent=None):
+    def __init__(self, rfb_data, balance: AbstractBalance, forward_power_meter: AbstractSensor,
+                 reflected_power_meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
+        self.stay_alive = None
         self.app = QApplication.instance()
         self.config = config
-        # Encapsulates all data relevent to the RFB efficiency test Polled by the manager and shared with the
+        # Encapsulates all data relevant to the RFB efficiency test Polled by the manager and shared with the
         # Ui thread by reference
         self.rfb_data = rfb_data
         # Event loop control vars
@@ -34,7 +37,7 @@ class RFBDataLogger(QThread):
         self.sensor_mutex.lock()
         self.sensor_mutex.unlock()
 
-        # These should all have the same length and the readings should begin being aquired within ~1ms of each other
+        # These should all have the same length and the readings should begin being acquired within ~1ms of each other
         self.awg_on_ray = list()
         self.times_s = list()
         self.balance_readings_g = list()
@@ -49,9 +52,9 @@ class RFBDataLogger(QThread):
         self.f_meter_ready = True
         self.r_meter_ready = True
 
-        self.BalanceThread = SensorThread(config=self.config, sensor=Balance)
-        self.F_Meter_Thread = SensorThread(config=self.config, sensor=Forward_Power_Meter)
-        self.R_Meter_Thread = SensorThread(config=self.config, sensor=Reflected_Power_Meter)
+        self.BalanceThread = SensorThread(config=self.config, sensor=balance)
+        self.F_Meter_Thread = SensorThread(config=self.config, sensor=forward_power_meter)
+        self.R_Meter_Thread = SensorThread(config=self.config, sensor=reflected_power_meter)
         self.thread_list = list()
         self.thread_list.append(self.BalanceThread)
         self.thread_list.append(self.F_Meter_Thread)
@@ -69,12 +72,16 @@ class RFBDataLogger(QThread):
         self.R_Meter_Thread.start(priority=QThread.HighPriority)
 
     def run(self) -> None:
+        """
+        Starts capturing data from the waveform generator, uses mutexes to prevent
+        race condition. Also appends values to awg_on_ray and times_s.
+        """
         # Setup event loop
         start_time = t.time()
         self.stay_alive = True
         self.mutex.lock()
         while self.stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            self.condition.wait(self.mutex, 50)
 
             # Inside event loop
             if self.sensors_ready():
@@ -92,11 +99,15 @@ class RFBDataLogger(QThread):
         self.mutex.unlock()
         return super().run()
 
-    def sensors_ready(self):
+    def sensors_ready(self) -> bool:
+        """
+        Tells the calling scope whether all the logged devices: the balance, forward power meter,
+        and reverse power meter are ready
+        """
         return self.balance_ready and self.f_meter_ready and self.r_meter_ready
 
     def update_realtime_data(self):
-        # copy lists by value to avoid length mismatch race condition
+        """copy lists by value to avoid length mismatch race condition"""
         times_s = list(self.times_s)
         acoustic_powers_w = list(self.acoustic_powers_w)
         awg_on_ray = list(self.awg_on_ray)
@@ -121,8 +132,10 @@ class RFBDataLogger(QThread):
 
     @pyqtSlot(float)
     def log_balance(self, reading_g):
-
-        # todo: remove this line
+        """
+        appends a balance reading to the balance_readings_g list, as well as
+        append a calculated acoustic power reading to acoustic_powers_w
+        """
         if self.awg_on:
             reading_g = reading_g / 500 + .053
         else:
@@ -134,7 +147,11 @@ class RFBDataLogger(QThread):
 
     @pyqtSlot(float)
     def log_f_meter(self, reading_w):
-        #todo: remove this block
+        """
+        adds reading from waveform generator in watts to a list called
+        f_meter_readings_w, a variable contained in the rfb_data_logger class
+        """
+        # todo: remove this block
         if self.awg_on:
             reading_w = reading_w / 50 + 1
         else:
@@ -161,6 +178,6 @@ class RFBDataLogger(QThread):
     def quit(self):
         self.stay_alive = False
         try:
-            super().quit()
+            super().quit()  # closes the thread
         except RuntimeError:
             pass
