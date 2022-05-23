@@ -67,11 +67,11 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
                 line = f.readline()
                 if len(serial_no) == 6 and serial_no in line:
                     chunks = line.replace(" ", "").split("|")
-                    freqs = chunks[2].split(",")
+                    frequencies = chunks[2].split(",")
                     hardware_code = chunks[3]
 
-                    self.lf_MHz_field.setText(freqs[0])
-                    self.hf_MHz_field.setText(freqs[1])
+                    self.lf_MHz_field.setText(frequencies[0])
+                    self.hf_MHz_field.setText(frequencies[1])
                     self.hardware_code_field.setText(hardware_code)
                     break
 
@@ -114,7 +114,7 @@ def print_info(dict):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5 import QtWidgets
+    from PyQt5 import QtWidgets, QtCore
     from datetime import date
 
     app = QtWidgets.QApplication(sys.argv)

@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QTabWidget
 from data_structures.test_data import TestData
 
 
-
 def create_coord_rays(coordinates: str, ax_letters: list):
     """
     Inputs:
@@ -159,14 +158,11 @@ def clear_layout(layout):
 
 def trim(lists: List[List]) -> Tuple:
     """Cut a tuple of lists to their minimum length, removing elements at the end"""
-    lengths = [] * len(lists)
+    lengths = [None] * len(lists)  # INFO: cannot change [None] to [] without errors
     trimmed_lists = [None] * len(lists)
 
-    for i in range(len(lists)):  # QUESTION: should we subtract 1 from the length since it starts at 1 and not 0?
-        try:
-            lengths[i] = len(lists[i])
-        except IndexError:
-            pass
+    for i in range(len(lists)):
+        lengths[i] = len(lists[i])
 
     # Ensure that every list had its length checked
     assert None not in lengths
@@ -298,7 +294,6 @@ def print_list_2(list2):
     what ever is inside the list to a string
     """
     print(str(list2)[1:-1])
-
 
 # if __name__ == "__main__":
 #     pass

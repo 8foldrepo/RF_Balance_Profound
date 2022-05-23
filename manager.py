@@ -1445,7 +1445,9 @@ class Manager(QThread):
         self.Oscilloscope.autoset_oscilloscope_timebase()
 
     def home_system(self, var_dict) -> bool:
-        """Return axis to zero coordinate, returns whether to continue the script"""
+        """
+        Return axis to zero coordinate, returns whether to continue the script
+        """
         axis_to_home = var_dict["Axis to home"]
 
         successful_go_home = False
@@ -1478,11 +1480,15 @@ class Manager(QThread):
         return True
 
     def retract_ua_warning(self):
-        """Warn the user that the UA is being retracted in x"""
+        """
+        Warn the user that the UA is being retracted in x
+        """
         self.retracting_ua_warning_signal.emit()
 
     def move_system(self, var_dict):
-        """Move motors to the specified coordinates"""
+        """
+        Move motors to the specified coordinates
+        """
         move_type = var_dict["Move Type"]
 
         if "Go To".upper() in move_type.upper():
@@ -1522,7 +1528,9 @@ class Manager(QThread):
 
     # todo: test
     def select_ua_channel(self, var_dict):
-        """Activate the relay for and move to a specified element"""
+        """
+        Activate the relay for and move to a specified element
+        """
         self.element = self.element_str_to_int(var_dict["Element"])
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
@@ -1613,7 +1621,9 @@ class Manager(QThread):
         return (list_of_frequencies_MHz, list_of_VSIs)
 
     def find_vsi(self, times_s, voltages_v):
-        """Returns the voltage squared integral of a oscilloscope waveform"""
+        """
+        Returns the voltage squared integral of a oscilloscope waveform
+        """
         dx = 0
         for i in range(1, len(times_s)):
             dx = times_s[i] - times_s[i - 1]
