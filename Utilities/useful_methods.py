@@ -162,8 +162,11 @@ def trim(lists: List[List]) -> Tuple:
     lengths = [] * len(lists)
     trimmed_lists = [None] * len(lists)
 
-    for i in range(len(lists)):
-        lengths[i: int] = len(lists[i])
+    for i in range(len(lists)):  # QUESTION: should we subtract 1 from the length since it starts at 1 and not 0?
+        try:
+            lengths[i] = len(lists[i])
+        except IndexError:
+            pass
 
     # Ensure that every list had its length checked
     assert None not in lengths
