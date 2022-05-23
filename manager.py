@@ -700,7 +700,6 @@ class Manager(QThread):
             self.select_ua_channel(args)
         else:
             self.log("Invalid task name in script, aborting immediately", "error")
-            self.abort_immediately_variable = True
             self.abort_immediately()  # todo: test this to make sure it does not cause any issues
 
         self.task_index_signal.emit(self.step_index + 1)

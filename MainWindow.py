@@ -364,7 +364,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.load_script_signal.connect(self.manager.load_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
         self.manager.button_enable_toggle_for_scripting.connect(self.set_buttons_enabled)
-        self.manager.button_enable_toggle_for_scripting.connect(self.script_running_buttons_enable)
+        self.manager.button_enable_toggle_for_scripting.connect(self.script_running_buttons_toggle)
         self.manager.no_script_loaded_signal.connect(self.no_script_loaded)
 
     @pyqtSlot(float)
@@ -804,10 +804,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.run_step_button.setEnabled(False)
         self.abort_immediately_button.setEnabled(False)
 
-    @pyqtSlot()
-    def script_running_buttons_enable(self):
-        self.abort_button.setEnabled(True)
-        self.abort_immediately_button.setEnabled(True)
+    @pyqtSlot(bool)
+    def script_running_buttons_toggle(self, enabled):
+        self.abort_button.setEnabled(not enabled)
+        self.abort_immediately_button.setEnabled(not enabled)
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled: bool) -> None:
