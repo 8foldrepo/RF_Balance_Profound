@@ -1,260 +1,263 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>config_func_generator</class>
-    <widget class="QWidget" name="config_func_generator">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>648</width>
-                <height>410</height>
-            </rect>
+ <class>config_func_generator</class>
+ <widget class="QWidget" name="config_func_generator">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>648</width>
+    <height>410</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>30</y>
+     <width>158</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Function generator configuration</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="func_generation_config_frame">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>201</width>
+     <height>145</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(220, 242, 255)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>86</width>
+      <height>129</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="freq_ampl_mode_vert">
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Frequency (MHz)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="freq_doublespin">
+       <property name="styleSheet">
+        <string notr="true">background-color:white</string>
+       </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>0.000100000000000</double>
+       </property>
+       <property name="maximum">
+        <double>19.899999999999999</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>4.200000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Amplitude (mVpp)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="ampl_doublespin">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Typical test case is 100mV (less than what is used clinically). Limit of the power amplifier is 1000 mV, with a 10x attenautor the limit raises to 10 Vpp (10,000 mVpp)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white</string>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="mode_combo">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>19</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>N Cycle</string>
         </property>
-        <property name="windowTitle">
-            <string>Form</string>
+       </item>
+       <item>
+        <property name="text">
+         <string>Continuous</string>
         </property>
-        <widget class="QLabel" name="label">
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>30</y>
-                    <width>158</width>
-                    <height>13</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Function generator configuration</string>
-            </property>
-        </widget>
-        <widget class="QFrame" name="func_generation_config_frame">
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>50</y>
-                    <width>201</width>
-                    <height>145</height>
-                </rect>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">background:rgb(220, 242, 255)</string>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-            </property>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>10</y>
-                        <width>86</width>
-                        <height>129</height>
-                    </rect>
-                </property>
-                <layout class="QVBoxLayout" name="freq_ampl_mode_vert">
-                    <item>
-                        <widget class="QLabel" name="label_7">
-                            <property name="text">
-                                <string>Frequency (MHz)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QDoubleSpinBox" name="freq_doublespin">
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white</string>
-                            </property>
-                            <property name="decimals">
-                                <number>4</number>
-                            </property>
-                            <property name="minimum">
-                                <double>0.000100000000000</double>
-                            </property>
-                            <property name="maximum">
-                                <double>19.899999999999999</double>
-                            </property>
-                            <property name="singleStep">
-                                <double>0.100000000000000</double>
-                            </property>
-                            <property name="value">
-                                <double>4.200000000000000</double>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QLabel" name="label_4">
-                            <property name="text">
-                                <string>Amplitude (mVpp)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QSpinBox" name="ampl_doublespin">
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white</string>
-                            </property>
-                            <property name="minimum">
-                                <number>1</number>
-                            </property>
-                            <property name="maximum">
-                                <number>10000</number>
-                            </property>
-                            <property name="value">
-                                <number>50</number>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QLabel" name="label_5">
-                            <property name="text">
-                                <string>Mode</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QComboBox" name="mode_combo">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>19</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white</string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>N Cycle</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Continuous</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>110</x>
-                        <y>10</y>
-                        <width>77</width>
-                        <height>44</height>
-                    </rect>
-                </property>
-                <layout class="QVBoxLayout" name="enable_output_vert">
-                    <item>
-                        <widget class="QLabel" name="label_3">
-                            <property name="text">
-                                <string>Enable output</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="Switch" name="enable_output_switch">
-                            <property name="text">
-                                <string>PushButton</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>144</x>
-                        <y>97</y>
-                        <width>41</width>
-                        <height>39</height>
-                    </rect>
-                </property>
-                <layout class="QVBoxLayout" name="cycles_vert">
-                    <item>
-                        <widget class="QLabel" name="label_6">
-                            <property name="text">
-                                <string>#Cycles</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QSpinBox" name="no_cycles_spin">
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-            <property name="geometry">
-                <rect>
-                    <x>240</x>
-                    <y>30</y>
-                    <width>155</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <layout class="QVBoxLayout" name="set_freq_opt_vert">
-                <item>
-                    <widget class="QLabel" name="label_2">
-                        <property name="text">
-                            <string>Set frequency options</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QComboBox" name="set_freq_opt_combo">
-                        <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>10</y>
+      <width>77</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="enable_output_vert">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Enable output</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Switch" name="enable_output_switch">
+       <property name="text">
+        <string>PushButton</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>144</x>
+      <y>97</y>
+      <width>41</width>
+      <height>39</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="cycles_vert">
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>#Cycles</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="no_cycles_spin">
+       <property name="styleSheet">
+        <string notr="true">background-color:white</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>30</y>
+     <width>155</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="set_freq_opt_vert">
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Set frequency options</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="set_freq_opt_combo">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                                 text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;-
                                 From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;-
                                 Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;-
                                 Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                             </string>
-                        </property>
-                        <item>
-                            <property name="text">
-                                <string>From config cluster</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Element pk low frequency</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Element pk high frequency</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Common low frequency</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Common high frequency</string>
-                            </property>
-                        </item>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-    </widget>
-    <customwidgets>
-        <customwidget>
-            <class>Switch</class>
-            <extends>QPushButton</extends>
-            <header location="global">ui_elements.switch</header>
-        </customwidget>
-    </customwidgets>
-    <resources/>
-    <connections/>
+      </property>
+      <item>
+       <property name="text">
+        <string>From config cluster</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Element pk low frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Element pk high frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Common low frequency</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Common high frequency</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Switch</class>
+   <extends>QPushButton</extends>
+   <header location="global">ui_elements.switch</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
 </ui>

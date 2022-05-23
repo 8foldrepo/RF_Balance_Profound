@@ -17,7 +17,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
                     ("Task type", "Configure Function Generator"),
                     ("Frequency (MHz)", "4.2"),
                     ("Enable Output", "True"),
-                    ("Amplitude (mVpp)", "50"),
+                    ("Amplitude (mVpp)", "100"),
                     ("Mode", "N Cycle"),
                     ("#Cycles", "15"),
                     ("Set frequency options", "From config cluster"),
