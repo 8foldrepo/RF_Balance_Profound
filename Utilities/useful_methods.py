@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QTabWidget
 from data_structures.test_data import TestData
 
 
+
 def create_coord_rays(coordinates: str, ax_letters: list):
     """
     Inputs:
