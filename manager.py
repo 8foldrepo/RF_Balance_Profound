@@ -6,6 +6,7 @@ import re
 import sys
 import time as t
 from collections import OrderedDict
+from pprint import pprint
 from typing import List
 
 import numpy as np
@@ -97,6 +98,7 @@ class Manager(QThread):
 
     logger_signal = QtCore.pyqtSignal(str)
     enable_ui_signal = QtCore.pyqtSignal(bool)
+    no_script_loaded_signal = QtCore.pyqtSignal()
 
     # Tab signal
     profile_plot_signal = QtCore.pyqtSignal(list, list, str)
@@ -310,6 +312,7 @@ class Manager(QThread):
         self.oscilloscope_channel = self.Oscilloscope.channel
         self.update_system_info()
         self.enable_ui_signal.emit(True)
+        self.no_script_loaded_signal.emit()
 
         # Get the position of the motors
         if self.Motors.connected:
@@ -596,6 +599,10 @@ class Manager(QThread):
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
+        if len(tasks) == 0 or (len(tasks) == 1 and '# of Tasks' in tasks[0]):  # checks if there are no tasks, with and without header
+            self.user_info_signal.emit("You cannot run a script that has no tasks, please select a script that has tasks.")
+            self.abort_immediately()
+            self.no_script_loaded_signal.emit()
     # get UA serial no. and append behind date
 
     @pyqtSlot()
