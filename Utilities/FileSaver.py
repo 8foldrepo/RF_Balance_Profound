@@ -494,6 +494,7 @@ class FileSaver:
             )
         else:
             self.log(level='error', message='Missing power data')
+            cumulative_results = []  # needed or else referenced before assignment error is raised
 
         # todo: check that p_on_rand_unc is the one we want
         self.store_measure_rfb_waveform_csv(
