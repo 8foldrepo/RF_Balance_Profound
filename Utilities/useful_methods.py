@@ -159,7 +159,7 @@ def clear_layout(layout):
 
 def trim(lists: List[List]) -> Tuple:
     """Cut a tuple of lists to their minimum length, removing elements at the end"""
-    lengths = [] * len(lists)
+    lengths = [None] * len(lists)
     trimmed_lists = [None] * len(lists)
 
     for i in range(len(lists)):
