@@ -294,38 +294,28 @@ class FileSaver:
 
         # matches number of points to start on, end on, start off, and end off in absorb_trans_focus_times 2D list
         # absorb_trans_focus_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
-        if not points == len(absorb_trans_times[0]) == len(absorb_trans_times[1]) == \
-               len(absorb_trans_times[2]) == len(absorb_trans_times[3]):
-            self.log('error: length mismatch between points parameter and absorb_trans_focus_times start/end '
-                     'lists in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section')
-        else:
+        if points == len(absorb_trans_times[0]) == len(absorb_trans_times[1]) == len(absorb_trans_times[2]) == len(absorb_trans_times[3]):
             for x in range(points):
                 file.write(
                     f'{"%.6f" % absorb_trans_times[0][x]},{"%.6f" % absorb_trans_times[1][x]},'
                     f'{"%.6f" % absorb_trans_times[2][x]},{"%.6f" % absorb_trans_times[3][x]}\n')
+        else:
+            self.log('error: length mismatch between points parameter and absorb_trans_focus_times start/end '
+                     'lists in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section')
 
         file.write("\nTransition Amp\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
-        if (
-                not points
-                    == len(transition_amps[0])
-                    == len(transition_amps[1])
-                    == len(transition_amps[2])
-                    == len(transition_amps[3])
-        ):
+        if points == len(transition_amps[0]) == len(transition_amps[1]) == len(transition_amps[2]) == len(transition_amps[3]):
+            for x in range(points):
+                file.write(f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
+                           f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n')
+        else:
             self.log(
                 f"error: length mismatch between points ({points}) parameter and transition_amp_times start/end lists "
                 f"({len(transition_amps[0])}, {len(transition_amps[1])}, "
                 f"{len(transition_amps[2])}, {len(transition_amps[3])}) "
-                f"in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section"
-            )
-        else:
-            for x in range(points):
-                file.write(
-                    f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
-                    f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n'
-                )
+                f"in store_measure_rfb_waveform_csv in FileSaver.py, skipping over this section")
 
         file.write("\nRaw Data\n")
         file.write("Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)\n")
@@ -341,7 +331,7 @@ class FileSaver:
     def save_find_element_profile(self, metadata, positions, vsi_values, storage_location,
                                   units_str="Voltage Squared Integral", filename_stub="FindElement"):
 
-        if storage_location != '' and storage_location != None:
+        if storage_location != '' and storage_location is not None:
             try:
                 path = check_directory(
                     os.path.join(
