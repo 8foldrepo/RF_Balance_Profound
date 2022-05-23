@@ -3102,7 +3102,7 @@
         <item>
          <widget class="QLabel" name="label_26">
           <property name="text">
-           <string>Select a test script by clicking &quot;Load script&quot; in the lower left corner of the display.                                       </string>
+           <string>Select a test script by clicking &quot;Load script&quot; in the lower left corner of the display. You may also build a script via the &quot;Edit Script&quot; tab, save it, then load it.                                      </string>
           </property>
          </widget>
         </item>
