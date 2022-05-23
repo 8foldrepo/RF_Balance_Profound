@@ -49,3 +49,11 @@ class MyQDialog(QDialog):
     # Ability to log messages
     def log(self, message, level="info"):
         log_msg(self, self.root_logger, message=message, level=level)
+        
+    def reject(self):
+        """
+        If escape key is pressed
+        """
+        self.dialog_resolved = False
+        self.abort_signal.emit()
+        self.close()
