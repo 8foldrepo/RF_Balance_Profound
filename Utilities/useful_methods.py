@@ -163,7 +163,7 @@ def trim(lists: List[List]) -> Tuple:
     trimmed_lists = [None] * len(lists)
 
     for i in range(len(lists)):
-        lengths[i: int] = len(lists[i])
+        lengths[i] = len(lists[i])
 
     # Ensure that every list had its length checked
     assert None not in lengths
