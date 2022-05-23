@@ -378,7 +378,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
     def move_selection_up(self):
         """
-        Moves the highlight cursor in the tree view up
+        Moves the highlight cursor in the tree view up, takes into no current selection into consideration
         """
         if self.treeWidget.currentItem() is None:  # if there is no selection, try to set selection to the last item
             child_count = self.treeWidget.invisibleRootItem().childCount()  # attain how many nodes there are in the tree
@@ -504,7 +504,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
-        self.move_selected_item_down()
+        self.move_selection_down()
 
         # If the item we added was the first item
         if self.treeWidget.invisibleRootItem().childCount() == 1:
