@@ -311,9 +311,8 @@ class FileSaver:
 
         if points == len(transition_amps[0]) == len(transition_amps[1]) == len(transition_amps[2]) == len(transition_amps[3]):
             for x in range(points):
-                file.write(
-                    f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
-                    f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n')
+                file.write(f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
+                           f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n')
         else:
             self.log(
                 f"error: length mismatch between points ({points}) parameter and transition_amp_times start/end lists "
@@ -487,7 +486,8 @@ class FileSaver:
             )
         else:
             self.log(level='error', message='Missing power data, setting cumulative_results list to empty list')
-            cumulative_results = []
+            cumulative_results = []  # needed or else referenced before assignment error is raised
+
 
         # todo: check that p_on_rand_unc is the one we want
         self.store_measure_rfb_waveform_csv(
