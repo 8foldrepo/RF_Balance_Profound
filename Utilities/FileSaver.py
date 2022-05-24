@@ -480,13 +480,7 @@ class FileSaver:
             # todo: for some reason, line in try block above hits index error exception
 
         power_on_w = transition_amp_w[1]
-        print("transition_amp_w: ")
-        pprint(transition_amp_w)
-        print("power_on_w: ")
-        pprint(power_on_w)
         power_off_w = transition_amp_w[2]
-        print("power_off_w: ")
-        pprint(power_off_w)
 
         if len(power_on_w) > 0 and len(power_off_w) > 0:
             cumulative_results = (
