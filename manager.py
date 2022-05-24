@@ -717,7 +717,7 @@ class Manager(QThread):
             self.log(f"{name} is not a valid task name in the script, aborting immediately", "error")
             self.critical_error_flag = True
             self.error_message = f"{name} is not a valid task name in the script"
-            self.abort_immediately()  # todo: test this to make sure it does not cause any issues
+            self.abort_immediately()
 
         self.task_index_signal.emit(self.step_index + 1)
 
@@ -758,10 +758,6 @@ class Manager(QThread):
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
         # self.enable_ui_signal.emit(True)
-
-        # INFO: debug lines
-        # caller = getframeinfo(stack()[1][0])
-        # print(caller.filename, caller.lineno, caller.function)
 
     def cont_if_cont_clicked(self):
         """
@@ -2000,7 +1996,7 @@ class Manager(QThread):
             max_retries = self.config[k1]['Retries']
         except KeyError:
             self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
-            max_retries = 5  # debug line
+            max_retries = 5 
 
         if self.retry_count < max_retries:
             self.retry_count = self.retry_count + 1
