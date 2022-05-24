@@ -6,6 +6,7 @@ import re
 import sys
 import time as t
 from collections import OrderedDict
+from pprint import pprint
 from typing import List
 
 import numpy as np
@@ -97,6 +98,7 @@ class Manager(QThread):
 
     logger_signal = QtCore.pyqtSignal(str)
     enable_ui_signal = QtCore.pyqtSignal(bool)
+    no_script_loaded_signal = QtCore.pyqtSignal()
 
     # Tab signal
     profile_plot_signal = QtCore.pyqtSignal(list, list, str)
@@ -310,6 +312,7 @@ class Manager(QThread):
         self.oscilloscope_channel = self.Oscilloscope.channel
         self.update_system_info()
         self.enable_ui_signal.emit(True)
+        self.no_script_loaded_signal.emit()
 
         # Get the position of the motors
         if self.Motors.connected:
@@ -596,6 +599,10 @@ class Manager(QThread):
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
+        if len(tasks) == 0 or (len(tasks) == 1 and '# of Tasks' in tasks[0]):  # checks if there are no tasks, with and without header
+            self.user_info_signal.emit("You cannot run a script that has no tasks, please select a script that has tasks.")
+            self.abort_immediately()
+            self.no_script_loaded_signal.emit()
     # get UA serial no. and append behind date
 
     @pyqtSlot()
@@ -693,7 +700,6 @@ class Manager(QThread):
             self.select_ua_channel(args)
         else:
             self.log("Invalid task name in script, aborting immediately", "error")
-            self.abort_immediately_variable = True
             self.abort_immediately()  # todo: test this to make sure it does not cause any issues
 
         self.task_index_signal.emit(self.step_index + 1)
@@ -1445,7 +1451,9 @@ class Manager(QThread):
         self.Oscilloscope.autoset_oscilloscope_timebase()
 
     def home_system(self, var_dict) -> bool:
-        """Return axis to zero coordinate, returns whether to continue the script"""
+        """
+        Return axis to zero coordinate, returns whether to continue the script
+        """
         axis_to_home = var_dict["Axis to home"]
 
         successful_go_home = False
@@ -1478,11 +1486,15 @@ class Manager(QThread):
         return True
 
     def retract_ua_warning(self):
-        """Warn the user that the UA is being retracted in x"""
+        """
+        Warn the user that the UA is being retracted in x
+        """
         self.retracting_ua_warning_signal.emit()
 
     def move_system(self, var_dict):
-        """Move motors to the specified coordinates"""
+        """
+        Move motors to the specified coordinates
+        """
         move_type = var_dict["Move Type"]
 
         if "Go To".upper() in move_type.upper():
@@ -1522,7 +1534,9 @@ class Manager(QThread):
 
     # todo: test
     def select_ua_channel(self, var_dict):
-        """Activate the relay for and move to a specified element"""
+        """
+        Activate the relay for and move to a specified element
+        """
         self.element = self.element_str_to_int(var_dict["Element"])
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
@@ -1613,7 +1627,9 @@ class Manager(QThread):
         return (list_of_frequencies_MHz, list_of_VSIs)
 
     def find_vsi(self, times_s, voltages_v):
-        """Returns the voltage squared integral of a oscilloscope waveform"""
+        """
+        Returns the voltage squared integral of a oscilloscope waveform
+        """
         dx = 0
         for i in range(1, len(times_s)):
             dx = times_s[i] - times_s[i - 1]

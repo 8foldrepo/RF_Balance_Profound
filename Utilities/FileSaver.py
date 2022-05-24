@@ -2,7 +2,10 @@ import logging
 import os
 import shutil
 from datetime import datetime
+from pprint import pprint
 from statistics import mean
+
+from termcolor import colored
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -348,7 +351,7 @@ class FileSaver:
             path = check_directory(
                 os.path.join(
                     self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
-                 )
+                )
             )
 
         file = open(
@@ -446,7 +449,6 @@ class FileSaver:
             try:
                 transition_times_s[3][i] = rfb_data.off_time_intervals_s[i][0]  # End of off transition
             except IndexError:
-                print("encountered index error 490")
                 transition_times_s[3][i] = float("NaN")
             # todo: for some reason, rfb_data.off_time_intervals_s[2][0] does not exist
 
@@ -455,7 +457,7 @@ class FileSaver:
         for i in range(num_cycles):
             if i != 0:
                 # Beginning of on transition
-                if 0 < i < len(rfb_data.off_indices)+1 and i < len(transition_amp_w[0]):
+                if 0 < i < len(rfb_data.off_indices) + 1 and i < len(transition_amp_w[0]):
                     transition_amp_w[0][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i - 1][1]]
                 else:
                     transition_amp_w[0][i] = float("NaN")
@@ -470,11 +472,11 @@ class FileSaver:
                 transition_amp_w[3][i] = rfb_data.acoustic_powers_w[rfb_data.off_indices[i][0]]  # End of off transition
             except IndexError:
                 transition_amp_w[3][i] = float("NaN")
-                print("encountered index error 511")
             # todo: for some reason, line in try block above hits index error exception
 
         power_on_w = transition_amp_w[1]
         power_off_w = transition_amp_w[2]
+
         if len(power_on_w) > 0 and len(power_off_w) > 0:
             cumulative_results = (
                 [[mean(power_on_w), mean(power_off_w),
@@ -483,8 +485,9 @@ class FileSaver:
                  [rfb_data.p_on_total_unc, rfb_data.p_on_total_unc, rfb_data.p_on_total_unc]]
             )
         else:
-            self.log(level='error', message='Missing power data')
+            self.log(level='error', message='Missing power data, setting cumulative_results list to empty list')
             cumulative_results = []  # needed or else referenced before assignment error is raised
+
 
         # todo: check that p_on_rand_unc is the one we want
         self.store_measure_rfb_waveform_csv(

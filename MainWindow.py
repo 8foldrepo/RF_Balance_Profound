@@ -1,7 +1,9 @@
+import inspect
 import logging
 import os
 import sys
 import time as t
+import traceback
 import webbrowser
 from typing import List
 from PyQt5.QtCore import QThread
@@ -362,6 +364,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.load_script_signal.connect(self.manager.load_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
         self.manager.button_enable_toggle_for_scripting.connect(self.set_buttons_enabled)
+        self.manager.button_enable_toggle_for_scripting.connect(self.script_running_buttons_toggle)
+        self.manager.no_script_loaded_signal.connect(self.no_script_loaded)
 
     @pyqtSlot(float)
     def update_frequency_field(self, frequency_MHz):
@@ -793,10 +797,23 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.exec()
 
+    @pyqtSlot()
+    def no_script_loaded(self):
+        self.run_button.setEnabled(False)
+        self.abort_button.setEnabled(False)
+        self.run_step_button.setEnabled(False)
+        self.abort_immediately_button.setEnabled(False)
+
+    @pyqtSlot(bool)
+    def script_running_buttons_toggle(self, enabled):
+        self.abort_button.setEnabled(not enabled)
+        self.abort_immediately_button.setEnabled(not enabled)
+
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled: bool) -> None:
         # Todo: make this enable/disable all buttons of all tabs that could interfere with operations in progress
         """Enables/disables various buttons in the UI depending on the boolean parameter 'enabled'"""
+
         if enabled:
             self.update_system_status("IDLE")
         else:
