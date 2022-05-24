@@ -1,0 +1,142 @@
+[Top Level]
+# of Tasks = "15"
+Createdon = "18/05/2022"
+Createdby = "axel"
+Description = "changes all the values from their default to bug test"
+
+[Task0]
+Task type = "Pre-test initialisation"
+
+[Task1]
+Task type = "Prompt user for action"
+Prompt type = "Fill measurement tank"
+Prompt message = "Im testing "Fill Measurement tank"."
+
+[Task2]
+Task type = "Loop over elements"
+Element 1 = "True"
+Element 2 = "True"
+Element 3 = "False"
+Element 4 = "True"
+Element 5 = "False"
+Element 6 = "True"
+Element 7 = "False"
+Element 8 = "False"
+Element 9 = "False"
+Element 10 = "False"
+
+[Task3]
+Task type = "End loop"
+
+[Task4]
+Task type = "Configure Function Generator"
+Frequency (MHz) = "1.2458"
+Enable output = "True"
+Amplitude (mVpp) = "1"
+Mode = "Continuous"
+#Cycles = "5"
+Set frequency options = "From config cluster"
+
+[Task5]
+Task type = "Configure Oscilloscope Channels"
+Channel 1 Enabled = "True"
+Channel 2 Enabled = "False"
+Gain 1 = "10"
+Gain 2 = "10"
+Offset 1 = "17.0"
+Offset 2 = "0.0"
+
+[Task6]
+Task type = "Configure Oscilloscope Timebase"
+Timebase = "4.005"
+Delay = "-10.0"
+
+[Task7]
+Task type = "Autoset timebase"
+
+[Task8]
+Task type = "Home system"
+Axis to home = "X"
+
+[Task9]
+Task type = "Move System"
+Move Type = "Go To"
+X POS = "-6.0"
+Move X = "False"
+Theta POS = "10000000.0"
+Move Theta = "True"
+
+[Task10]
+Task type = "Select UA Channel"
+Channel = "2"
+
+[Task11]
+Task type = "Find element n"
+Element = "Element 2"
+Scope channel = "Channel 4"
+Acquisition type = "Single Waveform"
+Averages = "4 Averages"
+Data storage = "Store entire waveform"
+Storage location = "Other Directory"
+Data directory = "C:/Users/Axel M/Documents/GitHub/RF_Balance_Profound/logs"
+Frequency settings = "From config cluster"
+ElementPositionTest = "False"
+BeamAngleTest = "True"
+Auto set timebase = "False"
+Frequency (MHz) = "4.1351"
+Burst count = "69.0"
+Amplitude (mV) = "-50.0"
+Max angle variation (deg) = "8.0"
+Max. position error (+/- mm) = "0.189"
+#Cycles.Capture = "18.0"
+#Cycles.Delay = "4.0"
+X #Pts. = "18"
+Theta #Pts. = "45"
+X Incr. (mm) = "82.2200"
+Theta Incr. (deg) = "-360.0"
+
+[Task12]
+Task type = "Frequency sweep"
+Frequency range = "Common low frequency"
+Start frequency (MHz) = "11"
+End frequency (MHz) = "2.0"
+Coarse increment (MHz) = "10.0"
+Fine increment (MHz) = "11.0"
+Burst count = "1"
+Amplitude (mVpp) = "9"
+Scope channel = "Channel 1"
+Acquisition type = "N Averaged Waveform"
+Averages = "1"
+Data storage = "Store profiles only"
+Storage location = "UA results directory"
+Data directory = "Place Holder"
+Peak VSI threshold = "9"
+Include test = "False"
+
+[Task13]
+Task type = "Measure element efficiency (RFB)"
+Element = "Element 4"
+Frequency range = "High Frequency"
+RFB.#on/off cycles = "15"
+RFB.On time (s) = "8.0"
+RFB.Off time (s) = "9.1"
+RFB.Threshold = "0.19"
+RFB.Offset = "1.7"
+Set frequency options = "From config cluster"
+Frequency (MHz) = "4.1977"
+Amplitude (mVpp) = "-10000.0"
+Storage location = "Other directory"
+Data directory = ""
+RFB target position = "RFB Position for Each Item"
+RFB target angle = "-109.0"
+EfficiencyTest = "False"
+Pa max (target, W) = "13.0"
+Pf max (limit, W) = "7.0"
+Reflection limit (%) = "78.0"
+
+[Task14]
+Task type = "Save results"
+Save summary file = "False"
+Write UA Calibration = "False"
+PromptForCalWrite = "True"
+

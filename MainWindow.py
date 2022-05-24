@@ -7,7 +7,7 @@ import traceback
 import webbrowser
 from typing import List
 from PyQt5.QtCore import QThread
-from PyQt5 import QtCore
+from PyQt5 import QtCore, Qt
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
@@ -213,7 +213,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(list)
     def set_tab_slot(self, tab_ray):
-        if len(tab_ray)<1:
+        if len(tab_ray) < 1:
             return
         index = tab_text_to_index(tab_ray[0], self.tabWidget)
         if index == -1:
@@ -366,6 +366,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.button_enable_toggle_for_scripting.connect(self.set_buttons_enabled)
         self.manager.button_enable_toggle_for_scripting.connect(self.script_running_buttons_toggle)
         self.manager.no_script_loaded_signal.connect(self.no_script_loaded)
+        self.manager.critical_error_signal.connect(self.dialog_critical)
 
     @pyqtSlot(float)
     def update_frequency_field(self, frequency_MHz):
@@ -689,14 +690,19 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
 
+    @pyqtSlot(str)
     def dialog_critical(self, text: str) -> None:
         """Method to show a customizable critical error dialog for the user. Sets text of dialog to string text parameter,
         and sets the buttons and icon of the dialog popup."""
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Error")
-        dlg.setText(text)
-        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setText("The application has encountered a critical error")
+        dlg.setInformativeText(f"{text}\n\nYou may launch this application with the command"
+                               f" prompt to see more verbose information, you may also contact "
+                               f"the developers for assistance via email: rajiv@8foldmfg.com")
+        dlg.setStandardButtons(QMessageBox.Ok)
         dlg.setIcon(QMessageBox.Critical)
+        dlg.setWindowFlag(Qt.Qt.WindowType.WindowStaysOnTopHint)
         dlg.exec()
 
     @pyqtSlot(str)

@@ -5,7 +5,9 @@ import os
 import re
 import sys
 import time as t
+import traceback
 from collections import OrderedDict
+from inspect import getframeinfo, stack
 from pprint import pprint
 from typing import List
 
@@ -17,6 +19,8 @@ from PyQt5.QtWidgets import QApplication
 from scipy import integrate
 # from termcolor import colored
 # from pprint import pprint
+from termcolor import colored
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -99,6 +103,7 @@ class Manager(QThread):
     logger_signal = QtCore.pyqtSignal(str)
     enable_ui_signal = QtCore.pyqtSignal(bool)
     no_script_loaded_signal = QtCore.pyqtSignal()
+    critical_error_signal = QtCore.pyqtSignal(str)
 
     # Tab signal
     profile_plot_signal = QtCore.pyqtSignal(list, list, str)
@@ -120,7 +125,9 @@ class Manager(QThread):
     def __init__(self, system_info, parent, config: dict):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.error_message = None
         self.thread_cont_mutex = None
+        self.critical_error_flag = False
         self.rfb_data = None
         self.no_clicked_variable = None
         self.yes_clicked_variable = None
@@ -603,56 +610,64 @@ class Manager(QThread):
             self.user_info_signal.emit("You cannot run a script that has no tasks, please select a script that has tasks.")
             self.abort_immediately()
             self.no_script_loaded_signal.emit()
+
     # get UA serial no. and append behind date
 
     @pyqtSlot()
     def advance_script(self):
         """Updates script step and executes the next step if applicable, and implements abort, continue, and retry"""
-        if self.task_names is None:  # we need a task name, otherwise the script cannot continue
-            self.abort_immediately()  # abort the script immediately
-            self.enable_ui_signal.emit(True)  # re-enable various buttons in the main window
-            return  # exit this method
+        try:
+            if self.task_names is None:  # we need a task name, otherwise the script cannot continue
+                self.abort_immediately()  # abort the script immediately
+                self.enable_ui_signal.emit(True)  # re-enable various buttons in the main window
+                return  # exit this method
 
-        if self.retry_clicked_variable is True:  # if the user clicked retry on a prompt
-            self.step_index = self.step_index - 1  # retry the step via decrementing the step index
-            self.retry_clicked_variable = False  # sets the retry variable to false so the retry function may happen
-            # again
+            if self.retry_clicked_variable is True:  # if the user clicked retry on a prompt
+                self.step_index = self.step_index - 1  # retry the step via decrementing the step index
+                self.retry_clicked_variable = False  # sets the retry variable to false so the retry function may happen
+                # again
 
-        # advance to the next step if the previous has been completed
-        self.step_index = self.step_index + 1
+            # advance to the next step if the previous has been completed
+            self.step_index = self.step_index + 1
 
-        # if a script is being executed, and the step index is valid, and the previous step is complete,
-        # run the next script step
+            # if a script is being executed, and the step index is valid, and the previous step is complete,
+            # run the next script step
 
-        if self.step_index > len(self.task_names):
-            self.currently_scripting = False
-            self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields in main window
-            return
+            if self.step_index > len(self.task_names):
+                self.currently_scripting = False
+                self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields in main window
+                return
 
-        if self.task_arguments is not None and self.task_names is not None and self.task_execution_order is not None:
-            if 0 <= self.step_index < len(self.task_names):
-                inside_iteration = False
-                iteration_number = None
-
-                if (
-                        len(self.task_execution_order[self.step_index]) == 3
-                ):  # elements that are a part of a loop will have a third sub element
-                    # notating which loop it's from
-                    self.test_data.log_script(
-                        [f"Iteration {self.task_execution_order[self.step_index][1]} of "
-                         f"{len(self.loops[self.task_execution_order[self.step_index][2]][0])}", "", "", "", ]
-                    )
-                    inside_iteration = True
-                    iteration_number = self.task_execution_order[self.step_index][1]
-
-                self.run_script_step()
-                if inside_iteration:
-                    self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
+            if self.task_arguments is not None and self.task_names is not None and self.task_execution_order is not None:
+                if 0 <= self.step_index < len(self.task_names):
                     inside_iteration = False
+                    iteration_number = None
 
-        if not self.currently_scripting:
-            self.enable_ui_signal.emit(True)
-            self.button_enable_toggle_for_scripting.emit(True)
+                    if (
+                            len(self.task_execution_order[self.step_index]) == 3
+                    ):  # elements that are a part of a loop will have a third sub element
+                        # notating which loop it's from
+                        self.test_data.log_script(
+                            [f"Iteration {self.task_execution_order[self.step_index][1]} of "
+                             f"{len(self.loops[self.task_execution_order[self.step_index][2]][0])}", "", "", "", ]
+                        )
+                        inside_iteration = True
+                        iteration_number = self.task_execution_order[self.step_index][1]
+
+                    self.run_script_step()
+                    if inside_iteration:
+                        self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
+                        inside_iteration = False
+
+            if not self.currently_scripting:
+                self.enable_ui_signal.emit(True)
+                self.button_enable_toggle_for_scripting.emit(True)
+        except Exception:
+            self.abort_immediately()
+            self.error_message = traceback.format_exc()
+            traceback.print_exc()
+            self.log(traceback.format_exc(), "error")
+            self.critical_error_flag = True
 
     def run_script_step(self):
         """Executes script step with given step index in taskNames/taskArgs"""
@@ -672,35 +687,37 @@ class Manager(QThread):
             # set the element to be operated on to the one in self.taskExecOrder
             args['Element'] = self.task_execution_order[self.step_index][1]
 
-        if "Measure element efficiency (RFB)".upper() in name.upper():
+        if "MEASURE ELEMENT EFFICIENCY (RFB)" in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
-        elif "Pre-test initialisation".upper() in name.upper():
+        elif "PRE-TEST INITIALISATION" in name.upper():
             self.pretest_initialization(args)
-        elif "Find element".upper() in name.upper():
+        elif "FIND ELEMENT" in name.upper():
             self.find_element(args)
-        elif "Save results".upper() in name.upper():
+        elif "SAVE RESULTS" in name.upper():
             self.save_results(args)
-        elif "Prompt user for action".upper() in name.upper():
+        elif "PROMPT USER FOR ACTION" in name.upper():
             self.prompt_user_for_action(args)
-        elif "Home system".upper() in name.upper():
+        elif "HOME SYSTEM" in name.upper():
             self.home_system(args)
-        elif "Oscilloscope Channels".upper() in name.upper():
+        elif "OSCILLOSCOPE CHANNELS" in name.upper():
             self.configure_oscilloscope_channels(args)
-        elif "Oscilloscope Timebase".upper() in name.upper():
+        elif "OSCILLOSCOPE TIMEBASE" in name.upper():
             self.configure_oscilloscope_timebase(args)
-        elif "Function Generator".upper() in name.upper():
+        elif "FUNCTION GENERATOR" in name.upper():
             self.configure_function_generator(args)
-        elif "Autoset Timebase".upper() in name.upper():
+        elif "AUTOSET TIMEBASE" in name.upper():
             self.autoset_timebase(args)
-        elif "Home System".upper() in name.upper():
-            self.home_system(args)
-        elif "Move System".upper() in name.upper():
+        elif "MOVE SYSTEM" in name.upper():
             self.move_system(args)
-        elif "Select Channel".upper() in name.upper():
+        elif "SELECT CHANNEL" in name.upper() or "SELECT UA CHANNEL" in name.upper():
             self.select_ua_channel(args)
+        elif 'FREQUENCY SWEEP' in name.upper():
+            self.frequency_sweep(args)
         else:
-            self.log("Invalid task name in script, aborting immediately", "error")
-            self.abort_immediately()  # todo: test this to make sure it does not cause any issues
+            self.log(f"{name} is not a valid task name in the script, aborting immediately", "error")
+            self.critical_error_flag = True
+            self.error_message = f"{name} is not a valid task name in the script"
+            self.abort_immediately()
 
         self.task_index_signal.emit(self.step_index + 1)
 
@@ -883,11 +900,16 @@ class Manager(QThread):
         self.test_data.set_pass_result(11, device_result)
 
         self.script_complete_signal.emit(pass_list, description_list)
+        if self.critical_error_flag:
+            self.critical_error_signal.emit(self.error_message)
+        self.critical_error_flag = False  # set this back to false so if user repeats test, same mechanism will work
+        self.error_message = ""
         self.currently_scripting = False
         self.button_enable_toggle_for_scripting.emit(True)  # not scripting, turn on buttons/fields
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
+        self.set_tab_signal.emit(["Results"])
 
     def pretest_initialization(self, var_dict):
         """Home the UA, perform hardware checks, and prompt the user until they pass,
@@ -1058,6 +1080,7 @@ class Manager(QThread):
         Find UA element with given number by scanning for a maximum VSI or RMS
         returns a boolean indicating whether to continue the script
         """
+        self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.element = self.element_str_to_int(var_dict["Element"])
         x_increment_mm = float(var_dict["X Incr. (mm)"])
         x_points = int(var_dict["X #Pts."])
@@ -1537,7 +1560,10 @@ class Manager(QThread):
         """
         Activate the relay for and move to a specified element
         """
-        self.element = self.element_str_to_int(var_dict["Element"])
+        try:
+            self.element = self.element_str_to_int(var_dict["Element"])
+        except KeyError:
+            self.log("No element defined in variable list for task 'select ua channel', previous self.element value preserved", "info")
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict):
@@ -1545,21 +1571,23 @@ class Manager(QThread):
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
 
         # todo: look into unused variables and see if we can/should use them in this method, if not, remove them
-        frequency_range = FrequencyRange[var_dict["Frequency range"].lower().replace(" ", "_")]
-        start_freq_MHz = var_dict["Start frequency (MHz)"]
-        end_freq_MHz = var_dict["Start frequency (MHz)"]
-        coarse_incr_MHz = var_dict["Coarse increment (MHz)"]
-        fine_incr_MHz = var_dict["Fine increment (MHz)"]
-        burst_count = var_dict["Burst count"]
-        amplitude_mVpp = var_dict["Amplitude (mVpp)"]
+        # WARNING: the FrequencyRange enum does not know how to handle the passed value below
+        # frequency_range = FrequencyRange[var_dict["Frequency Range"].lower().replace(" ", "_")]
+        frequency_range = var_dict["Frequency range"].lower().replace(" ", "_")
+        start_freq_MHz = float(var_dict["Start frequency (MHz)"])
+        end_freq_MHz = float(var_dict["Start frequency (MHz)"])
+        coarse_incr_MHz = float(var_dict["Coarse increment (MHz)"])
+        fine_incr_MHz = float(var_dict["Fine increment (MHz)"])
+        burst_count = int(var_dict["Burst count"])
+        amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
         scope_channel = var_dict["Scope channel"]
         acquisition_type = var_dict["Acquisition type"]
-        averages = var_dict["Averages"]
+        averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
         # todo: implement these settings
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        peak_VSI_threshold = var_dict["Peak VSI threshold"]
+        peak_VSI_threshold = float(var_dict["Peak VSI threshold"])
         include_test = var_dict["Include test"]
 
         self.AWG.set_output(True)
@@ -1647,6 +1675,7 @@ class Manager(QThread):
     def measure_element_efficiency_rfb_multithreaded(self, var_dict):
         """Measure the efficiency of an element"""
         self.element = self.element_str_to_int(var_dict["Element"])
+        self.set_tab_signal.emit(['RFB'])
 
         # Retrieve test parameters from the script and typecast them from strings
         # High frequency or Low frequency, convert to FrequencyRange enum
@@ -1722,7 +1751,7 @@ class Manager(QThread):
         awg_var_dict = dict()
         awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
         awg_var_dict["Frequency (MHz)"] = frequency_mhz
-        awg_var_dict["Mode"] = "Continous"
+        awg_var_dict["Mode"] = "Continuous"
         awg_var_dict["Enable output"] = "False"
         awg_var_dict["#Cycles"] = ""
         if "Common".upper() in set_frequency_options.upper() and frequency_range == FrequencyRange.low_frequency:
@@ -1967,7 +1996,7 @@ class Manager(QThread):
             max_retries = self.config[k1]['Retries']
         except KeyError:
             self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
-            max_retries = 5  # debug line
+            max_retries = 5 
 
         if self.retry_count < max_retries:
             self.retry_count = self.retry_count + 1

@@ -3152,7 +3152,7 @@
         </font>
        </property>
        <attribute name="title">
-        <string>Edit Scipt</string>
+        <string>Edit Script</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
