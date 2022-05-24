@@ -62,6 +62,9 @@ class Ui_Dialog(object):
         self.ok_button = QtWidgets.QPushButton(Dialog)
         self.ok_button.setGeometry(QtCore.QRect(540, 430, 75, 23))
         self.ok_button.setObjectName("ok_button")
+        self.label_2 = QtWidgets.QLabel(Dialog)
+        self.label_2.setGeometry(QtCore.QRect(410, 30, 243, 13))
+        self.label_2.setObjectName("label_2")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -97,11 +100,11 @@ class Ui_Dialog(object):
         item.setText(_translate("Dialog", "Description"))
         self.label.setText(_translate("Dialog", "Pass/Fail Summary"))
         self.ok_button.setText(_translate("Dialog", "OK"))
+        self.label_2.setText(_translate("Dialog", "Check RFB, position, and results tab for more data"))
 
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()

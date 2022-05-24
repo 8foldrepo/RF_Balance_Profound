@@ -489,6 +489,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_var_dict = select_UA_channel_dict()
             elif task_name == 'Run "Auto Gain Control"':
                 new_var_dict = auto_gain_control_dict()
+            # todo: create autoset timebase method in oscilloscope hardware class, INFO: feature will possibly not even be implemented
             elif task_name == "Autoset timebase":
                 new_var_dict = autoset_timebase_dict()
             # todo: add more methods

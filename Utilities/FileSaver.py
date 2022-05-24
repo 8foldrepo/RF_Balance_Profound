@@ -271,15 +271,19 @@ class FileSaver:
         file.write(",Power On (W),Power Off (W),Combined\n")
         # cumulative_results[0] = Power (W), [1] = Random UC (%), [2] = Total UC (%)
         # sublist [0] = Power On (W), [1] = Power Off (W), [2] = Combined
-        file.write(
-            f'Power (W),{"%.6f" % cumulative_results[0][0]},{"%.6f" % cumulative_results[0][1]},'
-            f'{"%.6f" % cumulative_results[0][2]}\n')
-        file.write(
-            f'Random UC (%),{"%.6f" % cumulative_results[1][0]},{"%.6f" % cumulative_results[1][1]},'
-            f'{"%.6f" % cumulative_results[1][2]}\n')
-        file.write(
-            f'Total UC (%),{"%.6f" % cumulative_results[2][0]},{"%.6f" % cumulative_results[2][1]},'
-            f'{"%.6f" % cumulative_results[2][2]}\n\n')
+        try:
+            file.write(
+                f'Power (W),{"%.6f" % cumulative_results[0][0]},{"%.6f" % cumulative_results[0][1]},'
+                f'{"%.6f" % cumulative_results[0][2]}\n')
+
+            file.write(
+                f'Random UC (%),{"%.6f" % cumulative_results[1][0]},{"%.6f" % cumulative_results[1][1]},'
+                f'{"%.6f" % cumulative_results[1][2]}\n')
+            file.write(
+                f'Total UC (%),{"%.6f" % cumulative_results[2][0]},{"%.6f" % cumulative_results[2][1]},'
+                f'{"%.6f" % cumulative_results[2][2]}\n\n')
+        except IndexError:
+            self.log("Cumulative results could not be accessed, skipping log step", "error")
 
         file.write("Data Analysis\n")
         file.write("Threshold,Offset (s)\n")
@@ -294,6 +298,7 @@ class FileSaver:
         )  # should be floats
         file.write("Transition Times (s)\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
+
 
         # matches number of points to start on, end on, start off, and end off in absorb_trans_focus_times 2D list
         # absorb_trans_focus_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
@@ -475,7 +480,13 @@ class FileSaver:
             # todo: for some reason, line in try block above hits index error exception
 
         power_on_w = transition_amp_w[1]
+        print("transition_amp_w: ")
+        pprint(transition_amp_w)
+        print("power_on_w: ")
+        pprint(power_on_w)
         power_off_w = transition_amp_w[2]
+        print("power_off_w: ")
+        pprint(power_off_w)
 
         if len(power_on_w) > 0 and len(power_off_w) > 0:
             cumulative_results = (

@@ -5,6 +5,7 @@ from typing import Tuple, List
 
 import numpy as np
 from PyQt5.QtWidgets import QTabWidget
+from termcolor import colored
 
 from data_structures.test_data import TestData
 
@@ -136,6 +137,19 @@ def unique(list_to_analyze: list) -> list:
             unique_list.append(x)
 
     return unique_list
+
+
+'''
+tab_widget[0].tabText: Welcome
+tab_widget[1].tabText: System Info
+tab_widget[2].tabText: Edit Script
+tab_widget[3].tabText: RFB
+tab_widget[4].tabText: UA Calibration
+tab_widget[5].tabText: Results
+tab_widget[6].tabText: Scan
+tab_widget[7].tabText: Position
+tab_widget[8].tabText: System Config
+'''
 
 
 def tab_text_to_index(text: str, tab_widget: QTabWidget) -> int:

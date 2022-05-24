@@ -4,6 +4,7 @@ import sys
 
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import *
+from termcolor import colored
 
 from MainWindow import MainWindow
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT

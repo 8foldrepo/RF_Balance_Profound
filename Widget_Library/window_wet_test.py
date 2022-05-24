@@ -1154,7 +1154,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -1222,7 +1222,7 @@ class Ui_MainWindow(object):
         self.label_28.setText(_translate("MainWindow", "Click \"Run script\" when ready to begin."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Welcome"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "System Info"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.script_tab), _translate("MainWindow", "Edit Scipt"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.script_tab), _translate("MainWindow", "Edit Script"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "RFB"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "UA Calibration"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "Results"))
