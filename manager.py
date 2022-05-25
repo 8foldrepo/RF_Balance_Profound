@@ -610,6 +610,8 @@ class Manager(QThread):
             self.user_info_signal.emit("You cannot run a script that has no tasks, please select a script that has tasks.")
             self.abort_immediately()
             self.no_script_loaded_signal.emit()
+        else:
+            self.set_tab_signal.emit(["Edit Script"])
 
     # get UA serial no. and append behind date
 
@@ -951,7 +953,7 @@ class Manager(QThread):
 
         # todo: have ua inserted to certain x position like in the ScriptResults.log
 
-        home_successful = self.home_system(var_dict={"Axis to home": "All Axes"})
+        home_successful = self.home_system(var_dict={"Axis to home": "All Axes"}, show_prompt=True)
 
         if home_successful:
             self.test_data.log_script(['', "Home all", f"OK; X={self.Motors.coords_mm[0]}; "
@@ -1492,7 +1494,7 @@ class Manager(QThread):
     def autoset_timebase(self, var_dict):
         self.Oscilloscope.autoset_oscilloscope_timebase()
 
-    def home_system(self, var_dict) -> bool:
+    def home_system(self, var_dict, show_prompt=False) -> bool:
         """
         Return axis to zero coordinate, returns whether to continue the script
         """
@@ -1508,8 +1510,9 @@ class Manager(QThread):
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
-            self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}, Theta moved to'
-                                       f' {self.Motors.coords_mm[1]}')
+            if show_prompt and successful_go_home:
+                self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}, Theta moved to'
+                                           f' {self.Motors.coords_mm[1]}')
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
@@ -1519,7 +1522,7 @@ class Manager(QThread):
             if not cont:
                 return False
             successful_go_home = self.Motors.go_home_1d("X")
-            if successful_go_home:
+            if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}')
                 cont = self.cont_if_cont_clicked()
                 if not cont:
@@ -1527,7 +1530,7 @@ class Manager(QThread):
             self.test_data.log_script(["", f"Home  X", f"Home X", f'Successful:{successful_go_home}'])
         elif axis_to_home == "Theta":
             successful_go_home = self.Motors.go_home_1d("R")
-            if successful_go_home:
+            if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, Theta moved to {self.Motors.coords_mm[1]}')
                 cont = self.cont_if_cont_clicked()
                 if not cont:

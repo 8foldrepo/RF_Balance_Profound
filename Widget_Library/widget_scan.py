@@ -14,9 +14,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_scan_tab_widget(object):
     def setupUi(self, scan_tab_widget):
         scan_tab_widget.setObjectName("scan_tab_widget")
-        scan_tab_widget.resize(898, 730)
+        scan_tab_widget.resize(1062, 718)
         self.scan_tabs = QtWidgets.QTabWidget(scan_tab_widget)
-        self.scan_tabs.setGeometry(QtCore.QRect(10, 35, 1026, 681))
+        self.scan_tabs.setGeometry(QtCore.QRect(10, 40, 1026, 671))
         self.scan_tabs.setObjectName("scan_tabs")
         self.one_dimension_scan_tab = QtWidgets.QWidget()
         self.one_dimension_scan_tab.setObjectName("one_dimension_scan_tab")
@@ -399,9 +399,18 @@ class Ui_scan_tab_widget(object):
         self.verticalLayout_5.addWidget(self.averages_spin_box_2)
         self.acquisition_settings_vert.addWidget(self.acquisition_settings_frame)
         self.scan_tabs.addTab(self.scan_setup_tab, "")
+        self.label_3 = QtWidgets.QLabel(scan_tab_widget)
+        self.label_3.setGeometry(QtCore.QRect(10, 0, 905, 13))
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(scan_tab_widget)
+        self.label_4.setGeometry(QtCore.QRect(10, 13, 1068, 13))
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(scan_tab_widget)
+        self.label_5.setGeometry(QtCore.QRect(10, 26, 814, 13))
+        self.label_5.setObjectName("label_5")
 
         self.retranslateUi(scan_tab_widget)
-        self.scan_tabs.setCurrentIndex(2)
+        self.scan_tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(scan_tab_widget)
 
     def retranslateUi(self, scan_tab_widget):
@@ -478,6 +487,9 @@ class Ui_scan_tab_widget(object):
         self.window_combo_box_2.setItemText(0, _translate("scan_tab_widget", "Blackman-Harris"))
         self.label_58.setText(_translate("scan_tab_widget", "Averages"))
         self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.scan_setup_tab), _translate("scan_tab_widget", "Scan Setup"))
+        self.label_3.setText(_translate("scan_tab_widget", "The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope."))
+        self.label_4.setText(_translate("scan_tab_widget", "The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn\'t needed as you request a trace via button."))
+        self.label_5.setText(_translate("scan_tab_widget", "The scan tab allows you to perform scans on individual elements to your desired specifications. This tab can be used without a script, as you are trigger this tab manually."))
 from ui_elements.ui_oscilloscope_plot import Plot
 
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>898</width>
-    <height>730</height>
+    <width>1062</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>35</y>
+     <y>40</y>
      <width>1026</width>
-     <height>681</height>
+     <height>671</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
     <attribute name="title">
@@ -1022,6 +1022,45 @@ selection-background-color:rgb(85, 170, 255);</string>
      </layout>
     </widget>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>905</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>13</y>
+     <width>1068</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn't needed as you request a trace via button.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>26</y>
+     <width>814</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The scan tab allows you to perform scans on individual elements to your desired specifications. This tab can be used without a script, as you are trigger this tab manually.</string>
+   </property>
   </widget>
  </widget>
  <customwidgets>
