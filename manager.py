@@ -1388,7 +1388,7 @@ class Manager(QThread):
             self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
 
         if write_uac_calibration and prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
-            self.user_prompt_signal.emit("Write calibration data to UA", False)
+            self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
             cont = self.cont_if_cont_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return

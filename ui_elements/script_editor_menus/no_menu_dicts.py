@@ -15,6 +15,12 @@ def end_loop_dict():
     return OrderedDict([("Task type", "End loop")])
 
 
+def loop_over_elements_dict():
+    return OrderedDict(
+        [("Task type", "Loop over elements")]
+    )
+
+
 def pre_test_dict():
     return OrderedDict([("Task type", "Pre-test initialisation")])
 
@@ -29,6 +35,10 @@ def frequency_sweep_dict():
 
 def oscilloscope_channel_dict():
     return OrderedDict([("Task type", "Configure oscilloscope channels")])
+
+
+def find_element_dict():
+    return OrderedDict([("Task type", "Find element n")])
 
 
 def oscilloscope_timebase_dict():
