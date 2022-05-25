@@ -893,7 +893,7 @@ class Manager(QThread):
 
         # Add ua write result to output
         print(colored(f'self.test_data.skip_write_to_ua: {self.test_data.skip_write_to_ua}', 'magenta'))
-        if self.test_data.skip_write_to_ua:
+        if self.test_data.skip_write_to_ua or self.test_data.write_result is None:
             pass_list[10] = "N/A"
         elif self.test_data.write_result:
             pass_list[10] = "PASS"
@@ -1508,15 +1508,30 @@ class Manager(QThread):
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
+            self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}, Theta moved to'
+                                       f' {self.Motors.coords_mm[1]}')
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                return False
         elif axis_to_home == 'X':
             self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
             successful_go_home = self.Motors.go_home_1d("X")
+            if successful_go_home:
+                self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}')
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return False
             self.test_data.log_script(["", f"Home  X", f"Home X", f'Successful:{successful_go_home}'])
         elif axis_to_home == "Theta":
             successful_go_home = self.Motors.go_home_1d("R")
+            if successful_go_home:
+                self.user_info_signal.emit(f'Homing successful, Theta moved to {self.Motors.coords_mm[1]}')
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return False
             self.test_data.log_script(["", f"Home Theta", f"Home Theta", f'Successful:{successful_go_home}'])
         else:
             self.test_data.log_script(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])

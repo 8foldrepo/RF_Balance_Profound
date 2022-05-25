@@ -48,7 +48,7 @@ class TestData(QObject):
         self.high_frequency_MHz = float("nan")
         self.hardware_code = ""
         self.results_summary = list()
-        self.write_result = False
+        self.write_result = None
         self.skip_write_to_ua = False
         self.schema = '1'
         hf = "NaN"
