@@ -131,10 +131,6 @@ class SimulatedMotorController(AbstractMotorController):
         return True
 
     @abstractmethod
-    def is_moving(self):
-        return self.moving
-
-    @abstractmethod
     def get_position(self, mutex_locked=False):
         self.x_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("X")])
         self.r_pos_mm_signal.emit(self.coords_mm[self.ax_letters.index("R")])

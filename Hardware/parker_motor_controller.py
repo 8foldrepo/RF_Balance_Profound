@@ -27,18 +27,21 @@ class ParkerMotorController(AbstractMotorController):
     # Tells one axis what coordinate to travel to
     # Axis must be 'x' , 'y' , 'z' , or 'r'
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: list, coords_mm: list) -> bool:
+    def go_to_position(self, axes: list, coords_mm: list, enable_ui: bool = True) -> bool:
         # self.command("0SV")
         # self.command("0Z")
         # t.sleep(0.25)
+        success = True
 
         if not self.connected:
-            self.ready_signal.emit()
+            if enable_ui:
+                self.ready_signal.emit()
             return False
 
         if not len(axes) == len(coords_mm):
             self.log(level='error', message="Axes length does not match coordinates length")
-            self.ready_signal.emit()
+            if enable_ui:
+                self.ready_signal.emit()
             return False
 
         axis_numbers = list()
@@ -53,7 +56,7 @@ class ParkerMotorController(AbstractMotorController):
             axis_numbers.append(num)
 
             target_coordinate_mm = float(coords_mm[i])
-            target_coord_steps = self.____position_to_steps(num - 1, target_coordinate_mm)
+            target_coord_steps = self.__position_to_steps(num - 1, target_coordinate_mm)
 
             coords.append(target_coord_steps)
 
@@ -66,23 +69,31 @@ class ParkerMotorController(AbstractMotorController):
             if '*E' in self.get_response(retries=1):
                 self.log(f"Movement of {axis_numbers[i]} to coordinate {coords} failed, checking fault data")
                 self.check_user_fault(axis_number=axis_numbers[i])
-                self.ready_signal.emit()
+                if enable_ui:
+                    self.ready_signal.emit()
                 return False
             else:
                 self.moving = True
                 self.moving_signal.emit(True)
 
-        while self.moving:
+        start_time = t.time()
+        while self.moving and t.time() - start_time < self.config[self.device_key]['move_timeout_s']:
             self.get_position()
             t.sleep(.1)
+
+        if self.moving:
+            self.log(level='error', message='movement timed out')
+            self.stop_motion()
+            success = False
 
         # Wait for motion to be over
         # t.sleep(2)
         # Check position
         # self.get_position()
         # Send ready signal to enable UI
-        self.ready_signal.emit()
-        return True
+        if enable_ui:
+            self.ready_signal.emit()
+        return success
 
     @pyqtSlot()
     def set_origin_here(self):
@@ -138,39 +149,58 @@ class ParkerMotorController(AbstractMotorController):
         self.set_speeds_1d(axis="All", speed=speed)
 
     @pyqtSlot()
-    def go_home(self):
+    def go_home(self, enable_ui:bool = True):
         # Theta prehome move
-        self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
+        self.go_to_position(['R'],[self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
         self.command(f"0GH")
 
-        while self.moving:
+        success = True
+
+        start_time = t.time()
+        while self.moving and t.time()-start_time < self.config[self.device_key]['move_timeout_s']:
             self.get_position()
+            t.sleep(.1)
+
+        if self.moving:
+            self.log(level='error', message='go home timed out')
+            self.stop_motion()
+            success = False
 
         t.sleep(3)
 
-        self.go_to_position(['R'], [-90])
+        self.go_to_position(['R'], [-90], enable_ui=False)
 
-        self.ready_signal.emit()
-        return True
+        if enable_ui:
+            self.ready_signal.emit()
+        return success
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis):
+    def go_home_1d(self, axis, enable_ui:bool = True):
         if axis == 'R' or axis == "Theta":
-            self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
+            self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
         axis_number = self.__get_ax_number(axis)
         self.command(f"{axis_number}GH")
 
-        while self.moving:
+        success = True
+
+        start_time = t.time()
+        while self.moving and t.time() - start_time < self.config[self.device_key]['move_timeout_s']:
             self.get_position()
+
+        if self.moving:
+            self.log(level='error', message='go home timed out')
+            self.stop_motion()
+            success = False
 
         t.sleep(3)
 
         if axis == 'R' or axis == "Theta":
-            self.go_to_position(['R'], [-90])
+            self.go_to_position(['R'], [-90], enable_ui=False)
 
-        self.ready_signal.emit()
-        return True
+        if enable_ui:
+            self.ready_signal.emit()
+        return success
 
     def setup_home(self):
         self.setup_home_1d(axis='X', enabled=self.config[self.device_key]['enable_homing_ray'][0],
@@ -519,13 +549,6 @@ class ParkerMotorController(AbstractMotorController):
                 stopped = self.command(f"{axis_number}S", retry=False)
         return stopped
 
-    def is_moving(self):
-        for i in range(len(self.ax_letters)):
-            self.command(f"{i + 1}R(MV)", log=True)
-            response = self.get_response()
-            if "1" in response:
-                return True
-        return False
 
     def getBaud(self):
         """Query and return the baud rate"""
@@ -552,7 +575,7 @@ class ParkerMotorController(AbstractMotorController):
         else:
             go_to_coord_mm = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
-        self.go_to_position([axis], [go_to_coord_mm])
+        self.go_to_position([axis], [go_to_coord_mm], enable_ui=True)
 
     @pyqtSlot()
     def stop_motion(self):
@@ -652,7 +675,7 @@ class ParkerMotorController(AbstractMotorController):
         if response[27] == "1":
             self.log("")
 
-    def __position_to_steps(self, axis_index, position_deg_or_mm):
+    def __position_to_steps(self, axis_index: int, position_deg_or_mm: float):
         """Converts the user-facing coordinate in mm or degrees to the coordinate in motor steps"""
         i = axis_index
 

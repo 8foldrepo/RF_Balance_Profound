@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QMutex
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -37,7 +37,8 @@ class AbstractMotorController(AbstractDevice):
     connected_signal = pyqtSignal(bool)
     ready_signal = pyqtSignal()
 
-    def __init__(self, config: dict, device_key="VIX_Motors", parent=None):
+    # The lock parameter is a provided as a way to prevent the motor class to have multiple conflicting commands at once
+    def __init__(self, config: dict, lock: QMutex, device_key="VIX_Motors", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.fields_setup()
 
@@ -61,10 +62,11 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: List[str], coords_mm: List[float]) -> bool:
+    def go_to_position(self, axes: List[str], coords_mm: List[float], mutex_locked: bool, enable_ui: bool = True) -> bool:
         """
         # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
         """
+        # Mutex locked informs this class if the class that called this method has already locked the mutex
         ...
 
     @abstractmethod
@@ -101,21 +103,25 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot()
-    def go_home(self) -> bool:
+    def go_home(self, enable_ui: bool = True) -> bool:
+        """
+        Commands all motors to begin motion in the negative direction until they hit the edge of a limit switch,
+        then to reverse direction and continue moving until the positive edge of the switch is reached
+        """
         ...
 
     @abstractmethod
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
+        """
+        Commands one axis to begin motion in the negative direction until they hit the edge of a limit switch,
+        then to reverse direction and continue moving until the positive edge of the switch is reached
+        """
         ...
 
     @abstractmethod
     @pyqtSlot(str)
     def stop_motion_1d(self, axis: str):
-        ...
-
-    @abstractmethod
-    def is_moving(self) -> bool:
         ...
 
     @pyqtSlot()
@@ -134,7 +140,7 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot()
-    def get_position(self):
+    def get_position(self, mutex_locked: bool = False):
         """Tell the motor controller to update its coords_mm variable and emit its current position as a signal"""
 
         ...

@@ -7,8 +7,6 @@ import sys
 import time as t
 import traceback
 from collections import OrderedDict
-from inspect import getframeinfo, stack
-from pprint import pprint
 from typing import List
 
 import numpy as np
@@ -17,9 +15,6 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
-# from termcolor import colored
-# from pprint import pprint
-from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -37,6 +32,7 @@ from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel, FrequencyRange
+from galil_motor_controller import GalilMotorController
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
@@ -72,14 +68,16 @@ class Manager(QThread):
 
     # Signal section
     # Dialog signals
-    user_prompt_signal = QtCore.pyqtSignal(str, bool)  # str is message for user to read, bool is whether to restrict the user from clicking continue/ignore
-    # continue button
+
+    # str is message for user to read, bool is whether to restrict the user from clicking continue/ignore
+    user_prompt_signal = QtCore.pyqtSignal(str, bool)  # continue button
     user_prompt_pump_not_running_signal = QtCore.pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = QtCore.pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = QtCore.pyqtSignal()
     write_cal_data_to_ua_signal = QtCore.pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = QtCore.pyqtSignal()
-    script_complete_signal = QtCore.pyqtSignal(list, list)  # Contains a pass/fail list of booleans and a list of descriptions
+    # Contains a pass/fail list of booleans and a list of descriptions
+    script_complete_signal = QtCore.pyqtSignal(list, list)
     user_info_signal = QtCore.pyqtSignal(str)
     user_question_signal = QtCore.pyqtSignal(str)  # str is question to be asked
 
@@ -228,7 +226,7 @@ class Manager(QThread):
             self.Motors = SimulatedMotorController(config=self.config)
         else:
             from Hardware.parker_motor_controller import ParkerMotorController
-            self.Motors = ParkerMotorController(config=self.config, lock=self.motor_control_lock)
+            self.Motors = GalilMotorController(config=self.config, lock=self.motor_control_lock)
 
         if self.config["Debugging"]["simulate_oscilloscope"] and simulate_access:
             from Hardware.Simulated.simulated_oscilloscope import SimulatedOscilloscope
@@ -1154,7 +1152,7 @@ class Manager(QThread):
         autoset_var_dict = dict()
         self.autoset_timebase(autoset_var_dict)
 
-        self.Motors.go_to_position(['R'], [-180])
+        self.Motors.go_to_position(['R'], [-180], enable_ui=False)
         cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                               ref_position=element_x_coordinate,
                               go_to_peak=True, data_storage=data_storage, update_element_position=True,
@@ -1248,7 +1246,7 @@ class Manager(QThread):
                 # Stop the current method and any parent methods that called it
                 return False
 
-            self.Motors.go_to_position([axis_letter], [position])
+            self.Motors.go_to_position([axis_letter], [position],enable_ui=False)
             position = position + increment
 
             if self.config["Analysis"]["capture_rms_only"]:
@@ -1299,7 +1297,7 @@ class Manager(QThread):
                      f'{"%.2f" % max_position} mm;'
 
         if go_to_peak:
-            status = self.Motors.go_to_position([axis_letter], [max_position])
+            status = self.Motors.go_to_position([axis_letter], [max_position],enable_ui=False)
             if status:
                 status_str = status_str + f" moved to {axis} = {max_position} {units_str}"
             else:
@@ -1485,7 +1483,7 @@ class Manager(QThread):
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
-            successful_go_home = self.Motors.go_home()
+            successful_go_home = self.Motors.go_home(enable_ui=False)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
@@ -1494,10 +1492,10 @@ class Manager(QThread):
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
-            successful_go_home = self.Motors.go_home_1d("X")
+            successful_go_home = self.Motors.go_home_1d("X",enable_ui=False)
             self.test_data.log_script(["", f"Home  X", f"Home X", f'Successful:{successful_go_home}'])
         elif axis_to_home == "Theta":
-            successful_go_home = self.Motors.go_home_1d("R")
+            successful_go_home = self.Motors.go_home_1d("R",enable_ui=False)
             self.test_data.log_script(["", f"Home Theta", f"Home Theta", f'Successful:{successful_go_home}'])
         else:
             self.test_data.log_script(['', f'Home {axis_to_home}', 'FAIL', 'axis unrecognized'])
@@ -1533,7 +1531,7 @@ class Manager(QThread):
             if move_theta:
                 axes.append("R")
                 coordinates.append(theta_pos)
-            self.Motors.go_to_position(axes, coordinates)
+            self.Motors.go_to_position(axes, coordinates,enable_ui=False)
         else:
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
@@ -1543,11 +1541,11 @@ class Manager(QThread):
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
             if "Hydrophone" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180],enable_ui=False)
             elif "RFB" in target:
-                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate],enable_ui=False)
             elif "Down" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90])
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90],enable_ui=False)
 
             x_coord_str = "%.2f" % element_x_coordinate
             r_coord_str = "%.1f" % element_r_coordinate
@@ -2023,19 +2021,19 @@ class Manager(QThread):
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
         if "Hydrophone" in ref_pos:
-            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180])
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180],enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = -180
         elif "RFB" in ref_pos:
-            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate])
+            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate],enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = element_r_coordinate
         elif "Down" in ref_pos:
-            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90])
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90],enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:
