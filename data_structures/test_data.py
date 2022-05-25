@@ -145,7 +145,7 @@ class TestData(QObject):
         angle_average = angle_sum / count
         self.results_summary[10][2] = str(angle_average)
 
-        #update UI representation
+        # update UI representation
         self.show_results_summary.emit(self.results_summary)
 
     def log_script(self, entry: List[str]):

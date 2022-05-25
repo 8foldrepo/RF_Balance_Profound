@@ -146,7 +146,9 @@
        <item>
         <widget class="QComboBox" name="acquisition_type_combo_box">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -170,7 +172,9 @@
        <item>
         <widget class="QComboBox" name="source_channel_combo_box">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -510,7 +514,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>231</width>
+        <width>241</width>
         <height>131</height>
        </rect>
       </property>
@@ -549,7 +553,9 @@ p, li { white-space: pre-wrap; }
         <item row="1" column="1">
          <widget class="QComboBox" name="axis_combo">
           <property name="styleSheet">
-           <string notr="true">background:white</string>
+           <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
           </property>
           <item>
            <property name="text">
@@ -710,7 +716,9 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="0">
         <widget class="QComboBox" name="ref_pos_combo">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -732,7 +740,9 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="1">
         <widget class="QComboBox" name="end_pos_combo">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -808,7 +818,9 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background:white</string>
+       <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
       </property>
       <item>
        <property name="text">
@@ -921,7 +933,9 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QComboBox" name="acquisition_type_combo">
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">
@@ -945,7 +959,9 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QComboBox" name="source_channel_combo">
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">
@@ -975,7 +991,9 @@ p, li { white-space: pre-wrap; }
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This feature is built into the graphing library. Right click a graph for window options&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">

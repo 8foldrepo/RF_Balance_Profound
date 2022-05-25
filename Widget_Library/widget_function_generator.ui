@@ -13,6 +13,14 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);
+selection-color: rgb(85, 170, 255);
+selection-background-color: rgb(200, 200, 200);</string>
+  </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
@@ -50,7 +58,7 @@
       <x>10</x>
       <y>10</y>
       <width>86</width>
-      <height>129</height>
+      <height>126</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="freq_ampl_mode_vert">
@@ -124,8 +132,13 @@
          <height>19</height>
         </size>
        </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="styleSheet">
-        <string notr="true">background-color:white</string>
+        <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
        </property>
        <item>
         <property name="text">
@@ -199,7 +212,7 @@
     <rect>
      <x>240</x>
      <y>30</y>
-     <width>155</width>
+     <width>159</width>
      <height>41</height>
     </rect>
    </property>
@@ -220,6 +233,14 @@
                                 Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;-
                                 Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                             </string>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
       </property>
       <item>
        <property name="text">

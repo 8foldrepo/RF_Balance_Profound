@@ -64,7 +64,9 @@ class Ui_scan_tab_widget(object):
         self.label_34.setObjectName("label_34")
         self.acquisition_arg_vert.addWidget(self.label_34)
         self.acquisition_type_combo_box = QtWidgets.QComboBox(self.layoutWidget)
-        self.acquisition_type_combo_box.setStyleSheet("background:white")
+        self.acquisition_type_combo_box.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.acquisition_type_combo_box.setObjectName("acquisition_type_combo_box")
         self.acquisition_type_combo_box.addItem("")
         self.acquisition_type_combo_box.addItem("")
@@ -73,7 +75,9 @@ class Ui_scan_tab_widget(object):
         self.label_35.setObjectName("label_35")
         self.acquisition_arg_vert.addWidget(self.label_35)
         self.source_channel_combo_box = QtWidgets.QComboBox(self.layoutWidget)
-        self.source_channel_combo_box.setStyleSheet("background:white")
+        self.source_channel_combo_box.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.source_channel_combo_box.setObjectName("source_channel_combo_box")
         self.source_channel_combo_box.addItem("")
         self.source_channel_combo_box.addItem("")
@@ -188,7 +192,7 @@ class Ui_scan_tab_widget(object):
         self.scan_details_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.scan_details_frame.setObjectName("scan_details_frame")
         self.axis_pts_inc_frame = QtWidgets.QFrame(self.scan_details_frame)
-        self.axis_pts_inc_frame.setGeometry(QtCore.QRect(0, 0, 231, 131))
+        self.axis_pts_inc_frame.setGeometry(QtCore.QRect(0, 0, 241, 131))
         self.axis_pts_inc_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.axis_pts_inc_frame.setFrameShadow(QtWidgets.QFrame.Plain)
         self.axis_pts_inc_frame.setLineWidth(1)
@@ -205,7 +209,9 @@ class Ui_scan_tab_widget(object):
         self.label_46.setObjectName("label_46")
         self.axis_pts_inc_form.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_46)
         self.axis_combo = QtWidgets.QComboBox(self.layoutWidget_4)
-        self.axis_combo.setStyleSheet("background:white")
+        self.axis_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.axis_combo.setObjectName("axis_combo")
         self.axis_combo.addItem("")
         self.axis_combo.addItem("")
@@ -265,14 +271,18 @@ class Ui_scan_tab_widget(object):
         self.label_50.setObjectName("label_50")
         self.ref_end_pos_grid.addWidget(self.label_50, 0, 1, 1, 1)
         self.ref_pos_combo = QtWidgets.QComboBox(self.layoutWidget_5)
-        self.ref_pos_combo.setStyleSheet("background:white")
+        self.ref_pos_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.ref_pos_combo.setObjectName("ref_pos_combo")
         self.ref_pos_combo.addItem("")
         self.ref_pos_combo.addItem("")
         self.ref_pos_combo.addItem("")
         self.ref_end_pos_grid.addWidget(self.ref_pos_combo, 1, 0, 1, 1)
         self.end_pos_combo = QtWidgets.QComboBox(self.layoutWidget_5)
-        self.end_pos_combo.setStyleSheet("background:white")
+        self.end_pos_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.end_pos_combo.setObjectName("end_pos_combo")
         self.end_pos_combo.addItem("")
         self.ref_end_pos_grid.addWidget(self.end_pos_combo, 1, 1, 1, 1)
@@ -304,7 +314,9 @@ class Ui_scan_tab_widget(object):
         self.filename_stub_vert.addWidget(self.filename_stub_input)
         self.store_state_combo = QtWidgets.QComboBox(self.scan_details_frame)
         self.store_state_combo.setGeometry(QtCore.QRect(12, 343, 141, 18))
-        self.store_state_combo.setStyleSheet("background:white")
+        self.store_state_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.store_state_combo.setObjectName("store_state_combo")
         self.store_state_combo.addItem("")
         self.store_state_combo.addItem("")
@@ -349,7 +361,9 @@ class Ui_scan_tab_widget(object):
         self.label_54.setObjectName("label_54")
         self.verticalLayout_5.addWidget(self.label_54)
         self.acquisition_type_combo = QtWidgets.QComboBox(self.acquisition_settings_frame)
-        self.acquisition_type_combo.setStyleSheet("background:white")
+        self.acquisition_type_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.acquisition_type_combo.setObjectName("acquisition_type_combo")
         self.acquisition_type_combo.addItem("")
         self.acquisition_type_combo.addItem("")
@@ -358,7 +372,9 @@ class Ui_scan_tab_widget(object):
         self.label_56.setObjectName("label_56")
         self.verticalLayout_5.addWidget(self.label_56)
         self.source_channel_combo = QtWidgets.QComboBox(self.acquisition_settings_frame)
-        self.source_channel_combo.setStyleSheet("background:white")
+        self.source_channel_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.source_channel_combo.setObjectName("source_channel_combo")
         self.source_channel_combo.addItem("")
         self.source_channel_combo.addItem("")
@@ -368,7 +384,9 @@ class Ui_scan_tab_widget(object):
         self.verticalLayout_5.addWidget(self.label_57)
         self.window_combo_box_2 = QtWidgets.QComboBox(self.acquisition_settings_frame)
         self.window_combo_box_2.setEnabled(False)
-        self.window_combo_box_2.setStyleSheet("background:white")
+        self.window_combo_box_2.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.window_combo_box_2.setObjectName("window_combo_box_2")
         self.window_combo_box_2.addItem("")
         self.verticalLayout_5.addWidget(self.window_combo_box_2)
