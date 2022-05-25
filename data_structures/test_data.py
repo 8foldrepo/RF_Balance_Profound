@@ -1,6 +1,7 @@
 from typing import List
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from termcolor import colored
 
 from definitions import FrequencyRange
 
@@ -23,6 +24,7 @@ class TestData(QObject):
     high_frequency_MHz: float
     hardware_code: str
     write_result: bool
+    skip_write_to_ua: bool
     schema: str
 
     def __init__(self):
@@ -47,6 +49,7 @@ class TestData(QObject):
         self.hardware_code = ""
         self.results_summary = list()
         self.write_result = False
+        self.skip_write_to_ua = False
         self.schema = '1'
         hf = "NaN"
         lf = "NaN"
@@ -156,3 +159,4 @@ class TestData(QObject):
 
         # update UI representation
         self.show_results_summary.emit(self.results_summary)
+        print(colored(f"self.results_summary = {self.results_summary}", 'cyan'))

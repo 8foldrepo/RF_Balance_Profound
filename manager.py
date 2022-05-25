@@ -829,11 +829,11 @@ class Manager(QThread):
 
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
-                self.yes_clicked_variable = False
+                print("returning true") #todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return True
             if self.no_clicked_variable:
-                self.no_clicked_variable = False
+                print("returning false") #todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
         # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
@@ -860,6 +860,7 @@ class Manager(QThread):
     @pyqtSlot()
     def yes_clicked(self):
         """Flags yes_selected to allow user to consent to question"""
+        print("yes button clicked") #todo: remove
         self.yes_clicked_variable = True
         self.no_clicked_variable = False
 
@@ -891,7 +892,10 @@ class Manager(QThread):
             description_list[i] = self.test_data.results_summary[i][16]
 
         # Add ua write result to output
-        if self.test_data.write_result:
+        print(colored(f'self.test_data.skip_write_to_ua: {self.test_data.skip_write_to_ua}', 'magenta'))
+        if self.test_data.skip_write_to_ua:
+            pass_list[10] = "N/A"
+        elif self.test_data.write_result:
             pass_list[10] = "PASS"
         else:
             pass_list[10] = "FAIL"
@@ -1383,17 +1387,32 @@ class Manager(QThread):
 
         self.test_data.software_version = self.config["Software_Version"]
         self.test_data.calculate_angle_average()
+
+        if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
+            self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
+            cont = self.cont_if_answer_clicked()  # sets cont variable to true if user clicked continue
+            if not cont:  # if user did not click continue, return
+                print(colored('returning', 'cyan'))
+                return
+            if self.yes_clicked_variable:
+                print(colored('yes clicked', 'yellow'))
+                self.test_data.skip_write_to_ua = False
+                self.yes_clicked_variable = False
+                calibration_data = generate_calibration_data(self.test_data)
+                self.UAInterface.write_data(calibration_data)
+            else:
+                self.no_clicked_variable = False
+                self.test_data.skip_write_to_ua = True
+                return
+        elif write_uac_calibration:
+            calibration_data = generate_calibration_data(self.test_data)
+            self.UAInterface.write_data(calibration_data)
+        else:
+            self.test_data.skip_write_to_ua = True
+
         # Save results summary to results folder
         if save_summary_file:  # ask for this in the abort methods
             self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
-
-        if write_uac_calibration and prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
-            self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
-            cont = self.cont_if_cont_clicked()  # sets cont variable to true if user clicked continue
-            if not cont:  # if user did not click continue, return
-                return
-            calibration_data = generate_calibration_data(self.test_data)
-            self.UAInterface.write_data(calibration_data)
 
     def prompt_user_for_action(self, var_dict: dict) -> None:
         """Waits for the user select continue, abort or retry via sending a signal
