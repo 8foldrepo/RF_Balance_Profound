@@ -661,6 +661,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.continue_signal.connect(self.manager.continue_clicked)
         if message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
             dlg.abort_signal.connect(self.manager.abort_immediately)
+        if message == "Do you want to write calibration data to UA?":
+            dlg.continue_button.setText('Skip')
         dlg.exec()
 
     @pyqtSlot(str)

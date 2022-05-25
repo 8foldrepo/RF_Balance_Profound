@@ -1,6 +1,7 @@
 import typing
 from datetime import date
 # from pprint import pprint
+from pprint import pprint
 from typing import List
 
 # import PyQt5
@@ -9,6 +10,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot, QModelIndex, QItemSelectionModel,
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from PyQt5.QtWidgets import QApplication as QApp
+from termcolor import colored
 
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
@@ -267,7 +269,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.treeWidget.invisibleRootItem().addChild(empty_item)
         self.treeWidget.setCurrentItem(empty_item)
 
-    def dict_to_tree_item(self, task_dict: dict) -> QTreeWidgetItem:
+    def dict_to_tree_item(self, task_dict: dict) -> typing.Union[QTreeWidgetItem, None]:
         """
         Reads the task dictionary entry and imports the task name (parent node) all of its
         variables (children nodes), and turns them into a QTreeWidgetItem to be added to
@@ -276,6 +278,9 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # Prevent user from running the script until it is saved and reloaded
         self.script_changed_signal.emit()
 
+        if not task_dict:  # if the dictionary is empty
+            self.log("task does not have any values in its dictionary variable, cannot add", "error")
+            return
         item = QTreeWidgetItem([task_dict["Task type"]])
 
         arg_list = list()
@@ -466,13 +471,19 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # if the widget has an ui_to_orderedDict method
         new_var_dict = self.edit_menu.ui_to_orderedDict()
 
-        if new_var_dict is not None:
-            if task_name == "Pre-test initialisation":
+        print(colored('new_var_dict is: ', 'yellow'))
+        pprint(new_var_dict)
+
+        # INFO: the previous code below this line was 'if new_var_dict is not None', but what
+        # INFO: I think was meant to be written is 'if new_var_dict is None' because you're
+        # INFO: potentially overwriting a perfectly good dictionary
+        if new_var_dict is None:
+            if task_name == 'Pre-test initialisation':
                 new_var_dict = pre_test_dict()
-            elif task_name == 'Find element "n"':
-                new_var_dict = self.find_element_dict()
+            elif task_name == 'Find element n':
+                new_var_dict = find_element_dict()
             elif task_name == "Loop over elements":
-                new_var_dict = self.loop_over_elements_dict()
+                new_var_dict = loop_over_elements_dict()
             elif task_name == "End loop":
                 new_var_dict = end_loop_dict()
             elif task_name == "Frequency sweep":
@@ -492,9 +503,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
             # todo: create autoset timebase method in oscilloscope hardware class, INFO: feature will possibly not even be implemented
             elif task_name == "Autoset timebase":
                 new_var_dict = autoset_timebase_dict()
-            # todo: add more methods
-        else:
-            new_var_dict = OrderedDict()
+            else:
+                new_var_dict = OrderedDict()
+
+        print(colored('new_var_dict is 2: ', 'yellow'))
+        pprint(new_var_dict)
 
         # add the new dictionary to var_dicts at the correct index
         if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:
@@ -505,7 +518,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
         item = self.dict_to_tree_item(new_var_dict)
         self.treeWidget.insertTopLevelItems(index, [item])
         self.treeWidget.setCurrentItem(item)
-        self.move_selection_down()
+        self.move_selected_down()
 
         # If the item we added was the first item
         if self.treeWidget.invisibleRootItem().childCount() == 1:
