@@ -53,7 +53,7 @@ class ParkerMotorController(AbstractMotorController):
             axis_numbers.append(num)
 
             target_coordinate_mm = float(coords_mm[i])
-            target_coord_steps = self.position_to_steps(num - 1, target_coordinate_mm)
+            target_coord_steps = self.____position_to_steps(num - 1, target_coordinate_mm)
 
             coords.append(target_coord_steps)
 
@@ -108,7 +108,7 @@ class ParkerMotorController(AbstractMotorController):
         axis_number = self.__get_ax_number(axis)
         axis_index = axis_number - 1
 
-        coord_steps = self.position_to_steps(axis_index, coord_mm)
+        coord_steps = self.__position_to_steps(axis_index, coord_mm)
 
         home_coordinate = int(coord_steps)
 
@@ -140,7 +140,6 @@ class ParkerMotorController(AbstractMotorController):
     @pyqtSlot()
     def go_home(self):
         # Theta prehome move
-        print("going home")
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]])
         self.command(f"0GH")
 
@@ -167,7 +166,8 @@ class ParkerMotorController(AbstractMotorController):
 
         t.sleep(3)
 
-        self.go_to_position(['R'], [-90])
+        if axis == 'R' or axis == "Theta":
+            self.go_to_position(['R'], [-90])
 
         self.ready_signal.emit()
         return True
@@ -574,7 +574,7 @@ class ParkerMotorController(AbstractMotorController):
 
             position_steps = float(position_string)
 
-            position_deg_or_mm = self.steps_to_position(i, position_steps)
+            position_deg_or_mm = self.__steps_to_position(i, position_steps)
 
             # Check if position has not changed. If all axes have not changed moving will be false
             if abs(position_deg_or_mm - self.coords_mm[i]) > moving_margin_ray[i]:
@@ -588,8 +588,9 @@ class ParkerMotorController(AbstractMotorController):
         else:
             self.moving = False
         self.moving_signal.emit(self.moving)
-        # May cause crashing, replace this with a signal if crashes occur
-        self.app.processEvents()
+
+        if self.app is not None:
+            self.app.processEvents()
 
     def check_user_fault(self, axis_number):
         response = self.ask(f"{axis_number}R(UF)", retries=1)
@@ -651,7 +652,7 @@ class ParkerMotorController(AbstractMotorController):
         if response[27] == "1":
             self.log("")
 
-    def position_to_steps(self, axis_index, position_deg_or_mm):
+    def __position_to_steps(self, axis_index, position_deg_or_mm):
         """Converts the user-facing coordinate in mm or degrees to the coordinate in motor steps"""
         i = axis_index
 
@@ -671,7 +672,7 @@ class ParkerMotorController(AbstractMotorController):
 
         return position_steps
 
-    def steps_to_position(self, axis_index, position_steps):
+    def __steps_to_position(self, axis_index, position_steps):
         """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
         i = axis_index
         position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
@@ -791,8 +792,8 @@ if __name__ == "__main__":
 
     for i in range(2):
         for item in [0, -263, -90]:
-            y = motors.position_to_steps(i, item)
-            x = motors.steps_to_position(i, y)
+            y = motors.__position_to_steps(i, item)
+            x = motors.__steps_to_position(i, y)
             print(item)
             print(x)
             print(y)

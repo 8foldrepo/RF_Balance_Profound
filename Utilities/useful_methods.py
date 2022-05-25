@@ -12,6 +12,7 @@ from data_structures.test_data import TestData
 
 def create_coord_rays(coordinates: str, ax_letters: list):
     """
+    For use with the galil motion controller class
     Inputs:
     A string containing comma delimited coordinates, some of which may be empty, for example [,,3,2]
     A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
@@ -29,6 +30,20 @@ def create_coord_rays(coordinates: str, ax_letters: list):
     coordinates = list(filter(lambda val: val != "", coordinates))
     return axes, coordinates
 
+def create_comma_string(axes: list, numbers: list, ax_letters: list):
+    """
+    For use with the galil motion controller class
+    Inverse of create coord_rays
+    """
+    answer = ""
+    for i in range(len(ax_letters)):
+        if ax_letters[i] in axes:
+            index = axes.index(ax_letters[i])
+            if len(numbers) == len(axes):
+                answer = answer + str((numbers[index]))
+
+        answer = answer + ","
+    return answer
 
 def get_element_distances(element_1_index, element_pitch):
     """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
@@ -41,7 +56,7 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coordinates
 
 
-def generate_calibration_data(test_data: TestData) -> list[str]:
+def generate_calibration_data(test_data: TestData) -> List[str]:
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
     output = [] * 27
     output[0] = str(test_data.schema)
@@ -61,19 +76,7 @@ def generate_calibration_data(test_data: TestData) -> list[str]:
     return output
 
 
-def create_comma_string(axes: list, coordinates: list, ax_letters: list):
-    """
-    Inverse of create coord_rays
-    """
-    answer = ""
-    for i in range(len(ax_letters)):
-        if ax_letters[i] in axes:
-            index = axes.index(ax_letters[i])
-            if len(coordinates) == len(axes):
-                answer = answer + str((coordinates[index]))
 
-        answer = answer + ","
-    return answer
 
 
 def update(dictionary: dict, u):
