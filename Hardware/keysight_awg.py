@@ -71,10 +71,11 @@ class KeysightAWG(AbstractAWG):
 
         self.connected_signal.emit(False)
 
-    """Sets all settings of the awg with one command and wait until it is done configuring"""
+
 
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50, trigger_out=True):
+        """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.set_output(output)
         self.set_frequency_hz(frequency_Hz)
         self.set_amplitude_v(amplitude_V)
@@ -87,9 +88,8 @@ class KeysightAWG(AbstractAWG):
 
         self.wait_til_complete()
 
-    """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
-
     def get_state(self):
+        """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
         self.get_output()
         self.get_frequency_hz()
         self.get_amplitude_v()
@@ -107,9 +107,8 @@ class KeysightAWG(AbstractAWG):
         self.command("*IDN?")
         self.read()
 
-    """Turns the output on or off"""
-
     def set_output(self, on: bool):
+        """Turns the output on or off"""
         if on:
             self.command("OUTP ON")
             self.output_signal.emit(True)
@@ -124,9 +123,8 @@ class KeysightAWG(AbstractAWG):
         self.output_signal.emit(self.state["output"])
         return self.state["output"]
 
-    """Sets the frequency of the signal"""
-
     def set_frequency_hz(self, frequency):
+        """Sets the frequency of the signal"""
         self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
 
@@ -297,5 +295,28 @@ class KeysightAWG(AbstractAWG):
 
 
 if __name__ == "__main__":
+    import random
+
     awg = KeysightAWG()
     awg.connect_hardware()
+
+    # test a random sequence of operations 10 times
+    for i in range(10):
+        step_sequence = list(range(5))
+        random.shuffle(step_sequence)
+
+        for step_number in step_sequence:
+            if step_number == 0:
+                ...
+            if step_number == 1:
+                ...
+            if step_number == 2:
+                ...
+            if step_number == 3:
+                ...
+            if step_number == 4:
+                ...
+            if step_number == 5:
+                ...
+
+    print("Test passed :)")
