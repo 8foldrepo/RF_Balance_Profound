@@ -29,9 +29,12 @@
    <item>
     <widget class="QTabWidget" name="tabWidget_2">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="scriptlog_tab">
+      <property name="toolTip">
+       <string/>
+      </property>
       <attribute name="title">
        <string>ScriptLog</string>
       </attribute>
@@ -39,7 +42,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>90</y>
          <width>971</width>
          <height>501</height>
         </rect>
@@ -72,7 +75,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>80</y>
+         <y>60</y>
          <width>111</width>
          <height>21</height>
         </rect>
@@ -86,21 +89,24 @@
         <string>UA Script Log</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
+      <widget class="QWidget" name="tooltip_script_log" native="true">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>10</y>
-         <width>812</width>
-         <height>13</height>
+         <y>0</y>
+         <width>1020</width>
+         <height>60</height>
         </rect>
        </property>
-       <property name="text">
+       <property name="toolTip">
         <string>This tab shows detailed information about the script parsing process, including whether certain tests succeeded and other intricate details about various script operations</string>
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_8">
+     <widget class="QWidget" name="ua_results_tab">
+      <property name="toolTip">
+       <string/>
+      </property>
       <attribute name="title">
        <string>UA Results</string>
       </attribute>
@@ -108,7 +114,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>160</y>
+         <y>130</y>
          <width>1000</width>
          <height>371</height>
         </rect>
@@ -385,7 +391,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>130</y>
+         <y>100</y>
          <width>111</width>
          <height>16</height>
         </rect>
@@ -402,8 +408,8 @@
       <widget class="QPushButton" name="save_button">
        <property name="geometry">
         <rect>
-         <x>860</x>
-         <y>630</y>
+         <x>890</x>
+         <y>570</y>
          <width>111</width>
          <height>31</height>
         </rect>
@@ -412,16 +418,16 @@
         <string>Save Report</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label">
+      <widget class="QWidget" name="tool_tip_ua_results" native="true">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>700</width>
-         <height>13</height>
+         <x>0</x>
+         <y>0</y>
+         <width>1031</width>
+         <height>80</height>
         </rect>
        </property>
-       <property name="text">
+       <property name="toolTip">
         <string>This tab shows very details information gathered about each element from the ultrasound actuator in a grid. </string>
        </property>
       </widget>

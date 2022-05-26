@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>448</height>
+    <width>450</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="read_from_ua_button">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>410</y>
+     <x>320</x>
+     <y>373</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QLabel" name="label_34">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>60</y>
+     <x>10</x>
+     <y>23</y>
      <width>81</width>
      <height>16</height>
     </rect>
@@ -42,8 +42,8 @@
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>80</y>
+     <x>10</x>
+     <y>43</y>
      <width>411</width>
      <height>325</height>
     </rect>
@@ -114,30 +114,17 @@
     </property>
    </column>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="tooltip" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>500</width>
-     <height>10</height>
+     <x>0</x>
+     <y>0</y>
+     <width>449</width>
+     <height>23</height>
     </rect>
    </property>
-   <property name="text">
-    <string>The table on the left displays the calibration data stored internally in the ultrasound actuator</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>30</y>
-     <width>469</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>The table on the right shows the efficiency of each element for both high and low frequency tests</string>
+   <property name="toolTip">
+    <string>The table on the left displays the calibration data stored internally in the ultrasound actuator. The table on the right shows the efficiency of each element for both high and low frequency tests</string>
    </property>
   </widget>
  </widget>

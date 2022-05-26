@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>789</width>
+    <width>646</width>
     <height>649</height>
    </rect>
   </property>
@@ -1722,17 +1722,17 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="sys_config_tooltip" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>723</width>
-     <height>16</height>
+     <x>0</x>
+     <y>0</y>
+     <width>644</width>
+     <height>40</height>
     </rect>
    </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;In this tab, you may see and set several parameters that are stored in the configuration (default/local.yaml) for the application&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="toolTip">
+    <string>In this tab, you may see and set several parameters that are stored in the configuration (default/local.yaml) for the application</string>
    </property>
   </widget>
  </widget>
