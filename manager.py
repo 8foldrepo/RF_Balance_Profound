@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import sys
+import unittest
 import time as t
 import traceback
 from collections import OrderedDict
@@ -15,6 +16,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
 from scipy import integrate
+from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -223,7 +225,7 @@ class Manager(QThread):
 
         if self.config["Debugging"]["simulate_motors"] and simulate_access:
             from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
-            self.Motors = SimulatedMotorController(config=self.config)
+            self.Motors = SimulatedMotorController(config=self.config, lock=self.motor_control_lock)
         else:
             from Hardware.parker_motor_controller import ParkerMotorController
             self.Motors = GalilMotorController(config=self.config, lock=self.motor_control_lock)
@@ -892,7 +894,6 @@ class Manager(QThread):
             description_list[i] = self.test_data.results_summary[i][16]
 
         # Add ua write result to output
-        print(colored(f'self.test_data.skip_write_to_ua: {self.test_data.skip_write_to_ua}', 'magenta'))
         if self.test_data.skip_write_to_ua or self.test_data.write_result is None:
             pass_list[10] = "N/A"
         elif self.test_data.write_result:
@@ -1392,10 +1393,8 @@ class Manager(QThread):
             self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
             cont = self.cont_if_answer_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
-                print(colored('returning', 'cyan'))
                 return
             if self.yes_clicked_variable:
-                print(colored('yes clicked', 'yellow'))
                 self.test_data.skip_write_to_ua = False
                 self.yes_clicked_variable = False
                 calibration_data = generate_calibration_data(self.test_data)
