@@ -39,13 +39,13 @@ FrequencyParameters:
     CoarseIncr(MHz): 0.1
     FineIncr(MHz): 0.01
 Galil_Motors:
-  move_timeout_s: 3
+  move_timeout_s: 300
   axes:
     - X
     - R
   calibrate_ray:
-    - 30.0
-    - 15.0
+    - 1000
+    - 11.111111111 #4000/360
   enable_homing_ray:
     - true
     - true
@@ -53,11 +53,11 @@ Galil_Motors:
     - false
     - true
   encoder_resolution_ray:
-    - 4000
     - 1000
+    - 4000
   increment_ray:
-    - 5
-    - 2
+    - 5 # mm
+    - 2 # deg
   gearing_ray:
     - 1
     - 1.92
@@ -71,8 +71,8 @@ Galil_Motors:
     - false
     - true
   speeds_ray:
-    - 1000
-    - 1000
+    - 5 #mm/s
+    - 5 #deg/s
   time_limit_s: 2
   timeout_s: 0.1
   ip_address: 192.168.42.100

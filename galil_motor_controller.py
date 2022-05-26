@@ -1,7 +1,5 @@
 import random
-from typing import List
-
-import numpy as np
+from typing import List, Union
 from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
@@ -13,10 +11,17 @@ from Utilities.useful_methods import create_comma_string
 class GalilMotorController(AbstractMotorController):
     """Provides an interface with key functionality for a galil motor controller"""
 
+    def get_serial_number(self) -> str:
+        ...
+        # todo stretch: implement
+
+    def wrap_up(self):
+        self.disconnect_hardware()
+
     # Note: see the abstract_motor_controller class for all inherited signals and attributes
     galil_ax_letters = list()
 
-    def __init__(self, config: dict, lock: QMutex, device_key="Galil_Motors", parent=None):
+    def __init__(self, config: Union[dict, None], lock: Union[QMutex, None], device_key="Galil_Motors", parent=None):
         super().__init__(parent=parent, config=config, lock=lock, device_key=device_key)
         self.app = QApp.instance()
         self.handle = gclib.py()
@@ -34,6 +39,8 @@ class GalilMotorController(AbstractMotorController):
     def disconnect_hardware(self):
         self.command("ST")
         self.command("MO")
+        self.get_position()
+        self.get_position()
         self.handle.GClose()
         self.log("Connection terminated")
         self.connected = False
@@ -66,32 +73,47 @@ class GalilMotorController(AbstractMotorController):
         if not self.connected:
             self.log(level="error", message=feedback)
         else:
-            self.setup_axes()
-            # todo: call self.setup
+            # todo: populate with settings
+
+            self.setup(settings=None)
 
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
     @pyqtSlot(dict)
-    def setup(self, settings):
+    def setup(self, settings: Union[dict, None]):
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+        # Update settings according to the dict
+        if settings is not None:
+            self.increment_ray[0] = settings["lin_incr"]
+            self.increment_ray[1] = settings["ang_incr"]
+            self.speeds_ray[0] = settings["lin_speed"]
+            self.speeds_ray[1] = settings["rot_speed"]
+            self.calibrate_ray_steps_per[0] = settings["steps_per_mm"]
+            self.calibrate_ray_steps_per[1] = settings["steps_per_deg"]
+            self.movement_mode = settings["movement_mode"]
+            self.gearing_ray[0] = settings["x_gearing"]
+            self.gearing_ray[1] = settings["r_gearing"]
 
-        ...
+        # Turn Motors on
+        self.handle.GCommand("SH")
 
-    # todo: merge into setup
-    def setup_axes(self):
-        # Setup
         try:
+            # Turn off gear ratio and gear mode
             self.command("GR 0,0,0,0")
             self.command("GM 0,0,0,0")
 
-            # self.command('PF 7')
+            # Set the number of decimal places preceding the decimal
+            self.command('PF 7')
+            # Attempt to stop motion
             self.command("ST")
-            self.command(
-                f"SP {create_comma_string(self.ax_letters, self.speeds_ray, self.ax_letters)}"
-            )  # yaml file value
 
-            self.command("AC 1000000,1000000,1000000,1000000")
+            # Convert speeds to counts per second and update them
+            steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
+
+            sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
+            self.command(sp_command_str)
+
             self.command("DC 1000000,1000000,1000000,1000000")
             # self.set_origin()
             self.get_position()
@@ -147,7 +169,8 @@ class GalilMotorController(AbstractMotorController):
 
             galil_ax_letters_for_move.append(galil_ax_letter)
             target_coordinate_mm = float(coords_mm[i])
-            target_coord_steps = self.__position_to_steps(ax_index, target_coordinate_mm)
+            target_coord_steps = int(self.__position_to_steps(ax_index, target_coordinate_mm))
+            print(target_coord_steps)
             coords_steps.append(target_coord_steps)
 
         pa_command_str = f"PA {create_comma_string(axes, coords_steps, self.ax_letters)}"
@@ -186,10 +209,9 @@ class GalilMotorController(AbstractMotorController):
             try:
                 self.get_position()
 
-                current_pos_str = self.command('RP')
+                # current_pos_str = self.command('RP')
                 # this command is intended to have no effect, by telling the motors to go to the current position.
                 # It will raise an exception if the motors are moving. If there is no exception the motion is complete
-                self.command(f"PA {current_pos_str}")
                 self.command(f"BG {''.join(self.galil_ax_letters)}")
                 success = True
                 break
@@ -197,7 +219,7 @@ class GalilMotorController(AbstractMotorController):
             except gclib.GclibError as e:
                 code = self.check_user_fault()
                 # This exception is expected to occur repeatedly until the motion is complete. This is not a bug.
-                if not code == '7 Command not valid while running':
+                if not 'not valid while running' in code:
                     # If the error code is different, log it as an error and return False
                     self.log(level='error', message=f"error in go to position: {code}")
                     return False
@@ -303,7 +325,7 @@ class GalilMotorController(AbstractMotorController):
         self.moving_signal.emit(self.moving)
 
     @pyqtSlot()
-    def go_home(self, enable_ui:bool = True) -> bool:
+    def go_home(self, enable_ui: bool = True) -> bool:
         # enforce premove conditions
         self.command("ST")
         self.command("SH ABCD")
@@ -329,7 +351,7 @@ class GalilMotorController(AbstractMotorController):
         return success and success_2
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str, enable_ui:bool = True) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
         # enforce premove conditions
         self.command("ST")
         self.command("SH ABCD")
@@ -467,6 +489,7 @@ class GalilMotorController(AbstractMotorController):
         t.sleep(.01)
         return output
 
+
 # unit test assuming that the galil box is connected and powered on
 if __name__ == '__main__':
     Motors = GalilMotorController(config=None, lock=None)
@@ -474,54 +497,87 @@ if __name__ == '__main__':
 
     assert Motors.connected
 
-
     assert Motors.config is not None
-    assert Motors.ax_letters == ['X', 'R']
-    assert Motors.increment_ray == [Motors.config[Motors.device_key]['increment_ray']]
+    assert Motors.ax_letters == Motors.config[Motors.device_key]['axes']
+    assert Motors.increment_ray == Motors.config[Motors.device_key]['increment_ray']
 
     Motors.set_origin_here()
     Motors.get_position()
 
-    assert Motors.coords_mm == [0,0]
+    margin_of_error = .4
+    for i in range(len(Motors.coords_mm)):
+        assert abs(Motors.coords_mm[i] - 0) < margin_of_error
 
-
-    #test a random sequence of operations 10 times
+    # test a random sequence of operations 10 times
     for i in range(10):
-        step_sequence = list(range(5))
+        step_sequence = list(range(6))
         random.shuffle(step_sequence)
 
         for step_number in step_sequence:
+            if step_number == 0:
+                axis = random.choice(Motors.ax_letters)
+                ax_index = Motors.ax_letters.index(axis)
+                current_pos = Motors.coords_mm[ax_index]
 
-            if step_number == 1:
+                Motors.begin_motion(axis, 1)
+                margin_of_error = .4  # mm or degrees
+                actual_pos = Motors.coords_mm[ax_index]
+                target_pos = Motors.increment_ray[ax_index] + current_pos
+                assert abs(actual_pos - target_pos) < margin_of_error
+
+            elif step_number == 1:
                 # test go to position
                 x = random.randrange(-263, 50)
                 r = random.randrange(-180, -80)
-                Motors.go_to_position(['X', 'R'], [x, r])
-                margin_of_error = .03 # mm or degrees
+                successful = Motors.go_to_position(Motors.ax_letters, [x, r])
+                assert successful
+                margin_of_error = .4  # mm or degrees
                 assert abs(Motors.coords_mm[0] - x) < margin_of_error
                 assert abs(Motors.coords_mm[1] - r) < margin_of_error
 
-            elif step_number == 2:
-                # test go home (should time out since there is no home switch as of 5/26/22)
-                start_time = t.time()
-                successful = Motors.go_home()
-
-                #make sure it did not take much longer than the cooldown
-                #assumes that there is no home switch
-                assert successful == False
-                assert t.time() - start_time < Motors.config[Motors.device_key]['move_timeout_s'] + 3
+            # elif step_number == 2:
+            #     # test go home
+            #     start_time = t.time()
+            #     successful = Motors.go_home()
+            #     # make sure it did not take much longer than the cooldown
+            #     # assumes that there is no home switch
+            #
+            #     # Flip this check to True when limit switches are installed
+            #     assert successful is False
+            #     current_time = t.time()
+            #     assert current_time - start_time < Motors.config[Motors.device_key]['move_timeout_s'] * 3 + 3
 
             elif step_number == 3:
                 # test disconnecting and reconnecting
                 Motors.disconnect_hardware()
-                assert Motors.moving == False
+                assert Motors.moving is False
+                successful = Motors.go_to_position(Motors.ax_letters, [0] * len(Motors.ax_letters))
+                assert successful is False
+                Motors.connect_hardware()
+                assert Motors.connected
+                Motors.set_origin_here()
+                successful = Motors.go_to_position(Motors.ax_letters, [0] * len(Motors.ax_letters))
+                assert successful
+                margin_of_error = .4
+                for j in range(len(Motors.coords_mm)):
+                    assert abs(Motors.coords_mm[j] - 0) < margin_of_error
 
-                successful = Motors.go_to_position(['X','R'],[0,0])
+            # elif step_number == 4:
+            #     # test go home 1d
+            #     start_time = t.time()
+            #     successful = Motors.go_home_1d(random.choice(Motors.ax_letters))
+            #     assert successful is False
+            #     assert t.time() - start_time < Motors.config[Motors.device_key]['move_timeout_s']*3 + 3
 
-                assert successful == False
-
-
-    print("Test passed :)")
-
-
-
+            elif step_number == 5:
+                # test stop_motion
+                for j in range(2):
+                    Motors.command('DP 0')
+                    Motors.get_position()
+                    Motors.command('PA 5000')
+                    Motors.command('BG A')
+                    t.sleep(.1)
+                    Motors.get_position()
+                    assert Motors.moving
+                    t.sleep(.1)
+                    Motors.stop_motion()
