@@ -43,6 +43,7 @@ class Position(MyQWidget, Ui_Form):
         self.config = None
         self.com_port = None
         self.settings_ray = list()
+        self.stop_button.setEnabled(False)
 
     def set_config(self, config):
         self.config = config
@@ -167,6 +168,10 @@ class Position(MyQWidget, Ui_Form):
         self.x_home_radio.setEnabled(enabled)
         self.theta_home_radio.setEnabled(enabled)
 
+        #The stop button is the only one where once enabled it can no longer be disabled by this method
+        if enabled:
+            self.stop_button.setEnabled(enabled)
+
 
     def configure_signals(self):
         # self.set_button.clicked.connect(self.set_clicked)
@@ -267,27 +272,35 @@ class Position(MyQWidget, Ui_Form):
         element_1_pos = self.config["WTF_PositionParameters"]["X-Element1"]
         element_pitch = self.config["WTF_PositionParameters"]["X-Element pitch (mm)"]
 
-        if is_number(self.go_element_combo.currentText()):
-            offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
-            target_position = element_1_pos + offset
-            self.go_to_signal.emit(["X"], [target_position])
+        if self.manager is not None:
+            if is_number(self.go_element_combo.currentText()):
+                target_position = self.manager.element_x_coordinates[int(self.go_element_combo.currentText())]
+                self.go_to_signal.emit(["X"], [target_position])
+            else:
+                target_position = self.manager.element_x_coordinates[self.manager.element]
+                self.go_to_signal.emit(["X"], [target_position])
         else:
-            # TODO: fill in later to handle "current" element condition
-            return
-
-    """Command the motors to retract until a sensor is reached"""
+            if is_number(self.go_element_combo.currentText()):
+                offset = (int(self.go_element_combo.currentText()) - 1) * element_pitch
+                target_position = element_1_pos + offset
+                self.go_to_signal.emit(["X"], [target_position])
 
     @pyqtSlot()
     def retract_button_clicked(self):
+        """Command the motors to retract until a sensor is reached"""
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         # TODO: fill in later with the code that uses the retraction sensor
         self.home_1d_signal.emit("X")
 
-    """Command the motors to blindly go to an element as defined by the element number times the offset from element 1"""
-
     @pyqtSlot()
     def manual_home_clicked(self):
+        """
+        Command the motors to blindly go to an element as defined by the element number times the offset from
+        element 1
+        """
+        self.set_buttons_enabled_signal.emit(False)
+
         if self.x_home_radio.isChecked():
             self.home_1d_signal.emit("X")
         elif self.theta_home_radio.isChecked():

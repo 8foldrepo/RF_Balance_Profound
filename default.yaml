@@ -39,6 +39,7 @@ FrequencyParameters:
     CoarseIncr(MHz): 0.1
     FineIncr(MHz): 0.01
 Galil_Motors:
+  move_timeout_s: 10
   axes:
     - X
     - R
@@ -70,10 +71,11 @@ Galil_Motors:
     - false
     - true
   speeds_ray:
-    - 5.0
-    - 5.0
+    - 1000
+    - 1000
   time_limit_s: 2
   timeout_s: 0.1
+  ip_address: 192.168.42.100
 Keysight_AWG:
   amplitude_V: 0.2
   burst_on: true
@@ -123,6 +125,7 @@ User Accounts:
   Engineer: Engineer
   Operator: Operator
 VIX_Motors:
+  move_timeout_s: 10
   axes:
     - X
     - R

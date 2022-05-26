@@ -1,0 +1,24 @@
+ua interface setup notes (windows 10)
+
+navigate to the following address in control panel
+Control Panel\Network and Internet\Network Connections
+
+plug the UA interface in with a ethernet cable and make sure it is powered up.
+
+It is recommended to use a dedicated ethernet port for this purpose,
+for example a USB-3 to ethernet adapter.
+
+Identify which network adapter in control panel is connected to the UA interface.
+right click it and click properties. Uncheck all but Internet Protocol Version 4
+
+Select the Internet Protocol Version 4 line and click properties.
+
+Select "use the following IP address".
+
+set IP address to 192.168.3.1 and the subnet to 255.255.255.0
+
+Run the code. the UA interface indicator should turn green.
+If it does try changing the address to 192.168.3.3
+
+
+
