@@ -7,6 +7,7 @@ from definitions import FrequencyRange
 
 
 class RFBData:
+    """Class containing all of the relevant data for an efficiency test. Populated in realtime during """
     element: int
     frequency_range: FrequencyRange
     water_temperature_c: float

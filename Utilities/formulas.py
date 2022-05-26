@@ -7,7 +7,6 @@ def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c
     acoustic_power_w = force_N * c_water
     return acoustic_power_w
 
-
 def calculate_speed_of_sound_in_water(temperature_c: float):
     from numpy import poly1d, polyfit
     temp_c_scatter = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  # Source: [2] in documentation
@@ -16,6 +15,16 @@ def calculate_speed_of_sound_in_water(temperature_c: float):
     polyfit = poly1d(polyfit(temp_c_scatter, c_water_m_per_s_scatter, 4))
 
     return polyfit(temperature_c)
+
+
+def calculate_pf_max(acoustic_power_max_w:float, acoustic_efficiency_percent:float, reflected_power_percent:float)-> float:
+    denominator = (acoustic_efficiency_percent / 100) * (1-reflected_power_percent/100)
+
+    if denominator == 0:
+        return float('nan')
+
+    print(acoustic_power_max_w/denominator)
+    return acoustic_power_max_w/denominator
 
 
 # returns the random uncertainty of a data set as a percentage
