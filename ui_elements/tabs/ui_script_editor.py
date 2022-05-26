@@ -2,12 +2,14 @@ import typing
 from datetime import date
 # from pprint import pprint
 from typing import List
+
 # import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QApplication as QApp
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
-from PyQt5.QtWidgets import QApplication as QApp
+
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -261,8 +263,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
         Add invisible item to allow inserting at the end
         """
         empty_item = QTreeWidgetItem([])
-        empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)  # should prevent user from selecting this item
-        empty_item.setFlags(empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEnabled)  # should prevent user from interacting with this item
+        empty_item.setFlags(
+            empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)  # should prevent user from selecting this item
+        empty_item.setFlags(
+            empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEnabled)  # should prevent user from interacting with this item
         self.treeWidget.invisibleRootItem().addChild(empty_item)
         self.treeWidget.setCurrentItem(empty_item)
 
@@ -344,10 +348,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         """
         # todo: perform move extensive testing with this function
         if self.treeWidget.currentItem().parent():  # if selected element is a child
-            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+            self.treeWidget.setCurrentItem(
+                self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
         current_index = self.treeWidget.currentIndex()  # QModelIndex object
         current_index_row = current_index.row()  # index of the selected item in tree
-        number_of_items_in_tree = self.treeWidget.invisibleRootItem().childCount()-2  # total number of items in tree
+        number_of_items_in_tree = self.treeWidget.invisibleRootItem().childCount() - 2  # total number of items in tree
 
         # error/exception prevention measures
         if self.treeWidget.currentItem() is None:  # if nothing is selected  #todo check to see what this does exactly
@@ -357,19 +362,24 @@ class ScriptEditor(MyQWidget, Ui_Form):
             return
 
         # if an item is selected
-        list_of_var_dicts_copy = list(self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
+        list_of_var_dicts_copy = list(
+            self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
             current_index_row = current_index_row + 1  # offset to account for header
-            temporary_item_to_save = list_of_var_dicts_copy[current_index_row+1]  # since moving item "down," it's actually moving up in the list, save the next item
-            list_of_var_dicts_copy[current_index_row+1] = list_of_var_dicts_copy[current_index_row]  # set next item in list to previous item
-            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save  # restore previous contents of next item to current index (swapping)
+            temporary_item_to_save = list_of_var_dicts_copy[
+                current_index_row + 1]  # since moving item "down," it's actually moving up in the list, save the next item
+            list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[
+                current_index_row]  # set next item in list to previous item
+            list_of_var_dicts_copy[
+                current_index_row] = temporary_item_to_save  # restore previous contents of next item to current index (swapping)
         else:  # if script does not have a header, no offset is needed
-            temporary_item_to_save = list_of_var_dicts_copy[current_index_row+1]
-            list_of_var_dicts_copy[current_index_row+1] = list_of_var_dicts_copy[current_index_row]
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row + 1]
+            list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[current_index_row]
             list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
 
-        self.list_of_var_dicts = list(list_of_var_dicts_copy)  # the changes applied to the copy will now be reflected onto the real list
+        self.list_of_var_dicts = list(
+            list_of_var_dicts_copy)  # the changes applied to the copy will now be reflected onto the real list
         self.update_tree()  # update the tree
         if self.check_if_script_has_header(list_of_var_dicts_copy):
             a = self.treeWidget.invisibleRootItem().child(current_index_row)
@@ -419,13 +429,15 @@ class ScriptEditor(MyQWidget, Ui_Form):
         if self.treeWidget.currentItem() is None:  # if nothing is selected  #todo check to see what this does exactly
             return  # exit this method, nothing will happen, an item needs to be selected
         elif current_index_row <= 0:  # if the selected item is at the beginning of the list
-            self.log("you are trying to move an item that is at the beginning of the list upwards, that is not possible")
+            self.log(
+                "you are trying to move an item that is at the beginning of the list upwards, that is not possible")
             return
-        elif current_index_row == last_invisible_item_index-1:
+        elif current_index_row == last_invisible_item_index - 1:
             self.log("you are trying to move a non-item in the list upwards, this is not possible")
 
         # if an item is selected
-        list_of_var_dicts_copy = list(self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
+        list_of_var_dicts_copy = list(
+            self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
             current_index_row = current_index_row + 1  # offset to account for header

@@ -1,12 +1,14 @@
+import random
 from abc import abstractmethod
 
-import random
 import numpy as np
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
 class SimulatedOscilloscope(AbstractOscilloscope):
     """Class providing a crude simulation of an oscilloscope so programs can be tested without one"""
+
     def __init__(self, config: dict, device_key="Keysight_Oscilloscope", parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False

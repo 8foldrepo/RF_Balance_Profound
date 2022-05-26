@@ -1,6 +1,8 @@
 from typing import List
+
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
+
 from Utilities.formulas import calculate_random_uncertainty_percent
 from Utilities.useful_methods import tab_text_to_index
 from Widget_Library.widget_scan import Ui_scan_tab_widget

@@ -3,6 +3,7 @@ import time as t
 from PyQt5 import QtCore
 from PyQt5.QtCore import QThread, QMutex, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication
+
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Utilities.formulas import calculate_power_from_balance_reading

@@ -1,9 +1,11 @@
 import logging
+import os
+
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import log_msg
-import os
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)

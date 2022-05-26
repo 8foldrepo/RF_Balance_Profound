@@ -149,15 +149,15 @@ class ParkerMotorController(AbstractMotorController):
         self.set_speeds_1d(axis="All", speed=speed)
 
     @pyqtSlot()
-    def go_home(self, enable_ui:bool = True):
+    def go_home(self, enable_ui: bool = True):
         # Theta prehome move
-        self.go_to_position(['R'],[self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
+        self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
         self.command(f"0GH")
 
         success = True
 
         start_time = t.time()
-        while self.moving and t.time()-start_time < self.config[self.device_key]['move_timeout_s']:
+        while self.moving and t.time() - start_time < self.config[self.device_key]['move_timeout_s']:
             self.get_position()
             t.sleep(.1)
 
@@ -175,7 +175,7 @@ class ParkerMotorController(AbstractMotorController):
         return success
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis, enable_ui:bool = True):
+    def go_home_1d(self, axis, enable_ui: bool = True):
         if axis == 'R' or axis == "Theta":
             self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
@@ -548,7 +548,6 @@ class ParkerMotorController(AbstractMotorController):
             else:
                 stopped = self.command(f"{axis_number}S", retry=False)
         return stopped
-
 
     def getBaud(self):
         """Query and return the baud rate"""

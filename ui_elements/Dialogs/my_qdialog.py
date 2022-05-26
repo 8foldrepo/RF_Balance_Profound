@@ -1,17 +1,13 @@
+import logging
 import os
 
-import PyQt5
-
-from definitions import ROOT_DIR
-import logging
-
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QIcon, QCloseEvent
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.useful_methods import log_msg
+from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 

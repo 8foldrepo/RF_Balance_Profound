@@ -114,7 +114,7 @@ def print_info(dict):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5 import QtWidgets, QtCore
+    from PyQt5 import QtWidgets
     from datetime import date
 
     app = QtWidgets.QApplication(sys.argv)

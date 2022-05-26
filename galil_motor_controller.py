@@ -1,10 +1,12 @@
 import random
+import time as t
 from typing import List, Union
+
+import gclib
 from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
+
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-import time as t
-import gclib
 from Utilities.useful_methods import create_comma_string
 
 
