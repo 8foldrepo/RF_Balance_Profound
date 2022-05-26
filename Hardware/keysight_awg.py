@@ -357,6 +357,6 @@ if __name__ == "__main__":
                 phase_degrees = random.randint(0, 180)
                 awg.set_phase_degrees(phase_degrees=phase_degrees)
                 assert awg.get_phase_degrees() == phase_degrees
-            if step_number == 10:  # TEST: output impedance
-                ...
+            # if step_number == 10:  # TEST: output impedance
+            #     ...
     print("Test passed :)")
