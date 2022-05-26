@@ -63,7 +63,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def get_horizontal_scale_V(self) -> float:
+    def get_horizontal_scale_sec(self) -> float:
         """method that returns the horizontal scale of the oscilloscope, return value is voltage as a float"""
         ...
 
