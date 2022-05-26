@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pyvisa
 from PyQt5 import QtCore
 
@@ -164,13 +166,13 @@ class KeysightAWG(AbstractAWG):
 
     """Shows text_item on the AWG screen"""
 
-    def DisplayText(self, text):
+    def display_text(self, text):
         self.command(f"DISP:TEXT {text}")
 
-    def SetFunction(self, func="SIN"):
+    def set_function(self, func="SIN"):
         self.command(f"FUNC {func}:")
 
-    def GetFunction(self):
+    def get_function(self):
         self.command(f"FUNC?")
         return self.read()
 
@@ -190,7 +192,7 @@ class KeysightAWG(AbstractAWG):
         else:
             self.command("BURS OFF")
 
-    def get_burst(self):
+    def get_burst(self) -> Tuple[bool, int]:
         """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""
         self.command(f"BURS?")
         self.state["burst_on"] = "1" in self.read()
@@ -311,19 +313,49 @@ if __name__ == "__main__":
                     assert awg.get_output() is not None
                 else:
                     assert awg.get_output() is None
-            if step_number == 1:  # TEST: frequency
-                frequency = random.uniform(1, 9999999)
+            if step_number == 1:  # TEST: frequency (Hz)
+                frequency = round(random.uniform(1, 9999999), 2)
                 awg.set_frequency_hz(frequency=frequency)
                 assert awg.get_frequency_hz() == frequency
             if step_number == 2:  # TEST: offset (V)
                 offset = random.uniform(1, 10)
                 awg.set_offset_v(offset=offset)
                 assert offset == awg.get_offset_v()
-            if step_number == 3:
-                ...
-            if step_number == 4:
-                ...
-            if step_number == 5:
-                ...
-
+            if step_number == 3:  # TEST: function
+                possible_funcs = ['SIN', 'SQU', 'RAMP', 'NRAM', 'TRI', 'NOIS', 'PRBS', 'ARB']
+                func = random.choice(possible_funcs)
+                awg.set_function(func=func)
+                assert awg.set_function() == func
+            if step_number == 4:  # TEST: check connected
+                awg.disconnect_hardware()
+                assert not awg.check_connected()
+                awg.connect_hardware()
+                assert awg.check_connected()
+            if step_number == 5:  # TEST: wrap up
+                awg.wrap_up()
+                assert not awg.check_connected()
+                assert type(awg.get_output()) is None
+                awg.connect_hardware()
+            if step_number == 6:  # TEST: amplitude (V)
+                amplitude = round(random.uniform(1, 10), 2)
+                awg.set_amplitude_v(amplitude=amplitude)
+                assert amplitude == awg.get_amplitude_v()
+            if step_number == 7:  # TEST: burst
+                on = bool(random.getrandbits(1))
+                awg.set_burst(on=on)
+                response = awg.get_burst()[0]
+                if on:
+                    assert response
+                else:
+                    assert not response
+            if step_number == 8:  # TEST: number of cycles
+                cycles = random.randint(1, 10)
+                awg.set_cycles(cycles=cycles)
+                assert awg.get_cycles() == cycles
+            if step_number == 9:  # TEST: phase degrees
+                phase_degrees = random.randint(0, 180)
+                awg.set_phase_degrees(phase_degrees=phase_degrees)
+                assert awg.get_phase_degrees() == phase_degrees
+            # if step_number == 10:  # TEST: output impedance
+            #     ...
     print("Test passed :)")
