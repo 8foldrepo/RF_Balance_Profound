@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(789, 649)
+        Form.resize(646, 649)
         self.save_config_button = QtWidgets.QPushButton(Form)
         self.save_config_button.setGeometry(QtCore.QRect(260, 600, 201, 41))
         font = QtGui.QFont()
@@ -684,9 +684,9 @@ class Ui_Form(object):
         self.lf_amplitude.setMaximum(999999999.0)
         self.lf_amplitude.setObjectName("lf_amplitude")
         self.gridLayout_19.addWidget(self.lf_amplitude, 7, 1, 1, 1)
-        self.label = QtWidgets.QLabel(Form)
-        self.label.setGeometry(QtCore.QRect(10, 10, 723, 16))
-        self.label.setObjectName("label")
+        self.sys_config_tooltip = QtWidgets.QWidget(Form)
+        self.sys_config_tooltip.setGeometry(QtCore.QRect(0, 0, 644, 40))
+        self.sys_config_tooltip.setObjectName("sys_config_tooltip")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -749,7 +749,7 @@ class Ui_Form(object):
         self.label_82.setText(_translate("Form", "LF.Amplitude(mVpp)"))
         self.label_80.setText(_translate("Form", "LF.BurstCount"))
         self.label_84.setText(_translate("Form", "Search.CoarseIncr"))
-        self.label.setText(_translate("Form", "<html><head/><body><p><span style=\" font-size:10pt;\">In this tab, you may see and set several parameters that are stored in the configuration (default/local.yaml) for the application</span></p></body></html>"))
+        self.sys_config_tooltip.setToolTip(_translate("Form", "In this tab, you may see and set several parameters that are stored in the configuration (default/local.yaml) for the application"))
 
 
 if __name__ == "__main__":

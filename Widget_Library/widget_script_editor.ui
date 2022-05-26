@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>793</width>
+    <width>779</width>
     <height>750</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>100</x>
      <y>110</y>
      <width>661</width>
      <height>630</height>
@@ -56,7 +56,7 @@
   <widget class="QComboBox" name="script_cmd_dropdown">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>70</y>
      <width>221</width>
      <height>31</height>
@@ -144,7 +144,7 @@
   <widget class="QPushButton" name="add_cmd_to_script_button">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>240</x>
      <y>70</y>
      <width>141</width>
      <height>31</height>
@@ -162,7 +162,7 @@
   <widget class="QGroupBox" name="script_command_buttons">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>170</y>
      <width>91</width>
      <height>291</height>
@@ -247,7 +247,7 @@
   <widget class="QLabel" name="label_132">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>40</y>
      <width>71</width>
      <height>16</height>
@@ -265,7 +265,7 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>440</x>
+     <x>430</x>
      <y>60</y>
      <width>271</width>
      <height>61</height>
@@ -325,17 +325,20 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QFrame" name="tootip">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>765</width>
-     <height>16</height>
+     <y>6</y>
+     <width>760</width>
+     <height>30</height>
     </rect>
    </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <property name="toolTip">
+    <string>This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
    </property>
   </widget>
  </widget>

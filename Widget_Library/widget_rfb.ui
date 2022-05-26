@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1025</width>
-    <height>656</height>
+    <width>1021</width>
+    <height>657</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -719,16 +719,16 @@
     </item>
    </layout>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="tooltip" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>916</width>
-     <height>13</height>
+     <x>0</x>
+     <y>0</y>
+     <width>1010</width>
+     <height>27</height>
     </rect>
    </property>
-   <property name="text">
+   <property name="toolTip">
     <string>This tab shows the data captured by the radiation force balance (RFB) and organizes the information into a grid and graph fashion, with a graph legend to explain what various lines represent</string>
    </property>
   </widget>
