@@ -13,8 +13,10 @@ class SimulatedMotorController(AbstractMotorController):
         super().__init__(parent=parent, config=config, device_key=device_key, lock=lock)
         self.fields_setup()
 
-    def go_home_1d(self, axis) -> bool:
+    def go_home_1d(self, axis, enable_ui:bool = True) -> bool:
         if self.config['Debugging']['simulate_motor_error']:
+            if enable_ui:
+                self.ready_signal.emit()
             return False
 
         if axis == "R":
@@ -22,7 +24,9 @@ class SimulatedMotorController(AbstractMotorController):
         elif axis == "X":
             self.coords_mm[0] = 273
         self.get_position()
-        self.ready_signal.emit()
+
+        if enable_ui:
+            self.ready_signal.emit()
         return True
 
     def fields_setup(self):
@@ -103,20 +107,26 @@ class SimulatedMotorController(AbstractMotorController):
         self.coords_mm[self.ax_letters.index(axis)] = 0
 
     @abstractmethod
-    def go_home(self):
+    def go_home(self, enable_ui: bool = True):
         self.get_position()
         self.coords_mm[1] = -90
         self.coords_mm[0] = 273
         self.get_position()
 
         if self.config['Debugging']['simulate_motor_error']:
+            if enable_ui:
+                self.ready_signal.emit()
             return False
 
+        if enable_ui:
+            self.ready_signal.emit()
         return True
 
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: list, coords_mm: list) -> bool:
+    def go_to_position(self, axes: list, coords_mm: list, enable_ui:bool = True) -> bool:
         if self.config["Debugging"]["simulate_motor_error"]:
+            if enable_ui:
+                self.ready_signal.emit()
             return False
 
         for i in range(len(axes)):
@@ -127,7 +137,8 @@ class SimulatedMotorController(AbstractMotorController):
 
         self.get_position()
 
-        self.ready_signal.emit()
+        if enable_ui:
+            self.ready_signal.emit()
         return True
 
     @abstractmethod
