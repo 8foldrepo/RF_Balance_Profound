@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1025, 656)
+        Form.resize(1021, 657)
         self.layoutWidget = QtWidgets.QWidget(Form)
         self.layoutWidget.setGeometry(QtCore.QRect(10, 30, 1001, 621))
         self.layoutWidget.setObjectName("layoutWidget")
@@ -45,7 +45,7 @@ class Ui_Form(object):
         self.reverse_pwr_img = QtWidgets.QLabel(self.legendsGroup)
         self.reverse_pwr_img.setGeometry(QtCore.QRect(10, 10, 30, 21))
         self.reverse_pwr_img.setText("")
-        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/reverse power.png"))
+        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("../ui_elements/images/reverse power.png"))
         self.reverse_pwr_img.setObjectName("reverse_pwr_img")
         self.label_125 = QtWidgets.QLabel(self.legendsGroup)
         self.label_125.setGeometry(QtCore.QRect(440, 10, 73, 21))
@@ -53,7 +53,7 @@ class Ui_Form(object):
         self.xsition_pwr_img = QtWidgets.QLabel(self.legendsGroup)
         self.xsition_pwr_img.setGeometry(QtCore.QRect(400, 10, 30, 21))
         self.xsition_pwr_img.setText("")
-        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/xsition pts.png"))
+        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("../ui_elements/images/xsition pts.png"))
         self.xsition_pwr_img.setObjectName("xsition_pwr_img")
         self.label_124 = QtWidgets.QLabel(self.legendsGroup)
         self.label_124.setGeometry(QtCore.QRect(43, 10, 73, 21))
@@ -62,7 +62,7 @@ class Ui_Form(object):
         self.forward_pwr_img.setGeometry(QtCore.QRect(710, 10, 31, 21))
         self.forward_pwr_img.setMinimumSize(QtCore.QSize(20, 20))
         self.forward_pwr_img.setText("")
-        self.forward_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/forward power.png"))
+        self.forward_pwr_img.setPixmap(QtGui.QPixmap("../ui_elements/images/forward power.png"))
         self.forward_pwr_img.setObjectName("forward_pwr_img")
         self.label_126 = QtWidgets.QLabel(self.legendsGroup)
         self.label_126.setGeometry(QtCore.QRect(750, 10, 91, 21))
@@ -292,9 +292,9 @@ class Ui_Form(object):
         self.gridLayout_23.addLayout(self.results_layout, 0, 1, 1, 1)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_23.addItem(spacerItem1, 0, 2, 1, 1)
-        self.label = QtWidgets.QLabel(Form)
-        self.label.setGeometry(QtCore.QRect(10, 10, 916, 13))
-        self.label.setObjectName("label")
+        self.tooltip = QtWidgets.QWidget(Form)
+        self.tooltip.setGeometry(QtCore.QRect(0, 0, 1010, 27))
+        self.tooltip.setObjectName("tooltip")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -326,7 +326,7 @@ class Ui_Form(object):
         self.label_122.setText(_translate("Form", "RF Electrical Power"))
         self.label_115.setText(_translate("Form", "Pf (W)"))
         self.label_116.setText(_translate("Form", "Pr (W)"))
-        self.label.setText(_translate("Form", "This tab shows the data captured by the radiation force balance (RFB) and organizes the information into a grid and graph fashion, with a graph legend to explain what various lines represent"))
+        self.tooltip.setToolTip(_translate("Form", "This tab shows the data captured by the radiation force balance (RFB) and organizes the information into a grid and graph fashion, with a graph legend to explain what various lines represent"))
 from ui_elements.ui_oscilloscope_plot import Plot
 
 

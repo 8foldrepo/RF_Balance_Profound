@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1062</width>
-    <height>718</height>
+    <width>1047</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,68 +17,99 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>5</y>
      <width>1026</width>
-     <height>671</height>
+     <height>672</height>
     </rect>
    </property>
    <property name="currentIndex">
     <number>0</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
+    <property name="toolTip">
+     <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.</string>
+    </property>
     <attribute name="title">
      <string>1D Scan</string>
     </attribute>
-    <layout class="QVBoxLayout" name="verticalLayout_6">
-     <item>
-      <widget class="QLabel" name="last_aquired_waveform_plot_label">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Last Aquired Waveform</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="Plot" name="waveform_plot" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>100</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_55">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Profile</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="Plot" name="profile_plot" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>100</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QLabel" name="last_aquired_waveform_plot_label">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>0</y>
+       <width>1000</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.</string>
+     </property>
+     <property name="text">
+      <string>Last Aquired Waveform</string>
+     </property>
+    </widget>
+    <widget class="Plot" name="waveform_plot" native="true">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>35</y>
+       <width>1002</width>
+       <height>285</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_55">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>326</y>
+       <width>30</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Profile</string>
+     </property>
+    </widget>
+    <widget class="Plot" name="profile_plot" native="true">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>352</y>
+       <width>1002</width>
+       <height>285</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="acquire_waveform_tab">
+    <property name="toolTip">
+     <string>The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn't needed as you request a trace via button.</string>
+    </property>
     <attribute name="title">
      <string>Acquire Waveform</string>
     </attribute>
@@ -95,11 +126,14 @@
     <widget class="QLabel" name="label_31">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>93</width>
-       <height>13</height>
+       <x>0</x>
+       <y>0</y>
+       <width>1020</width>
+       <height>30</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn't needed as you request a trace via button.</string>
      </property>
      <property name="text">
       <string>Acquired waveform</string>
@@ -1021,46 +1055,20 @@ selection-background-color:rgb(85, 170, 255);</string>
       </item>
      </layout>
     </widget>
+    <widget class="QWidget" name="tooltip_scan_setup" native="true">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1020</width>
+       <height>130</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>The scan tab allows you to perform scans on individual elements to your desired specifications. This tab can be used without a script, as you are trigger this tab manually.</string>
+     </property>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>905</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>13</y>
-     <width>1068</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn't needed as you request a trace via button.</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>26</y>
-     <width>814</width>
-     <height>13</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>The scan tab allows you to perform scans on individual elements to your desired specifications. This tab can be used without a script, as you are trigger this tab manually.</string>
-   </property>
   </widget>
  </widget>
  <customwidgets>
