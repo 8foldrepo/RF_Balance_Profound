@@ -39,7 +39,7 @@ FrequencyParameters:
     CoarseIncr(MHz): 0.1
     FineIncr(MHz): 0.01
 Galil_Motors:
-  move_timeout_s: 300
+  move_timeout_s: 3
   axes:
     - X
     - R
@@ -125,7 +125,7 @@ User Accounts:
   Engineer: Engineer
   Operator: Operator
 VIX_Motors:
-  move_timeout_s: 10
+  move_timeout_s: 300
   axes:
     - X
     - R

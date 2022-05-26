@@ -1,8 +1,6 @@
 import os
-
 import yaml
 from PyQt5.QtCore import pyqtSlot
-
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 

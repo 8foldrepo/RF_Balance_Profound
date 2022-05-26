@@ -329,9 +329,35 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
 # Script/example code for testing out hardware class
 if __name__ == "__main__":
+    import random
     osc = KeysightOscilloscope()
     osc.connect_hardware()
-    test = osc.get_rms()
-    print(type(test))
-    print(test)
-    osc.disconnect_hardware()
+
+    # test a random sequence of operations 10 times
+    for i in range(10):
+        step_sequence = list(range(5))
+        random.shuffle(step_sequence)
+
+        for step_number in step_sequence:
+            if step_number == 0:
+                scale = random.randrange(10,40000)
+                osc.set_vertical_scale_V(1, scale)
+                assert osc.get_vertical_scale_V(1) == scale
+                assert osc.range_mV == 8 * scale
+            if step_number == 1:
+                ...
+            if step_number == 2:
+                ...
+            if step_number == 3:
+                ...
+            if step_number == 4:
+                ...
+            if step_number == 5:
+                ...
+
+    print("Test passed :)")
+
+
+
+
+

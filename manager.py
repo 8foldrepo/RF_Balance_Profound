@@ -1,23 +1,18 @@
 import distutils.util
-# import inspect
 import logging
 import os
 import re
 import sys
-import unittest
 import time as t
 import traceback
 from collections import OrderedDict
 from typing import List
-
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
-from termcolor import colored
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -115,7 +110,8 @@ class Manager(QThread):
     # sets the current tab text of the main window (must match a tab name of the main window
     set_tab_signal = QtCore.pyqtSignal(list)
 
-    # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice versa
+    # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice 
+    # versa 
     button_enable_toggle_for_scripting = QtCore.pyqtSignal(bool)
 
     Motors = None
@@ -220,14 +216,17 @@ class Manager(QThread):
         use the simulated class instead.
         """
 
-        self.access_level = self.parent.access_level_combo.currentText()
+        self.access_level = 'Operator'
+        if hasattr(self.parent, 'access_level_combo'):
+            if isinstance(self.parent.access_level_combo, QComboBox):
+                self.access_level = self.parent.access_level_combo.currentText()
+
         simulate_access = self.access_level.upper() != "Operator".upper()
 
         if self.config["Debugging"]["simulate_motors"] and simulate_access:
             from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
             self.Motors = SimulatedMotorController(config=self.config, lock=self.motor_control_lock)
         else:
-            from Hardware.parker_motor_controller import ParkerMotorController
             self.Motors = GalilMotorController(config=self.config, lock=self.motor_control_lock)
 
         if self.config["Debugging"]["simulate_oscilloscope"] and simulate_access:
@@ -323,8 +322,8 @@ class Manager(QThread):
 
         # Get the position of the motors
         if self.Motors.connected:
-            lock_aquired = self.motor_control_lock.tryLock()
-            if lock_aquired:
+            lock_acquired = self.motor_control_lock.tryLock()
+            if lock_acquired:
                 self.Motors.get_position(mutex_locked=True)
                 self.motor_control_lock.unlock()
 
@@ -452,8 +451,10 @@ class Manager(QThread):
                 self.thermocouple.get_reading()
 
     def capture_scope(self, channel=1, plot=True):
-        """captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
-        them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true"""
+        """
+        captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
+        them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true
+        """
         try:
             time, voltage = self.Oscilloscope.capture(channel=channel)
             if plot:
@@ -466,7 +467,9 @@ class Manager(QThread):
         return [], []
 
     def plot_scope(self, time, voltage):
-        """takes the time and voltage data (lists) from the oscilloscope and sends a signal to main window to plot them"""
+        """
+        takes the time and voltage data (lists) from the oscilloscope and sends a signal to main window to plot them
+        """
         time_elapsed = t.time() - self.start_time
         if time_elapsed == 0:
             return
@@ -476,7 +479,9 @@ class Manager(QThread):
 
     # noinspection PyUnresolvedReferences
     def capture_oscilloscope_and_plot(self):
-        """Captures an oscilloscope trace and plots it to the scan tab, assuming the plot is ready"""
+        """
+        Captures an oscilloscope trace and plots it to the scan tab, assuming the plot is ready
+        """
 
         if self.oscilloscope_averages != self.Oscilloscope.averages:
             self.Oscilloscope.set_averaging(self.oscilloscope_averages)
@@ -493,8 +498,10 @@ class Manager(QThread):
         self.start_time = t.time()
 
     def load_script(self, path):
-        """takes the script file and parses the info within it into various lists and dictionaries so the program can
-         run the script, requires a path argument to the script"""
+        """
+        takes the script file and parses the info within it into various lists and dictionaries so the program can
+        run the script, requires a path argument to the script
+        """
         self.abort_immediately(log=False, save_prompt_var=False)  # we don't want the save prompt for this use of abort
 
         # Send name of script to UI
@@ -594,7 +601,8 @@ class Manager(QThread):
 
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
-            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
+            if "Task type" in tasks[
+                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -606,8 +614,10 @@ class Manager(QThread):
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 
-        if len(tasks) == 0 or (len(tasks) == 1 and '# of Tasks' in tasks[0]):  # checks if there are no tasks, with and without header
-            self.user_info_signal.emit("You cannot run a script that has no tasks, please select a script that has tasks.")
+        if len(tasks) == 0 or (
+                len(tasks) == 1 and '# of Tasks' in tasks[0]):  # checks if there are no tasks, with and without header
+            self.user_info_signal.emit(
+                "You cannot run a script that has no tasks, please select a script that has tasks.")
             self.abort_immediately()
             self.no_script_loaded_signal.emit()
         else:
@@ -831,11 +841,11 @@ class Manager(QThread):
 
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
-                print("returning true") #todo: remove
+                print("returning true")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return True
             if self.no_clicked_variable:
-                print("returning false") #todo: remove
+                print("returning false")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
         # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
@@ -862,7 +872,7 @@ class Manager(QThread):
     @pyqtSlot()
     def yes_clicked(self):
         """Flags yes_selected to allow user to consent to question"""
-        print("yes button clicked") #todo: remove
+        print("yes button clicked")  # todo: remove
         self.yes_clicked_variable = True
         self.no_clicked_variable = False
 
@@ -993,7 +1003,8 @@ class Manager(QThread):
         # todo: ensure this change does not break the code, if does, revert it via the commit history
         if self.abort_immediately_variable:  # if the abort_immediately_variable is on at this point
             return  # exit the pretest_initialization method
-        self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)  # this task cannot be automated
+        self.user_prompt_signal.emit("Please ensure that the power amplifier is on",
+                                     False)  # this task cannot be automated
         cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
         if not cont:  # if the user did not click continue
             return  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
@@ -1034,7 +1045,8 @@ class Manager(QThread):
                 # QUESTION: if this code block is for water being above level, shouldn't we drain the tank, not fill it?
                 self.IO_Board.fill_tank()
             else:
-                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])  # log successful water level test if we've reached this point in the code
+                self.test_data.log_script(["", "Check/prompt water level", "OK",
+                                           ""])  # log successful water level test if we've reached this point in the code
                 break
 
     @pyqtSlot(TestData)
@@ -1097,13 +1109,14 @@ class Manager(QThread):
         data_storage = var_dict["Data storage"]
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])  # QUESTION: do we need these three unused variables in this method?
+        # QUESTION: do we need these three unused variables in this method?
+        max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])
         element_position_test = bool(var_dict["ElementPositionTest"])
         max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
         frequency_mhz = float(var_dict["Frequency (MHz)"])
-        amplitude_mvpp = float(var_dict["Amplitude (mV)"])
+        amplitude_mVpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
 
         if storage_location == 'UA Results Directory' or data_directory == '':
@@ -1130,14 +1143,15 @@ class Manager(QThread):
 
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]  # QUESTION: do we need this variable?
-        self.log(f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
+        self.log(
+            f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
         # Configure hardware
         self.select_ua_channel(var_dict={"Element": self.element})
 
         # Configure function generator
         awg_var_dict = dict()
-        awg_var_dict["Amplitude (mVpp)"] = amplitude_mvpp
+        awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
         awg_var_dict["Frequency (MHz)"] = frequency_mhz
         awg_var_dict["Mode"] = "Toneburst"
         awg_var_dict["Enable output"] = "False"
@@ -1170,7 +1184,8 @@ class Manager(QThread):
 
         self.home_system({'Axis to home': 'Theta'})
         if beam_angle_test:
-            cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points, increment=theta_increment_degrees,
+            cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
+                                  increment=theta_increment_degrees,
                                   ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
                                   go_to_peak=False, update_element_position=True, data_storage=data_storage,
                                   acquisition_type=acquisition_type,
@@ -1210,7 +1225,6 @@ class Manager(QThread):
             filename_stub:
 
         Returns:
-
         """
 
         self.element = element
@@ -1253,7 +1267,7 @@ class Manager(QThread):
                 # Stop the current method and any parent methods that called it
                 return False
 
-            self.Motors.go_to_position([axis_letter], [position],enable_ui=False)
+            self.Motors.go_to_position([axis_letter], [position], enable_ui=False)
             position = position + increment
 
             if self.config["Analysis"]["capture_rms_only"]:
@@ -1304,7 +1318,7 @@ class Manager(QThread):
                      f'{"%.2f" % max_position} mm;'
 
         if go_to_peak:
-            status = self.Motors.go_to_position([axis_letter], [max_position],enable_ui=False)
+            status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             if status:
                 status_str = status_str + f" moved to {axis} = {max_position} {units_str}"
             else:
@@ -1437,7 +1451,7 @@ class Manager(QThread):
         Set function generator to various desired settings, such as the mVpp, frequency, etc.
         from the passed variable dictionary.
         """
-        mvpp: int = int(var_dict["Amplitude (mVpp)"])
+        mVpp: int = int(var_dict["Amplitude (mVpp)"])
         mode = var_dict["Mode"]
         output = bool(var_dict["Enable output"])
         frequency_options: str = var_dict["Set frequency options"]
@@ -1456,7 +1470,7 @@ class Manager(QThread):
         self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
         self.test_data.log_script(
             ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_mhz} MHz", "", ])
-        self.AWG.set_amplitude_v(mvpp / 1000)
+        self.AWG.set_amplitude_v(mVpp / 1000)
 
         if mode == "N Cycle":
             self.AWG.set_burst(True)
@@ -1465,7 +1479,7 @@ class Manager(QThread):
         else:
             self.AWG.set_burst(False)
 
-        self.test_data.log_script(["", "Config FGen", f"{mvpp}mVpp;{frequency_mhz}MHz,{mode}"])
+        self.test_data.log_script(["", "Config FGen", f"{mVpp}mVpp;{frequency_mhz}MHz,{mode}"])
 
     def configure_oscilloscope_channels(self, var_dict):
         c1_enabled = bool(var_dict["Channel 1 Enabled"])
@@ -1518,7 +1532,7 @@ class Manager(QThread):
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
-            successful_go_home = self.Motors.go_home_1d("X",enable_ui=False)
+            successful_go_home = self.Motors.go_home_1d("X", enable_ui=False)
             if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}')
                 cont = self.cont_if_cont_clicked()
@@ -1526,7 +1540,7 @@ class Manager(QThread):
                     return False
             self.test_data.log_script(["", f"Home  X", f"Home X", f'Successful:{successful_go_home}'])
         elif axis_to_home == "Theta":
-            successful_go_home = self.Motors.go_home_1d("R",enable_ui=False)
+            successful_go_home = self.Motors.go_home_1d("R", enable_ui=False)
             if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, Theta moved to {self.Motors.coords_mm[1]}')
                 cont = self.cont_if_cont_clicked()
@@ -1567,7 +1581,7 @@ class Manager(QThread):
             if move_theta:
                 axes.append("R")
                 coordinates.append(theta_pos)
-            self.Motors.go_to_position(axes, coordinates,enable_ui=False)
+            self.Motors.go_to_position(axes, coordinates, enable_ui=False)
         else:
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
@@ -1577,11 +1591,11 @@ class Manager(QThread):
             # todo: make sure these names match theirs
             # todo: make sure these home coordinates work as expected
             if "Hydrophone" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180],enable_ui=False)
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             elif "RFB" in target:
-                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate],enable_ui=False)
+                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate], enable_ui=False)
             elif "Down" in target:
-                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90],enable_ui=False)
+                self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90], enable_ui=False)
 
             x_coord_str = "%.2f" % element_x_coordinate
             r_coord_str = "%.1f" % element_r_coordinate
@@ -1597,7 +1611,9 @@ class Manager(QThread):
         try:
             self.element = self.element_str_to_int(var_dict["Element"])
         except KeyError:
-            self.log("No element defined in variable list for task 'select ua channel', previous self.element value preserved", "info")
+            self.log(
+                "No element defined in variable list for task 'select ua channel', previous self.element value preserved",
+                "info")
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict):
@@ -1667,7 +1683,7 @@ class Manager(QThread):
         list_of_frequencies_MHz = list()
 
         for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x incremenet
+            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x increment
             # add the frequency to the list
             # Find the average vsi voltage at a given frequency
             vsi_sum = 0
@@ -2030,7 +2046,7 @@ class Manager(QThread):
             max_retries = self.config[k1]['Retries']
         except KeyError:
             self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
-            max_retries = 5 
+            max_retries = 5
 
         if self.retry_count < max_retries:
             self.retry_count = self.retry_count + 1
@@ -2057,19 +2073,19 @@ class Manager(QThread):
         element_x_coordinate = self.element_x_coordinates[self.element]
         element_r_coordinate = self.element_r_coordinates[self.element]
         if "Hydrophone" in ref_pos:
-            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180],enable_ui=False)
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = -180
         elif "RFB" in ref_pos:
-            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate],enable_ui=False)
+            self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate], enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = element_r_coordinate
         elif "Down" in ref_pos:
-            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90],enable_ui=False)
+            self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90], enable_ui=False)
             if axis == 'X':
                 ref_pos = element_x_coordinate
             else:

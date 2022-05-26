@@ -2,11 +2,7 @@ import logging
 import os
 import shutil
 from datetime import datetime
-from pprint import pprint
 from statistics import mean
-
-from termcolor import colored
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
@@ -299,10 +295,10 @@ class FileSaver:
         file.write("Transition Times (s)\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
-
         # matches number of points to start on, end on, start off, and end off in absorb_trans_focus_times 2D list
         # absorb_trans_focus_times[0] = start on, [1] = end on, [2] = start off, [3] = end off
-        if points == len(absorb_trans_times[0]) == len(absorb_trans_times[1]) == len(absorb_trans_times[2]) == len(absorb_trans_times[3]):
+        if points == len(absorb_trans_times[0]) == len(absorb_trans_times[1]) == len(absorb_trans_times[2]) == len(
+                absorb_trans_times[3]):
             for x in range(points):
                 file.write(
                     f'{"%.6f" % absorb_trans_times[0][x]},{"%.6f" % absorb_trans_times[1][x]},'
@@ -314,7 +310,8 @@ class FileSaver:
         file.write("\nTransition Amp\n")
         file.write("StartOn,EndOn,StartOff,EndOff\n")
 
-        if points == len(transition_amps[0]) == len(transition_amps[1]) == len(transition_amps[2]) == len(transition_amps[3]):
+        if points == len(transition_amps[0]) == len(transition_amps[1]) == len(transition_amps[2]) == len(
+                transition_amps[3]):
             for x in range(points):
                 file.write(f'{"%.6f" % transition_amps[0][x]},{"%.6f" % transition_amps[1][x]},'
                            f'{"%.6f" % transition_amps[2][x]},{"%.6f" % transition_amps[3][x]}\n')
@@ -492,7 +489,6 @@ class FileSaver:
         else:
             self.log(level='error', message='Missing power data, setting cumulative_results list to empty list')
             cumulative_results = []  # needed or else referenced before assignment error is raised
-
 
         # todo: check that p_on_rand_unc is the one we want
         self.store_measure_rfb_waveform_csv(

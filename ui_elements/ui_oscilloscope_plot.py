@@ -11,6 +11,8 @@ class Plot(pg.PlotWidget):
         self.app = QApplication.instance()
         self.styles = {"color": "k", "font-size": "10pt"}
         self.left = 50
+        self._plot = None
+        self.text = ""
         self.top = 50
         self.screen_width = 1500
         self.screen_height = 750

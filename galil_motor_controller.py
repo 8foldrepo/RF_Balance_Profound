@@ -467,34 +467,61 @@ class GalilMotorController(AbstractMotorController):
         t.sleep(.01)
         return output
 
-
+# unit test assuming that the galil box is connected and powered on
 if __name__ == '__main__':
-    galil = GalilMotorController(config=None, lock=None)
-    galil.connect_hardware()
+    Motors = GalilMotorController(config=None, lock=None)
+    Motors.connect_hardware()
 
-    galil.handle.GCommand("DP 0,0,0,0")
+    assert Motors.connected
 
-    i = 1
-    while True:
-        i = i + 1
 
-        distance_target = random.choice([-5000, 5000])
-        galil.handle.GCommand("ST")
+    assert Motors.config is not None
+    assert Motors.ax_letters == ['X', 'R']
+    assert Motors.increment_ray == [Motors.config[Motors.device_key]['increment_ray']]
 
-        t.sleep(.01)
+    Motors.set_origin_here()
+    Motors.get_position()
 
-        try:
-            galil.handle.GCommand(f"PA {distance_target}")
-        except:
-            print(galil.check_user_fault())
+    assert Motors.coords_mm == [0,0]
 
-        galil.handle.GCommand("BG A")
 
-        t.sleep(.01)
+    #test a random sequence of operations 10 times
+    for i in range(10):
+        step_sequence = list(range(5))
+        random.shuffle(step_sequence)
 
-        #wait_for_motion_to_complete()
+        for step_number in step_sequence:
 
-        t.sleep(.01)
+            if step_number == 1:
+                # test go to position
+                x = random.randrange(-263, 50)
+                r = random.randrange(-180, -80)
+                Motors.go_to_position(['X', 'R'], [x, r])
+                margin_of_error = .03 # mm or degrees
+                assert abs(Motors.coords_mm[0] - x) < margin_of_error
+                assert abs(Motors.coords_mm[1] - r) < margin_of_error
 
-        print(galil.handle.GCommand("RP"))
-        t.sleep(.01)
+            elif step_number == 2:
+                # test go home (should time out since there is no home switch as of 5/26/22)
+                start_time = t.time()
+                successful = Motors.go_home()
+
+                #make sure it did not take much longer than the cooldown
+                #assumes that there is no home switch
+                assert successful == False
+                assert t.time() - start_time < Motors.config[Motors.device_key]['move_timeout_s'] + 3
+
+            elif step_number == 3:
+                # test disconnecting and reconnecting
+                Motors.disconnect_hardware()
+                assert Motors.moving == False
+
+                successful = Motors.go_to_position(['X','R'],[0,0])
+
+                assert successful == False
+
+
+    print("Test passed :)")
+
+
+

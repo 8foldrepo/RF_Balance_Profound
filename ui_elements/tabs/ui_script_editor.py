@@ -1,17 +1,13 @@
 import typing
 from datetime import date
 # from pprint import pprint
-from pprint import pprint
 from typing import List
-
 # import PyQt5
-from PyQt5 import QtCore, Qt
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QModelIndex, QItemSelectionModel, QEvent, QPoint
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSlot
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 from PyQt5.QtWidgets import QApplication as QApp
-from termcolor import colored
-
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -222,7 +218,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
         """
         Display the task names and arguments from the script parser with a QTreeView
         """
-        item = None  # initialize the variable to None, as it will be (un)changed appropriately via the following lines of codes
+        # initialize the variable to None, as it will be (un)changed appropriately via the following lines of codes
+        item = None
         self.list_of_var_dicts = var_dicts
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.treeWidget.clear()
@@ -385,17 +382,24 @@ class ScriptEditor(MyQWidget, Ui_Form):
         """
         Moves the highlight cursor in the tree view up, takes into no current selection into consideration
         """
-        if self.treeWidget.currentItem() is None:  # if there is no selection, try to set selection to the last item
-            child_count = self.treeWidget.invisibleRootItem().childCount()  # attain how many nodes there are in the tree
-            last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)  # attain the last item of the tree widget
-            if last_item is not None:  # checks to make sure the last item actually exists (tree is not empty)
-                self.treeWidget.setCurrentItem(last_item)  # sets the selected item to the last node in tree
+        # if there is no selection, try to set selection to the last item
+        if self.treeWidget.currentItem() is None:
+            # attain how many nodes there are in the tree
+            child_count = self.treeWidget.invisibleRootItem().childCount()
+            # attain the last item of the tree widget
+            last_item = self.treeWidget.invisibleRootItem().child(child_count - 1)
+            # checks to make sure the last item actually exists (tree is not empty)
+            if last_item is not None:
+                # sets the selected item to the last node in tree
+                self.treeWidget.setCurrentItem(last_item)
                 return  # exit function
             else:  # tree is empty
                 return  # exit function
 
-        index = self.treeWidget.currentIndex()  # if there is a currently selected item in the tree, copy its index
-        self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))  # move the selection based on the previously attained index position
+        # if there is a currently selected item in the tree, copy its index
+        index = self.treeWidget.currentIndex()
+        # move the selection based on the previously attained index position
+        self.treeWidget.setCurrentIndex(index.sibling(index.row() - 1, index.column()))
 
     def move_selected_item_up(self):
         """
@@ -405,9 +409,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         """
         # todo: perform move extensive testing with this function
         if self.treeWidget.currentItem().parent():  # if selected element is a child
-            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+            # set the currently selected item to its parent
+            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())
         current_index_row = self.treeWidget.currentIndex().row()  # index of the selected item in tree
-        last_invisible_item_index = self.treeWidget.invisibleRootItem().childCount()  # index of the blank item that can be selected at end of tree list
+        # index of the blank item that can be selected at end of tree list
+        last_invisible_item_index = self.treeWidget.invisibleRootItem().childCount()
 
         # error/exception prevention measures
         if self.treeWidget.currentItem() is None:  # if nothing is selected  #todo check to see what this does exactly
@@ -423,15 +429,19 @@ class ScriptEditor(MyQWidget, Ui_Form):
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
             current_index_row = current_index_row + 1  # offset to account for header
-            temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]  # since moving item "up," it's actually moving down in the list, save the previous item
-            list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]  # set next item in list to previous item
-            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save  # restore previous contents of previous item to current index (swapping)
+            # since moving item "up," it's actually moving down in the list, save the previous item
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
+            # set next item in list to previous item
+            list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
+            # restore previous contents of previous item to current index (swapping)
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
         else:  # if script does not have a header, no offset is needed
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
             list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
             list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
 
-        self.list_of_var_dicts = list(list_of_var_dicts_copy)  # the changes applied to the copy will now be reflected onto the real list
+        # the changes applied to the copy will now be reflected onto the real list
+        self.list_of_var_dicts = list(list_of_var_dicts_copy)
         self.update_tree()  # update the tree
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):
@@ -497,7 +507,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_var_dict = select_UA_channel_dict()
             elif task_name == 'Run "Auto Gain Control"':
                 new_var_dict = auto_gain_control_dict()
-            # todo: create autoset timebase method in oscilloscope hardware class, INFO: feature will possibly not even be implemented
+            # todo: create autoset timebase method in oscilloscope hardware class,
+            #  INFO: feature will possibly not even be implemented
             elif task_name == "Autoset timebase":
                 new_var_dict = autoset_timebase_dict()
             else:
