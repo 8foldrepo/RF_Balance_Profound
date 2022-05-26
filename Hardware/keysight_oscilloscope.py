@@ -340,7 +340,7 @@ if __name__ == "__main__":
 
         for step_number in step_sequence:
             if step_number == 0:
-                scale = random.randrange(10,40000)
+                scale = random.randrange(10, 40000)
                 osc.set_vertical_scale_V(1, scale)
                 assert osc.get_vertical_scale_V(1) == scale
                 assert osc.range_mV == 8 * scale
