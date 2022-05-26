@@ -17,6 +17,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
+        self.external_trigger = None
+        self.average_count = None
+        self.autorange_v = None
+        self.time_of_flight_window = None
         self.connected = False
         if resource_manager is not None:
             self.rm = resource_manager
@@ -90,9 +94,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def set_to_defaults(self):
         self.reset()
         self.channel = self.config[self.device_key]['channel']
-        self.max_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Max time of flight (us)"]
-        self.min_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Min time of flight (us)"]
-        self.range_s = self.config[self.autoset_oscilloscope_timebase]["Horizontal scale (us)"] * 10 ** -6
+        self.max_time_of_flight = self.config['Autoset timebase']["Max time of flight (us)"]
+        self.min_time_of_flight = self.config['Autoset timebase']["Min time of flight (us)"]
+        self.range_s = self.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         self.offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         autorange_v = self.config[self.device_key]["autorange_v_startup"]
@@ -120,15 +124,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.set_trigger(ext_trigger)
 
     def set_trigger(self, external):
-
+        self.command(":TRIG:EDGE:SLOP POS")
+        self.command(":TRIG:MODE EDGE")
         if external:
-            self.command(":TRIG:MODE EDGE")
             self.command(":TRIG:EDGE:SOUR EXT")
-            self.command(":TRIG:EDGE:SLOP POS")
         else:
-            self.command(":TRIG:MODE EDGE")
             self.command(":TRIG:EDGE:SOUR CHAN1")
-            self.command(":TRIG:EDGE:SLOP POS")
 
     def set_averaging(self, averages=1):
         self.averages = averages
@@ -137,9 +138,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(f":ACQ:COUN {averages}")
         else:
             self.command(":ACQ:TYPE HRES")
-
-    def display_text(self, text: str):
-        self.command(f":DISP:TEXT {text}")
 
     def get_vertical_scale_V(self, channel):
         return float(self.ask(f":CHAN{channel}:SCAL?"))
@@ -160,11 +158,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def set_vertical_offset_V(self, channel: int, offset: float) -> None:
         self.command(f":CHAN{channel}:OFFS {offset}")
 
-    def get_horizontal_scale_V(self) -> float:
+    def get_horizontal_scale_sec(self) -> float:
         return float(self.ask(f":TIM:SCAL?"))
 
     def set_horizontal_scale_sec(self, seconds: float) -> None:
         self.command(f":TIM:SCAL {seconds}")
+
+    def get_horizontal_range_sec(self) -> float:
+        return float(self.ask(":TIM:RANG?"))
 
     def set_horizontal_range_sec(self, seconds: float) -> None:
         self.range_s = seconds
@@ -180,9 +181,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     # stretch: add automatic waveform finding
     def autoset_oscilloscope_timebase(self):
-        self.max_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Max time of flight (us)"]
-        self.min_time_of_flight = self.config[self.autoset_oscilloscope_timebase]["Min time of flight (us)"]
-        range_s = self.config[self.autoset_oscilloscope_timebase]["Horizontal scale (us)"] * 10 ** -6
+        self.max_time_of_flight = self.config['Autoset timebase']["Max time of flight (us)"]
+        self.min_time_of_flight = self.config['Autoset timebase']["Min time of flight (us)"]
+        range_s = self.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         self.set_horizontal_range_sec(range_s)
@@ -308,7 +309,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if str(e) == "'NoneType' object has no attribute 'read'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
 
-    def ask(self, command):
+    def ask(self, command) -> str:
         """generic method to send a command to the oscilloscope and return its response"""
         return self.inst.query(command)
 
@@ -333,28 +334,91 @@ if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
 
+    assert osc.config is not None
+
     # test a random sequence of operations 10 times
     for i in range(10):
         step_sequence = list(range(5))
         random.shuffle(step_sequence)
 
+        # todo: figure out true limits in certain variables
         for step_number in step_sequence:
-            if step_number == 0:
-                scale = random.randrange(10,40000)
-                osc.set_vertical_scale_V(1, scale)
-                assert osc.get_vertical_scale_V(1) == scale
+            if step_number == 0:  # TEST: set to defaults
+                osc.set_to_defaults()
+                assert osc.channel == osc.config[osc.device_key]['channel']
+                assert osc.max_time_of_flight == osc.config['Autoset timebase']["Max time of flight (us)"]
+                assert osc.min_time_of_flight == osc.config['Autoset timebase']["Min time of flight (us)"]
+                assert osc.range_s == osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
+                assert osc.time_of_flight_window == (osc.max_time_of_flight - osc.min_time_of_flight) / 1000000
+                assert osc.offset_s == osc.min_time_of_flight / 1000000 + osc.time_of_flight_window / 2
+                assert osc.autorange_v == osc.config[osc.device_key]["autorange_v_startup"]
+                assert osc.range_mV == osc.config[osc.device_key]["range_mV"]
+                assert osc.average_count == osc.config[osc.device_key]["averages"]
+                assert osc.external_trigger == osc.config[osc.device_key]["ext_trigger"]
+                assert osc.timeout_s == osc.config[osc.device_key]["timeout_s"]
+            if step_number == 1:  # TEST: disconnect hardware
+                osc.disconnect_hardware()
+                assert not osc.connected
+            if step_number == 2:  # TEST: set averaging
+                averages = random.randrange(1, 10)
+                osc.set_averaging(averages=averages)
+                assert osc.averages == averages
+                if averages > 1:
+                    assert osc.ask(":ACQ:TYPE?") == "AVER"
+                    assert int(osc.ask(":ACQ:COUN?")) == int(averages)
+                else:
+                    assert osc.ask(":ACQ:TYPE?") == "HRES"
+            if step_number == 3:  # TEST: set trigger
+                external = bool(random.getrandbits(1))
+                osc.set_trigger(external=external)
+                assert osc.ask(":TRIG:MODE?") == "EDGE"
+                assert osc.ask(":TRIG:EDGE:SLOP?") == "POS"
+                if external:
+                    assert osc.ask(":TRIG:EDGE:SOUR?") == "EXT"
+                else:
+                    assert osc.ask(":TRIG:EDGE:SOUR?") == "CHAN1"
+            # horizontal commands ----------------------------------------------------
+            if step_number == 4:  # TEST: horizontal scale (s)
+                seconds = random.uniform(0, 10)
+                osc.set_horizontal_scale_sec(seconds=seconds)
+                assert osc.get_horizontal_scale_sec() == seconds
+            if step_number == 5:  # TEST: horizontal range sec (s)
+                seconds = random.randrange(1, 30)  # set range between 1 and 30 seconds
+                osc.set_horizontal_range_sec(seconds=float(seconds))
+                assert osc.get_horizontal_range_sec() == float(seconds)
+                assert osc.range_s == float(seconds)
+            if step_number == 6:  # TEST: horizontal offset (s)
+                offset_seconds = random.uniform(0, 10)
+                osc.set_horizontal_offset_sec(offset=offset_seconds)
+                assert osc.get_horizontal_offset_sec() == offset_seconds
+                assert osc.offset_s == offset_seconds
+            # vertical commands -----------------------------------------------------
+            if step_number == 7:  # TEST: vertical scale (V)
+                scale = random.randrange(10, 40000)
+                osc.set_vertical_scale_V(channel=1, volts_per_div=scale)
+                assert osc.get_vertical_scale_V(channel=1) == scale
                 assert osc.range_mV == 8 * scale
-            if step_number == 1:
-                ...
-            if step_number == 2:
-                ...
-            if step_number == 3:
-                ...
-            if step_number == 4:
-                ...
-            if step_number == 5:
-                ...
-
+            if step_number == 8:  # TEST: vertical range (V)
+                range_V = random.uniform(0, 10)
+                osc.set_vertical_range_V(channel=1, volts=range_V)
+                assert osc.get_vertical_range_V(channel=1) == range_V
+                assert osc.range_mV == range_V * 1000
+            if step_number == 9:  # TEST: vertical offset (V)
+                offset_V = random.uniform(1.0, 100.0)
+                osc.set_vertical_offset_V(channel=1, offset=offset_V)
+                assert osc.get_vertical_offset_V(channel=1) == offset_V
+            # -------------------------------------------------------------
+            if step_number == 10:  # TEST: autoset timebase
+                osc.autoset_oscilloscope_timebase()
+                assert osc.max_time_of_flight == osc.config['Autoset timebase']["Max time of flight (us)"]
+                assert osc.min_time_of_flight == osc.config['Autoset timebase']["Min time of flight (us)"]
+                assert osc.range_s == osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
+                assert osc.time_of_flight_window == (osc.max_time_of_flight - osc.min_time_of_flight) / 1000000
+                assert osc.offset_s == osc.min_time_of_flight / 1000000 + osc.time_of_flight_window / 2
+                osc.set_horizontal_range_sec(osc.range_s)
+                osc.set_horizontal_offset_sec(osc.offset_s)
+                assert osc.get_horizontal_range_sec() == osc.range_s
+                assert osc.get_horizontal_offset_sec() == osc.offset_s
     print("Test passed :)")
 
 

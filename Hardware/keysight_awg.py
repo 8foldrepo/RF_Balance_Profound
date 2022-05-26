@@ -1,4 +1,5 @@
 import pyvisa
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
@@ -6,7 +7,7 @@ from Utilities.load_config import *
 
 
 class KeysightAWG(AbstractAWG):
-    output_signal = pyqtSignal(bool)
+    output_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, resource_manager=None, config=None, device_key='Keysight_AWG', parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
@@ -128,7 +129,7 @@ class KeysightAWG(AbstractAWG):
         self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
 
-        if not self.get_frequency_hz() == frequency:
+        if self.get_frequency_hz() != frequency:
             self.log(level="error", message="frequency not set")
             return False
         return True
@@ -306,12 +307,21 @@ if __name__ == "__main__":
         random.shuffle(step_sequence)
 
         for step_number in step_sequence:
-            if step_number == 0:
-                ...
-            if step_number == 1:
-                ...
-            if step_number == 2:
-                ...
+            if step_number == 0:  # TEST: output
+                on = bool(random.getrandbits(1))
+                awg.set_output(on=on)
+                if on:
+                    assert awg.get_output() is not None
+                else:
+                    assert awg.get_output() is None
+            if step_number == 1:  # TEST: frequency
+                frequency = random.uniform(1, 9999999)
+                awg.set_frequency_hz(frequency=frequency)
+                assert awg.get_frequency_hz() == frequency
+            if step_number == 2:  # TEST: offset (V)
+                offset = random.uniform(1, 10)
+                awg.set_offset_v(offset=offset)
+                assert offset == awg.get_offset_v()
             if step_number == 3:
                 ...
             if step_number == 4:
