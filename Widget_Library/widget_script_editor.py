@@ -18,7 +18,7 @@ class Ui_Form(object):
         Form.setMinimumSize(QtCore.QSize(778, 750))
         Form.setMaximumSize(QtCore.QSize(1050, 750))
         self.tabWidget = QtWidgets.QTabWidget(Form)
-        self.tabWidget.setGeometry(QtCore.QRect(110, 110, 661, 641))
+        self.tabWidget.setGeometry(QtCore.QRect(110, 110, 661, 630))
         font = QtGui.QFont()
         font.setPointSize(8)
         self.tabWidget.setFont(font)
