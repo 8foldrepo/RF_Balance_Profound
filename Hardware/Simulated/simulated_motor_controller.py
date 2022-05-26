@@ -1,6 +1,8 @@
 import time as t
 from abc import abstractmethod
+
 from PyQt5.QtCore import *
+
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
 
@@ -13,7 +15,7 @@ class SimulatedMotorController(AbstractMotorController):
         super().__init__(parent=parent, config=config, device_key=device_key, lock=lock)
         self.fields_setup()
 
-    def go_home_1d(self, axis, enable_ui:bool = True) -> bool:
+    def go_home_1d(self, axis, enable_ui: bool = True) -> bool:
         if self.config['Debugging']['simulate_motor_error']:
             if enable_ui:
                 self.ready_signal.emit()
@@ -123,7 +125,7 @@ class SimulatedMotorController(AbstractMotorController):
         return True
 
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: list, coords_mm: list, enable_ui:bool = True) -> bool:
+    def go_to_position(self, axes: list, coords_mm: list, enable_ui: bool = True) -> bool:
         if self.config["Debugging"]["simulate_motor_error"]:
             if enable_ui:
                 self.ready_signal.emit()

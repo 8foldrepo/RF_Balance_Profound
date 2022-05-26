@@ -62,7 +62,8 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: List[str], coords_mm: List[float], mutex_locked: bool, enable_ui: bool = True) -> bool:
+    def go_to_position(self, axes: List[str], coords_mm: List[float], mutex_locked: bool,
+                       enable_ui: bool = True) -> bool:
         """
         # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
         """

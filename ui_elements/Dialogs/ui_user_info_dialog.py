@@ -27,7 +27,6 @@ class WTFUserInfo(MyQDialog, user_info_dialog.Ui_user_info_dialog):
         """
         self.continue_clicked()  # do nothing
 
-
 # if __name__ == "__main__":
 #     import sys
 #     from PyQt5.QtWidgets import QApplication

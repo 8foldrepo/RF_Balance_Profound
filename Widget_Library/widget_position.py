@@ -473,7 +473,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label_31.setToolTip(_translate("Form", "Here you may set specific configuration parameters for the drivers/software that moves the motors."))
+        self.label_31.setToolTip(_translate("Form",
+                                            "Here you may set specific configuration parameters for the drivers/software that moves the motors."))
         self.label_31.setText(_translate("Form", "Stepper system"))
         self.set_button.setText(_translate("Form", "Set"))
         self.label_32.setText(_translate("Form", "VISA Resource Name"))
@@ -545,13 +546,16 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "Rotational speed (deg/s)"))
         self.label_8.setText(_translate("Form", "Theta"))
         self.label_6.setText(_translate("Form", "Gearing"))
-        self.move_tooltip.setToolTip(_translate("Form", "Here you may manually home either the X or Theta position of the ultrasound actuator using the motors, with addtional options in a user friendly GUI"))
+        self.move_tooltip.setToolTip(_translate("Form",
+                                                "Here you may manually home either the X or Theta position of the ultrasound actuator using the motors, with addtional options in a user friendly GUI"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), _translate("Form", "Move"))
-from ui_elements.switch import Switch
 
+
+from ui_elements.switch import Switch
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

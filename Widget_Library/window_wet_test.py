@@ -1252,10 +1252,13 @@ class Ui_MainWindow(object):
         self.abort_immediately_button.setText(_translate("MainWindow", "ABORT IMMEDIATELY"))
         self.label_5.setText(_translate("MainWindow", "Script Description"))
         self.label_23.setText(_translate("MainWindow", "Welcome to the Wet Test Fixture Control Program."))
-        self.label_29.setText(_translate("MainWindow", "Hover your cursor underneath a tab to see its description (if the tab has nested tabs, only the nested tabs will have tooltip descriptions)"))
+        self.label_29.setText(_translate("MainWindow",
+                                         "Hover your cursor underneath a tab to see its description (if the tab has nested tabs, only the nested tabs will have tooltip descriptions)"))
         self.label_24.setText(_translate("MainWindow", "To begin a UA test:"))
-        self.label_25.setText(_translate("MainWindow", "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)                                            "))
-        self.label_26.setText(_translate("MainWindow", "Select a test script by clicking \"Load script\" in the lower left corner of the display. You may also build a script via the \"Edit Script\" tab, save it, then load it.                                      "))
+        self.label_25.setText(_translate("MainWindow",
+                                         "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)                                            "))
+        self.label_26.setText(_translate("MainWindow",
+                                         "Select a test script by clicking \"Load script\" in the lower left corner of the display. You may also build a script via the \"Edit Script\" tab, save it, then load it.                                      "))
         self.label_27.setText(_translate("MainWindow", "Mount the UA in the fixture."))
         self.label_28.setText(_translate("MainWindow", "Click \"Run script\" when ready to begin."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.welcome_tab), _translate("MainWindow", "Welcome"))
@@ -1266,7 +1269,10 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.results_tab_outer), _translate("MainWindow", "Results"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.scan_tab), _translate("MainWindow", "Scan"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.position_tab_outer), _translate("MainWindow", "Position"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sys_config_tab), _translate("MainWindow", "System Config"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sys_config_tab),
+                                  _translate("MainWindow", "System Config"))
+
+
 from ui_elements.switch import Switch
 from ui_elements.tabs.ui_position import Position
 from ui_elements.tabs.ui_results import Results
@@ -1277,9 +1283,9 @@ from ui_elements.tabs.ui_system_config import SystemConfig
 from ui_elements.tabs.ui_system_info import SystemInfo
 from ui_elements.tabs.ui_ua_calibration import UACalibration
 
-
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

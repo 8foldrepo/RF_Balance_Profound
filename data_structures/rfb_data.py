@@ -145,10 +145,10 @@ class RFBData:
 
         from Utilities.useful_methods import trim
         self.times_s, self.acoustic_powers_w, self.awg_on_ray, self.f_meter_readings_w, self.r_meter_readings_w, \
-            self.balance_readings_g = trim(
-                [self.times_s, self.acoustic_powers_w, self.awg_on_ray,
-                 self.f_meter_readings_w, self.r_meter_readings_w, self.balance_readings_g]
-                )
+        self.balance_readings_g = trim(
+            [self.times_s, self.acoustic_powers_w, self.awg_on_ray,
+             self.f_meter_readings_w, self.r_meter_readings_w, self.balance_readings_g]
+        )
 
     def end_of_test_data_analysis(self):
         self.trim_data()
@@ -158,7 +158,9 @@ class RFBData:
         self.off_time_intervals_s = self.convert_interval_indices_to_times(self.off_indices)
 
         if self.forward_power_on_mean != 0:
-            self.efficiency_percent = calculate_efficiency_percent(self.acoustic_power_on_mean, self.forward_power_on_mean, self.reflected_power_on_mean)
+            self.efficiency_percent = calculate_efficiency_percent(self.acoustic_power_on_mean,
+                                                                   self.forward_power_on_mean,
+                                                                   self.reflected_power_on_mean)
         else:
             self.efficiency_percent = 0
 
@@ -167,10 +169,8 @@ class RFBData:
         else:
             self.reflected_power_percent = 1
 
-
-        self.forward_power_max_extrapolated = calculate_pf_max(self.Pa_max,self.efficiency_percent,
+        self.forward_power_max_extrapolated = calculate_pf_max(self.Pa_max, self.efficiency_percent,
                                                                self.reflected_power_percent)
-
 
     def get_on_interval_indices(self) -> List[Tuple[int, int]]:
         """
@@ -201,7 +201,7 @@ class RFBData:
                 stop_indices.append(i - buffer)
 
             if i == len(self.awg_on_ray) - 1 and self.awg_on_ray[i]:
-                stop_indices.append(i+1-buffer)
+                stop_indices.append(i + 1 - buffer)
 
         assert len(start_indices) <= len(stop_indices)
 
@@ -256,7 +256,7 @@ class RFBData:
                 stop_indices.append(i - buffer)
 
             if i == len(self.awg_on_ray) - 1 and not self.awg_on_ray[i]:
-                stop_indices.append(i+1 - buffer)
+                stop_indices.append(i + 1 - buffer)
 
         # Remove the first interval since it is not considered an off interval
         try:

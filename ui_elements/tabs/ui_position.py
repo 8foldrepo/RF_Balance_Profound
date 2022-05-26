@@ -1,4 +1,5 @@
 import logging
+import os
 
 import yaml
 from PyQt5 import QtCore
@@ -9,9 +10,8 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import is_number
 from Utilities.useful_methods import log_msg
 from Widget_Library.widget_position import Ui_Form
-from ui_elements.my_qwidget import MyQWidget
-import os
 from definitions import ROOT_DIR
+from ui_elements.my_qwidget import MyQWidget
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")

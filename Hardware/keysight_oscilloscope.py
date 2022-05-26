@@ -1,5 +1,7 @@
 import time as t
+
 import pyvisa
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
@@ -12,7 +14,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
     averages: int
     range_s: float
     offset_s: float
-    
+
     autoset_timebase = "Autoset_timebase"
 
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
@@ -331,6 +333,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 # Script/example code for testing out hardware class
 if __name__ == "__main__":
     import random
+
     osc = KeysightOscilloscope()
     osc.connect_hardware()
 
@@ -420,8 +423,3 @@ if __name__ == "__main__":
                 assert osc.get_horizontal_range_sec() == osc.range_s
                 assert osc.get_horizontal_offset_sec() == osc.offset_s
     print("Test passed :)")
-
-
-
-
-

@@ -1,6 +1,5 @@
 import pyvisa
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
 from Utilities.load_config import *
@@ -71,8 +70,6 @@ class KeysightAWG(AbstractAWG):
         self.inst.close()
 
         self.connected_signal.emit(False)
-
-
 
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50, trigger_out=True):
