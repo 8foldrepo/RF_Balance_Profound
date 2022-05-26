@@ -1,7 +1,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QTableWidgetItem
-
 from Hardware.ua_interface import UAInterface
 from Widget_Library.widget_ua_calibration import Ui_Form
 from ui_elements.my_qwidget import MyQWidget

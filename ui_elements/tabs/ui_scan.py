@@ -175,7 +175,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
             return
 
-        self.last_aquired_waveform_plot_label.setText(
+        self.last_acquired_waveform_plot_label.setText(
             f"Last Acquired Waveform - refresh rate: {refresh_rate}"
         )
         if x is None or y is None:

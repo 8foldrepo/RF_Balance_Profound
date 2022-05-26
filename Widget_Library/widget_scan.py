@@ -22,10 +22,10 @@ class Ui_scan_tab_widget(object):
         self.one_dimension_scan_tab.setObjectName("one_dimension_scan_tab")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.one_dimension_scan_tab)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.last_aquired_waveform_plot_label = QtWidgets.QLabel(self.one_dimension_scan_tab)
-        self.last_aquired_waveform_plot_label.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.last_aquired_waveform_plot_label.setObjectName("last_aquired_waveform_plot_label")
-        self.verticalLayout_6.addWidget(self.last_aquired_waveform_plot_label)
+        self.last_acquired_waveform_plot_label = QtWidgets.QLabel(self.one_dimension_scan_tab)
+        self.last_acquired_waveform_plot_label.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.last_acquired_waveform_plot_label.setObjectName("last_acquired_waveform_plot_label")
+        self.verticalLayout_6.addWidget(self.last_acquired_waveform_plot_label)
         self.waveform_plot = Plot(self.one_dimension_scan_tab)
         self.waveform_plot.setMinimumSize(QtCore.QSize(0, 100))
         self.waveform_plot.setObjectName("waveform_plot")
@@ -416,7 +416,7 @@ class Ui_scan_tab_widget(object):
     def retranslateUi(self, scan_tab_widget):
         _translate = QtCore.QCoreApplication.translate
         scan_tab_widget.setWindowTitle(_translate("scan_tab_widget", "Form"))
-        self.last_aquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last Aquired Waveform"))
+        self.last_acquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last acquired Waveform"))
         self.label_55.setText(_translate("scan_tab_widget", "Profile"))
         self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab), _translate("scan_tab_widget", "1D Scan"))
         self.label_31.setText(_translate("scan_tab_widget", "Acquired waveform"))

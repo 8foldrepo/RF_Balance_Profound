@@ -7,6 +7,7 @@ def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c
     acoustic_power_w = force_N * c_water
     return acoustic_power_w
 
+
 def calculate_speed_of_sound_in_water(temperature_c: float):
     from numpy import poly1d, polyfit
     temp_c_scatter = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]  # Source: [2] in documentation
@@ -17,14 +18,25 @@ def calculate_speed_of_sound_in_water(temperature_c: float):
     return polyfit(temperature_c)
 
 
-def calculate_pf_max(acoustic_power_max_w:float, acoustic_efficiency_percent:float, reflected_power_percent:float)-> float:
-    denominator = (acoustic_efficiency_percent / 100) * (1-reflected_power_percent/100)
+def calculate_efficiency_percent(acoustic_power_on_mean: float, forward_power_on_mean: float,
+                                 reflected_power_on_mean: float) -> float:
+    denominator = forward_power_on_mean - reflected_power_on_mean
 
     if denominator == 0:
         return float('nan')
 
-    print(acoustic_power_max_w/denominator)
-    return acoustic_power_max_w/denominator
+    return acoustic_power_on_mean / denominator * 100
+
+
+def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: float,
+                     reflected_power_percent: float) -> float:
+    denominator = (acoustic_efficiency_percent / 100) * (1 - reflected_power_percent / 100)
+
+    if denominator == 0:
+        return float('nan')
+
+    print(acoustic_power_max_w / denominator)
+    return acoustic_power_max_w / denominator
 
 
 # returns the random uncertainty of a data set as a percentage
@@ -42,6 +54,7 @@ def calculate_total_uncertainty_percent(data_set: list) -> float:
         return float("nan")
     return calculate_random_uncertainty_percent(data_set) + 6
 
+
 # returns the random uncertainty of a data set as a percentage
 # Todo: double check this formula
 def calculate_random_uncertainty_percent(data_set: list) -> float:
@@ -55,7 +68,7 @@ def calculate_random_uncertainty_percent(data_set: list) -> float:
     mean = mean(data_set)
     if mean == 0:
         return float("nan")
-    return (max(data_set)-min(data_set))/2 / mean * 100
+    return (max(data_set) - min(data_set)) / 2 / mean * 100
 
 
 # returns the standard deviation of a data set
@@ -67,7 +80,7 @@ def calculate_standard_deviation(data_set: list) -> float:
         return float("nan")
     from numpy import std
 
-    return std(data_set)
+    return float(std(data_set))
 
 
 # Test script

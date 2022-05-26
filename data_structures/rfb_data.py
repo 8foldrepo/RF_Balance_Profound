@@ -2,12 +2,15 @@ from statistics import mean
 from typing import List, Tuple
 
 from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent, \
-    calculate_standard_deviation
+    calculate_standard_deviation, calculate_pf_max
 from definitions import FrequencyRange
 
 
 class RFBData:
-    """Class containing all of the relevant data for an efficiency test. Populated in realtime during """
+    """
+    Class containing all the relevant data for an efficiency test. Populated in realtime during the measure
+    element efficiency method and passed to the file saver object when the test is complete (if file storage is enabled)
+    """
     element: int
     frequency_range: FrequencyRange
     water_temperature_c: float
@@ -155,8 +158,7 @@ class RFBData:
         self.off_time_intervals_s = self.convert_interval_indices_to_times(self.off_indices)
 
         if self.forward_power_on_mean != 0:
-            self.efficiency_percent = self.acoustic_power_on_mean / (
-                    self.forward_power_on_mean - self.reflected_power_on_mean) * 100
+            self.efficiency_percent = calculate_efficiency_percent(self.acoustic_power_on_mean, self.forward_power_on_mean, self.reflected_power_on_mean)
         else:
             self.efficiency_percent = 0
 
@@ -165,13 +167,10 @@ class RFBData:
         else:
             self.reflected_power_percent = 1
 
-        # todo: test
 
-        # Extrapolate the forward power that would be necessary to produce the target clinical acoustic power.
-        # If this exceeds a limit the test will fail
-        max_f_power = max(self.f_meter_readings_w)
-        max_a_power = max(self.acoustic_powers_w)
-        self.forward_power_max_extrapolated = max_f_power * (self.Pa_max / max_a_power)
+        self.forward_power_max_extrapolated = calculate_pf_max(self.Pa_max,self.efficiency_percent,
+                                                               self.reflected_power_percent)
+
 
     def get_on_interval_indices(self) -> List[Tuple[int, int]]:
         """

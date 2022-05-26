@@ -1,13 +1,9 @@
 import collections.abc
 import datetime
 import os
-from pprint import pprint
 from typing import Tuple, List
-
 import numpy as np
 from PyQt5.QtWidgets import QTabWidget
-from termcolor import colored
-
 from data_structures.test_data import TestData
 
 
@@ -31,6 +27,7 @@ def create_coord_rays(coordinates: str, ax_letters: list):
     coordinates = list(filter(lambda val: val != "", coordinates))
     return axes, coordinates
 
+
 def create_comma_string(axes: list, numbers: list, ax_letters: list):
     """
     For use with the galil motion controller class
@@ -46,6 +43,7 @@ def create_comma_string(axes: list, numbers: list, ax_letters: list):
         answer = answer + ","
     return answer
 
+
 def get_element_distances(element_1_index, element_pitch):
     """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
@@ -59,7 +57,7 @@ def get_element_distances(element_1_index, element_pitch):
 
 def generate_calibration_data(test_data: TestData) -> List[str]:
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
-    output = [None] * 27
+    output = [''] * 27
     output[0] = str(test_data.schema)
     output[1] = str(test_data.serial_number)
     date_str = test_data.test_date_time[0:4] + test_data.test_date_time[5:7] + test_data.test_date_time[8:10]
@@ -75,9 +73,6 @@ def generate_calibration_data(test_data: TestData) -> List[str]:
         output[i + 17] = test_data.results_summary[i][11]  # LF efficiency percent
 
     return output
-
-
-
 
 
 def update(dictionary: dict, u):
@@ -176,22 +171,16 @@ def clear_layout(layout):
 
 def trim(lists: List[List]) -> Tuple:
     """Cut a tuple of lists to their minimum length, removing elements at the end"""
-    lengths = [None] * len(lists)  # INFO: cannot change [None] to [] without errors
-    trimmed_lists = [None] * len(lists)
+    lengths = [0] * len(lists)  # INFO: cannot change [None] to [] without errors
+    trimmed_lists = [[]] * len(lists)
 
     for i in range(len(lists)):
         lengths[i] = len(lists[i])
-
-    # Ensure that every list had its length checked
-    assert None not in lengths
 
     min_length = min(lengths)
 
     for i in range(len(lists)):
         trimmed_lists[i] = (lists[i][0:min_length])
-
-    # Ensure that every list was trimmed
-    assert None not in trimmed_lists
 
     return tuple(trimmed_lists)
 

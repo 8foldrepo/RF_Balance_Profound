@@ -1,9 +1,7 @@
-import inspect
 import logging
 import os
 import sys
 import time as t
-import traceback
 import webbrowser
 from pprint import pprint
 from typing import List
@@ -13,12 +11,10 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
-from termcolor import colored
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index
 from Widget_Library import window_wet_test
-from data_structures.test_data import TestData
 from definitions import ROOT_DIR, WaterLevel
 from manager import Manager
 from ui_elements.Dialogs.draining_dialog import DrainingDialog
@@ -69,7 +65,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
     yes_signal = QtCore.pyqtSignal()
     no_signal = QtCore.pyqtSignal()
-    set_scan_tab_signal = QtCore.pyqtSignal(list) # list containing one str element matching the text of the scan subtab
+    # list containing one str element matching the text of the scan subtab
+    set_scan_tab_signal = QtCore.pyqtSignal(list)
     num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
     progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
     script_changed = False  # prevents user from running a script if it has been modified and not reloaded
@@ -456,7 +453,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.ua_pump_indicator.setStyleSheet("background-color: grey")
             self.ua_pump_indicator.setText("UA PUMP OFF")
 
-
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
         """Command the motors to go to the insertion point"""
@@ -496,7 +492,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             return
         self.progress_bar_ready = False
         if not self.num_tasks == 0:
-            self.progressBar.setValue(int((step_index) / self.num_tasks * 100))
+            self.progressBar.setValue(int(step_index / self.num_tasks * 100))
         self.progress_bar_ready = True
 
     def popup(self, s):
@@ -733,8 +729,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     # todo: test
     @pyqtSlot()
     def show_write_cal_data_prompt(self, calibration_data):
-        """Shows the user a prompt to write the calibration data to the ultrasound actuator and connects various signals.
-         Calibration data parameter is a 2d list"""
+        """
+        Shows the user a prompt to write the calibration data to the ultrasound actuator and connects various signals.
+         Calibration data parameter is a 2d list
+        """
         dlg = WriteCalDataToUA()
         dlg.schema.setText(calibration_data[0][0])
         dlg.serial_no.setText(calibration_data[0][1])
@@ -775,8 +773,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def show_user_prompt_pump_not_running(self, pump_status):
-        """Shows the user a warning that the ultrasound actuator pump is not running. Waits for the user's response
-        and connects the dialog's continue and abort signals to the manager's respective internal variables"""
+        """
+        Shows the user a warning that the ultrasound actuator pump is not running. Waits for the user's response
+        and connects the dialog's continue and abort signals to the manager's respective internal variables
+        """
         dlg = WTFUserPromptPumpNotRunning(config=self.config)
         dlg.label.setText(pump_status)
         # todo: have ua_pump_status switch react to pump_status var
@@ -786,8 +786,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot()
     def show_user_prompt_water_too_low(self):
-        """Shows the user a warning that the water level is too low and waits for their response to the dialog via connecting
-        the dialog's continue and abort buttons to the manager's internal respective variables"""
+        """
+        Shows the user a warning that the water level is too low and waits for their response to the dialog via
+        connecting the dialog's continue and abort buttons to the manager's internal respective variables
+        """
         dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.continue_clicked)
@@ -796,8 +798,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot()
     def show_user_prompt_water_too_high(self):
-        """Shows the user a warning that the water level is too high, connects the 'continue' and 'abort' signal from the
-        dialog to the manager's respective variables via a signal connect relay."""
+        """
+        Shows the user a warning that the water level is too high, connects the 'continue' and 'abort' signal from the
+        dialog to the manager's respective variables via a signal connect relay.
+        """
         dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
         dlg.continue_signal.connect(self.manager.continue_clicked)
@@ -806,9 +810,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(list, list)
     def show_script_complete_dialog(self, passed_ray, description_ray):  # WARNING: duplicate method
-        """Shows the script complete dialog when test is finished (either via aborting or normal completion.) Connects
-        the abort and continue signals from the dialog to the managers respective variables. Takes two arrays as parameters
-        that are used to fill script results information."""
+        """
+        Shows the script complete dialog when test is finished (either via aborting or normal completion.) Connects
+        the abort and continue signals from the dialog to the managers respective variables. Takes two arrays as
+        parameters that are used to fill script results information.
+        """
         dlg = ScriptCompleteDialog(
             config=self.config, passed_ray=passed_ray, description_ray=description_ray
         )
@@ -854,7 +860,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.retract_button.setEnabled(enabled)
         self.run_button.setEnabled(enabled and not self.script_changed)
         self.load_button.setEnabled(enabled)
-        if self.access_level_combo.currentText().upper() != "Operator".upper():  # user must be above operator permissions to run individual steps
+        # user must be above operator permissions to run individual steps
+        if self.access_level_combo.currentText().upper() != "Operator".upper():
             self.run_step_button.setEnabled(enabled)
         else:
             self.run_step_button.setEnabled(False)

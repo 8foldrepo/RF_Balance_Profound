@@ -10,11 +10,10 @@ from Utilities.useful_methods import is_number
 from Utilities.useful_methods import log_msg
 from Widget_Library.widget_position import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
-
-log_formatter = logging.Formatter(LOGGER_FORMAT)
 import os
 from definitions import ROOT_DIR
 
+log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
 file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w")
 file_handler.setFormatter(log_formatter)
@@ -36,11 +35,15 @@ class Position(MyQWidget, Ui_Form):
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent=parent)
+        self.rotational_ray = None
+        self.encoder_ray = None
+        self.gearing_ray = None
+        self.calibrate_ray = None
         self.app = QApplication.instance()
         self.setupUi(self)
         self.motors = None
         self.manager = None
-        self.config = None
+        self.config = config
         self.com_port = None
         self.settings_ray = list()
         self.stop_button.setEnabled(False)
@@ -71,9 +74,7 @@ class Position(MyQWidget, Ui_Form):
         self.trans_1_indicator.dPtr.animate(True)
         self.theta_rotation_indicator.setChecked(True)
         self.theta_rotation_indicator.dPtr.animate(True)
-
         self.visa_resource_field.setText(self.com_port)
-
         self.axis_spinbox.setValue(2)
         self.calibrate_ray = self.config[self.motors.device_key]['calibrate_ray']
         self.steps_per_mm_sb.setValue(self.calibrate_ray[1])
@@ -96,15 +97,15 @@ class Position(MyQWidget, Ui_Form):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.setup_signal.emit({
-                                'lin_incr': self.lin_incr_double_sb.value(),
-                                'lin_speed': self.linear_speed_mm_s_sb.value(),
-                                'rot_speed': self.rotational_speed_deg_s_sb.value(),
-                                'steps_per_deg': self.steps_per_degree_sb.value(),
-                                'steps_per_mm': self.steps_per_mm_sb.value(),
-                                'ang_incr': self.ang_inc_double_sb.value(),
-                                'x_gearing': self.gearing_ray[0],
-                                'r_gearing': self.gearing_ray[1]
-                                })
+            'lin_incr': self.lin_incr_double_sb.value(),
+            'lin_speed': self.linear_speed_mm_s_sb.value(),
+            'rot_speed': self.rotational_speed_deg_s_sb.value(),
+            'steps_per_deg': self.steps_per_degree_sb.value(),
+            'steps_per_mm': self.steps_per_mm_sb.value(),
+            'ang_incr': self.ang_inc_double_sb.value(),
+            'x_gearing': self.gearing_ray[0],
+            'r_gearing': self.gearing_ray[1]
+        })
 
     def populate_default_ui(self):
         self.steps_per_mm_sb.setValue(self.config[self.motors.device_key]["calibrate_ray"][0])
@@ -146,7 +147,8 @@ class Position(MyQWidget, Ui_Form):
         self.steps_per_degree_sb.setEnabled(enabled)
         self.ang_inc_double_sb.setEnabled(enabled)
         self.rotational_speed_deg_s_sb.setEnabled(enabled)
-        self.doubleSpinBox.setEnabled(enabled)  # todo: rename this element to something more intuitive like gearing_double_sb
+        self.doubleSpinBox.setEnabled(enabled)  # todo: rename this element to something more intuitive like
+        # gearing_double_sb
         self.setup_button.setEnabled(enabled)
         self.save_settings_button.setEnabled(enabled)
         self.x_neg_button.setEnabled(enabled)
@@ -168,10 +170,9 @@ class Position(MyQWidget, Ui_Form):
         self.x_home_radio.setEnabled(enabled)
         self.theta_home_radio.setEnabled(enabled)
 
-        #The stop button is the only one where once enabled it can no longer be disabled by this method
+        # The stop button is the only one where once enabled it can no longer be disabled by this method
         if enabled:
             self.stop_button.setEnabled(enabled)
-
 
     def configure_signals(self):
         # self.set_button.clicked.connect(self.set_clicked)
