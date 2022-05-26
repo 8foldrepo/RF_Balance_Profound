@@ -69,6 +69,7 @@ class UACalibration(MyQWidget, Ui_Form):
 
         status = 0
 
+        # todo: refactor grid display in ua calibration tab
         for i in range(7):
             item = QTableWidgetItem()
             item.setText(data[i])

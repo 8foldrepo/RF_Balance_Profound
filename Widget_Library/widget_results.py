@@ -24,7 +24,7 @@ class Ui_Form(object):
         self.scriptlog_tab = QtWidgets.QWidget()
         self.scriptlog_tab.setObjectName("scriptlog_tab")
         self.script_log_table = QtWidgets.QTableWidget(self.scriptlog_tab)
-        self.script_log_table.setGeometry(QtCore.QRect(10, 40, 971, 501))
+        self.script_log_table.setGeometry(QtCore.QRect(10, 110, 971, 501))
         self.script_log_table.setObjectName("script_log_table")
         self.script_log_table.setColumnCount(4)
         self.script_log_table.setRowCount(0)
@@ -38,24 +38,23 @@ class Ui_Form(object):
         self.script_log_table.setHorizontalHeaderItem(3, item)
         self.script_log_table.horizontalHeader().setStretchLastSection(True)
         self.label_131 = QtWidgets.QLabel(self.scriptlog_tab)
-        self.label_131.setGeometry(QtCore.QRect(10, 10, 111, 21))
+        self.label_131.setGeometry(QtCore.QRect(10, 80, 111, 21))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_131.setFont(font)
         self.label_131.setObjectName("label_131")
+        self.label_2 = QtWidgets.QLabel(self.scriptlog_tab)
+        self.label_2.setGeometry(QtCore.QRect(10, 10, 812, 13))
+        self.label_2.setObjectName("label_2")
         self.tabWidget_2.addTab(self.scriptlog_tab, "")
         self.tab_8 = QtWidgets.QWidget()
         self.tab_8.setObjectName("tab_8")
         self.results_table = QtWidgets.QTableWidget(self.tab_8)
         self.results_table.setGeometry(QtCore.QRect(0, 160, 1000, 371))
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
-        )
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.results_table.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy.setHeightForWidth(self.results_table.sizePolicy().hasHeightForWidth())
         self.results_table.setSizePolicy(sizePolicy)
         self.results_table.setMaximumSize(QtCore.QSize(1000, 1000))
         font = QtGui.QFont()
@@ -164,7 +163,7 @@ class Ui_Form(object):
         self.results_table.verticalHeader().setDefaultSectionSize(20)
         self.results_table.verticalHeader().setMinimumSectionSize(10)
         self.label_130 = QtWidgets.QLabel(self.tab_8)
-        self.label_130.setGeometry(QtCore.QRect(10, 10, 111, 16))
+        self.label_130.setGeometry(QtCore.QRect(10, 130, 111, 16))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.label_130.setFont(font)
@@ -172,6 +171,9 @@ class Ui_Form(object):
         self.save_button = QtWidgets.QPushButton(self.tab_8)
         self.save_button.setGeometry(QtCore.QRect(860, 630, 111, 31))
         self.save_button.setObjectName("save_button")
+        self.label = QtWidgets.QLabel(self.tab_8)
+        self.label.setGeometry(QtCore.QRect(10, 10, 700, 13))
+        self.label.setObjectName("label")
         self.tabWidget_2.addTab(self.tab_8, "")
         self.horizontalLayout.addWidget(self.tabWidget_2)
 
@@ -183,10 +185,8 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label_131.setText(_translate("Form", "UA Script Log"))
-        self.tabWidget_2.setTabText(
-            self.tabWidget_2.indexOf(self.scriptlog_tab),
-            _translate("Form", "ScriptLog"),
-        )
+        self.label_2.setText(_translate("Form", "This tab shows detailed information about the script parsing process, including whether certain tests succeeded and other intricate details about various script operations"))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.scriptlog_tab), _translate("Form", "ScriptLog"))
         item = self.results_table.verticalHeaderItem(1)
         item.setText(_translate("Form", "Element_01"))
         item = self.results_table.verticalHeaderItem(2)
@@ -276,14 +276,12 @@ class Ui_Form(object):
         self.results_table.setSortingEnabled(__sortingEnabled)
         self.label_130.setText(_translate("Form", "UA Test Results"))
         self.save_button.setText(_translate("Form", "Save Report"))
-        self.tabWidget_2.setTabText(
-            self.tabWidget_2.indexOf(self.tab_8), _translate("Form", "UA Results")
-        )
+        self.label.setText(_translate("Form", "This tab shows very details information gathered about each element from the ultrasound actuator in a grid. "))
+        self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_8), _translate("Form", "UA Results"))
 
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

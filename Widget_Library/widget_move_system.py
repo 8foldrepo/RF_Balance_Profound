@@ -41,7 +41,9 @@ class Ui_Form(object):
         self.label_4.setObjectName("label_4")
         self.mov_type_vert.addWidget(self.label_4)
         self.move_type_combo = QtWidgets.QComboBox(self.layoutWidget)
-        self.move_type_combo.setStyleSheet("background:white")
+        self.move_type_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.move_type_combo.setObjectName("move_type_combo")
         self.move_type_combo.addItem("")
         self.move_type_combo.addItem("")

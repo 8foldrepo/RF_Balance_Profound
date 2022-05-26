@@ -5,6 +5,7 @@ import sys
 import time as t
 import traceback
 import webbrowser
+from pprint import pprint
 from typing import List
 from PyQt5.QtCore import QThread
 from PyQt5 import QtCore, Qt
@@ -656,17 +657,21 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         Method takes message and restrict continue as parameters"""
         dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
-        dlg.abort_signal.connect(self.manager.abort_clicked)
-        dlg.retry_signal.connect(self.manager.retry_clicked)
-        dlg.continue_signal.connect(self.manager.continue_clicked)
-        if message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
-            dlg.abort_signal.connect(self.manager.abort_immediately)
         if message == "Do you want to write calibration data to UA?":
             dlg.continue_button.setText('Yes')
-            dlg.abort_button.setText('Skip')
+            dlg.continue_signal.connect(self.manager.yes_clicked)
+            dlg.abort_button.setText('No')
+            dlg.abort_signal.connect(self.manager.no_clicked)
             dlg.retry_button.hide()
             dlg.retry_button.setVisible(False)
             dlg.retry_button.setEnabled(False)
+        elif message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
+            dlg.abort_signal.connect(self.manager.abort_immediately)
+        else:
+            dlg.abort_signal.connect(self.manager.abort_clicked)
+            dlg.retry_signal.connect(self.manager.retry_clicked)
+            dlg.continue_signal.connect(self.manager.continue_clicked)
+
         dlg.exec()
 
     @pyqtSlot(str)
@@ -686,10 +691,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.abort_signal.connect(self.manager.abort_immediately)
         dlg.exec()
 
-    @pyqtSlot(list, list)
+    @pyqtSlot(list, list)  # WARNING: there is a duplicate method in this file
     def show_script_complete_dialog(self, passed_ray: list, description_ray: list) -> None:
         """Launches the script complete message that shows the various details of the tests for all the elements
         and connects various """
+        print(colored(f"passed ray and description_ray: ", 'pink'))
+        pprint(passed_ray)
+        pprint(description_ray)
         dlg = ScriptCompleteDialog(
             passed_ray=passed_ray, description_ray=description_ray, config=self.config
         )
@@ -798,7 +806,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.exec()
 
     @pyqtSlot(list, list)
-    def show_script_complete_dialog(self, passed_ray, description_ray):
+    def show_script_complete_dialog(self, passed_ray, description_ray):  # WARNING: duplicate method
         """Shows the script complete dialog when test is finished (either via aborting or normal completion.) Connects
         the abort and continue signals from the dialog to the managers respective variables. Takes two arrays as parameters
         that are used to fill script results information."""

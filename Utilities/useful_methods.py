@@ -1,6 +1,7 @@
 import collections.abc
 import datetime
 import os
+from pprint import pprint
 from typing import Tuple, List
 
 import numpy as np
@@ -58,7 +59,7 @@ def get_element_distances(element_1_index, element_pitch):
 
 def generate_calibration_data(test_data: TestData) -> List[str]:
     """Create UA calibration data compatible with the UA_Interface_Box class given test_data from the manager class"""
-    output = [] * 27
+    output = [None] * 27
     output[0] = str(test_data.schema)
     output[1] = str(test_data.serial_number)
     date_str = test_data.test_date_time[0:4] + test_data.test_date_time[5:7] + test_data.test_date_time[8:10]
@@ -240,7 +241,11 @@ def create_test_results_summary_file(test_data: TestData, path):
     f.write("Comment\t" + test_data.test_comment + "\n")
     f.write("Software Version\t" + test_data.software_version + "\n")
     f.write("Script\t" + test_data.script_name + "\n")
-    if test_data.write_result:
+    print(colored(f'test_data.skip_write_to_ua {test_data.skip_write_to_ua}', 'cyan'))
+    if test_data.skip_write_to_ua:
+        print(colored('entered into if statement @ line 243 in useful methods', 'yellow'))
+        f.write("UA Write\tN/A\t")
+    elif test_data.write_result:
         f.write("UA Write\tOK\n")
     else:
         f.write("UA Write\tFAIL\n")

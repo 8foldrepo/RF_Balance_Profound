@@ -3040,6 +3040,9 @@
         <height>780</height>
        </size>
       </property>
+      <property name="toolTip">
+       <string>Shows information regarding the hardware</string>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>

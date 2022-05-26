@@ -95,7 +95,7 @@ class Position(MyQWidget, Ui_Form):
     def setup_pressed(self):
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
-        self.setup_signal.emit({'movement_mode': self.movement_mode_comboBox.currentText(),
+        self.setup_signal.emit({
                                 'lin_incr': self.lin_incr_double_sb.value(),
                                 'lin_speed': self.linear_speed_mm_s_sb.value(),
                                 'rot_speed': self.rotational_speed_deg_s_sb.value(),
@@ -107,7 +107,6 @@ class Position(MyQWidget, Ui_Form):
                                 })
 
     def populate_default_ui(self):
-        self.movement_mode_comboBox.setCurrentText(self.config[self.motors.device_key]["movement_mode"])
         self.steps_per_mm_sb.setValue(self.config[self.motors.device_key]["calibrate_ray"][0])
         self.steps_per_degree_sb.setValue(self.config[self.motors.device_key]["calibrate_ray"][1])
         self.lin_incr_double_sb.setValue(self.config[self.motors.device_key]["increment_ray"][0])
@@ -116,7 +115,6 @@ class Position(MyQWidget, Ui_Form):
         self.rotational_speed_deg_s_sb.setValue(self.config[self.motors.device_key]["speeds_ray"][1])
 
     def save_config_ui(self):
-        self.config[self.motors.device_key]["movement_mode"] = self.movement_mode_comboBox.currentText()
         self.config[self.motors.device_key]["calibrate_ray"][0] = self.steps_per_mm_sb.value()
         self.config[self.motors.device_key]["calibrate_ray"][1] = self.steps_per_degree_sb.value()
         self.config[self.motors.device_key]["increment_ray"][0] = self.lin_incr_double_sb.value()

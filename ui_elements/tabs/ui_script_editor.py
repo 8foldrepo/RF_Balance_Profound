@@ -471,9 +471,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # if the widget has an ui_to_orderedDict method
         new_var_dict = self.edit_menu.ui_to_orderedDict()
 
-        print(colored('new_var_dict is: ', 'yellow'))
-        pprint(new_var_dict)
-
         # INFO: the previous code below this line was 'if new_var_dict is not None', but what
         # INFO: I think was meant to be written is 'if new_var_dict is None' because you're
         # INFO: potentially overwriting a perfectly good dictionary
@@ -505,9 +502,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_var_dict = autoset_timebase_dict()
             else:
                 new_var_dict = OrderedDict()
-
-        print(colored('new_var_dict is 2: ', 'yellow'))
-        pprint(new_var_dict)
 
         # add the new dictionary to var_dicts at the correct index
         if len(self.list_of_var_dicts) > 0 and "Task type" not in self.list_of_var_dicts[0]:

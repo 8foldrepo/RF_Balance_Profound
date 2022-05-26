@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QFileDialog
+from termcolor import colored
 
 from Widget_Library.widget_measure_element_efficiency import Ui_Form_2
 from ui_elements.my_qwidget import MyQWidget
@@ -57,9 +58,13 @@ class MeasureElementEfficiency(Ui_Form_2, MyQWidget):
         if "Results Directory".upper() in self.DATALOC_FIELD.currentText().upper():
             self.DATA_DIRECTORY_FIELD.setEnabled(False)
             self.DATA_DIRECTORY_BUTTON.setEnabled(False)
+            self.data_directory_hint.setVisible(True)
+            self.data_directory_hint.setEnabled(True)
         else:
             self.DATA_DIRECTORY_FIELD.setEnabled(True)
             self.DATA_DIRECTORY_BUTTON.setEnabled(True)
+            self.data_directory_hint.setVisible(False)
+            self.data_directory_hint.setEnabled(False)
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()

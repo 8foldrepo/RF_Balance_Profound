@@ -94,7 +94,9 @@
        <item>
         <widget class="QComboBox" name="move_type_combo">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">

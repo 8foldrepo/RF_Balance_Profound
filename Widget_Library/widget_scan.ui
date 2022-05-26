@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>898</width>
-    <height>730</height>
+    <width>1062</width>
+    <height>718</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>35</y>
+     <y>40</y>
      <width>1026</width>
-     <height>681</height>
+     <height>671</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
     <attribute name="title">
@@ -146,7 +146,9 @@
        <item>
         <widget class="QComboBox" name="acquisition_type_combo_box">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -170,7 +172,9 @@
        <item>
         <widget class="QComboBox" name="source_channel_combo_box">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -510,7 +514,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>231</width>
+        <width>241</width>
         <height>131</height>
        </rect>
       </property>
@@ -549,7 +553,9 @@ p, li { white-space: pre-wrap; }
         <item row="1" column="1">
          <widget class="QComboBox" name="axis_combo">
           <property name="styleSheet">
-           <string notr="true">background:white</string>
+           <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
           </property>
           <item>
            <property name="text">
@@ -710,7 +716,9 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="0">
         <widget class="QComboBox" name="ref_pos_combo">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -732,7 +740,9 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="1">
         <widget class="QComboBox" name="end_pos_combo">
          <property name="styleSheet">
-          <string notr="true">background:white</string>
+          <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
          </property>
          <item>
           <property name="text">
@@ -808,7 +818,9 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background:white</string>
+       <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
       </property>
       <item>
        <property name="text">
@@ -921,7 +933,9 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QComboBox" name="acquisition_type_combo">
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">
@@ -945,7 +959,9 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QComboBox" name="source_channel_combo">
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">
@@ -975,7 +991,9 @@ p, li { white-space: pre-wrap; }
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This feature is built into the graphing library. Right click a graph for window options&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="styleSheet">
-            <string notr="true">background:white</string>
+            <string notr="true">background-color:white;
+selection-color:rgb(255, 255, 255);
+selection-background-color:rgb(85, 170, 255);</string>
            </property>
            <item>
             <property name="text">
@@ -1004,6 +1022,45 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>905</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>13</y>
+     <width>1068</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The acquire waveform tab allows for more control over capturing the voltage waveform, such as specifying the acquisition type, source channel, averages, etc. A script isn't needed as you request a trace via button.</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>26</y>
+     <width>814</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>The scan tab allows you to perform scans on individual elements to your desired specifications. This tab can be used without a script, as you are trigger this tab manually.</string>
+   </property>
   </widget>
  </widget>
  <customwidgets>

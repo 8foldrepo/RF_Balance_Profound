@@ -15,6 +15,10 @@ class Ui_config_func_generator(object):
     def setupUi(self, config_func_generator):
         config_func_generator.setObjectName("config_func_generator")
         config_func_generator.resize(648, 410)
+        config_func_generator.setAutoFillBackground(True)
+        config_func_generator.setStyleSheet("background-color: rgb(255, 255, 255);\n"
+"selection-color: rgb(85, 170, 255);\n"
+"selection-background-color: rgb(200, 200, 200);")
         self.label = QtWidgets.QLabel(config_func_generator)
         self.label.setGeometry(QtCore.QRect(20, 30, 158, 13))
         self.label.setObjectName("label")
@@ -25,7 +29,7 @@ class Ui_config_func_generator(object):
         self.func_generation_config_frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.func_generation_config_frame.setObjectName("func_generation_config_frame")
         self.layoutWidget = QtWidgets.QWidget(self.func_generation_config_frame)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 86, 129))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 10, 86, 126))
         self.layoutWidget.setObjectName("layoutWidget")
         self.freq_ampl_mode_vert = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.freq_ampl_mode_vert.setContentsMargins(0, 0, 0, 0)
@@ -57,7 +61,10 @@ class Ui_config_func_generator(object):
         self.freq_ampl_mode_vert.addWidget(self.label_5)
         self.mode_combo = QtWidgets.QComboBox(self.layoutWidget)
         self.mode_combo.setMinimumSize(QtCore.QSize(0, 19))
-        self.mode_combo.setStyleSheet("background-color:white")
+        self.mode_combo.setAutoFillBackground(False)
+        self.mode_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.mode_combo.setObjectName("mode_combo")
         self.mode_combo.addItem("")
         self.mode_combo.addItem("")
@@ -88,7 +95,7 @@ class Ui_config_func_generator(object):
         self.no_cycles_spin.setObjectName("no_cycles_spin")
         self.cycles_vert.addWidget(self.no_cycles_spin)
         self.layoutWidget3 = QtWidgets.QWidget(config_func_generator)
-        self.layoutWidget3.setGeometry(QtCore.QRect(240, 30, 155, 41))
+        self.layoutWidget3.setGeometry(QtCore.QRect(240, 30, 159, 41))
         self.layoutWidget3.setObjectName("layoutWidget3")
         self.set_freq_opt_vert = QtWidgets.QVBoxLayout(self.layoutWidget3)
         self.set_freq_opt_vert.setContentsMargins(0, 0, 0, 0)
@@ -97,6 +104,10 @@ class Ui_config_func_generator(object):
         self.label_2.setObjectName("label_2")
         self.set_freq_opt_vert.addWidget(self.label_2)
         self.set_freq_opt_combo = QtWidgets.QComboBox(self.layoutWidget3)
+        self.set_freq_opt_combo.setAutoFillBackground(False)
+        self.set_freq_opt_combo.setStyleSheet("background-color:white;\n"
+"selection-color:rgb(255, 255, 255);\n"
+"selection-background-color:rgb(85, 170, 255);")
         self.set_freq_opt_combo.setObjectName("set_freq_opt_combo")
         self.set_freq_opt_combo.addItem("")
         self.set_freq_opt_combo.addItem("")

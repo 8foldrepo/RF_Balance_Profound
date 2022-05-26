@@ -1214,6 +1214,7 @@ class Ui_MainWindow(object):
         self.abort_button.setText(_translate("MainWindow", "ABORT AFTER STEP"))
         self.run_button.setText(_translate("MainWindow", "RUN SCRIPT"))
         self.insert_button.setText(_translate("MainWindow", "INSERT UA"))
+        self.tabWidget.setToolTip(_translate("MainWindow", "Shows information regarding the hardware"))
         self.label_23.setText(_translate("MainWindow", "Welcome to the Wet Test Fixture Control Program."))
         self.label_24.setText(_translate("MainWindow", "To begin a UA test:"))
         self.label_25.setText(_translate("MainWindow", "(It is advised to first home the X (linear) axis of the WTF bench by clicking \"Retract UA\" below.)                                            "))
