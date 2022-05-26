@@ -159,4 +159,3 @@ class TestData(QObject):
 
         # update UI representation
         self.show_results_summary.emit(self.results_summary)
-        print(colored(f"self.results_summary = {self.results_summary}", 'cyan'))

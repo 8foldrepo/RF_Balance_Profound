@@ -241,9 +241,7 @@ def create_test_results_summary_file(test_data: TestData, path):
     f.write("Comment\t" + test_data.test_comment + "\n")
     f.write("Software Version\t" + test_data.software_version + "\n")
     f.write("Script\t" + test_data.script_name + "\n")
-    print(colored(f'test_data.skip_write_to_ua {test_data.skip_write_to_ua}', 'cyan'))
     if test_data.skip_write_to_ua:
-        print(colored('entered into if statement @ line 243 in useful methods', 'yellow'))
         f.write("UA Write\tN/A\t")
     elif test_data.write_result:
         f.write("UA Write\tOK\n")

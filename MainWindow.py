@@ -695,7 +695,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def show_script_complete_dialog(self, passed_ray: list, description_ray: list) -> None:
         """Launches the script complete message that shows the various details of the tests for all the elements
         and connects various """
-        print(colored(f"passed ray and description_ray: ", 'pink'))
         pprint(passed_ray)
         pprint(description_ray)
         dlg = ScriptCompleteDialog(
