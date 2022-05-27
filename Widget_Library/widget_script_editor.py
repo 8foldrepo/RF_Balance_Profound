@@ -14,11 +14,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(779, 750)
-        Form.setMinimumSize(QtCore.QSize(778, 750))
-        Form.setMaximumSize(QtCore.QSize(1050, 750))
+        Form.resize(1000, 730)
+        Form.setMinimumSize(QtCore.QSize(1000, 700))
+        Form.setMaximumSize(QtCore.QSize(1000, 730))
         self.tabWidget = QtWidgets.QTabWidget(Form)
-        self.tabWidget.setGeometry(QtCore.QRect(100, 110, 661, 630))
+        self.tabWidget.setGeometry(QtCore.QRect(100, 110, 661, 611))
         font = QtGui.QFont()
         font.setPointSize(8)
         self.tabWidget.setFont(font)
@@ -114,7 +114,7 @@ class Ui_Form(object):
         self.save_script_button.setObjectName("save_script_button")
         self.horizontalLayout.addWidget(self.save_script_button)
         self.tootip = QtWidgets.QWidget(Form)
-        self.tootip.setGeometry(QtCore.QRect(0, 0, 780, 40))
+        self.tootip.setGeometry(QtCore.QRect(10, 6, 760, 30))
         self.tootip.setObjectName("tootip")
 
         self.retranslateUi(Form)

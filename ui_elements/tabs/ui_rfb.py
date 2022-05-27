@@ -1,5 +1,6 @@
 import time as t
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
 
@@ -39,6 +40,12 @@ class RFB(MyQWidget, Ui_Form):
         y = range(0, 100)
         x = range(0, 100)
         self.rfb_graph.refresh(x, y)
+        # INFO: for some reason the bottom three elements' Pixmap don't copy over correctly
+        # INFO: in widget_rfb.py when using the pyuic command, fixed via manually overriding here
+        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/reverse power.png"))
+        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/xsition pts.png"))
+        self.forward_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/forward power.png"))
+
 
     @pyqtSlot()
     def update_rfb_tab(self):

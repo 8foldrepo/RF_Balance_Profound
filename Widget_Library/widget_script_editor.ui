@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>779</width>
-    <height>750</height>
+    <width>1000</width>
+    <height>730</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>778</width>
-    <height>750</height>
+    <width>1000</width>
+    <height>700</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1050</width>
-    <height>750</height>
+    <width>1000</width>
+    <height>730</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
      <x>100</x>
      <y>110</y>
      <width>661</width>
-     <height>630</height>
+     <height>611</height>
     </rect>
    </property>
    <property name="font">
@@ -325,7 +325,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="tootip">
+  <widget class="QWidget" name="tootip" native="true">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -336,9 +336,6 @@
    </property>
    <property name="toolTip">
     <string>This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks</string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
    </property>
   </widget>
  </widget>
