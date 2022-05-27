@@ -5,12 +5,14 @@ import time as t
 import webbrowser
 from pprint import pprint
 from typing import List
-from PyQt5.QtCore import QThread
+
 from PyQt5 import QtCore, Qt
+from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index

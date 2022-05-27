@@ -148,11 +148,13 @@ class Ui_Form(object):
         self.label_132.setText(_translate("Form", "Script Action"))
         self.update_tree_button.setText(_translate("Form", "UPDATE TREE"))
         self.save_script_button.setText(_translate("Form", "SAVE SCRIPT"))
-        self.tootip.setToolTip(_translate("Form", "This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks"))
+        self.tootip.setToolTip(_translate("Form",
+                                          "This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

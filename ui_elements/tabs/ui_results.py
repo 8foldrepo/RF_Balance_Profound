@@ -1,7 +1,6 @@
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QHeaderView, QMessageBox
 
-from Utilities.useful_methods import create_test_results_summary_file
 from Widget_Library.widget_results import Ui_Form
 from data_structures.test_data import TestData
 from ui_elements.my_qwidget import MyQWidget
@@ -94,7 +93,8 @@ class Results(MyQWidget, Ui_Form):
         dlg.setIcon(QMessageBox.Question)
         answer = dlg.question(self, '', "Would you like to save the results summary and script log?", dlg.Yes | dlg.No)
         if answer == dlg.Yes:
-            self.save_summary_log_signal.emit({'Save summary file': 'True', 'Write UA Calibration': 'False', 'PromptForCalWrite': 'False'})
+            self.save_summary_log_signal.emit(
+                {'Save summary file': 'True', 'Write UA Calibration': 'False', 'PromptForCalWrite': 'False'})
         elif answer == dlg.No:
             return
 

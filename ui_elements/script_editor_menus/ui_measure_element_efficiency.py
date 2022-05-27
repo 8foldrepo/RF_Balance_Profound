@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QFileDialog
-from termcolor import colored
 
 from Widget_Library.widget_measure_element_efficiency import Ui_Form_2
 from ui_elements.my_qwidget import MyQWidget

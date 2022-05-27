@@ -59,7 +59,7 @@ class RFB(MyQWidget, Ui_Form):
 
         start_time = t.time()
 
-        #print("graphing")
+        # print("graphing")
         self.plot_ready = False
         self.app.processEvents()
 

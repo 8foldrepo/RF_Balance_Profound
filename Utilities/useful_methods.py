@@ -2,8 +2,10 @@ import collections.abc
 import datetime
 import os
 from typing import Tuple, List
+
 import numpy as np
 from PyQt5.QtWidgets import QTabWidget
+
 from data_structures.test_data import TestData
 
 

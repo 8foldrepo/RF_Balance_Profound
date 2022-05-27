@@ -68,7 +68,6 @@ class DIOBoard(AbstractIOBoard):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-
     def fill_tank(self):
         water_level = self.get_water_level()
 
@@ -93,7 +92,6 @@ class DIOBoard(AbstractIOBoard):
                     self.log("Tank full")
                     return True
         return False
-
 
     def drain_tank(self):
         water_level = self.get_water_level()
@@ -122,7 +120,6 @@ class DIOBoard(AbstractIOBoard):
                     self.log("Tank drained")
                     return True
         return False
-
 
     def drain_tank_to_level(self):
         water_level = self.get_water_level()

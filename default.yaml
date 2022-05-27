@@ -1,123 +1,130 @@
+Analysis:
+  capture_rms_only: false
+  max_standard_deviation_w: 0.1
+  samples_to_remove_at_end: 3
+  settling_time_s: 0.001
 Autoset timebase:
-  Max time of flight (us): 50
-  Min time of flight (us): 42
   Horizontal scale (us): 5
+  Max time of flight (us): 50.0
+  Min time of flight (us): 42.0
+Daq_Power_Relay:
+  on_by_default: true
+  port: COM3
+  timeout_s: 1
 Debugging:
-  simulate_ua_interface: true
-  simulate_sensors: true
-  simulate_motors: true
-  simulate_oscilloscope: true
-  simulate_awg: true
-  simulate_balance: true
-  simulate_power_meters: true
-  simulate_io_board: true
-  simulate_thermocouple: true
+  disable_password_prompt: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
-  simulate_ua_error: false
-  simulate_motor_error: false
-  simulate_thermocouple_error: false
-  simulate_oscilloscope_error: false
+  simulate_awg: true
+  simulate_balance: true
   simulate_balance_error: false
-  disable_password_prompt: true
+  simulate_io_board: true
+  simulate_motor_error: false
+  simulate_motors: true
+  simulate_oscilloscope: true
+  simulate_oscilloscope_error: false
+  simulate_power_meters: true
+  simulate_sensors: true
+  simulate_thermocouple: true
+  simulate_thermocouple_error: false
+  simulate_ua_error: false
+  simulate_ua_interface: true
 Forward_Power_Meter:
   serial_number: '11408040323'
-Reflected_Power_Meter:
-  serial_number: '11506210019'
 FrequencyParameters:
   HF:
-    HF.Amplitude(mVpp): 50
+    HF.Amplitude(mVpp): 50.0
     HF.BurstCount: 65
     HighFreqLimit(MHz): 13.8
     LowFreqLimit(MHz): 12.8
   LF:
-    Amplitude(mVpp): 50
+    Amplitude(mVpp): 50.0
     BurstCount: 50
     HighFreqLimit(MHz): 4.8
-    LowFreqLimit(MHz): 4
+    LowFreqLimit(MHz): 4.0
   Search:
     CoarseIncr(MHz): 0.1
     FineIncr(MHz): 0.01
 Galil_Motors:
-  move_timeout_s: 300
   axes:
-    - X
-    - R
+  - X
+  - R
   calibrate_ray:
-    - 1000
-    - 11.111111111 #4000/360
+  - 1000
+  - 11.111111111 #4000/360
   enable_homing_ray:
-    - true
-    - true
+  - true
+  - true
   encoder_installed_ray:
-    - false
-    - true
+  - false
+  - true
   encoder_resolution_ray:
-    - 1000
-    - 4000
-  increment_ray:
-    - 5 # mm
-    - 2 # deg
+  - 1000
+  - 4000
   gearing_ray:
-    - 1
-    - 1.92
+  - 1
+  - 1.92
+  increment_ray:
+  - 5
+  - 2
+  ip_address: 192.168.42.100
+  move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
-    - false
-    - false
+  - false
+  - false
   rotational_ray:
-    - false
-    - true
+  - false
+  - true
   speeds_ray:
-    - 5 #mm/s
-    - 5 #deg/s
+  - 5 #mm/s
+  - 5 #deg/s
   time_limit_s: 2
   timeout_s: 0.1
-  ip_address: 192.168.42.100
 Keysight_AWG:
   amplitude_V: 0.2
-  burst_on: true
   burst_cycles: 4000
+  burst_on: true
   burst_period_s: 0.1
-  trig_in: false
-  trig_out: true
   frequency_Hz: 4290000
   identifier: '0x2507'
   offset_V: 0
   output_Impedance: 50
   set_on_startup: true
+  trig_in: false
+  trig_out: true
 Keysight_Oscilloscope:
-  channel: 1
+  autorange_v_startup: false
   averages: 16
+  channel: 1
   cycles: 10
   delay_cycles: 0
+  ext_trigger: false
   identifier: '0x179B'
-  autorange_v_startup: False
   range_mV: 2000
-  ext_trigger: False
-  timeout_s: 10
-  set_on_startup: True
   retries: 5
+  set_on_startup: true
+  timeout_s: 10
 MT_Balance:
   port: COM4
   timeout_s: 10
 Paths:
-  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial
-    numbers.txt
-  UA results root directory: C:\Users\Isaiah\Documents\UA results
   Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
-Daq_Power_Relay:
-  on_by_default: true
-  port: COM3
-  timeout_s: 1
+  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial numbers.txt
+  UA results root directory: C:\Users\Isaiah\Documents\UA results
+Reflected_Power_Meter:
+  serial_number: '11506210019'
 Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
   Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
   Retries: 0
 Software_Version: '1.0'
+TempMon:
+  DeviceName: TankTemp
+  TCoupleType: J
 UAInterface:
   timeout_s: 2.0
 User Accounts:
@@ -125,45 +132,42 @@ User Accounts:
   Engineer: Engineer
   Operator: Operator
 VIX_Motors:
-  move_timeout_s: 300
   axes:
-    - X
-    - R
+  - X
+  - R
   calibrate_ray:
-    - 30.0
-    - 15.0
+  - 30.0
+  - 15.0
   enable_homing_ray:
-    - true
-    - true
+  - true
+  - true
   encoder_installed_ray:
-    - false
-    - true
+  - false
+  - true
   encoder_resolution_ray:
-    - 4000
-    - 1000
-  increment_ray:
-    - 5
-    - 2
+  - 4000
+  - 1000
   gearing_ray:
-    - 1
-    - 1.92
+  - 1
+  - 1.92
+  increment_ray:
+  - 5
+  - 2
+  move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
-    - false
-    - false
+  - false
+  - false
   rotational_ray:
-    - false
-    - true
+  - false
+  - true
   speeds_ray:
-    - 5.0
-    - 5.0
+  - 5.0
+  - 5.0
   time_limit_s: 2
   timeout_s: 0.1
-TempMon:
-  DeviceName: "TankTemp"
-  TCoupleType: "J"
 WTF_DIO:
   DAQ Device name: WTF4
   Fill/Drain mode: Automatic
@@ -182,8 +186,3 @@ WTF_PositionParameters:
   X-Element1: 0
   X-TankInsertionPoint: 108
   XHomeCoord: 263
-Analysis:
-  settling_time_s: .001
-  samples_to_remove_at_end: 3
-  max_standard_deviation_w: .1
-  capture_rms_only: False

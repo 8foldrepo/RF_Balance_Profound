@@ -2,7 +2,6 @@ from typing import Tuple
 
 import pyvisa
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
 from Utilities.load_config import *

@@ -3,6 +3,7 @@ import os
 import shutil
 from datetime import datetime
 from statistics import mean
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file

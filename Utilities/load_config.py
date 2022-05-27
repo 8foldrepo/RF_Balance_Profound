@@ -1,12 +1,13 @@
 import os
+
+import yaml
+
+from Utilities import useful_methods
 from definitions import DEFAULT_CONFIG_PATH
 from definitions import LOCAL_CONFIG_PATH
-import yaml
-from Utilities import useful_methods
 
 ROOT_LOGGER_NAME = "wtf_log"
 LOGGER_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-
 
 
 def load_configuration() -> dict:

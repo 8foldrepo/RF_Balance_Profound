@@ -2,7 +2,6 @@ from typing import Tuple
 
 import nidaqmx
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 

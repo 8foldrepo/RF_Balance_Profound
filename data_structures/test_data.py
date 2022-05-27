@@ -1,7 +1,6 @@
 from typing import List
 
 from PyQt5.QtCore import pyqtSignal, QObject
-from termcolor import colored
 
 from definitions import FrequencyRange
 
@@ -91,7 +90,6 @@ class TestData(QObject):
             self.results_summary[element - 1][2] = "%.2f" % max_position
         self.show_results_summary.emit(self.results_summary)
 
-
     def update_results_summary_with_efficiency_results(
             self,
             frequency_range: FrequencyRange,
@@ -131,7 +129,6 @@ class TestData(QObject):
         if self.results_summary[element - 1][15].upper() != 'FAIL':
             self.results_summary[element - 1][15] = test_result.upper()
             self.results_summary[element - 1][16] = comment
-
 
         self.show_results_summary.emit(self.results_summary)
 
