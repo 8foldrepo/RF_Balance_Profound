@@ -1,349 +1,344 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Form</class>
-    <widget class="QWidget" name="Form">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>779</width>
-                <height>750</height>
-            </rect>
-        </property>
-        <property name="minimumSize">
-            <size>
-                <width>778</width>
-                <height>750</height>
-            </size>
-        </property>
-        <property name="maximumSize">
-            <size>
-                <width>1050</width>
-                <height>750</height>
-            </size>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
-        </property>
-        <widget class="QTabWidget" name="tabWidget">
-            <property name="geometry">
-                <rect>
-                    <x>100</x>
-                    <y>110</y>
-                    <width>661</width>
-                    <height>630</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>8</pointsize>
-                </font>
-            </property>
-            <property name="currentIndex">
-                <number>0</number>
-            </property>
-            <widget class="QWidget" name="tab_13">
-                <attribute name="title">
-                    <string>Tab 1</string>
-                </attribute>
-                <layout class="QGridLayout" name="gridLayout_8">
-                    <item row="0" column="0">
-                        <layout class="QGridLayout" name="action_widget_layout"/>
-                    </item>
-                </layout>
-            </widget>
-        </widget>
-        <widget class="QComboBox" name="script_cmd_dropdown">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>70</y>
-                    <width>221</width>
-                    <height>31</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>10</pointsize>
-                </font>
-            </property>
-            <property name="currentText">
-                <string>Pre-test initialisation</string>
-            </property>
-            <item>
-                <property name="text">
-                    <string>Pre-test initialisation</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Prompt user for action</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Loop over elements</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>End loop</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Configure function generator</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Configure oscilloscope channels</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Configure oscilloscope timebase</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Home system</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Move system</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Select UA channel</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Find element &quot;n&quot;</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Frequency sweep</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Measure element efficiency (RFB)</string>
-                </property>
-            </item>
-            <item>
-                <property name="text">
-                    <string>Save results</string>
-                </property>
-            </item>
-        </widget>
-        <widget class="QPushButton" name="add_cmd_to_script_button">
-            <property name="geometry">
-                <rect>
-                    <x>240</x>
-                    <y>70</y>
-                    <width>141</width>
-                    <height>31</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>9</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>Add to Script</string>
-            </property>
-        </widget>
-        <widget class="QGroupBox" name="script_command_buttons">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>170</y>
-                    <width>91</width>
-                    <height>291</height>
-                </rect>
-            </property>
-            <property name="title">
-                <string/>
-            </property>
-            <widget class="QPushButton" name="delete_all_button">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>220</y>
-                        <width>75</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <property name="font">
-                    <font>
-                        <pointsize>9</pointsize>
-                    </font>
-                </property>
-                <property name="text">
-                    <string>Delete All</string>
-                </property>
-            </widget>
-            <widget class="QPushButton" name="move_cmd_up_button">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>10</y>
-                        <width>75</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <property name="font">
-                    <font>
-                        <pointsize>16</pointsize>
-                    </font>
-                </property>
-                <property name="text">
-                    <string>⬆️</string>
-                </property>
-            </widget>
-            <widget class="QPushButton" name="delete_step_button">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>150</y>
-                        <width>75</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <property name="font">
-                    <font>
-                        <pointsize>9</pointsize>
-                    </font>
-                </property>
-                <property name="text">
-                    <string>Delete Step</string>
-                </property>
-            </widget>
-            <widget class="QPushButton" name="move_cmd_down_button">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>80</y>
-                        <width>75</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <property name="font">
-                    <font>
-                        <pointsize>16</pointsize>
-                    </font>
-                </property>
-                <property name="text">
-                    <string>⬇️</string>
-                </property>
-            </widget>
-        </widget>
-        <widget class="QLabel" name="label_132">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>71</width>
-                    <height>16</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>9</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>Script Action</string>
-            </property>
-        </widget>
-        <widget class="QGroupBox" name="groupBox">
-            <property name="geometry">
-                <rect>
-                    <x>430</x>
-                    <y>60</y>
-                    <width>271</width>
-                    <height>61</height>
-                </rect>
-            </property>
-            <property name="title">
-                <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-                <item>
-                    <widget class="QPushButton" name="update_tree_button">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>100</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>9</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>UPDATE TREE</string>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QPushButton" name="save_script_button">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>100</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>9</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>SAVE SCRIPT</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="tootip">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>6</y>
-                    <width>760</width>
-                    <height>30</height>
-                </rect>
-            </property>
-            <property name="toolTip">
-                <string>This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and
-                    change/set individual variables within tasks
-                </string>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
-            </property>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>730</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1000</width>
+    <height>730</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>110</y>
+     <width>661</width>
+     <height>611</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="tab_13">
+    <attribute name="title">
+     <string>Tab 1</string>
+    </attribute>
+    <layout class="QGridLayout" name="gridLayout_8">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="action_widget_layout"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QComboBox" name="script_cmd_dropdown">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>221</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="currentText">
+    <string>Pre-test initialisation</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>Pre-test initialisation</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Prompt user for action</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Loop over elements</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>End loop</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure function generator</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure oscilloscope channels</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Configure oscilloscope timebase</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Home system</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Move system</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Select UA channel</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Find element &quot;n&quot;</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Frequency sweep</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Measure element efficiency (RFB)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Save results</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QPushButton" name="add_cmd_to_script_button">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>70</y>
+     <width>141</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Add to Script</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="script_command_buttons">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>170</y>
+     <width>91</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QPushButton" name="delete_all_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Delete All</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="move_cmd_up_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>⬆️</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="delete_step_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Delete Step</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="move_cmd_down_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>75</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>⬇️</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label_132">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Script Action</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>60</y>
+     <width>271</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="update_tree_button">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>UPDATE TREE</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="save_script_button">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>SAVE SCRIPT</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="tootip" native="true">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>6</y>
+     <width>760</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>This tab allows you to change task order, delete tasks, add tasks, save/create scripts, and change/set individual variables within tasks</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
