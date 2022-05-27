@@ -2,7 +2,7 @@ from statistics import mean
 from typing import List, Tuple
 
 from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent, \
-    calculate_standard_deviation, calculate_pf_max
+    calculate_standard_deviation, calculate_pf_max, calculate_efficiency_percent
 from definitions import FrequencyRange
 
 
