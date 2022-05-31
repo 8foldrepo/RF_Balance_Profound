@@ -5,6 +5,7 @@ from typing import Tuple, List
 
 import numpy as np
 from PyQt5.QtWidgets import QTabWidget
+from termcolor import colored
 
 from data_structures.test_data import TestData
 
@@ -55,6 +56,17 @@ def get_element_distances(element_1_index, element_pitch):
         element_coordinates[i + 1] = element_1_index + offset
 
     return element_coordinates
+
+
+def error_acceptable(value1: float, value2: float, acceptable_error_percent= 6, print_msg=True) -> bool:
+    """Returns whether the two values are approximately equal with a given acceptable error percentage"""
+    if print_msg:
+        print(colored(f'value1 = {value1}, value2 = {value2}', 'yellow'))
+
+    if value1 == 0:
+        print("value is 0")
+        return False
+    return abs((value1 - value2) / value1) * 100 < acceptable_error_percent
 
 
 def generate_calibration_data(test_data: TestData) -> List[str]:

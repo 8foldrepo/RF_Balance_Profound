@@ -1515,10 +1515,11 @@ class Manager(QThread):
 
         successful_go_home = False
         if axis_to_home == "All Axes":
-            self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
-            cont = self.cont_if_cont_clicked()
-            if not cont:
-                return False
+            if self.config["debugging"]["drain_before_retract"]:
+                self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return False
             successful_go_home = self.Motors.go_home(enable_ui=False)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
@@ -1530,7 +1531,8 @@ class Manager(QThread):
             if not cont:
                 return False
         elif axis_to_home == 'X':
-            self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
+            if self.config["debugging"]["drain_before_retract"]:
+                self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False

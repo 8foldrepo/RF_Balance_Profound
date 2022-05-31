@@ -35,8 +35,13 @@ class AbstractBalance(AbstractSensor):
         ...
 
     @abstractmethod
-    def get_stable_reading(self) -> None:
+    def get_stable_reading(self) -> Union[float,None]:
         """Waits until the weight reading on the scale is stable, function mechanics are already built-in"""
+        ...
+
+    @abstractmethod
+    def get_reading(self) -> Union[float,None]:
+        """Returns the current balance reading in grams"""
         ...
 
     @abstractmethod
