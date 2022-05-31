@@ -29,6 +29,7 @@ Debugging:
   simulate_thermocouple_error: false
   simulate_ua_error: false
   simulate_ua_interface: true
+  drain_before_retract: false
 Forward_Power_Meter:
   serial_number: '11408040323'
 FrequencyParameters:

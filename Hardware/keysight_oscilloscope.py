@@ -1,12 +1,8 @@
-
-from sys import exit
 import time as t
 from typing import Union
-
 import pyvisa
-from termcolor import colored
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
+from Utilities.useful_methods import error_acceptable
 
 
 class KeysightOscilloscope(AbstractOscilloscope):
@@ -170,12 +166,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def get_vertical_offset_V(self, channel: int) -> float:
         return float(self.ask(f":CHAN{channel}:OFFS?"))
 
-    def set_vertical_offset_V(self, channel: int, offset: float) -> None:
+    def set_vertical_offset_V(self, channel: int, offset: float) -> bool:
         self.command(f":CHAN{channel}:OFFS {offset}")
 
         actual_offset_v = self.get_vertical_offset_V(channel=channel)
-        if not actual_offset_v == offset:
-            self.log(level='error', message=f'Value out of range, '
+        if not error_acceptable(actual_offset_v, offset, 3, print_msg=False):
+            self.log(level='error', message=f'Offset of {offset} V out of range, '
                                             f'oscilloscope voltage offset set to: {actual_offset_v} Volts')
             return False
 
@@ -187,29 +183,30 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def set_horizontal_scale_sec(self, seconds: float) -> None:
         self.command(f":TIM:SCAL {seconds}")
+        self.range_s = 8 * seconds
 
     def get_horizontal_range_sec(self) -> float:
-        return float(self.ask(":TIM:RANG?"))
+        self.range_s = float(self.ask(":TIM:RANG?"))
+        return self.range_s
 
     def set_horizontal_range_sec(self, seconds: float) -> None:
         self.range_s = seconds
         command = f":TIM:RANG {seconds}"
         self.command(command)
 
-
-
     def get_horizontal_offset_sec(self) -> float:
         return float(self.ask(":TIM:POS?"))
 
-    def set_horizontal_offset_sec(self, offset: float) -> None:
+    def set_horizontal_offset_sec(self, offset: float) -> bool:
         self.offset_s = offset
         self.command(f":TIM:POS {offset}")
 
         actual_offset_s = self.get_horizontal_offset_sec()
-        if not actual_offset_s == self.offset_s:
-            self.log(level='error', message=f'Value out of range, '
+        if not error_acceptable(actual_offset_s, self.offset_s, 2, print_msg=False):
+            self.log(level='error', message=f'Offset of {offset}s out of range, '
                                             f'oscilloscope time offset set to: {actual_offset_s} seconds')
             return False
+        return True
 
     # stretch: add automatic waveform finding
     def autoset_oscilloscope_timebase(self):
@@ -253,6 +250,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                     break
 
             if preamble is None:
+                self.log(level='error', message='preamble is none')
                 return
 
             while preamble[0] != "+4":
@@ -328,7 +326,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         handles device not being"""
         try:
             self.inst.write(command)
-            t.sleep(.03)
+            t.sleep(.02)
         except AttributeError as e:
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
@@ -341,16 +339,16 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if str(e) == "'NoneType' object has no attribute 'read'":
                 self.log(f"Could not read reply, {self.device_key} Not connected")
 
-    def ask(self, command:str) -> Union[str, None]:
+    def ask(self, command: str) -> Union[str, None]:
         """generic method to send a command to the oscilloscope and return its response"""
         if not self.connected:
             return None
 
         reply = self.inst.query(command)
-        t.sleep(.03)
+        t.sleep(.02)
         return reply
 
-    def get_serial_number(self) -> Union[str,None]:
+    def get_serial_number(self) -> Union[str, None]:
         if not self.connected:
             return None
 
@@ -365,134 +363,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return float(rms)
 
 
-def error_acceptable(value1: float, value2: float) -> bool:
-    print(colored(f'value1 = {value1}, value2 = {value2}','yellow'))
-    if value1 == 0:
-        print("value is 0")
-        return False
-    return abs((value1 - value2) / value1) * 100 < 6
-
-def handler(signal_received, frame):
-    # Handle any cleanup here
-    print('SIGINT or CTRL-C detected. Exiting gracefully')
-    exit(0)
-
-# Script/example code for testing out hardware class
 if __name__ == "__main__":
-    import random
-    from signal import signal, SIGINT
-    signal(SIGINT, handler)
-
-    osc = KeysightOscilloscope()
-    osc.connect_hardware()
-
-    osc.set_horizontal_scale_sec(5.704571933249891)
-
-
-    assert osc.config is not None
-
-    # test a random sequence of operations 10 times
-    for i in range(10):
-        step_sequence = list(range(11))
-        random.shuffle(step_sequence)
-
-        # todo: figure out true limits in certain variables
-        for step_number in step_sequence:
-            if step_number == 0:  # TEST: set to defaults
-                print(colored("running set to default test", 'cyan'))
-                osc.set_to_defaults()
-                assert error_acceptable(osc.channel, osc.config[osc.device_key]['channel'])
-                assert error_acceptable(osc.max_time_of_flight, osc.config['Autoset timebase']["Max time of flight (us)"])
-                assert osc.min_time_of_flight == osc.config['Autoset timebase']["Min time of flight (us)"]
-                assert error_acceptable(osc.range_s, osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6)
-                assert error_acceptable(osc.time_of_flight_window, (osc.max_time_of_flight - osc.min_time_of_flight) / 1000000)
-                assert error_acceptable(osc.offset_s, osc.min_time_of_flight / 1000000 + osc.time_of_flight_window / 2)
-                assert osc.autorange_v == bool(osc.config[osc.device_key]["autorange_v_startup"])
-                assert error_acceptable(osc.range_mV, osc.config[osc.device_key]["range_mV"])
-                assert error_acceptable(osc.average_count, osc.config[osc.device_key]["averages"])
-                assert osc.external_trigger == osc.config[osc.device_key]["ext_trigger"]
-                assert error_acceptable(osc.timeout_s, osc.config[osc.device_key]["timeout_s"])
-            if step_number == 1:  # TEST: disconnect hardware
-                print(colored("running disconnect hardware test", 'cyan'))
-                osc.disconnect_hardware()
-                assert not osc.connected
-                osc.connect_hardware()
-            if step_number == 2:  # TEST: set averaging
-                print(colored("running set averaging test", 'cyan'))
-                averages = random.randrange(1, 10)
-                osc.set_averaging(averages=averages)
-                assert error_acceptable(osc.averages, averages)
-                if averages > 1:
-                    type1 = osc.ask(":ACQ:TYPE?")
-                    assert type1 == "AVER\n"
-                    assert error_acceptable(int(osc.ask(":ACQ:COUN?")), int(averages))
-                else:
-                    type2 = osc.ask(":ACQ:TYPE?")
-                    assert type2 == "HRES\n"
-            if step_number == 3:  # TEST: set trigger
-                print(colored("running set trigger test", 'cyan'))
-                external = bool(random.getrandbits(1))
-                osc.set_trigger(external=external)
-                trig_mode = osc.ask(":TRIG:MODE?")
-                mode = osc.ask(":TRIG:MODE?")
-                assert mode == "EDGE\n"
-                assert osc.ask(":TRIG:EDGE:SLOP?") == "POS\n"
-                if external:
-                    assert osc.ask(":TRIG:EDGE:SOUR?")=="EXT\n"
-                else:
-                    assert osc.ask(":TRIG:EDGE:SOUR?")=="CHAN1\n"
-            # horizontal commands ----------------------------------------------------
-            if step_number == 4:  # TEST: horizontal scale (s)
-                print(colored("running horizontal scale test", 'cyan'))
-                seconds = random.uniform(0, 10)
-                osc.set_horizontal_scale_sec(seconds=seconds)
-                assert error_acceptable(osc.get_horizontal_scale_sec(), seconds)
-            if step_number == 5:  # TEST: horizontal range sec (s)
-                print(colored("running horizontal range test", 'cyan'))
-                seconds = random.randrange(1, 30)  # set range between 1 and 30 seconds
-                osc.set_horizontal_range_sec(seconds=float(seconds))
-                assert error_acceptable(osc.get_horizontal_range_sec(), float(seconds))
-                assert error_acceptable(osc.range_s, float(seconds))
-            if step_number == 6:  # TEST: horizontal offset (s)
-                print(colored("running horizontal offset test", 'cyan'))
-                offset_seconds = random.uniform(-500, 500)
-                in_range = osc.set_horizontal_offset_sec(offset=offset_seconds)
-                assert error_acceptable(osc.get_horizontal_offset_sec(), offset_seconds) or not in_range
-                assert error_acceptable(osc.offset_s, offset_seconds)
-            # vertical commands -----------------------------------------------------
-            if step_number == 7:  # TEST: vertical scale (V)
-                print(colored("running vertical scale test", 'cyan'))
-                scale1 = random.uniform(0.1, 50)
-                osc.set_vertical_scale_V(channel=1, volts_per_div=scale1)
-                scale2 = osc.get_vertical_scale_V(channel=1)
-                assert error_acceptable(scale1, scale2)
-                assert error_acceptable(osc.range_mV/1000, 8 * scale1)
-            if step_number == 8:  # TEST: vertical range (V)
-                print(colored("running vertical range test", 'cyan'))
-                range_V = random.uniform(.01, 50)
-                osc.set_vertical_range_V(channel=1, volts=range_V)
-                assert error_acceptable(osc.get_vertical_range_V(channel=1), range_V)
-                assert error_acceptable(osc.range_mV, range_V * 1000)
-            if step_number == 9:  # TEST: vertical offset (V)
-                print(colored("running vertical offset test", 'cyan'))
-                offset_V = random.uniform(-20, 20)
-                osc.set_vertical_offset_V(channel=1, offset=offset_V)
-                assert error_acceptable(osc.get_vertical_offset_V(channel=1), offset_V)
-            # -------------------------------------------------------------
-            if step_number == 10:  # TEST: autoset timebase
-                print(colored("running autoset timebase test", 'cyan'))
-                osc.autoset_oscilloscope_timebase()
-                assert error_acceptable(osc.max_time_of_flight, osc.config['Autoset timebase']["Max time of flight (us)"])
-                assert error_acceptable(osc.min_time_of_flight, osc.config['Autoset timebase']["Min time of flight (us)"])
-                assert error_acceptable(osc.range_s, osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6)
-                assert error_acceptable(osc.time_of_flight_window, (osc.max_time_of_flight - osc.min_time_of_flight) / 1000000)
-                assert error_acceptable(osc.offset_s, osc.min_time_of_flight / 1000000 + osc.time_of_flight_window / 2)
-                osc.set_horizontal_range_sec(osc.range_s)
-                osc.set_horizontal_offset_sec(osc.offset_s)
-                assert error_acceptable(osc.get_horizontal_range_sec(), osc.range_s)
-                assert error_acceptable(osc.get_horizontal_offset_sec(), osc.offset_s)
-
-    osc.disconnect_hardware()
-    print("Test passed :)")
-
-
+    import unittest
+    from Hardware.unit_tests.test_oscilloscope import TestOscilloscope
+    unittest.main()

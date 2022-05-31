@@ -108,7 +108,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def set_horizontal_offset_sec(self, offset: float) -> None:
+    def set_horizontal_offset_sec(self, offset: float) -> bool:
         """Method to set the horizontal offset of the oscilloscope window in seconds as a float parameter"""
         ...
 

@@ -1,10 +1,12 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 import pyvisa
 from PyQt5 import QtCore
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
 from Utilities.load_config import *
+from Utilities.useful_methods import error_acceptable
+import time as t
 
 
 class KeysightAWG(AbstractAWG):
@@ -70,7 +72,7 @@ class KeysightAWG(AbstractAWG):
 
     def disconnect_hardware(self):
         self.inst.close()
-
+        self.connected = False
         self.connected_signal.emit(False)
 
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
@@ -117,10 +119,12 @@ class KeysightAWG(AbstractAWG):
             self.output_signal.emit(False)
 
     def get_output(self):
+        """Returns true or false depending on the whether the waveform generator is on or off"""
         self.command("OUTP?")
         reply = self.read()
         self.state["output"] = "1" in reply
         self.output_signal.emit(self.state["output"])
+
         return self.state["output"]
 
     def set_frequency_hz(self, frequency):
@@ -128,8 +132,10 @@ class KeysightAWG(AbstractAWG):
         self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
 
-        if self.get_frequency_hz() != frequency:
-            self.log(level="error", message="frequency not set")
+        actual_frequency = self.get_frequency_hz()
+        if not error_acceptable(actual_frequency, frequency, 2, print_msg=False):
+            self.log(level="error", message=f"Frequency {frequency}Hz out of range "
+                                            f"with current settings. Frequency is {actual_frequency}")
             return False
         return True
 
@@ -139,12 +145,13 @@ class KeysightAWG(AbstractAWG):
         self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)
         return self.state["frequency_Hz"]
 
-    """Sets the peak to peak amplitude of the waveform in volts"""
-
     def set_amplitude_v(self, amplitude):
+        """Sets the peak to peak amplitude of the waveform in volts"""
         self.command(f"VOLT {amplitude}")
-        if not self.get_amplitude_v() == amplitude:
-            self.log(level="error", message="frequency not set")
+        actual_amplitude_v = self.get_amplitude_v()
+        if error_acceptable(actual_amplitude_v, amplitude, 2, print_msg=False):
+            self.log(level="error",
+                     message=f"Amplitude {amplitude}V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
             return False
         return True
 
@@ -153,28 +160,27 @@ class KeysightAWG(AbstractAWG):
         self.state["amplitude_V"] = float(self.read())
         return self.state["amplitude_V"]
 
-    """Sets the dc offset of the waveform in volts"""
-
     def set_offset_v(self, offset):
+        """Sets the dc offset of the waveform in volts"""
         self.state["offset_V"] = offset
         self.command(f"VOLT:OFFS {offset}")
 
     def get_offset_v(self):
+        """Shows text_item on the AWG screen"""
         self.command(f"VOLT:OFFS?")
         self.state["offset_V"] = float(self.read())
         return self.state["offset_V"]
 
-    """Shows text_item on the AWG screen"""
-
-    def display_text(self, text):
-        self.command(f"DISP:TEXT {text}")
-
     def set_function(self, func="SIN"):
-        self.command(f"FUNC {func}:")
+        """Sets the shape of the source waveform"""
+        command_str = f"SOUR:FUNC {func}"
+        print(command_str)
+        self.command(command_str)
+        t.sleep(.05)
 
     def get_function(self):
-        self.command(f"FUNC?")
-        return self.read()
+        self.command(f"SOUR:FUNC?")
+        return self.read().replace("\n", "")
 
     def set_trigger_output(self, trigger_out=True):
         if trigger_out:
@@ -206,41 +212,43 @@ class KeysightAWG(AbstractAWG):
         else:
             self.command(f"OUTP:LOAD {impedance_ohms}")
 
-    def get_output_impedance(self):
+    def get_output_impedance(self) -> Union[float, None]:
         self.command(f"OUTP:LOAD?")
         return float(self.read())
 
-    def set_phase_degrees(self, phase_degrees=0):
+    def set_phase_degrees(self, phase_degrees: float = 0) -> bool:
         self.command(f"UNIT:ANGL DEG")
-        self.command(f"SOUR:PHASE{phase_degrees}")
-        return self.get_phase_degrees() == phase_degrees
+        self.command(f"BURS:PHASE {phase_degrees}")
+        t.sleep(.05)
+        return error_acceptable(self.get_phase_degrees(), phase_degrees, 2, print_msg=False)
 
-    def get_phase_degrees(self):
+    def get_phase_degrees(self) -> float:
         self.command(f"UNIT:ANGL DEG")
-        self.command(f"SOUR:PHASE?")
-        self.state["phase degrees"] = self.read()
+        self.command(f"BURS:PHASE?")
+        self.state["phase degrees"] = float(self.read())
         return self.state["phase degrees"]
 
-    def set_cycles(self, cycles):
+    def set_cycles(self, cycles: int):
         self.state["burst_cycles"] = cycles
         self.command(f"BURS:NCYC {cycles}")
         return self.get_cycles == cycles
 
-    def get_cycles(self):
+    def get_cycles(self) -> int:
         self.command(f"BURS:NCYC?")
         self.state["burst_cycles"] = self.read()
-        return self.state["burst_cycles"]
+        return int(float(self.state["burst_cycles"]))
 
-    def command(self, command):
+    def command(self, command: str):
         try:
             self.inst.write(command)
+            t.sleep(.03)
         except AttributeError as e:
             if str(e) == "'NoneType' object has no attribute 'write'":
                 self.log(f"{self.device_key} Not connected")
             else:
                 self.log(level="error", message=f"error in command: {e}")
 
-    def read(self):
+    def read(self) -> str:
         try:
             return self.inst.read()
         except AttributeError as e:
@@ -249,8 +257,18 @@ class KeysightAWG(AbstractAWG):
             else:
                 self.log(level="error", message=f"error in read: {e}")
 
-    def check_connected(self):
-        return self.inst is not None
+    def check_connected(self) -> bool:
+        connected = False
+        try:
+            Output = self.get_output()
+            if Output is not None:
+                connected = True
+        except AssertionError:
+            pass
+        except pyvisa.errors.InvalidSession:
+            pass
+        self.connected = connected
+        return connected
 
     # Trigger input methods, unused, untested
     # """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
@@ -277,11 +295,9 @@ class KeysightAWG(AbstractAWG):
     def wrap_up(self):
         self.set_output(False)
         self.disconnect_hardware()
+        t.sleep(.05)
 
-    def get_serial_number(self) -> str:
-        if not self.connected:
-            return None
-
+    def get_serial_number(self) -> Union[str, None]:
         self.command("*IDN?")
         str = self.read()
 
@@ -294,7 +310,12 @@ class KeysightAWG(AbstractAWG):
         return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 
 
-if __name__ == "__main__":
+def unit_test():
+    """
+    Tests all key features of the waveform generator in a random order with random parameters 10 times.
+    Run in debug mode with a breakpoint on any exception to search for bugs.
+    If the test passes the test will print "test passed :)"
+    """
     import random
 
     awg = KeysightAWG()
@@ -302,7 +323,7 @@ if __name__ == "__main__":
 
     # test a random sequence of operations 10 times
     for i in range(10):
-        step_sequence = list(range(5))
+        step_sequence = list(range(10))
         random.shuffle(step_sequence)
 
         for step_number in step_sequence:
@@ -310,22 +331,24 @@ if __name__ == "__main__":
                 on = bool(random.getrandbits(1))
                 awg.set_output(on=on)
                 if on:
-                    assert awg.get_output() is not None
+                    assert awg.get_output() is True
                 else:
-                    assert awg.get_output() is None
+                    assert awg.get_output() is False
             if step_number == 1:  # TEST: frequency (Hz)
-                frequency = round(random.uniform(1, 9999999), 2)
-                awg.set_frequency_hz(frequency=frequency)
-                assert awg.get_frequency_hz() == frequency
+                frequency = round(random.uniform(.0001, 19999999), 2)
+                successful = awg.set_frequency_hz(frequency=frequency)
+                freq = awg.get_frequency_hz()
+                assert error_acceptable(freq, frequency, 2) or not successful
             if step_number == 2:  # TEST: offset (V)
-                offset = random.uniform(1, 10)
+                offset = random.uniform(-5, 5)
                 awg.set_offset_v(offset=offset)
-                assert offset == awg.get_offset_v()
+                assert error_acceptable(offset, awg.get_offset_v())
             if step_number == 3:  # TEST: function
-                possible_funcs = ['SIN', 'SQU', 'RAMP', 'NRAM', 'TRI', 'NOIS', 'PRBS', 'ARB']
+                possible_funcs = ['SIN', 'SQU', 'RAMP', 'TRI', 'NOIS', 'PRBS']
                 func = random.choice(possible_funcs)
                 awg.set_function(func=func)
-                assert awg.set_function() == func
+                func2 = awg.get_function()
+                assert func2 == func
             if step_number == 4:  # TEST: check connected
                 awg.disconnect_hardware()
                 assert not awg.check_connected()
@@ -334,10 +357,10 @@ if __name__ == "__main__":
             if step_number == 5:  # TEST: wrap up
                 awg.wrap_up()
                 assert not awg.check_connected()
-                assert type(awg.get_output()) is None
                 awg.connect_hardware()
+                assert awg.check_connected()
             if step_number == 6:  # TEST: amplitude (V)
-                amplitude = round(random.uniform(1, 10), 2)
+                amplitude = round(random.uniform(1, 9.9999), 2)
                 awg.set_amplitude_v(amplitude=amplitude)
                 assert amplitude == awg.get_amplitude_v()
             if step_number == 7:  # TEST: burst
@@ -349,13 +372,19 @@ if __name__ == "__main__":
                 else:
                     assert not response
             if step_number == 8:  # TEST: number of cycles
-                cycles = random.randint(1, 10)
+                cycles = random.randint(1, 99)
                 awg.set_cycles(cycles=cycles)
-                assert awg.get_cycles() == cycles
+                cycles2 = awg.get_cycles()
+                assert cycles2 == cycles
             if step_number == 9:  # TEST: phase degrees
                 phase_degrees = random.randint(0, 180)
                 awg.set_phase_degrees(phase_degrees=phase_degrees)
-                assert awg.get_phase_degrees() == phase_degrees
+                phase = awg.get_phase_degrees()
+                assert error_acceptable(phase, phase_degrees, 2)
             # if step_number == 10:  # TEST: output impedance
             #     ...
     print("Test passed :)")
+
+
+if __name__ == "__main__":
+    unit_test()

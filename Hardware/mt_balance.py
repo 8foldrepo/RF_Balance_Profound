@@ -1,9 +1,8 @@
 import time as t
 from typing import Union
-
+import unittest
 import serial
 from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import is_number
@@ -160,7 +159,7 @@ class MT_balance(AbstractBalance):
     #     self.log(level='error', message=f'{self.device_key} timed out')
 
     def get_reading(self):
-        if self.ser is None:
+        if self.ser is None or not self.connected:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
 
@@ -211,7 +210,7 @@ class MT_balance(AbstractBalance):
                     return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def get_stable_reading(self):
+    def get_stable_reading(self) -> Union[float,None]:
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -230,7 +229,7 @@ class MT_balance(AbstractBalance):
                             self.log(f"Stable weight acquired: {val} g")
                             self.latest_weight = val
                             self.reading_signal.emit(val)
-                            return
+                            return self.latest_weight
                 else:
                     if item == b'I':
                         self.log(level='error', message='Weight unstable or balance busy')
@@ -279,8 +278,61 @@ class MT_balance(AbstractBalance):
         self.ser.write(b"\n@\n")
 
 
+class TestBalance(unittest.TestCase):
+    def setUp(self):
+        self.balance = MT_balance(config=None)
+        self.balance.connect_hardware()
+
+    def test_config_loading(self):
+        print("Testing loading")
+        self.assertIsNotNone(self.balance.config)
+
+    def test_connected(self):
+        print("Testing connected")
+        self.assertEqual(self.balance.connected, True)
+
+    def test_reconnect(self):
+        print("Testing reconnect")
+        self.balance.disconnect_hardware()
+        self.assertEqual(self.balance.connected, False)
+        self.assertIsNone(self.balance.get_reading())
+        self.balance.connect_hardware()
+        self.assertEqual(self.balance.connected, True)
+        self.assertIsNotNone(self.balance.get_reading())
+
+    def test_get_continuous_readings(self):
+        print("Testing read continuously")
+        self.balance.start_continuous_reading()
+
+        starttime = t.time()
+        num_captures = 100
+        for i in range(num_captures):
+            self.assertIsInstance(self.balance.get_reading(), float)
+
+        capture_time = (t.time() - starttime) / num_captures
+        self.assertLessEqual(capture_time, 4)
+
+    def test_stable_reading(self):
+        print("Testing stable reading")
+        reading = self.balance.get_stable_reading()
+        self.assertIsInstance(reading, float)
+
+    def test_get_serial_number(self):
+        print("Testing get serial number")
+        sn = self.balance.get_serial_number()
+        self.assertIsInstance(sn, str)
+        self.assertNotEqual(sn, '')
+
+    def test_zero_instantly(self):
+        print("Testing zero instantly")
+        self.balance.zero_balance_instantly()
+        self.assertAlmostEqual(self.balance.get_reading(), 0, 4)
+
+    def test_zero_stable(self):
+        print("Testing zero stable")
+        self.balance.zero_balance_stable()
+        self.assertAlmostEqual(self.balance.get_reading(), 0, 4)
+
+
 if __name__ == "__main__":
-    balance = MT_balance(config=load_configuration())
-    balance.connect_hardware()
-    while True:
-        print(balance.get_reading())
+    unittest.main()

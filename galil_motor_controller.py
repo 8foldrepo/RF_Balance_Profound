@@ -55,17 +55,16 @@ class GalilMotorController(AbstractMotorController):
         feedback = ""
 
         port_list = self.handle.GAddresses()
-        feedback = feedback + ("pre-connection handle status: {0}".format(self.handle)) + '\n'
         self.connected = False
 
         for port in port_list.keys():
-            feedback = feedback + ("port: {0} , handle status: {1}".format(port, self.handle)) + '\n'
             try:
                 self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
                 feedback = feedback + self.handle.GInfo() + '\n'
                 self.connected = True
             except gclib.GclibError as e:
-                feedback = feedback + ("Something went wrong: {0}".format(e)) + '\n'
+                feedback = "Connection to motor controller timed out. Make sure it is connected and do a power " \
+                           "cycle: {0}".format(e)
 
             if self.connected:
                 break
@@ -492,8 +491,12 @@ class GalilMotorController(AbstractMotorController):
         return output
 
 
-# unit test assuming that the galil box is connected and powered on
-if __name__ == '__main__':
+class TestMotors(unittest.test.TestCase):
+    """
+    Warning, if connected to motors this program will move the motors around randomly.
+    Tests all core functionality of the motion controller
+    """
+
     Motors = GalilMotorController(config=None, lock=None)
     Motors.connect_hardware()
 
@@ -583,3 +586,8 @@ if __name__ == '__main__':
                     assert Motors.moving
                     t.sleep(.1)
                     Motors.stop_motion()
+    print("Test passed :)")
+
+
+if __name__ == '__main__':
+    unit_test()
