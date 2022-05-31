@@ -1,16 +1,19 @@
 import time as t
-from typing import Union
+from typing import Union, Tuple
 import unittest
 import serial
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
+from termcolor import colored
+
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import is_number
 
 
 class MT_balance(AbstractBalance):
-    reading_signal = pyqtSignal(float)
-    connected_signal = pyqtSignal(bool)
+    reading_signal = QtCore.pyqtSignal(float)
+    connected_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, config, device_key="MT_Balance", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
@@ -28,9 +31,8 @@ class MT_balance(AbstractBalance):
         self.timeout_s = self.config[self.device_key]["timeout_s"]
         self.port = self.config[self.device_key]["port"]
 
-    """Zeroes the scale with the next stale weight reading"""
-
-    def zero_balance_stable(self):
+    def zero_balance_stable(self) -> None:
+        """Zeroes the scale with the next stale weight reading"""
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected is False:
@@ -70,15 +72,15 @@ class MT_balance(AbstractBalance):
             self.log("Device is not connected")
             return
         self.log("Zeroing Balance")
-        self.ser.write(b"\nZ\n")
+        self.ser.write(b"\nZI\n")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                # print(item)
                 # For some reason when debugging these can also appear as b'ES'. that is normal.
                 if item == b"ZI D" or item == b"ZI S":
                     self.log(level="info", message="Balance Zeroed")
+                    t.sleep(.05)
                     return
                 else:
                     if item == b'I':
@@ -92,7 +94,7 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
         feedback = ""
         try:
             self.ser = serial.Serial(
@@ -118,7 +120,7 @@ class MT_balance(AbstractBalance):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -127,49 +129,18 @@ class MT_balance(AbstractBalance):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    # def get_reading(self):
-    #     if self.ser is None:
-    #         self.log(level='error', message=f'{self.device_key} not connected')
-    #         return
-    #
-    #     start_time = t.time()
-    #     while t.time() - start_time < self.timeout_s:
-    #         y = self.ser.readline().split(b"\r\n")
-    #         print(y)
-    #         for item in y:
-    #             if b'S S' in item:
-    #                 chunks = item.split(b" ")
-    #                 for chunk in chunks:
-    #                     print(chunk)
-    #                     if is_number(chunk):
-    #                         val = float(chunk)
-    #                         self.latest_weight = val
-    #                         self.reading_signal.emit(val)
-    #                         return val
-    #             else:
-    #                 if item == b'I':
-    #                     self.log(level = 'error', message='Weight unstable or balance busy')
-    #                     return
-    #                 elif item == b'+':
-    #                     self.log(level = 'error', message='Balance overloaded')
-    #                     return
-    #                 elif item == b'-':
-    #                     self.log(level = 'error', message='Balance underloaded')
-    #                     return
-    #     self.log(level='error', message=f'{self.device_key} timed out')
-
     def get_reading(self):
         if self.ser is None or not self.connected:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
 
         if not self.continuously_reading:
+            self.log("balance was not in continuous read mode, switching to it now")
             self.start_continuous_reading()
             self.continuously_reading = True
 
         self.ser.flushInput()
 
-        # self.ser.write(b"\nSI\n")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
@@ -194,7 +165,7 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def reset(self):
+    def reset(self) -> None:
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -210,11 +181,12 @@ class MT_balance(AbstractBalance):
                     return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def get_stable_reading(self) -> Union[float,None]:
+    def get_stable_reading(self) -> Union[float, None]:
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
         self.ser.write(b"\nS\n")
+        self.continuously_reading = False
         self.log("Getting stable reading, please wait")
 
         start_time = t.time()
@@ -273,66 +245,15 @@ class MT_balance(AbstractBalance):
 
     def start_continuous_reading(self):
         self.ser.write(b"\nSIR\n")
+        self.continuously_reading = True
 
     def stop_continuous_reading(self):
         self.ser.write(b"\n@\n")
-
-
-class TestBalance(unittest.TestCase):
-    def setUp(self):
-        self.balance = MT_balance(config=None)
-        self.balance.connect_hardware()
-
-    def test_config_loading(self):
-        print("Testing loading")
-        self.assertIsNotNone(self.balance.config)
-
-    def test_connected(self):
-        print("Testing connected")
-        self.assertEqual(self.balance.connected, True)
-
-    def test_reconnect(self):
-        print("Testing reconnect")
-        self.balance.disconnect_hardware()
-        self.assertEqual(self.balance.connected, False)
-        self.assertIsNone(self.balance.get_reading())
-        self.balance.connect_hardware()
-        self.assertEqual(self.balance.connected, True)
-        self.assertIsNotNone(self.balance.get_reading())
-
-    def test_get_continuous_readings(self):
-        print("Testing read continuously")
-        self.balance.start_continuous_reading()
-
-        starttime = t.time()
-        num_captures = 100
-        for i in range(num_captures):
-            self.assertIsInstance(self.balance.get_reading(), float)
-
-        capture_time = (t.time() - starttime) / num_captures
-        self.assertLessEqual(capture_time, 4)
-
-    def test_stable_reading(self):
-        print("Testing stable reading")
-        reading = self.balance.get_stable_reading()
-        self.assertIsInstance(reading, float)
-
-    def test_get_serial_number(self):
-        print("Testing get serial number")
-        sn = self.balance.get_serial_number()
-        self.assertIsInstance(sn, str)
-        self.assertNotEqual(sn, '')
-
-    def test_zero_instantly(self):
-        print("Testing zero instantly")
-        self.balance.zero_balance_instantly()
-        self.assertAlmostEqual(self.balance.get_reading(), 0, 4)
-
-    def test_zero_stable(self):
-        print("Testing zero stable")
-        self.balance.zero_balance_stable()
-        self.assertAlmostEqual(self.balance.get_reading(), 0, 4)
+        self.continuously_reading = False
 
 
 if __name__ == "__main__":
+    import unittest
+    from Hardware.unit_tests.test_balance import TestBalance
     unittest.main()
+
