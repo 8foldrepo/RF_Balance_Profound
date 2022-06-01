@@ -14,6 +14,8 @@ class AbstractOscilloscope(AbstractDevice):
 
     def __init__(self, device_key="Keysight_Oscilloscope", config=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
+        self.min_time_of_flight: float = float('nan')
+        self.max_time_of_flight: float = float('nan')
 
     @abstractmethod
     def reset(self) -> None:
@@ -127,4 +129,8 @@ class AbstractOscilloscope(AbstractDevice):
     @abstractmethod
     def get_rms(self) -> float:
         """Retrieves the root mean squared value of what's current in the oscilloscope's window as a float"""
+        ...
+
+    @abstractmethod
+    def get_horizontal_range_sec(self):
         ...
