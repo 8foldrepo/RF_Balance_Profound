@@ -281,6 +281,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     # signal connections
     def configure_non_manager_signals(self):
+        self.quit_button.clicked.connect(self.quit_clicked)
+
         self.script_editor.script_changed_signal.connect(self.upon_script_changed)
         self.load_button.clicked.connect(self.load_script_clicked)
         self.run_button.clicked.connect(self.run_button_clicked)
@@ -583,6 +585,25 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Updating the Feedback window
         Progress = "Notes Printed"
         self.log(str(Progress))
+
+    def quit_clicked(self):
+        bQuit = False
+        qReply = QMessageBox.question(
+            self,
+            "Confirm Exit",
+            "Do you want to exit?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if qReply == QMessageBox.Yes:
+            bQuit = True
+            self.manager.wrap_up()
+            t.sleep(0.1)
+            self.manager.exit()
+        if bQuit:
+            self.close()
+        else:
+            pass
 
     def closeEvent(self, event):
         bQuit = False

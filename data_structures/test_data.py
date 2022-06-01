@@ -50,6 +50,7 @@ class TestData(QObject):
         self.write_result = None
         self.skip_write_to_ua = False
         self.schema = '1'
+        self.angle_average = -90
         hf = "NaN"
         lf = "NaN"
 
@@ -139,8 +140,8 @@ class TestData(QObject):
             angle_sum = angle_sum + float(self.results_summary[i][2])
             count = count + 1
 
-        angle_average = angle_sum / count
-        self.results_summary[10][2] = str(angle_average)
+        self.angle_average = angle_sum / count
+        self.results_summary[10][2] = str(self.angle_average)
 
         # update UI representation
         self.show_results_summary.emit(self.results_summary)

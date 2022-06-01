@@ -1308,6 +1308,8 @@ class Manager(QThread):
                 self.element_x_coordinates[self.element] = max_position
             else:
                 self.element_r_coordinates[self.element] = max_position + 90
+                #Refresh the angle average in self.test_data
+                self.test_data.calculate_angle_average()
 
         self.test_data.set_max_position(axis, self.element, max_position)
 
@@ -1421,7 +1423,6 @@ class Manager(QThread):
                                              storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
-
     def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         try:
@@ -1614,7 +1615,7 @@ class Manager(QThread):
 
         return True
 
-    def move_system(self, var_dict):
+    def move_system(self, var_dict, average_angle = True):
         """
         Move motors to the specified coordinates
         """
@@ -1645,7 +1646,13 @@ class Manager(QThread):
             if "Hydrophone" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             elif "RFB" in target:
-                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate], enable_ui=False)
+                if average_angle:
+                    self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, self.test_data.angle_average],
+                                               enable_ui=False)
+                else:
+                    self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate,
+                                                            self.test_data.angle_average],
+                                               enable_ui=False)
             elif "Down" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90], enable_ui=False)
 
@@ -2001,17 +2008,18 @@ class Manager(QThread):
 
         self.retry_clicked_variable = False
 
-        self.test_data.update_results_summary_with_efficiency_results(
-            frequency_range=frequency_range,
-            element=self.element,
-            frequency_Hz=self.AWG.state["frequency_Hz"],
-            efficiency_percent=self.rfb_data.efficiency_percent,
-            reflected_power_percent=self.rfb_data.reflected_power_percent,
-            forward_power_max=self.rfb_data.forward_power_max_extrapolated,
-            water_temperature_c=self.rfb_data.water_temperature_c,
-            test_result=test_result,
-            comment=comment
-        )
+        if  efficiency_test:
+            self.test_data.update_results_summary_with_efficiency_results(
+                frequency_range=frequency_range,
+                element=self.element,
+                frequency_Hz=self.AWG.state["frequency_Hz"],
+                efficiency_percent=self.rfb_data.efficiency_percent,
+                reflected_power_percent=self.rfb_data.reflected_power_percent,
+                forward_power_max=self.rfb_data.forward_power_max_extrapolated,
+                water_temperature_c=self.rfb_data.water_temperature_c,
+                test_result=test_result,
+                comment=comment
+            )
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 
