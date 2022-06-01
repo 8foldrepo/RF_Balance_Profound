@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication as QApp
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
+from termcolor import colored
 
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
@@ -33,6 +34,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
     # This will be the menu for changing parameters of the current task type
     edit_menu: AbstractEditMenu
     script_changed_signal = QtCore.pyqtSignal()
+    load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the script file
     treeWidget: QTreeWidget
     list_of_var_dicts: List[dict]
 
@@ -43,6 +45,11 @@ class ScriptEditor(MyQWidget, Ui_Form):
         self.setupUi(self)
         self.configure_signals()
         self.app = QApp.instance()
+        self.manager = None
+
+    def set_manager(self, manager):
+        self.manager = manager
+        self.load_script_signal.connect(self.manager.load_script)
 
     def set_tree_widget(self, tree_widget: QTreeWidget) -> None:
         """
@@ -588,6 +595,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 for arg in task_args.keys():
                     f.write(f'{arg} = "{task_args[arg]}"\n')
                 f.write("\n")
+
+        self.load_script_signal.emit(path)
 
 
 if __name__ == "__main__":

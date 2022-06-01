@@ -64,10 +64,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     command_signal = QtCore.pyqtSignal(str)
     abort_instantly_signal = QtCore.pyqtSignal()
-    load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the file
+    load_script_signal = QtCore.pyqtSignal(str)  # str is the path to the script file
     yes_signal = QtCore.pyqtSignal()
     no_signal = QtCore.pyqtSignal()
-    # list containing one str element matching the text of the scan subtab
+    # list containing one str element matching the text of the scan sub-tab
     set_scan_tab_signal = QtCore.pyqtSignal(list)
     num_tasks = 0  # the number of tasks in the current script. Used to calculate progress
     progress_bar_ready = True  # variables to prevent signals from refreshing UI elements too quickly
@@ -167,6 +167,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.ua_calibration_tab.set_ua_interface(self.manager.UAInterface)
         self.scan_tab_widget.set_manager(self.manager)
         self.results_tab.set_manager(self.manager)
+        self.script_editor.set_manager(self.manager)
 
     # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, var_dicts: list):
@@ -393,7 +394,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_changed = True
         self.run_button.setEnabled(False)
         self.run_button.setStyleSheet("background-color:red")
-        self.run_button.setText("RUN SCRIPT (Reload)")
+        self.run_button.setText("SAVE BEFORE RUNNING")
 
     def upon_script_reloaded(self):
         self.script_changed = False
