@@ -6,10 +6,12 @@ import random
 
 
 class TestOscilloscope(unittest.TestCase):
+    osc = None
+
     @classmethod
-    def setUpClass(self):
-        self.osc = KeysightOscilloscope()
-        self.osc.connect_hardware()
+    def setUpClass(cls):
+        cls.osc = KeysightOscilloscope()
+        cls.osc.connect_hardware()
 
     def test_config_loading(self):
         self.assertIsNotNone(self.osc.config)
@@ -134,8 +136,8 @@ class TestOscilloscope(unittest.TestCase):
                 self.assertIsInstance(voltage[j], float)
 
     @classmethod
-    def tearDownClass(self) -> None:
-        self.osc.wrap_up()
+    def tearDownClass(cls) -> None:
+        cls.osc.wrap_up()
 
 
 if __name__ == '__main__':
