@@ -1649,7 +1649,7 @@ class Manager(QThread):
                 "info")
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
-    def frequency_sweep(self, var_dict):
+    def frequency_sweep(self, var_dict)-> bool:
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
 
@@ -1692,11 +1692,14 @@ class Manager(QThread):
         else:
             self.Oscilloscope.set_averaging(averages)
 
-        coarse_freq_MHz_list, coarse_VSI_list, y_units_str = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz,
+        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz,
                                                                                       coarse_incr_MHz, burst_count,
                                                                                       channel=scope_channel,
                                                                                       storage_location=storage_location,
                                                                                       data_storage=data_storage)
+
+        if not cont:
+            return False
 
         # todo: enable this in a way that makes sense and add it to the output file
         # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
@@ -1708,7 +1711,7 @@ class Manager(QThread):
                                       y_units_str=y_units_str)
 
     def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, data_storage, storage_location,
-                            channel=1) -> Tuple[List[float], List[float], str]:
+                            channel=1) -> Tuple[List[float], List[float], str, bool]:
         """
         Performs a sweep between two frequencies, capturing the oscilloscope waveform (or rms thereof)
         at each frequency. Saves each waveform to a file if specified
@@ -1716,6 +1719,7 @@ class Manager(QThread):
             a list of floats representing the frequencies in MHz
             a list of floats representing the VSI or the RMS voltage of the waveform
             a string specifying the units of the latter
+            a boolean indicating whether to continue the script
         """
         list_of_VSIs = list()
         list_of_frequencies_MHz = list()
@@ -1728,8 +1732,11 @@ class Manager(QThread):
             vsi_sum = 0
 
             for i in range(bursts):
-                # populates times_s and voltages_v with set frequency
+                if self.abort_immediately_variable:
+                    # Stop the current method and any parent methods that called it
+                    return [], [], "", False
 
+                # populates times_s and voltages_v with set frequency
                 if self.config["Analysis"]["capture_rms_only"]:
                     vsi = self.Oscilloscope.get_rms()
                 else:
@@ -1739,7 +1746,7 @@ class Manager(QThread):
                         cont = self.sequence_pass_fail(action_type='Interrupt action',
                                                        error_detail='Oscilloscope capture failed')
                         if not cont:
-                            return [], [], ""
+                            return [], [], "", False
 
                     if 'entire waveform'.upper() in data_storage.upper():
                         self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
@@ -1760,7 +1767,7 @@ class Manager(QThread):
         self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
-        return list_of_frequencies_MHz, list_of_VSIs, y_units_str
+        return list_of_frequencies_MHz, list_of_VSIs, y_units_str, True
 
     def find_vsi(self, times_s, voltages_v):
         """
