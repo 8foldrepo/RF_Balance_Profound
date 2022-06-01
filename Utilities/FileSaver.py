@@ -141,41 +141,39 @@ class FileSaver:
                     f"E{metadata.element_number:02}")
             )
 
-        file = open(
-            os.path.join(path, f"{filename_stub}{metadata.element_number:02}_{metadata.axis}_"
-                               f"{metadata.waveform_number}.txt"), 'w+')
+        with open(os.path.join(path, f"{filename_stub}{metadata.element_number:02}_{metadata.axis}_"
+                            f"{metadata.waveform_number}.txt"), 'w+') as file:
+            file.write(f"UASerialNumber={self.test_data.serial_number}\n")
+            file.write("[File Format]\n")
+            file.write(f"Version={self.config['Software_Version']}\n")
+            file.write(f"# Arrays=1\n")
+            file.write("[Position]\n")
+            file.write(f"X={metadata.X}\n")
+            file.write(f"Theta={metadata.Theta}\n")
+            file.write(f"Calibration Frequency={metadata.frequency_MHz}MHz\n")
+            file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
+            file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+            file.write(f"# Cycles={metadata.num_cycles}\n")
+            file.write("[Array 0]\n")
+            file.write('Label=""\n')
+            file.write('X Data Type="Time (s)"\n')
+            file.write('Y Data Type="Voltage Waveform (V)"\n')
+            file.write("[Data]\n")
+            file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
+            file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
 
-        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
-        file.write("[File Format]\n")
-        file.write(f"Version={self.config['Software_Version']}\n")
-        file.write(f"# Arrays=1\n")
-        file.write("[Position]\n")
-        file.write(f"X={metadata.X}\n")
-        file.write(f"Theta={metadata.Theta}\n")
-        file.write(f"Calibration Frequency={metadata.frequency_MHz}MHz\n")
-        file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
-        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
-        file.write(f"# Cycles={metadata.num_cycles}\n")
-        file.write("[Array 0]\n")
-        file.write('Label=""\n')
-        file.write('X Data Type="Time (s)"\n')
-        file.write('Y Data Type="Voltage Waveform (V)"\n')
-        file.write("[Data]\n")
-        file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
-        file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
-
-        if len(times) != len(voltages):
-            # self.log(level="error", message=f"length of times = {len(times)} ; length of voltages = {len(voltages)}
-            # mismatch in store_find_element_waveform()")
-            print(
-                f"length of times = {len(times)} ; length of voltages = {len(voltages)} size mismatch in "
-                f"store_find_element_waveform()")
-            return
-        else:
-            for x in range(len(times)):
-                formatted_time = "{:.6e}".format(times[x])
-                formatted_voltage = "{:.6e}".format(voltages[x])
-                file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
+            if len(times) != len(voltages):
+                # self.log(level="error", message=f"length of times = {len(times)} ; length of voltages = {len(voltages)}
+                # mismatch in store_find_element_waveform()")
+                print(
+                    f"length of times = {len(times)} ; length of voltages = {len(voltages)} size mismatch in "
+                    f"store_find_element_waveform()")
+                return
+            else:
+                for x in range(len(times)):
+                    formatted_time = "{:.6e}".format(times[x])
+                    formatted_voltage = "{:.6e}".format(voltages[x])
+                    file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
     # the three lists are 2D, first col in sub list is time second is voltage
     # todo: add a more specific filename and match the format of the example files

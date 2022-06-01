@@ -11,6 +11,7 @@ class SimulatedAWG(AbstractAWG):
         super().__init__(config=config, device_key=device_key, parent=parent)
         self.state = dict()
         self.fields_setup()
+        self.set_to_defaults()
 
     def fields_setup(self):
         if self.config is None:
@@ -22,7 +23,7 @@ class SimulatedAWG(AbstractAWG):
             amplitude_V=self.config[self.device_key]["amplitude_V"],
             burst=self.config[self.device_key]["burst_on"],
             burst_cycles=self.config[self.device_key]["burst_cycles"],
-            ext_trig=self.config[self.device_key]["ext_trig"],
+            ext_trig=self.config[self.device_key]["trig_out"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
             offset_V=self.config[self.device_key]["offset_V"],
             output=False,
