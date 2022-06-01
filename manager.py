@@ -504,7 +504,7 @@ class Manager(QThread):
         takes the script file and parses the info within it into various lists and dictionaries so the program can
         run the script, requires a path argument to the script
         """
-        self.abort_immediately(log=False, save_prompt_var=False)  # we don't want the save prompt for this use of abort
+        self.abort_immediately(log=False)  # we don't want the save prompt for this use of abort
 
         # Send name of script to UI
         split_path = path.split("/")
@@ -540,7 +540,8 @@ class Manager(QThread):
                 if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main
                     # list
                     tasks.append(OrderedDict(task_variables))
-                    task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
+                    # empties out variable list for task since we're ready to move to the next set
+                    task_variables.clear()
                 if adding_elements_to_loop:  # detects if we're done with the element name block for the loop in script
                     adding_elements_to_loop = False  # we're done with the block so set the flag to false
                 continue  # move forward one line
@@ -604,7 +605,7 @@ class Manager(QThread):
         self.task_names = list()  # makes the task_names object into a list
         for i in range(len(self.task_execution_order)):
             if "Task type" in tasks[
-                self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
+                    self.task_execution_order[i][0] + 1].keys():  # tasks and task_execution_order are # offset by 1
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()  # makes the task_arguments object into a list
@@ -652,7 +653,8 @@ class Manager(QThread):
                 self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields in main window
                 return
 
-            if self.task_arguments is not None and self.task_names is not None and self.task_execution_order is not None:
+            if self.task_arguments is not None and self.task_names is not None and \
+                    self.task_execution_order is not None:
                 if 0 <= self.step_index < len(self.task_names):
                     inside_iteration = False
                     iteration_number = None
@@ -741,7 +743,7 @@ class Manager(QThread):
         #     [self.step_index][1]} from loop {self.loops[self.taskExecOrder[self.step_index][2]]}")
 
     @pyqtSlot()
-    def abort_after_step(self, log=True, save_prompt_var=False):
+    def abort_after_step(self, log=True):
         """Aborts script when current step is done running"""
 
         if self.retry_clicked_variable:
@@ -757,7 +759,7 @@ class Manager(QThread):
         self.task_index_signal.emit(0)
 
     @pyqtSlot()
-    def abort_immediately(self, log=True, save_prompt_var=False):
+    def abort_immediately(self, log=True):
         """
         Aborts script as soon as the current step checks abort_immediately var and returns or the step finishes.
         Any long-running step should check abort_immediately_var frequently and return false if the var is true
@@ -784,10 +786,10 @@ class Manager(QThread):
         except AbortException:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:  # if abort immediately is true
-                self.abort_immediately(save_prompt_var=True)
+                self.abort_immediately()
                 return False
             else:  # if abort immediately is not true
-                self.abort_after_step(save_prompt_var=True)
+                self.abort_after_step()
                 return False
         except RetryException:
             self.test_data.log_script(["", "User prompt", "Retry step", ""])
@@ -828,10 +830,10 @@ class Manager(QThread):
         except AbortException:
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:  # if abort immediately is true
-                self.abort_immediately(save_prompt_var=True)
+                self.abort_immediately()
                 return False
             else:  # if abort immediately is not true
-                self.abort_after_step(save_prompt_var=True)
+                self.abort_after_step()
                 return False
 
     def wait_for_answer(self):
@@ -2058,7 +2060,7 @@ class Manager(QThread):
             return
         else:
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
-            self.abort_after_step(save_prompt_var=True)
+            self.abort_after_step()
 
     def command_scan(self, command: str):
         """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
