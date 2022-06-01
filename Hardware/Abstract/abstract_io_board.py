@@ -22,7 +22,7 @@ class AbstractIOBoard(AbstractDevice):
         ...
 
     @abstractmethod
-    def set_tank_pump_on(self, on):
+    def set_tank_pump_on(self, on:bool, clockwise:bool):
         ...
 
     @abstractmethod

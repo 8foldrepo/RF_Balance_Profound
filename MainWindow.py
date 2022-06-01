@@ -457,10 +457,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
-        """Command the motors to go to the insertion point"""
-        self.temp_field.setText(
-            "%.1f" % (temp / 50)
-        )  # todo: remove /50 its for demo purposes
+        """Display the latest temperature reading in the UI"""
+        self.temp_field.setText("%.1f" % temp)
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
@@ -640,6 +638,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         else:
             serial_no = None
 
+        if len(ua_read_data) < 1:
+            ua_read_data.append("UA Not Connected")
+
         dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0],
                             access_level=self.access_level_combo.currentText(), config=self.config)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
@@ -710,7 +711,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.setText("The application has encountered a critical error")
         dlg.setInformativeText(f"{text}\n\nYou may launch this application with the command"
                                f" prompt to see more verbose information, you may also contact "
-                               f"the developers for assistance via email: rajiv@8foldmfg.com")
+                               f"the developers for assistance via email: isaiah@8foldmfg.com")
         dlg.setStandardButtons(QMessageBox.Ok)
         dlg.setIcon(QMessageBox.Critical)
         dlg.setWindowFlag(Qt.Qt.WindowType.WindowStaysOnTopHint)

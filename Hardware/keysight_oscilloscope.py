@@ -1,5 +1,5 @@
 import time as t
-from typing import Union
+from typing import Union, List, Tuple
 import pyvisa
 from termcolor import colored
 
@@ -101,7 +101,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             pass
         self.connected = False
         self.connected_signal.emit(False)
-        pass  # todo: is this pass needed? sonarlint says otherwise
 
     def set_to_defaults(self):
         self.reset()
@@ -170,7 +169,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def set_vertical_offset_V(self, channel: int, offset: float) -> bool:
         self.command(f":CHAN{channel}:OFFS {offset}")
-
         actual_offset_v = self.get_vertical_offset_V(channel=channel)
         if not error_acceptable(actual_offset_v, offset, 3, print_msg=False):
             self.log(level='error', message=f'Offset of {offset} V out of range, '
@@ -178,8 +176,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return False
 
     def get_horizontal_scale_sec(self) -> float:
-        self.command(f":TIM:SCAL?")
-        scale_s = float(self.inst.read())
+        scale_s = float(self.ask(f":TIM:SCAL?"))
         self.range_s = scale_s * 8
         return scale_s
 
@@ -230,7 +227,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def autoScale(self):
         self.command(":AUT")
 
-    def capture(self, channel):
+    def capture(self, channel) -> Tuple[List[float], List[float]]:
         # self.log(
         #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
@@ -254,14 +251,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
             if preamble is None:
                 self.log(level='error', message='preamble is none')
-                return
+                return [0.0],[0.0]
 
             while preamble[0] != "+4":
                 self.command(f"WAV:FORM ASC")
 
             # Interpret preamble
             if preamble[1] == "+0":
-                mode = "normal"  # todo: mode is not being used, why is this here?
+                mode = "normal"
             elif preamble[1] == "+1":
                 mode = "peak"
             elif preamble[1] == "+2":
@@ -311,7 +308,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return time_s, voltages_v
         else:
             self.log(f"Could not capture, {self.device_key} is not connected")
-            return [0], [0]
+            return [0.0], [0.0]
 
     # Waveform generator methods, unused, untested
     # def SetPeriod_s(self, channel, period_s):
@@ -325,8 +322,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
     #     self.command(Cycl)
 
     def command(self, command: str) -> None:
-        """Generic method that takes a command parameter and writes it to the oscilloscope, does not read the response,
-        handles device not being"""
+        """
+        Generic method that takes a command parameter and writes it to the oscilloscope, does not read the response,
+        handles device not being
+        """
         try:
             self.inst.write(command)
             t.sleep(.02)
@@ -340,13 +339,13 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return self.inst.read()
         except AttributeError as e:
             if str(e) == "'NoneType' object has no attribute 'read'":
-                self.log(f"Could not read reply, {self.device_key} Not connected")
+                self.log(level='error',message=f"Could not read reply, {self.device_key} Not connected")
 
     def ask(self, command: str) -> Union[str, None]:
         """generic method to send a command to the oscilloscope and return its response"""
         if not self.connected:
+            self.log(level='error',message='cannot ask, oscilloscope is not connected')
             return None
-
         reply = self.inst.query(command)
         t.sleep(.02)
         return reply
@@ -359,7 +358,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return str.split(",")[2]
 
     def get_rms(self) -> float:
-
         """asks the oscilloscope what the voltage root mean squared of the current window is and returns it as a
         float"""
         rms = self.ask(":MEASure:VRMS?")

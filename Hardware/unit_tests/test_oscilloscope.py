@@ -98,7 +98,7 @@ class TestOscilloscope(unittest.TestCase):
         print(colored("running vertical range test", 'cyan'))
         range_V = random.uniform(.01, 50)
         self.osc.set_vertical_range_V(channel=1, volts=range_V)
-        self.assertAlmostEqual(self.osc.get_vertical_range_V(channel=1), range_V,1)
+        self.assertAlmostEqual(self.osc.get_vertical_range_V(channel=1), range_V,0)
         self.assertAlmostEqual(self.osc.range_mV, range_V * 1000,1)
     
     def test_vertical_offset(self):

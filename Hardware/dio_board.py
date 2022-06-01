@@ -4,15 +4,13 @@ import time as t
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
 from nidaqmx.constants import LineGrouping
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
 from definitions import WaterLevel
 
-"""Class for interfacing with an National instruments usb-6009 digital IO board"""
-
 
 class DIOBoard(AbstractIOBoard):
+    """Class for interfacing with an National instruments usb-6009 digital IO board"""
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(WaterLevel)
 
@@ -102,7 +100,7 @@ class DIOBoard(AbstractIOBoard):
         if water_level == WaterLevel.above_level or WaterLevel.level:
             self.log("Draining tank, please wait...")
             self.draining_signal.emit(WaterLevel.below_level)
-            self.set_tank_pump_on(on=True, clockwise=False)
+            self.set_tank_pump_on(on=True, clockwise=True)
             start_time = t.time()
 
             while (
@@ -130,7 +128,7 @@ class DIOBoard(AbstractIOBoard):
         elif water_level == WaterLevel.above_level:
             self.log("Draining tank, please wait...")
             self.draining_signal.emit(WaterLevel.level)
-            self.set_tank_pump_on(on=True, clockwise=False)
+            self.set_tank_pump_on(on=True, clockwise=True)
             start_time = t.time()
 
             while (
@@ -180,6 +178,10 @@ class DIOBoard(AbstractIOBoard):
             task.write([not on, clockwise], auto_start=True)
 
     def get_ua_pump_reading(self) -> bool:
+        if self.config['Debugging']['simulate_ua_pump_on']:
+            self.pump_reading_signal.emit(True)
+            return True
+
         if self.simulate_sensors:
             self.pump_on = random.choice([True, False])
             self.pump_reading_signal.emit(self.pump_on)

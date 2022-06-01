@@ -386,9 +386,9 @@ class GalilMotorController(AbstractMotorController):
         current_coordinate_mm = self.coords_mm[axis_index]
 
         if direction < 0:
-            go_to_coord_mm = int((current_coordinate_mm - abs(self.increment_ray[axis_index])))
+            go_to_coord_mm = float((current_coordinate_mm - abs(self.increment_ray[axis_index])))
         else:
-            go_to_coord_mm = int((current_coordinate_mm + abs(self.increment_ray[axis_index])))
+            go_to_coord_mm = float((current_coordinate_mm + abs(self.increment_ray[axis_index])))
 
         self.go_to_position([axis], [go_to_coord_mm], enable_ui=True)
 

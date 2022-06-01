@@ -1,8 +1,5 @@
 import time as t
-from unittest import mock
-
 from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.Simulated.simulated_relay import SimulatedRelay
 from definitions import WaterLevel
@@ -29,7 +26,7 @@ class SimulatedIOBoard(AbstractIOBoard):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-    def set_pump_on(self, on):
+    def set_tank_pump_on(self, on, clockwise):
         self.pump_on = on
 
     def get_ua_pump_reading(self) -> bool:

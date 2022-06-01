@@ -29,6 +29,7 @@ class KeysightAWG(AbstractAWG):
             self.config = load_configuration()
 
     def set_to_defaults(self):
+        self.command("*RST")
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],
@@ -149,9 +150,9 @@ class KeysightAWG(AbstractAWG):
         """Sets the peak to peak amplitude of the waveform in volts"""
         self.command(f"VOLT {amplitude}")
         actual_amplitude_v = self.get_amplitude_v()
-        if error_acceptable(actual_amplitude_v, amplitude, 2, print_msg=False):
+        if error_acceptable(actual_amplitude_v, amplitude, 6, print_msg=False):
             self.log(level="error",
-                     message=f"Amplitude {amplitude}V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
+                     message=f"Amplitude {amplitude} V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
             return False
         return True
 

@@ -91,7 +91,7 @@ class UAInterface(AbstractUAInterface):
 
         if status == 1:
             self.cal_data_signal.emit([], -1)
-            self.log("No ua found...")
+            self.log(level = 'error', message="No ua found...")
             return [], -1
 
         calibration_string_pre_list2 = calibration_string_pre_list[5]
