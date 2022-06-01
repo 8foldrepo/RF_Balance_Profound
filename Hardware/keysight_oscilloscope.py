@@ -73,6 +73,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
                             feedback = f"retry:{retries} Oscilloscope appears to be disconnected, " \
                                        f"retrying, otherwise check connection and restart it"
                             # Retry
+                        elif 'Timeout' in str(e):
+                            feedback = f"retry:{retries} Communication with the oscilloscope timed out, " \
+                                       f"try restarting it"
+                            # Retry
                         else:
                             feedback = f"retry:{retries} Unknown error: {e}"
                             # Retry

@@ -7,15 +7,12 @@ import time as t
 import traceback
 from collections import OrderedDict
 from typing import List, Tuple
-
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
-from termcolor import colored
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -336,17 +333,21 @@ class Manager(QThread):
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
         if info.oscilloscope_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
         if info.awg_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
         if info.forward_power_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
         info.thermocouple_sn = self.thermocouple.get_serial_number()
         info.rf_balance_sn = self.Balance.get_serial_number()
         if info.rf_balance_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "Balance serial number not found")
         self.system_info_signal.emit(info)
 
@@ -453,7 +454,7 @@ class Manager(QThread):
             if self.thermocouple.connected:
                 self.thermocouple.get_reading()
 
-    def capture_scope(self, channel: int=1, plot: bool=True):
+    def capture_scope(self, channel: int = 1, plot: bool = True):
         """
         captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
         them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true
@@ -723,7 +724,7 @@ class Manager(QThread):
         elif "FUNCTION GENERATOR" in name.upper():
             self.configure_function_generator(args)
         elif "AUTOSET TIMEBASE" in name.upper():
-            self.autoset_timebase(args)
+            self.autoset_timebase()
         elif "MOVE SYSTEM" in name.upper():
             self.move_system(args)
         elif "SELECT CHANNEL" in name.upper() or "SELECT UA CHANNEL" in name.upper():
@@ -1160,9 +1161,7 @@ class Manager(QThread):
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
-        # Set timebase
-        autoset_var_dict = dict()
-        self.autoset_timebase(autoset_var_dict)
+        self.autoset_timebase()
 
         if element_position_test:
             self.Motors.go_to_position(['R'], [-180], enable_ui=False)
@@ -1282,9 +1281,9 @@ class Manager(QThread):
 
                 if 'entire waveform'.upper() in data_storage.upper():
                     self.__save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                                  voltages_v=voltages_v, storage_location=storage_location,
-                                                  filename_stub=filename_stub, x_units_str='Time (s)',
-                                                  y_units_str=y_units_str)
+                                                    voltages_v=voltages_v, storage_location=storage_location,
+                                                    filename_stub=filename_stub, x_units_str='Time (s)',
+                                                    y_units_str=y_units_str)
 
                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1297,7 +1296,7 @@ class Manager(QThread):
 
             positions.append(position)
             vsi_values.append(vsi)
-            self.profile_plot_signal.emit(positions, vsi_values, axis_label)
+            self.__refresh_profile_plot(positions, vsi_values, axis_label)
 
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
@@ -1327,8 +1326,8 @@ class Manager(QThread):
 
         if 'Do not store'.upper() != data_storage.upper():
             self.__save_scan_profile(positions=positions, vsi_values=vsi_values,
-                                   axis=axis, storage_location=storage_location, filename_stub=filename_stub,
-                                   x_units_str=axis_label, y_units_str=y_units_str)
+                                     axis=axis, storage_location=storage_location, filename_stub=filename_stub,
+                                     x_units_str=axis_label, y_units_str=y_units_str)
 
         # ensure finished profile plot is plotted on screen
         t.sleep(.05)
@@ -1356,7 +1355,7 @@ class Manager(QThread):
         return True
 
     def __save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub,
-                                 x_units_str, y_units_str):
+                                   x_units_str, y_units_str):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1378,7 +1377,8 @@ class Manager(QThread):
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
                                        storage_location=storage_location, filename_stub=filename_stub)
 
-    def __save_scan_profile(self, axis, positions, vsi_values, storage_location, filename_stub, x_units_str, y_units_str):
+    def __save_scan_profile(self, axis, positions, vsi_values, storage_location, filename_stub, x_units_str,
+                            y_units_str):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1421,6 +1421,7 @@ class Manager(QThread):
                                              storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
+
     def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         try:
@@ -1663,11 +1664,11 @@ class Manager(QThread):
             self.element = self.element_str_to_int(var_dict["Element"])
         except KeyError:
             self.log(
-                "No element defined in variable list for task 'select ua channel', previous self.element value preserved",
-                "info")
+                "No element defined in variable list for task 'select ua channel', "
+                "previous self.element value preserved info")
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
-    def frequency_sweep(self, var_dict)-> bool:
+    def frequency_sweep(self, var_dict) -> bool:
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
 
@@ -1710,23 +1711,45 @@ class Manager(QThread):
         else:
             self.Oscilloscope.set_averaging(averages)
 
-        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz,
-                                                                                      coarse_incr_MHz, burst_count,
-                                                                                      channel=scope_channel,
-                                                                                      storage_location=storage_location,
-                                                                                      data_storage=data_storage)
+        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(start_freq_MHz,
+                                                                                            end_freq_MHz,
+                                                                                            coarse_incr_MHz,
+                                                                                            burst_count,
+                                                                                            channel=scope_channel,
+                                                                                            storage_location=
+                                                                                            storage_location,
+                                                                                            data_storage=
+                                                                                            data_storage)
 
         if not cont:
             return False
 
-        # todo: enable this in a way that makes sense and add it to the output file
-        # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
-        #                                                             burst_count, scope_channel = scope_channel)
-
         if 'Do not store'.upper() != data_storage.upper():
             self.__save_frequency_sweep(frequencies=coarse_freq_MHz_list, vsi_values=coarse_VSI_list,
-                                      storage_location=storage_location, filename_stub='FrequencySweep',
-                                      y_units_str=y_units_str)
+                                        storage_location=storage_location, filename_stub='CoarseFrequencySweep',
+                                        y_units_str=y_units_str)
+
+        # todo: enable this in a way that makes sense and add it to the output file
+        max_coarse_VSI_index = max(range(len(coarse_VSI_list)), key=coarse_VSI_list.__getitem__)
+
+        fine_start_freq_MHz = max(coarse_freq_MHz_list[max_coarse_VSI_index]-1, 0)
+        fine_stop_freq_MHz = min(coarse_freq_MHz_list[max_coarse_VSI_index]+1, len(coarse_freq_MHz_list)-1)
+
+        fine_freq_MHz_list, fine_VSI_list, y_units_str, cont = self.run_frequency_sweep(fine_start_freq_MHz,
+                                                                                        fine_stop_freq_MHz,
+                                                                                        fine_incr_MHz,
+                                                                                        burst_count,
+                                                                                        channel=scope_channel,
+                                                                                        data_storage=data_storage,
+                                                                                        storage_location=
+                                                                                        storage_location)
+        if not cont:
+            return False
+
+        if 'Do not store'.upper() != data_storage.upper():
+            self.__save_frequency_sweep(frequencies=fine_freq_MHz_list, vsi_values=fine_VSI_list,
+                                        storage_location=storage_location, filename_stub='FineFrequencySweep',
+                                        y_units_str=y_units_str)
 
     def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, data_storage, storage_location,
                             channel=1) -> Tuple[List[float], List[float], str, bool]:
@@ -1768,9 +1791,9 @@ class Manager(QThread):
 
                     if 'entire waveform'.upper() in data_storage.upper():
                         self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
-                                                      voltages_v=voltages_v, storage_location=storage_location,
-                                                      filename_stub="FrequencySweep", x_units_str='Time (s)',
-                                                      y_units_str=y_units_str)
+                                                        voltages_v=voltages_v, storage_location=storage_location,
+                                                        filename_stub="FrequencySweep", x_units_str='Time (s)',
+                                                        y_units_str=y_units_str)
 
                     vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1779,10 +1802,8 @@ class Manager(QThread):
 
             list_of_frequencies_MHz.append(x)
             list_of_VSIs.append(vsi_avg)
-
-        assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
-
-        self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
+            assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
+            self.__refresh_profile_plot(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
         return list_of_frequencies_MHz, list_of_VSIs, y_units_str, True

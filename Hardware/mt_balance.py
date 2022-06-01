@@ -218,6 +218,8 @@ class MT_balance(AbstractBalance):
         if not self.connected:
             return None
 
+        self.stop_continuous_reading()
+
         self.ser.write(b"\nI4\n")
 
         start_time = t.time()
