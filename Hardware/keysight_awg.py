@@ -150,9 +150,9 @@ class KeysightAWG(AbstractAWG):
         """Sets the peak to peak amplitude of the waveform in volts"""
         self.command(f"VOLT {amplitude}")
         actual_amplitude_v = self.get_amplitude_v()
-        if error_acceptable(actual_amplitude_v, amplitude, 2, print_msg=False):
+        if error_acceptable(actual_amplitude_v, amplitude, 6, print_msg=False):
             self.log(level="error",
-                     message=f"Amplitude {amplitude}V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
+                     message=f"Amplitude {amplitude} V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
             return False
         return True
 

@@ -17,7 +17,7 @@ Select "use the following IP address".
 
 set IP address to 192.168.3.1 and the subnet to 255.255.255.0
 
-Run the code. the UA interface indicator should turn green.
+Run main.py. the UA interface indicator should turn green.
 If it does try changing the address to 192.168.3.3
 
 

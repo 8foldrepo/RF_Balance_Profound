@@ -1,8 +1,6 @@
 from typing import Tuple
-
 import nidaqmx
 from PyQt5 import QtCore
-
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
@@ -59,6 +57,10 @@ class NIThermocouple(AbstractSensor):
     # todo: implement
     def get_serial_number(self) -> str:
         """Method retrieves serial number from device and returns it as a string value"""
+        pass
+
+    def wrap_up(self):
+        self.disconnect_hardware()
         pass
 
 

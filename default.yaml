@@ -23,6 +23,7 @@ Debugging:
   simulate_motors: true
   simulate_oscilloscope: true
   simulate_oscilloscope_error: false
+  simulate_ua_pump_on: true
   simulate_power_meters: true
   simulate_sensors: true
   simulate_thermocouple: true

@@ -1663,7 +1663,7 @@ class Manager(QThread):
         else:
             frequency_range = FrequencyRange.low_frequency
         start_freq_MHz = float(var_dict["Start frequency (MHz)"])
-        end_freq_MHz = float(var_dict["Start frequency (MHz)"])
+        end_freq_MHz = float(var_dict["End frequency (MHz)"])
         coarse_incr_MHz = float(var_dict["Coarse increment (MHz)"])
         fine_incr_MHz = float(var_dict["Fine increment (MHz)"])
         burst_count = int(var_dict["Burst count"])

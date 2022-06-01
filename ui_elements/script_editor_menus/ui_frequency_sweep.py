@@ -43,7 +43,7 @@ class FrequencySweep(MyQWidget, Ui_Form):
         var_dict["Task type"] = "Frequency sweep"
         var_dict["Frequency range"] = self.freq_range_combo.currentText()
         var_dict["Start frequency (MHz)"] = str(self.start_freq_spin.value())
-        var_dict["End Frequency (MHz)"] = str(self.end_freq_doublespin.value())
+        var_dict["End frequency (MHz)"] = str(self.end_freq_doublespin.value())
         var_dict["Coarse increment (MHz)"] = str(self.coarse_inc_doublespin.value())
         var_dict["Fine increment (MHz)"] = str(self.fine_incr_doublespin.value())
         var_dict["Burst count"] = str(self.burst_count_spin.value())

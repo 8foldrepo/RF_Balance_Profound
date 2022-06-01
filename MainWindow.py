@@ -457,10 +457,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(float)
     def update_temp_reading(self, temp):
-        """Command the motors to go to the insertion point"""
-        self.temp_field.setText(
-            "%.1f" % (temp / 50)
-        )  # todo: remove /50 its for demo purposes
+        """Display the latest temperature reading in the UI"""
+        self.temp_field.setText("%.1f" % temp)
 
     @pyqtSlot(object, object, float)
     def plot(self, x, y, refresh_rate):
@@ -639,6 +637,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             serial_no = ua_read_data[1]
         else:
             serial_no = None
+
+        if len(ua_read_data) < 1:
+            ua_read_data.append("UA Not Connected")
 
         dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0],
                             access_level=self.access_level_combo.currentText(), config=self.config)

@@ -1,15 +1,12 @@
 import time as t
-
 from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.Simulated.simulated_relay import SimulatedRelay
 from definitions import WaterLevel
 
-"""Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware"""
-
 
 class SimulatedIOBoard(AbstractIOBoard):
+    """Class defining the functions of a WTF digital IO board. It can be instantiated with simulated or real hardware"""
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(WaterLevel)
     filling_signal = pyqtSignal()
@@ -29,7 +26,7 @@ class SimulatedIOBoard(AbstractIOBoard):
     def get_active_relay_channel(self) -> int:
         return self.active_channel
 
-    def set_pump_on(self, on):
+    def set_tank_pump_on(self, on, clockwise):
         self.pump_on = on
 
     def get_ua_pump_reading(self) -> bool:
@@ -61,9 +58,8 @@ class SimulatedIOBoard(AbstractIOBoard):
                 return True
         return False
 
-    """Return the state of the water level sensor as a WaterLevel Enum"""
-
     def get_water_level(self) -> WaterLevel:
+        """Return the state of the water level sensor as a WaterLevel Enum"""
         self.water_level_reading_signal.emit(self.water_level)
         return self.water_level
 
