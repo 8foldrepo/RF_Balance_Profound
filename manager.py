@@ -120,9 +120,10 @@ class Manager(QThread):
 
     # Global variables section
 
-    def __init__(self, system_info, parent, config: dict):
+    def __init__(self, system_info, parent, config: dict, access_level='Operator'):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.access_level=access_level
         self.error_message = None
         self.thread_cont_mutex = None
         self.critical_error_flag = False
@@ -134,7 +135,6 @@ class Manager(QThread):
         self.oscilloscope_channel = 1
         self.last_rfb_update_time = t.time()
         self.last_profile_update_time = t.time()
-        self.access_level = "Operator"  # Defaults to operator access
         self.warn = str(logging.WARNING)  # sets variable for shorter typing
         self.error = str(logging.ERROR)  # sets variable for shorter typing
         # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
@@ -218,12 +218,12 @@ class Manager(QThread):
         use the simulated class instead.
         """
 
-        self.access_level = 'Operator'
         if hasattr(self.parent, 'access_level_combo'):
             if isinstance(self.parent.access_level_combo, QComboBox):
                 self.access_level = self.parent.access_level_combo.currentText()
 
         simulate_access = self.access_level.upper() != "Operator".upper()
+
 
         if self.config["Debugging"]["simulate_motors"] and simulate_access:
             from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
@@ -266,7 +266,6 @@ class Manager(QThread):
 
         if self.config["Debugging"]["simulate_power_meters"] and simulate_access:
             from Hardware.Simulated.simulated_power_meter import PowerMeter
-
             self.Forward_Power_Meter = PowerMeter(config=self.config, device_key="Forward_Power_Meter")
             self.Reflected_Power_Meter = PowerMeter(config=self.config, device_key="Reflected_Power_Meter")
         else:
@@ -1331,7 +1330,9 @@ class Manager(QThread):
         # ensure finished profile plot is plotted on screen
         t.sleep(.05)
         self.refresh_profile_plot(positions, vsi_values, axis_label)
-        self.app.processEvents()
+
+        if self.app is not None:
+            self.app.processEvents()
 
         return True
 
@@ -1347,7 +1348,9 @@ class Manager(QThread):
         if t.time() - self.last_profile_update_time > profile_cooldown_s:
             self.profile_plot_signal.emit(x_data, y_data, y_label)
             self.last_profile_update_time = t.time()
-        self.app.processEvents()
+
+        if self.app is not None:
+            self.app.processEvents()
         return True
 
     def save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub):
@@ -1983,7 +1986,9 @@ class Manager(QThread):
             self.rfb_data = self.rfb_logger.rfb_data
             self.update_rfb_tab_signal.emit()
             self.last_rfb_update_time = t.time()
-        self.app.processEvents()
+
+        if self.app is not None:
+            self.app.processEvents()
         return True
 
     @pyqtSlot(str)
