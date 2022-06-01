@@ -45,9 +45,12 @@ class FileSaver:
         self.copy_system_info()
 
     def create_results_folder(self):
-        self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
+        if self.test_data.serial_number is None or self.test_data.serial_number == "":
+            self.folder_name = "No_Serial_Provided-" + self.test_data.test_date_time
+        else:
+            self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)
-        # Retrieve the path of the results directory from the yaml file and create it if it does not exist
+        # Retrieve the path of the "results" directory from the yaml file and create it if it does not exist
         self.results_dir = check_directory(results_path)
 
     def create_subfolders(self):
@@ -79,7 +82,7 @@ class FileSaver:
         destination_path = os.path.join(self.log_files_dir, "SystemHardware.log")
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
-    def save_test_results_summary_and_log(self, test_data: TestData):
+    def save_test_results_summary_and_log(self, test_data: TestData) -> None:
         """Save the test data (shared with the manager) to the "results" folder in the form of a results summary"""
         if not test_data:  # if dictionary is empty return
             self.log(level="error", message="No results to save")
@@ -96,7 +99,7 @@ class FileSaver:
 
     # turn a 2d list into a .log file (a text file with a different extension
 
-    def save_log_file(self, log_table=None):
+    def save_log_file(self, log_table: list = None):
         """saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided"""
         if log_table is None:
             log_table = self.test_data.script_log

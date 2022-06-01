@@ -14,6 +14,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
+from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -338,7 +339,7 @@ class Manager(QThread):
             self.sequence_pass_fail('Interrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
         if info.awg_sn is None:
-            self.sequence_pass_fail('Interrrupt action', "AWG serial number not found")
+            self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
         if info.forward_power_sn is None:
             self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
@@ -452,7 +453,7 @@ class Manager(QThread):
             if self.thermocouple.connected:
                 self.thermocouple.get_reading()
 
-    def capture_scope(self, channel=1, plot=True):
+    def capture_scope(self, channel: int=1, plot: bool=True):
         """
         captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
         them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true
@@ -465,7 +466,7 @@ class Manager(QThread):
         except pyvisa.errors.InvalidSession:
             self.log(level='error', message="Could not capture, oscilloscope resource closed")
         except TypeError:
-            self.log(level='error', message="Cold not capture")
+            self.log(level='error', message="Could not capture")
         return [], []
 
     def plot_scope(self, time, voltage):
@@ -1420,13 +1421,30 @@ class Manager(QThread):
                                              storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
-    def save_results(self, var_dict):
+    def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
-        save_summary_file = bool(distutils.util.strtobool(var_dict["Save summary file"]))
-        write_uac_calibration = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
-        prompt_for_calibration_write = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
+        try:
+            save_summary_file: bool = bool(distutils.util.strtobool(var_dict["Save summary file"]))
+        except KeyError:
+            self.log(level='warning', message="no 'Save summary file' specified in script, defaulting to false")
+            save_summary_file = False
+        try:
+            write_uac_calibration: bool = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
+        except KeyError:
+            self.log(level='warning', message="no 'Write UA Calibration' specified in script, defaulting to false")
+            write_uac_calibration = False
+        try:
+            prompt_for_calibration_write: bool = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
+        except KeyError:
+            self.log(level='warning', message="no 'PromptForCalWrite' specified in script, defaulting to false")
+            prompt_for_calibration_write = False
 
-        self.test_data.software_version = self.config["Software_Version"]
+        try:
+            self.test_data.software_version = self.config["Software_Version"]
+        except KeyError:
+            self.log("'Software_Version' value not found in config file, defaulting to version 1.0")
+            self.test_data.software_version = "1.0"
+
         self.test_data.calculate_angle_average()
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
@@ -1480,8 +1498,8 @@ class Manager(QThread):
         from the passed variable dictionary.
         """
         mVpp: int = int(var_dict["Amplitude (mVpp)"])
-        mode = var_dict["Mode"]
-        output = bool(var_dict["Enable output"])
+        mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
+        output: bool = bool(var_dict["Enable output"])
         frequency_options: str = var_dict["Set frequency options"]
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
@@ -1529,7 +1547,7 @@ class Manager(QThread):
         self.Oscilloscope.set_horizontal_scale_sec(timebase_us / 1000000)
         self.Oscilloscope.set_horizontal_offset_sec(delay_us / 1000000)
 
-    def autoset_timebase(self, var_dict):
+    def autoset_timebase(self):
         self.Oscilloscope.autoset_oscilloscope_timebase()
 
     def home_system(self, var_dict, show_prompt=False) -> bool:

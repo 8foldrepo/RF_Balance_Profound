@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
@@ -5,7 +6,7 @@ from Utilities.load_config import *
 
 
 class SimulatedAWG(AbstractAWG):
-    output_signal = pyqtSignal(bool)
+    output_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, config=None, device_key="Keysight_AWG", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
@@ -72,7 +73,7 @@ class SimulatedAWG(AbstractAWG):
     def wait_til_complete(self):
         pass
 
-    def set_output(self, on: bool):
+    def set_output(self, on: bool) -> None:
         """Turns the output on or off"""
         self.state["on"] = on
         self.output_signal.emit(on)
