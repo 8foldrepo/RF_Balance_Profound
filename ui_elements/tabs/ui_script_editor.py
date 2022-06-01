@@ -556,12 +556,8 @@ class ScriptEditor(MyQWidget, Ui_Form):
             parent=self, caption="Save script", directory=ROOT_DIR + "/Scripts", filter="Script files (*.wtf)"
         )[0]
 
-        # INFO: path = C:/Users/[user]/Documents/GitHub/RF_Balance_Profound/Scripts/[script_name].wtf
-
         if path == "":
             return
-
-        new_file_name = path.split('/')[-1]
 
         # remove existing header(s) if there is one
         for i in range(len(self.list_of_var_dicts)):
