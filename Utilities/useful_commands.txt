@@ -4,6 +4,7 @@
 cd widget_library
 
 python -m PyQt5.uic.pyuic -x [FILENAME].ui -o [FILENAME].py
+python -m PyQt5.uic.pyuic -x widget_scan.ui -o widget_scan.py
 
 #if image paths don't work, remove the '../' from their path
 

@@ -1148,9 +1148,6 @@ class Manager(QThread):
         self.log(
             f"Finding element {self.element}, near coordinate x = {element_x_coordinate}, r = {element_r_coordinate}")
 
-        # Configure hardware
-        self.select_ua_channel(var_dict={"Element": self.element})
-
         # Configure function generator
         awg_var_dict = dict()
         awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
@@ -1226,11 +1223,11 @@ class Manager(QThread):
             averages:
             filename_stub:
 
-        Returns:
+        Returns: A boolean indicating whether to continue the script
         """
 
         self.element = element
-        # todo: call select element
+        self.select_ua_channel(var_dict={"Element": self.element})
 
         self.oscilloscope_channel = scope_channel
 
@@ -1304,8 +1301,7 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
-        #  todo: uncomment line below in final version
-        #  self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
+        self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {units_str}")
 
         if update_element_position:
             if axis == "X":
@@ -1430,9 +1426,11 @@ class Manager(QThread):
             self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
 
     def prompt_user_for_action(self, var_dict: dict) -> None:
-        """Waits for the user select continue, abort or retry via sending a signal
+        """
+        Waits for the user select continue, abort or retry via sending a signal
         to the main window. It extracts the Prompt type and message from the passed
-        dict"""
+        dict
+        """
         prompt_type = var_dict["Prompt type"]
         if "Other".upper() in prompt_type.upper():
             try:
@@ -1466,7 +1464,7 @@ class Manager(QThread):
             frequency_mhz: float = float(var_dict["Frequency (MHz)"])
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
-            return self.abort_after_step()  # QUESTION: should this be abort_immediately()?
+            return self.abort_immediately()
 
         self.AWG.set_output(output)
         self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
@@ -1485,7 +1483,6 @@ class Manager(QThread):
 
     def configure_oscilloscope_channels(self, var_dict):
         c1_enabled = bool(var_dict["Channel 1 Enabled"])
-        # todo: implement capture from channel 2 (stretch), must also enable the menu options in QT designer
         c2_enabled = bool(var_dict["Channel 2 Enabled"])
         g1_mV_div = float(var_dict["Gain 1"])
         g2_mV_div = float(var_dict["Gain 2"])
@@ -1515,11 +1512,9 @@ class Manager(QThread):
 
         successful_go_home = False
         if axis_to_home == "All Axes":
-            if self.config["debugging"]["drain_before_retract"]:
-                self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
-                cont = self.cont_if_cont_clicked()
-                if not cont:
-                    return False
+            cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
+            if not cont:
+                return False
             successful_go_home = self.Motors.go_home(enable_ui=False)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
@@ -1531,9 +1526,7 @@ class Manager(QThread):
             if not cont:
                 return False
         elif axis_to_home == 'X':
-            if self.config["debugging"]["drain_before_retract"]:
-                self.retracting_ua_warning_signal.emit()  # launch the retracting UA in the x direction warning box
-            cont = self.cont_if_cont_clicked()
+            cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
             if not cont:
                 return False
             successful_go_home = self.Motors.go_home_1d("X", enable_ui=False)
@@ -1560,11 +1553,19 @@ class Manager(QThread):
 
         return True
 
-    def retract_ua_warning(self):
+    def retract_ua_warning(self) -> bool:
         """
         Warn the user that the UA is being retracted in x
+        returns: a boolean indicating whether or not to continue the script
         """
-        self.retracting_ua_warning_signal.emit()
+        if self.config["debugging"]["drain_before_retract"]:
+            self.retracting_ua_warning_signal.emit()
+
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                return False
+
+        return True
 
     def move_system(self, var_dict):
         """
@@ -1626,8 +1627,13 @@ class Manager(QThread):
 
         # todo: look into unused variables and see if we can/should use them in this method, if not, remove them
         # WARNING: the FrequencyRange enum does not know how to handle the passed value below
+
         # frequency_range = FrequencyRange[var_dict["Frequency Range"].lower().replace(" ", "_")]
-        frequency_range = var_dict["Frequency range"].lower().replace(" ", "_")
+
+        if 'high'.upper() in var_dict["Frequency range"].upper():
+            frequency_range = FrequencyRange.high_frequency
+        else:
+            frequency_range = FrequencyRange.low_frequency
         start_freq_MHz = float(var_dict["Start frequency (MHz)"])
         end_freq_MHz = float(var_dict["Start frequency (MHz)"])
         coarse_incr_MHz = float(var_dict["Coarse increment (MHz)"])
@@ -1825,7 +1831,7 @@ class Manager(QThread):
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
-        # Begin multi-threaded capture from the power meters and the balance and cycle the awg on and off
+        # Begin multithreaded capture from the power meters and the balance and cycle the awg on and off
         self.__begin_rfb_logger_thread(self.rfb_data)
 
         start_time = t.time()
@@ -1863,7 +1869,6 @@ class Manager(QThread):
 
             current_cycle = (current_cycle + 1)  # we just passed a cycle at this point in the code
 
-        start_time = t.time()  # todo: variable is unused here, should this be self.start_time?
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
@@ -1944,10 +1949,8 @@ class Manager(QThread):
         calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
         , relays this data to the main window to open a GUI dialog to save calibration data.
         """
-        # todo: check that a dialog appears
         self.write_cal_data_to_ua_signal.emit(calibration_data)
 
-    # todo: test that this turns off and disconnects all devices
     def wrap_up(self) -> None:
         """
         This method disconnects all devices from the program when called,
@@ -2024,8 +2027,6 @@ class Manager(QThread):
                 self.prompt_for_retry(error_detail)
         return True
 
-        # todo: make sure that ignoring errors and continuing is reserved for engineers and admin_pass_field
-
     def prompt_for_retry(self, error_detail: str) -> bool:
         self.abort_clicked_variable = False
         self.user_prompt_signal.emit(F"{error_detail}\n\n"
@@ -2059,7 +2060,6 @@ class Manager(QThread):
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
             self.abort_after_step(save_prompt_var=True)
 
-    # todo: add an element spinbox to the scan setup tab
     def command_scan(self, command: str):
         """Activated by the scan setup tab when start scan is clicked. Extracts parameters and initiates a 1D scan"""
         # self.test_data.set_blank_values()
@@ -2094,7 +2094,9 @@ class Manager(QThread):
                 ref_pos = element_x_coordinate
             else:
                 ref_pos = -90
+
         end_pos = command_ray[5]
+        go_to_peak = 'peak'.upper() in end_pos.upper()
         comments = command_ray[6]
         filename_stub = command_ray[7]
         data_directory = command_ray[8]
@@ -2112,14 +2114,12 @@ class Manager(QThread):
         # self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
-        self.test_data.serial_number = " " + str(serial_number)
+        self.test_data.serial_number = str(serial_number)
         self.file_saver = FileSaver(self.config)
-        # TODO: Undocumented
         self.file_saver.create_folders(self.test_data)
         self.test_data.test_comment = comments
-        # todo: implement end position
 
-        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, data_directory,
+        self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, go_to_peak,
                        data_directory, False, source_channel, acquisition_type, averages, filename_stub)
 
         self.enable_ui_signal.emit(True)

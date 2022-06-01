@@ -38,6 +38,7 @@ class FileSaver:
             self.config = load_configuration()
 
     def create_folders(self, test_data):
+        """Creates the folder structure for a UA test (defaults to the results directory in the config)"""
         self.test_data = test_data
         self.create_results_folder()
         self.create_subfolders()
