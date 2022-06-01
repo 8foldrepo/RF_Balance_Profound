@@ -1504,7 +1504,6 @@ class Manager(QThread):
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
             frequency_mhz = self.test_data.low_frequency_MHz
-            print(colored(str(frequency_mhz), 'yellow'))
         elif frequency_options == "Common high frequency" or frequency_options == 'Element pk high frequency':
             frequency_mhz = self.test_data.high_frequency_MHz
         elif frequency_options == "From config cluster":

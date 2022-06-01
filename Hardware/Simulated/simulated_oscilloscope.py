@@ -57,7 +57,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         return self.range_s
 
     def set_horizontal_scale_sec(self, seconds: float) -> None:
-        print(colored(f'setting horizontal scale to {8 * seconds}', 'cyan'))
         self.range_s = 8 * seconds
 
     def get_horizontal_offset_sec(self) -> float:
