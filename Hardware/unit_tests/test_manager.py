@@ -7,6 +7,9 @@ from random import randrange, choice, uniform
 
 class MyTestCase(unittest.TestCase):
 
+    config = None
+    manager = None
+
     @classmethod
     def setUpClass(cls):
         cls.config = load_configuration()
