@@ -4,15 +4,13 @@ import time as t
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
 from nidaqmx.constants import LineGrouping
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
 from definitions import WaterLevel
 
-"""Class for interfacing with an National instruments usb-6009 digital IO board"""
-
 
 class DIOBoard(AbstractIOBoard):
+    """Class for interfacing with an National instruments usb-6009 digital IO board"""
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(WaterLevel)
 

@@ -29,6 +29,7 @@ class KeysightAWG(AbstractAWG):
             self.config = load_configuration()
 
     def set_to_defaults(self):
+        self.command("*RST")
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],

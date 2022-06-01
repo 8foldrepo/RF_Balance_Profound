@@ -710,7 +710,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.setText("The application has encountered a critical error")
         dlg.setInformativeText(f"{text}\n\nYou may launch this application with the command"
                                f" prompt to see more verbose information, you may also contact "
-                               f"the developers for assistance via email: rajiv@8foldmfg.com")
+                               f"the developers for assistance via email: isaiah@8foldmfg.com")
         dlg.setStandardButtons(QMessageBox.Ok)
         dlg.setIcon(QMessageBox.Critical)
         dlg.setWindowFlag(Qt.Qt.WindowType.WindowStaysOnTopHint)

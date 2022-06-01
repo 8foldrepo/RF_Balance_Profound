@@ -8,7 +8,10 @@ class FileMetadata:
     num_cycles: int
     axis: str
     waveform_number: int
-
+    nominal_low_frequency_MHz: float
+    nominal_high_frequency_MHz: float
+    y_units_str: str
+    x_units_str: str
 
 class SystemInfo:
     rf_balance_sn: str

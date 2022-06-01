@@ -143,7 +143,7 @@ class FileSaver:
             )
 
         with open(os.path.join(path, f"{filename_stub}{metadata.element_number:02}_{metadata.axis}_"
-                            f"{metadata.waveform_number}.txt"), 'w+') as file:
+                                     f"{metadata.waveform_number}.txt"), 'w+') as file:
             file.write(f"UASerialNumber={self.test_data.serial_number}\n")
             file.write("[File Format]\n")
             file.write(f"Version={self.config['Software_Version']}\n")
@@ -157,14 +157,15 @@ class FileSaver:
             file.write(f"# Cycles={metadata.num_cycles}\n")
             file.write("[Array 0]\n")
             file.write('Label=""\n')
-            file.write('X Data Type="Time (s)"\n')
-            file.write('Y Data Type="Voltage Waveform (V)"\n')
+            file.write(f'X Data Type="{metadata.x_units_str}"\n')
+            file.write(f'Y Data Type="{metadata.y_units_str}"\n')
             file.write("[Data]\n")
             file.write("Format=\"Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>\"\n")
             file.write("Comment=\">>>>Data arrays start here<<<<\"\n")
 
             if len(times) != len(voltages):
-                # self.log(level="error", message=f"length of times = {len(times)} ; length of voltages = {len(voltages)}
+                # self.log(level="error", message=f"length of times = {len(times)} ;
+                # length of voltages = {len(voltages)}
                 # mismatch in store_find_element_waveform()")
                 print(
                     f"length of times = {len(times)} ; length of voltages = {len(voltages)} size mismatch in "
@@ -333,80 +334,109 @@ class FileSaver:
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
 
-    def save_find_element_profile(self, metadata, positions, vsi_values, storage_location,
-                                  units_str="Voltage Squared Integral", filename_stub="FindElement"):
+    def save_find_element_profile(self, metadata, positions, vsi_values, storage_location,filename_stub="FindElement"):
 
         if storage_location != '' and storage_location is not None:
             try:
-                path = check_directory(
-                    os.path.join(
-                        storage_location, self.folder_name, "EfficiencyTest", f"E{metadata.element_number:02}"
-                    )
-                )
+                path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
+                                                    f"E{metadata.element_number:02}"))
             except PermissionError:
-                path = check_directory(
-                    os.path.join(
-                        self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
-                    )
-                )
+                path = check_directory(os.path.join(self.waveform_data_path, "ElementScans",
+                                                    f"E{metadata.element_number:02}"))
         else:
             path = check_directory(
-                os.path.join(
-                    self.waveform_data_path, "EfficiencyTest", f"E{metadata.element_number:02}"
+                os.path.join(self.waveform_data_path, "ElementScans", f"E{metadata.element_number:02}")
+            )
+
+        full_path = os.path.join(path,f"{filename_stub}{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt")
+
+        with open(full_path,"w+") as file:
+            file.write(f"UASerialNumber={self.test_data.serial_number}\n")
+            file.write("[File Format]\n")
+            file.write(f"Version={self.config['Software_Version']}\n")
+            file.write(f"# Arrays=1\n")
+            file.write("[Position]\n")
+            file.write(f"X={f'%.2f' % metadata.X}\n")
+            file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
+            file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
+            file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
+            file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+            file.write(f"# Cycles={metadata.num_cycles}\n")
+            file.write("[Array 0]\n")
+            file.write('Label=""\n')
+            file.write(f'X Data Type="{metadata.x_units_str}"\n')
+            file.write(f'Y Data Type="{metadata.y_units_str}"\n')
+            file.write("[Data]\n")
+            file.write(
+                'Format="Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>"\n'
+            )
+            file.write('Comment=">>>>Data arrays start here<<<<"\n')
+
+            if len(positions) != len(vsi_values):
+                # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vsi = {len(vsi)}
+                # mismatch in store_find_element_waveform()")
+                print(
+                    f"length of distances = {len(positions)} ; length of vsi = {len(vsi_values)} size mismatch in "
+                    f"store_find_element_waveform()"
                 )
+                file.close()
+                return
+            else:
+                for x in range(len(positions)):
+                    formatted_time = "{:.6e}".format(positions[x])
+                    formatted_voltage = "{:.6e}".format(vsi_values[x])
+                    file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
+
+    def save_frequency_sweep(self, metadata, frequencies, vsi_values, storage_location,filename_stub="FindElement"):
+        if storage_location != '' and storage_location is not None:
+            try:
+                path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
+                                                    f"E{metadata.element_number:02}"))
+            except PermissionError:
+                path = check_directory(os.path.join(self.waveform_data_path, "ElementScans",
+                                                    f"E{metadata.element_number:02}"))
+        else:
+            path = check_directory(
+                os.path.join(self.waveform_data_path, "ElementScans", f"E{metadata.element_number:02}")
             )
 
-        file = open(
-            os.path.join(
-                path,
-                f"{filename_stub}{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt",
-            ),
-            "w+",
-        )
-        file.write(f"UASerialNumber={self.test_data.serial_number}\n")
-        file.write("[File Format]\n")
-        file.write(f"Version={self.config['Software_Version']}\n")
-        file.write(f"# Arrays=1\n")
-        file.write("[Position]\n")
-        file.write(f"X={f'%.2f' % metadata.X}\n")
-        file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
-        file.write(f"Calibration Frequency={f'%.2f' % metadata.frequency_MHz}MHz\n")
-        file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
-        file.write(f"Source Signal Type={metadata.source_signal_type}\n")
-        file.write(f"# Cycles={metadata.num_cycles}\n")
-        file.write("[Array 0]\n")
-        file.write('Label=""\n')
-        if metadata.axis == "R" or metadata.axis == "Theta":
-            file.write('X Data Type="Position (deg)"\n')
-        else:
-            file.write('X Data Type="Distance (mm)"\n')
-        file.write(f'Y Data Type="{units_str}"\n')
-        file.write("[Data]\n")
-        file.write(
-            'Format="Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>"\n'
-        )
-        file.write('Comment=">>>>Data arrays start here<<<<"\n')
+        full_path = os.path.join(path,f"{filename_stub}{metadata.element_number:02}_FrequencyProfile",)
 
-        if len(positions) != len(vsi_values):
-            # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vsi = {len(vsi)}
-            # mismatch in store_find_element_waveform()")
-            print(
-                f"length of distances = {len(positions)} ; length of vsi = {len(vsi_values)} size mismatch in "
-                f"store_find_element_waveform()"
-            )
-            file.close()
-            return
-        else:
-            for x in range(len(positions)):
-                formatted_time = "{:.6e}".format(positions[x])
-                formatted_voltage = "{:.6e}".format(vsi_values[x])
-                file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
-        file.close()
+        with open(full_path, 'w+') as file:
+            file.write(f"UASerialNumber={self.test_data.serial_number}\n")
+            file.write("[File Format]\n")
+            file.write(f"Version={self.config['Software_Version']}\n")
+            file.write(f"# Arrays=1\n")
+            file.write("[Position]\n")
+            file.write(f"X={f'%.2f' % metadata.X}\n")
+            file.write(f"Theta={f'%.2f' % metadata.Theta}\n")
+            file.write(f"Nominal Low Frequency={f'%.2f' % metadata.nominal_low_frequency_MHz}MHz\n")
+            file.write(f"Nominal High Frequency={f'%.2f' % metadata.nominal_high_frequency_MHz}MHz\n")
+            file.write(f"Source Signal Amplitude={metadata.amplitude_mVpp}mVpp\n")
+            file.write(f"Source Signal Type={metadata.source_signal_type}\n")
+            file.write(f"# Cycles={metadata.num_cycles}\n")
+            file.write("[Array 0]\n")
+            file.write('Label=""\n')
+            file.write(f'X Data Type="{metadata.x_units_str}"\n')
+            file.write(f'Y Data Type="{metadata.y_units_str}"\n')
+            file.write("[Data]\n")
+            file.write('Format="Cols arranged <X0>, <Y0>, <Uncertainty0> ... <Xn>, <Yn>, <Uncertaintyn>"\n')
+            file.write('Comment=">>>>Data arrays start here<<<<"\n')
 
-    # todo
-    def save_frequency_sweep(self):
-
-        pass
+            if len(frequencies) != len(vsi_values):
+                # self.log(level="error", message=f"length of distances = {len(distances)} ; length of vsi = {len(vsi)}
+                # mismatch in store_find_element_waveform()")
+                print(
+                    f"length of distances = {len(frequencies)} ; length of vsi = {len(vsi_values)} size mismatch in "
+                    f"store_find_element_waveform()"
+                )
+                file.close()
+                return
+            else:
+                for x in range(len(frequencies)):
+                    formatted_time = "{:.6e}".format(frequencies[x])
+                    formatted_voltage = "{:.6e}".format(vsi_values[x])
+                    file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
     def log(self, message, level="info"):
         log_msg(self, root_logger, message=message, level=level)
