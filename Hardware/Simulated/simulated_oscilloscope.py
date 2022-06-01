@@ -2,6 +2,7 @@ import random
 from abc import abstractmethod
 
 import numpy as np
+from termcolor import colored
 
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
@@ -52,6 +53,25 @@ class SimulatedOscilloscope(AbstractOscilloscope):
     def set_averaging(self, averages=1):
         pass
 
+    def get_horizontal_scale_sec(self) -> float:
+        return self.range_s
+
+    def set_horizontal_scale_sec(self, seconds: float) -> None:
+        print(colored(f'setting horizontal scale to {8 * seconds}', 'cyan'))
+        self.range_s = 8 * seconds
+
+    def get_horizontal_offset_sec(self) -> float:
+        return self.offset_s
+
+    def set_horizontal_offset_sec(self, seconds: float) -> None:
+        self.offset_s = seconds
+
+    def get_horizontal_range_sec(self) -> float:
+        return self.range_s
+
+    def set_horizontal_range_sec(self, seconds: float) -> None:
+        self.range_s = seconds
+
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)
@@ -79,7 +99,13 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         return '"Simulated"'
 
     def autoset_oscilloscope_timebase(self):
-        return
+        self.max_time_of_flight = self.config['Autoset timebase']["Max time of flight (us)"]
+        self.min_time_of_flight = self.config['Autoset timebase']["Min time of flight (us)"]
+        range_s = self.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
+        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
+        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
+        self.set_horizontal_range_sec(range_s)
+        self.set_horizontal_offset_sec(offset_s)
 
     def get_rms(self) -> float:
         return random.random()

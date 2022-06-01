@@ -1,6 +1,8 @@
 import time as t
 from typing import Union, List, Tuple
 import pyvisa
+from termcolor import colored
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Utilities.useful_methods import error_acceptable
 
@@ -192,7 +194,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.command(command)
 
     def get_horizontal_offset_sec(self) -> float:
-        return float(self.ask(":TIM:POS?"))
+        self.offset_s = float(self.ask(":TIM:POS?"))
+        return self.offset_s
 
     def set_horizontal_offset_sec(self, offset: float) -> bool:
         self.offset_s = offset

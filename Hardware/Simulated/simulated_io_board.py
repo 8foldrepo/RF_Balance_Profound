@@ -76,7 +76,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         pass
 
     def disconnect_hardware(self):
-        self.connected = True
+        self.connected = False
         self.connected_signal.emit(self.connected)
 
     def is_connected(self):
