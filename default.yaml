@@ -31,6 +31,7 @@ Debugging:
   simulate_ua_error: false
   simulate_ua_interface: true
   drain_before_retract: false
+  sensor_refresh_interval_s: 1.5
 Forward_Power_Meter:
   serial_number: '11408040323'
 FrequencyParameters:
@@ -99,13 +100,13 @@ Keysight_AWG:
   trig_out: true
 Keysight_Oscilloscope:
   autorange_v_startup: false
-  averages: 16
+  averages: 1
   channel: 1
   cycles: 10
   delay_cycles: 0
   ext_trigger: false
   identifier: '0x179B'
-  range_mV: 2000
+  range_mV: 6000
   retries: 5
   set_on_startup: true
   timeout_s: 10

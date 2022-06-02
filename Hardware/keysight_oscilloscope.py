@@ -10,11 +10,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
     max_time_of_flight: float
     min_time_of_flight: float
     timeout_s: float
-    range_mV: float
-    channel: int
-    averages: int
-    range_s: float
-    offset_s: float
 
     autoset_timebase = "Autoset_timebase"
 
@@ -233,68 +228,71 @@ class KeysightOscilloscope(AbstractOscilloscope):
         # self.log(
         #     f"capture method called in keysight_oscilloscope.py, called by
         #     {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
-        if self.connected:
-            # self.command("WAV:POIN:MODE RAW")
-            self.command(f"WAV:SOUR:CHAN{channel}")
-            self.command(f"WAV:FORM ASC")
-
-            preamble: Union[OscilloscopePreamble, None]
-            preamble = None
-            start_time = t.time()
-            while t.time() - start_time < self.timeout_s:
-                try:
-                    preamble = OscilloscopePreamble(self.ask("WAV:PRE?").split(","))
-
-                except pyvisa.errors.VisaIOError as e:
-                    if "Timeout" in str(e):
-                        pass
-                    else:
-                        self.log(level="error",
-                                 message=f"Unknown error when asking for waveform preamble, retrying: {e}")
-                if preamble is not None:
-                    if preamble == "+4":
-                        break
-                    else:
-                        self.command(f"WAV:FORM ASC")
-
-            if preamble is None:
-                self.log(level='error', message='preamble is none')
-                return [0.0],[0.0]
-
-            # Capture data
-            voltages_v_strings = None
-            start_time_2 = t.time()
-            while t.time() - start_time_2 < self.timeout_s:
-                try:
-                    voltages_v_strings = self.ask("WAV:DATA?").split(",")
-                except pyvisa.errors.VisaIOError as e:
-                    if "Timeout" in str(e):
-                        pass
-                    else:
-                        self.log(level="error", message="Unknown error when asking for waveform preamble")
-                if voltages_v_strings is not None:
-                    break
-
-            # temp = voltages_v[0].split()[-1]
-            # voltages_v[0] = temp
-            # removes the metadata at the beginning
-            if "#" in voltages_v_strings[0]:
-                voltages_v_strings[0] = voltages_v_strings[0][10:]
-
-            voltages_v = list()
-            time_s = list()
-
-            for i in range(len(voltages_v_strings)):
-                try:
-                    voltages_v.append(float(voltages_v_strings[i]))
-                    time_s.append((i - preamble.x_reference) * preamble.sample_interval_s + preamble.x_origin)
-                except ValueError:
-                    self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
-
-            return time_s, voltages_v
-        else:
+        if not self.connected:
             self.log(f"Could not capture, {self.device_key} is not connected")
             return [0.0], [0.0]
+
+        # Ensure mode is ascii and read metadata
+        preamble: Union[OscilloscopePreamble, None]
+        preamble = None
+        start_time = t.time()
+        while t.time() - start_time < self.timeout_s:
+            try:
+                preamble = OscilloscopePreamble(self.ask("WAV:PRE?").split(","))
+
+            except pyvisa.errors.VisaIOError as e:
+                if "Timeout" in str(e):
+                    pass
+                else:
+                    self.log(level="error",
+                             message=f"Unknown error when asking for waveform preamble, retrying: {e}")
+            if preamble is not None:
+                if preamble.format_str == "+4":
+                    break
+                else:
+                    preamble = None
+                    self.command(f"WAV:FORM ASC")
+
+        if preamble is None:
+            self.log(level='error', message='preamble is none')
+            return [0.0], [0.0]
+
+        # self.command("WAV:POIN:MODE RAW")
+        # Set capture source
+        self.command(f"WAV:SOUR:CHAN{channel}")
+        # self.command(f"WAV:FORM ASC")
+
+        # Capture data
+        voltages_v_strings = None
+        start_time_2 = t.time()
+        while t.time() - start_time_2 < self.timeout_s:
+            try:
+                voltages_v_strings = self.ask("WAV:DATA?").split(",")
+            except pyvisa.errors.VisaIOError as e:
+                if "Timeout" in str(e):
+                    pass
+                else:
+                    self.log(level="error", message="Unknown error when asking for waveform preamble")
+            if voltages_v_strings is not None:
+                break
+
+        # temp = voltages_v[0].split()[-1]
+        # voltages_v[0] = temp
+        # removes the metadata at the beginning
+        if "#" in voltages_v_strings[0]:
+            voltages_v_strings[0] = voltages_v_strings[0][10:]
+
+        voltages_v = list()
+        time_s = list()
+
+        for i in range(len(voltages_v_strings)):
+            try:
+                voltages_v.append(float(voltages_v_strings[i]))
+                time_s.append((i - preamble.x_reference) * preamble.sample_interval_s + preamble.x_origin)
+            except ValueError:
+                self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
+
+        return time_s, voltages_v
 
     # Waveform generator methods, unused, untested
     # def SetPeriod_s(self, channel, period_s):
@@ -325,12 +323,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return self.inst.read()
         except AttributeError as e:
             if str(e) == "'NoneType' object has no attribute 'read'":
-                self.log(level='error',message=f"Could not read reply, {self.device_key} Not connected")
+                self.log(level='error', message=f"Could not read reply, {self.device_key} Not connected")
 
     def ask(self, command: str) -> Union[str, None]:
         """generic method to send a command to the oscilloscope and return its response"""
         if not self.connected:
-            self.log(level='error',message='cannot ask, oscilloscope is not connected')
+            self.log(level='error', message='cannot ask, oscilloscope is not connected')
             return None
         reply = self.inst.query(command)
         t.sleep(.02)
@@ -340,8 +338,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         if not self.connected:
             return None
 
-        str = self.ask("*IDN?")
-        return str.split(",")[2]
+        out_str = self.ask("*IDN?")
+        return out_str.split(",")[2]
 
     def get_rms(self) -> float:
         """asks the oscilloscope what the voltage root mean squared of the current window is and returns it as a
@@ -352,6 +350,11 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def wrap_up(self):
         self.disconnect_hardware()
 
+
 if __name__ == "__main__":
-    import unittest
-    unittest.main()
+    osc = KeysightOscilloscope()
+    osc.connect_hardware()
+    osc.capture(1)
+
+    # import unittest
+    # unittest.main()

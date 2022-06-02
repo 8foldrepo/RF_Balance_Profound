@@ -131,16 +131,19 @@ class Manager(QThread):
         self.oscilloscope_averages = 1
         self.abort_guard = False
         self.oscilloscope_channel = 1
-        self.last_rfb_update_time = t.time()
-        self.last_profile_update_time = t.time()
+
         self.warn = str(logging.WARNING)  # sets variable for shorter typing
         self.error = str(logging.ERROR)  # sets variable for shorter typing
-        # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
-        self.sensor_refresh_interval_s = 0.2
-        self.last_sensor_update_time = 0.0
 
         self.config = config
         self.system_info = system_info
+
+        # variables controlling automatic sensor updates
+        self.last_rfb_update_time = t.time()
+        self.last_profile_update_time = t.time()
+        # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
+        self.sensor_refresh_interval_s = self.config['Debugging']['sensor_refresh_interval_s']
+        self.last_sensor_update_time = 0.0
 
         self.app = QApplication.instance()
         self.test_data = TestData()
@@ -371,19 +374,24 @@ class Manager(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-            self.condition.wait(self.mutex, 50)
-
+            print("running")
+            self.condition.wait(self.mutex, 1)
             if self.stay_alive is False:
                 break
 
             # code block below checks the first part of the split command_ray to see what command is
             command = self.command.upper()
             command_ray = command.split(" ")
+
+            if command != '':
+                print(command)
+                print("CAPTURE".upper() in command.upper())
+
             if command_ray[0] == "CLOSE":
                 self.wrap_up()
             elif command_ray[0] == "CONNECT":
                 self.connect_hardware()
-            elif command_ray[0] == "CAPTURE":
+            elif "CAPTURE".upper() in command.upper():
                 self.capture_oscilloscope_and_plot()
             elif command_ray[0] == "STEP":
                 self.advance_script()
@@ -401,11 +409,8 @@ class Manager(QThread):
                     else:
                         self.advance_script()
                 else:
-                    if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
-                        self.capture_oscilloscope_and_plot()
                     self.update_sensors()
-                    if self.thermocouple.connected:
-                        self.thermocouple.get_reading()
+
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
@@ -437,13 +442,18 @@ class Manager(QThread):
         self.abort_immediately_variable = False
 
     def update_sensors(self):
-        """Attempts to update the last sensor update time, the water level, thermocouple reading, and ua pump status.
+        """Attempts to update the last sensor update time, the water level, thermocouple reading, oscilloscope trace
+        (if applicable) and ua pump status. Runs according to the sensor refresh interval, if the program seems
+        unresponsive try increasing the sensor_refresh_interval_s variable in local.yaml
         Returns if the user is not looking at positional feedback"""
         if self.parent is not None and not hasattr(self.parent, "tabWidget"):
             return
 
         if t.time() - self.last_sensor_update_time > self.sensor_refresh_interval_s:
             self.last_sensor_update_time = t.time()
+
+            if self.thermocouple.connected:
+                self.thermocouple.get_reading()
 
             if self.IO_Board.connected:
                 self.IO_Board.get_water_level()
@@ -453,6 +463,13 @@ class Manager(QThread):
 
             if self.thermocouple.connected:
                 self.thermocouple.get_reading()
+
+            if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
+                self.capture_oscilloscope_and_plot()
+            else:
+                pass
+
+            print(t.time()-self.last_sensor_update_time) #todo: remove
 
     def capture_scope(self, channel: int = 1, plot: bool = True):
         """

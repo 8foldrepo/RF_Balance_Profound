@@ -37,7 +37,7 @@ class KeysightAWG(AbstractAWG):
             ext_trig=self.config[self.device_key]["trig_in"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
             offset_V=self.config[self.device_key]["offset_V"],
-            output=False,
+            output=True, #todo: change to false
             output_Impedance=self.config[self.device_key]["output_Impedance"],
             trigger_out=self.config[self.device_key]["trig_out"],
         )
@@ -300,3 +300,4 @@ class KeysightAWG(AbstractAWG):
 
 
 if __name__ == "__main__":
+    pass
