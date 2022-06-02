@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from typing import Tuple
+from typing import Tuple, Union
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -28,7 +28,7 @@ class AbstractAWG(AbstractDevice):
         self.set_amplitude_v(amplitude_V)
         self.set_cycles(burst_cycles)
         self.set_burst(burst)
-        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
+        self.SetTriggerOutput(external=ext_trig, period_s=burst_period_s, delay_s=0)
         self.set_offset_v(offset_V)
         self.set_output_impedance(output_Impedance, HiZ=False)
 
@@ -39,7 +39,7 @@ class AbstractAWG(AbstractDevice):
         self.get_frequency_hz()
         self.get_amplitude_v()
         self.get_burst()
-        self.GetTriggerInput()
+        self.GetTriggerOutput()
         self.get_offset_v()
         self.get_output_impedance()
         return self.state
@@ -95,16 +95,6 @@ class AbstractAWG(AbstractDevice):
         ...
 
     @abstractmethod
-    def SetTriggerInput(self, external: bool, period_s: float, delay_s: float):
-        """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-        ...
-
-    @abstractmethod
-    def GetTriggerInput(self) -> Tuple[str, float, float]:
-        """Returns info about the trigger: source, delay_s, period_s"""
-        ...
-
-    @abstractmethod
     def set_burst(self, on: bool) -> None:
         """Simple method to toggle the burst mode of the AWG when given a boolean parameter"""
         self.state["burst_on"] = on
@@ -145,6 +135,11 @@ class AbstractAWG(AbstractDevice):
     @abstractmethod
     def set_trigger_output(self, trigger_out: bool) -> None:
         """Enables or disables the AWG trigger output signal"""
+        ...
+
+    @abstractmethod
+    def get_trigger_output(self) -> Union[bool, None]:
+        """Returns whether the trigger output is on, or None if the AWG is not connected"""
         ...
 
     def __str__(self):

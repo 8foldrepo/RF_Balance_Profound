@@ -200,15 +200,12 @@ class GalilMotorController(AbstractMotorController):
         return success
 
     def wait_for_motion_to_complete(self):
-
+        # todo: this method seems to return true even if only one axis makes it to the origin
         start_time = t.time()
-
         success = False
-
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
             try:
                 self.get_position()
-
                 # current_pos_str = self.command('RP')
                 # this command is intended to have no effect, by telling the motors to go to the current position.
                 # It will raise an exception if the motors are moving. If there is no exception the motion is complete
@@ -342,7 +339,6 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message=self.check_user_fault())
 
         success = self.wait_for_motion_to_complete()
-
         success_2 = self.go_to_position(['R'], [-90], enable_ui=False)
 
         if enable_ui:

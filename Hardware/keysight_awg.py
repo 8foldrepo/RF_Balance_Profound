@@ -28,11 +28,7 @@ class KeysightAWG(AbstractAWG):
         if self.config is None:
             self.config = load_configuration()
 
-    def reset(self):
-        self.command("*RST")
-
     def set_to_defaults(self):
-        self.reset()
         self.setup(
             frequency_Hz=self.config[self.device_key]["frequency_Hz"],
             amplitude_V=self.config[self.device_key]["amplitude_V"],
@@ -82,16 +78,15 @@ class KeysightAWG(AbstractAWG):
     def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
               offset_V=0, output=False, output_Impedance=50, trigger_out=True):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
+        self.reset()
         self.set_output(output)
         self.set_frequency_hz(frequency_Hz)
         self.set_amplitude_v(amplitude_V)
         self.set_cycles(burst_cycles)
         self.set_burst(burst)
-        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s, delay_s=0)
         self.set_trigger_output(trigger_out=trigger_out)
         self.set_offset_v(offset_V)
         self.set_output_impedance(output_Impedance)
-
         self.wait_til_complete()
 
     def get_state(self):
@@ -100,7 +95,7 @@ class KeysightAWG(AbstractAWG):
         self.get_frequency_hz()
         self.get_amplitude_v()
         self.get_burst()
-        self.GetTriggerInput()
+        self.get_trigger_output()
         self.get_offset_v()
         self.get_output_impedance()
         return self.state
@@ -155,7 +150,8 @@ class KeysightAWG(AbstractAWG):
         actual_amplitude_v = self.get_amplitude_v()
         if not error_acceptable(actual_amplitude_v, amplitude, 2, print_msg=False):
             self.log(level="error",
-                     message=f"Amplitude {amplitude} V is out of range with current settings. Amplitude is {actual_amplitude_v} V")
+                     message=f"Amplitude {amplitude} V is out of range with current settings. Amplitude is "
+                             f"{actual_amplitude_v} V")
             return False
         return True
 
@@ -192,6 +188,16 @@ class KeysightAWG(AbstractAWG):
             self.command("OUTP:TRIG:SLOP POS")
         else:
             self.command("OUTP:TRIG OFF")
+
+    def get_trigger_output(self) -> Union[bool, None]:
+        """Returns whether the trigger output is on, or None if the AWG is not connected"""
+        if not self.connected:
+            return None
+
+        self.command("OUTP:TRIG?")
+        on_str = self.read()
+        self.state["trig_out"] = '1' in on_str
+        return self.state["trig_out"]
 
     def set_burst(self, on=True):
         self.state["burst_on"] = on
@@ -274,45 +280,23 @@ class KeysightAWG(AbstractAWG):
         self.connected = connected
         return connected
 
-    # Trigger input methods, unused, untested
-    # """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-    #
-    # def SetTriggerInput(self, external: bool, period_s=.000010, delay_s=0):
-    #     self.command(f"TRIG1:DEL {delay_s}")
-    #     if external:
-    #         self.command(f"TRIG1:SOUR EXT")
-    #     else:
-    #         self.command(f"TRIG1:SOUR TIM")
-    #         self.command(f"TRIG1:TIM {period_s}")
-
-    # """Returns info about the trigger: source, delay_s, period_s"""
-    #
-    # def GetTriggerInput(self):
-    #     self.command(f"TRIG:SOUR?")
-    #     self.state['trig_source'] = self.read().strip('\n')
-    #     self.command(f"TRIG:DEL?")
-    #     self.state['trig_delay_s'] = float(self.read())
-    #     self.command(f"TRIG:TIM?")
-    #     self.state['trig_period_s'] = float(self.read())
-    #     return self.state['trig_source'], self.state['trig_delay_s'], self.state['trig_period_s']
-
     def wrap_up(self):
         self.set_output(False)
         self.disconnect_hardware()
         t.sleep(.05)
 
     def get_serial_number(self) -> Union[str, None]:
-        self.command("*IDN?")
-        str = self.read()
+        if not self.connected:
+            return None
 
-        return str.split(",")[2]
+        self.command("*IDN?")
+        read_str = self.read()
+        return read_str.split(",")[2]
 
     def __str__(self):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
-
         self.get_state()
         return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
 
 
 if __name__ == "__main__":
-    pass

@@ -29,7 +29,7 @@ from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel, FrequencyRange
-from galil_motor_controller import GalilMotorController
+from Hardware.galil_motor_controller import GalilMotorController
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
@@ -1036,7 +1036,7 @@ class Manager(QThread):
                 if not cont:
                     return
 
-                self.IO_Board.fill_tank()
+                self.IO_Board.drain_tank_to_level()
             else:
                 # log successful water level test if we've reached this point in the code
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])

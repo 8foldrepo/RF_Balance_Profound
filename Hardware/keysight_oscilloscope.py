@@ -99,7 +99,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return  # already disconnected
         try:
             self.inst.close()
-            self.rm.close()
         except pyvisa.errors.VisaIOError:
             pass
         self.connected = False
