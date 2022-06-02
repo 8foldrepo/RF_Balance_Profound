@@ -311,7 +311,7 @@ class ParkerMotorController(AbstractMotorController):
             bites = command.encode("utf-8")
             output = bites + b"\r\n"
 
-            # Keep track of the previous few commands for debugging purposes
+            # Keep track of the previous few commands for Debugging purposes
             self.command_history.append(output)
             if len(self.command_history) > self.history_length:
                 self.command_history.pop(0)
@@ -325,7 +325,7 @@ class ParkerMotorController(AbstractMotorController):
             for i in range(2):
                 echo = self.ser.readline().strip(b"\r\n")
                 # t.sleep(0.1)
-                # Keep track of the previous few echos for debugging purposes
+                # Keep track of the previous few echos for Debugging purposes
                 self.echo_history.append(output)
                 if len(self.echo_history) > self.history_length:
                     self.echo_history.pop(0)
@@ -395,7 +395,7 @@ class ParkerMotorController(AbstractMotorController):
         if reply == "" and need_reply:
             self.log(level="error", message=f"{self.device_key} gave no reply")
 
-        # Keep track of the previous few commands for debugging purposes
+        # Keep track of the previous few commands for Debugging purposes
         self.response_history.append(reply)
         if len(self.response_history) > self.history_length:
             self.response_history.pop(0)

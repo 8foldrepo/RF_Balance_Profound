@@ -675,7 +675,6 @@ class Manager(QThread):
                     self.run_script_step()
                     if inside_iteration:
                         self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
-                        inside_iteration = False
 
             if not self.currently_scripting:
                 self.enable_ui_signal.emit(True)
@@ -708,7 +707,7 @@ class Manager(QThread):
         if "MEASURE ELEMENT EFFICIENCY (RFB)" in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
         elif "PRE-TEST INITIALISATION" in name.upper():
-            self.pretest_initialization(args)
+            self.pretest_initialization()
         elif "FIND ELEMENT" in name.upper():
             self.find_element(args)
         elif "SAVE RESULTS" in name.upper():
@@ -847,11 +846,9 @@ class Manager(QThread):
 
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
-                print("returning true")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return True
             if self.no_clicked_variable:
-                print("returning false")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
         # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
@@ -927,7 +924,7 @@ class Manager(QThread):
         self.test_data.log_script(["Script complete", "", "", ""])
         self.set_tab_signal.emit(["Results"])
 
-    def pretest_initialization(self, var_dict):
+    def pretest_initialization(self):
         """Home the UA, perform hardware checks, and prompt the user until they pass,
         takes in a variable dict as a parameter"""
 
@@ -1202,8 +1199,8 @@ class Manager(QThread):
 
     def scan_axis(self, element: int, axis, num_points, increment, ref_position, data_storage, go_to_peak,
                   storage_location,
-                  update_element_position: bool, scope_channel=1, acquisition_type='N Averaged Waveform', averages=1,
-                  filename_stub="FindElement") -> bool:
+                  update_element_position: bool, scope_channel: int = 1, acquisition_type='N Averaged Waveform',
+                  averages=1, filename_stub="FindElement") -> bool:
         """
 
         Args:
@@ -1308,7 +1305,7 @@ class Manager(QThread):
                 self.element_x_coordinates[self.element] = max_position
             else:
                 self.element_r_coordinates[self.element] = max_position + 90
-                #Refresh the angle average in self.test_data
+                # Refresh the angle average in self.test_data
                 self.test_data.calculate_angle_average()
 
         self.test_data.set_max_position(axis, self.element, max_position)
@@ -1423,6 +1420,7 @@ class Manager(QThread):
                                              storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
+
     def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         try:
@@ -1503,6 +1501,8 @@ class Manager(QThread):
         mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
         output: bool = bool(var_dict["Enable output"])
         frequency_options: str = var_dict["Set frequency options"]
+
+        self.AWG.reset()
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
             frequency_mhz = self.test_data.low_frequency_MHz
@@ -1606,7 +1606,7 @@ class Manager(QThread):
         Warn the user that the UA is being retracted in x
         returns: a boolean indicating whether or not to continue the script
         """
-        if self.config["debugging"]["drain_before_retract"]:
+        if self.config["Debugging"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
 
             cont = self.cont_if_cont_clicked()
@@ -1615,7 +1615,7 @@ class Manager(QThread):
 
         return True
 
-    def move_system(self, var_dict, average_angle = True):
+    def move_system(self, var_dict, average_angle=True):
         """
         Move motors to the specified coordinates
         """
@@ -1667,12 +1667,16 @@ class Manager(QThread):
         """
         Activate the relay for and move to a specified element
         """
-        try:
+        if "Element" in var_dict.keys():
             self.element = self.element_str_to_int(var_dict["Element"])
-        except KeyError:
+        elif "Channel" in var_dict.keys():
+            self.element = self.element_str_to_int(var_dict["Channel"])
+        else:
             self.log(
                 "No element defined in variable list for task 'select ua channel', "
                 "previous self.element value preserved info")
+            return
+
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict) -> bool:
@@ -1694,7 +1698,7 @@ class Manager(QThread):
         fine_incr_MHz = float(var_dict["Fine increment (MHz)"])
         burst_count = int(var_dict["Burst count"])
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
-        scope_channel = var_dict["Scope channel"]
+        self.oscilloscope_channel = int(var_dict["Scope channel"])
         acquisition_type = var_dict["Acquisition type"]
         averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
@@ -1709,24 +1713,31 @@ class Manager(QThread):
         else:
             storage_location = data_directory
 
-        self.AWG.set_output(True)
-        self.AWG.set_amplitude_v(amplitude_mVpp / 1000)
-        self.AWG.set_burst(True)
+        # configure function generator
+        func_var_dict = dict()
+        func_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
+        func_var_dict["Frequency (MHz)"] = start_freq_MHz
+        func_var_dict["Mode"] = "Toneburst"
+        func_var_dict["Enable output"] = True
+        func_var_dict["#Cycles"] = burst_count  # Rename to burst_cycles in the future?
+        func_var_dict["Set frequency options"] = "From config cluster"
+        self.configure_function_generator(func_var_dict)
 
         if acquisition_type == "Single Waveform":
             self.Oscilloscope.set_averaging(1)
         else:
             self.Oscilloscope.set_averaging(averages)
 
-        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(start_freq_MHz,
-                                                                                            end_freq_MHz,
-                                                                                            coarse_incr_MHz,
-                                                                                            burst_count,
-                                                                                            channel=scope_channel,
-                                                                                            storage_location=
+        if self.config["Analysis"]["capture_rms_only"]:
+            y_units_str = 'RMS voltage (V)'
+        else:
+            y_units_str = 'VSI (Voltage Squared Integral)'
+
+        list_of_frequencies_MHz = list(np.arange(start_freq_MHz, end_freq_MHz, coarse_incr_MHz))
+        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(list_of_frequencies_MHz,
+                                                                                            data_storage,
                                                                                             storage_location,
-                                                                                            data_storage=
-                                                                                            data_storage)
+                                                                                            y_units_str)
 
         if not cont:
             return False
@@ -1736,30 +1747,46 @@ class Manager(QThread):
                                         storage_location=storage_location, filename_stub='CoarseFrequencySweep',
                                         y_units_str=y_units_str)
 
-        # todo: enable this in a way that makes sense and add it to the output file
+        # Run fine VSI sweep
         max_coarse_VSI_index = max(range(len(coarse_VSI_list)), key=coarse_VSI_list.__getitem__)
-
-        fine_start_freq_MHz = max(coarse_freq_MHz_list[max_coarse_VSI_index]-1, 0)
-        fine_stop_freq_MHz = min(coarse_freq_MHz_list[max_coarse_VSI_index]+1, len(coarse_freq_MHz_list)-1)
-
-        fine_freq_MHz_list, fine_VSI_list, y_units_str, cont = self.run_frequency_sweep(fine_start_freq_MHz,
-                                                                                        fine_stop_freq_MHz,
-                                                                                        fine_incr_MHz,
-                                                                                        burst_count,
-                                                                                        channel=scope_channel,
-                                                                                        data_storage=data_storage,
-                                                                                        storage_location=
-                                                                                        storage_location)
+        fine_start_freq_MHz = max(coarse_freq_MHz_list[max_coarse_VSI_index] - 1, 0)
+        fine_stop_freq_MHz = min(coarse_freq_MHz_list[max_coarse_VSI_index] + 1, len(coarse_freq_MHz_list) - 1)
+        fine_list_of_frequencies_MHz = list(np.arange(fine_start_freq_MHz, fine_stop_freq_MHz, fine_incr_MHz))
+        fine_freq_MHz_list, fine_VSI_list, y_units_str, cont = self.run_frequency_sweep(fine_list_of_frequencies_MHz,
+                                                                                        data_storage,
+                                                                                        storage_location,
+                                                                                        y_units_str)
         if not cont:
             return False
+
+        # Update test results summary
+        max_vsi = max(max(coarse_VSI_list), max(fine_VSI_list))
+
+        if max_vsi in coarse_VSI_list:
+            max_vsi_index = coarse_VSI_list.index(max_vsi)
+            max_vsi_frequency = list_of_frequencies_MHz[max_vsi_index]
+        else:
+            max_vsi_index = fine_VSI_list.index(max_vsi)
+            max_vsi_frequency = fine_list_of_frequencies_MHz[max_vsi_index]
+
+        if include_test:
+            self.test_data.update_results_summary_with_frequency_sweep(
+                frequency_range=frequency_range,
+                element=self.element,
+                frequency_Hz=max_vsi_frequency,
+                units_str=y_units_str,
+                vsi=max_vsi
+            )
 
         if 'Do not store'.upper() != data_storage.upper():
             self.__save_frequency_sweep(frequencies=fine_freq_MHz_list, vsi_values=fine_VSI_list,
                                         storage_location=storage_location, filename_stub='FineFrequencySweep',
                                         y_units_str=y_units_str)
 
-    def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, data_storage, storage_location,
-                            channel=1) -> Tuple[List[float], List[float], str, bool]:
+        self.AWG.set_output(False)
+
+    def run_frequency_sweep(self, list_of_frequencies_MHz,
+                            data_storage, storage_location, y_units_str) -> Tuple[List[float], List[float], str, bool]:
         """
         Performs a sweep between two frequencies, capturing the oscilloscope waveform (or rms thereof)
         at each frequency. Saves each waveform to a file if specified
@@ -1770,45 +1797,37 @@ class Manager(QThread):
             a boolean indicating whether to continue the script
         """
         list_of_VSIs = list()
-        list_of_frequencies_MHz = list()
 
-        y_units_str = 'RMS voltage (V)'
-        for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x increment
-            # add the frequency to the list
-            # Find the average vsi voltage at a given frequency
+        for i in range(len(list_of_frequencies_MHz)):
+            # set frequency according to step (coarse/fine) and x increment
+            self.AWG.set_frequency_hz(list_of_frequencies_MHz[i] * 1000000)
+            # Find the vsi voltage at a given frequency
             vsi_sum = 0
 
-            for i in range(bursts):
-                if self.abort_immediately_variable:
-                    # Stop the current method and any parent methods that called it
-                    return [], [], "", False
+            if self.abort_immediately_variable:
+                # Stop the current method and any parent methods that called it
+                return [], [], "", False
 
-                # populates times_s and voltages_v with set frequency
-                if self.config["Analysis"]["capture_rms_only"]:
-                    vsi = self.Oscilloscope.get_rms()
-                else:
-                    y_units_str = 'VSI (Voltage Squared Integral)'
-                    times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
-                    if times_s == [] or voltages_v == []:
-                        cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                                       error_detail='Oscilloscope capture failed')
-                        if not cont:
-                            return [], [], "", False
+            # populates times_s and voltages_v with set frequency
+            if self.config["Analysis"]["capture_rms_only"]:
+                vsi = self.Oscilloscope.get_rms()
+            else:
+                times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
+                if times_s == [] or voltages_v == []:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail='Oscilloscope capture failed')
+                    if not cont:
+                        return [], [], "", False
 
-                    if 'entire waveform'.upper() in data_storage.upper():
-                        self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
-                                                        voltages_v=voltages_v, storage_location=storage_location,
-                                                        filename_stub="FrequencySweep", x_units_str='Time (s)',
-                                                        y_units_str=y_units_str)
+                if 'entire waveform'.upper() in data_storage.upper():
+                    self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
+                                                    voltages_v=voltages_v, storage_location=storage_location,
+                                                    filename_stub="FrequencySweep", x_units_str='Time (s)',
+                                                    y_units_str=y_units_str)
 
-                    vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
-                vsi_sum = vsi_sum + vsi
-            vsi_avg = vsi_sum / bursts
-
-            list_of_frequencies_MHz.append(x)
-            list_of_VSIs.append(vsi_avg)
+            list_of_VSIs.append(vsi)
             assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
             self.__refresh_profile_plot(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
@@ -2008,7 +2027,7 @@ class Manager(QThread):
 
         self.retry_clicked_variable = False
 
-        if  efficiency_test:
+        if efficiency_test:
             self.test_data.update_results_summary_with_efficiency_results(
                 frequency_range=frequency_range,
                 element=self.element,

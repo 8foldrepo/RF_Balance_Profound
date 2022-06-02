@@ -18,7 +18,8 @@ balance_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 
 
-def main(args):
+def main():
+    """Script which instantiates the main window, and performs all tasks that occur upon program startup"""
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     QThread.currentThread().setObjectName("ui_thread")
@@ -47,4 +48,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

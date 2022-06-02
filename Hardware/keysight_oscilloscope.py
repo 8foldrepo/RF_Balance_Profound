@@ -1,10 +1,9 @@
 import time as t
 from typing import Union, List, Tuple
 import pyvisa
-from termcolor import colored
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Utilities.useful_methods import error_acceptable
+from data_structures.variable_containers import OscilloscopePreamble
 
 
 class KeysightOscilloscope(AbstractOscilloscope):
@@ -233,17 +232,20 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def capture(self, channel) -> Tuple[List[float], List[float]]:
         # self.log(
-        #     f"capture method called in keysight_oscilloscope.py, called by {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
+        #     f"capture method called in keysight_oscilloscope.py, called by
+        #     {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if self.connected:
             # self.command("WAV:POIN:MODE RAW")
             self.command(f"WAV:SOUR:CHAN{channel}")
             self.command(f"WAV:FORM ASC")
 
+            preamble: Union[OscilloscopePreamble, None]
             preamble = None
             start_time = t.time()
             while t.time() - start_time < self.timeout_s:
                 try:
-                    preamble = self.ask("WAV:PRE?").split(",")
+                    preamble = OscilloscopePreamble(self.ask("WAV:PRE?").split(","))
+
                 except pyvisa.errors.VisaIOError as e:
                     if "Timeout" in str(e):
                         pass
@@ -251,33 +253,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
                         self.log(level="error",
                                  message=f"Unknown error when asking for waveform preamble, retrying: {e}")
                 if preamble is not None:
-                    break
+                    if preamble == "+4":
+                        break
+                    else:
+                        self.command(f"WAV:FORM ASC")
 
             if preamble is None:
                 self.log(level='error', message='preamble is none')
                 return [0.0],[0.0]
-
-            while preamble[0] != "+4":
-                self.command(f"WAV:FORM ASC")
-
-            # Interpret preamble
-            if preamble[1] == "+0":
-                mode = "normal"
-            elif preamble[1] == "+1":
-                mode = "peak"
-            elif preamble[1] == "+2":
-                mode = "average"
-            else:
-                mode = "HRESolution"
-
-            num_points = int(preamble[2])
-            average_num = preamble[3]
-            sample_interval_s = float(preamble[4])
-            x_origin = float(preamble[5])
-            x_reference = float(preamble[6])
-            voltage_resolution_v = float(preamble[7])
-            y_origin = float(preamble[8])
-            y_reference = float(preamble[9])
 
             # Capture data
             voltages_v_strings = None
@@ -305,7 +288,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             for i in range(len(voltages_v_strings)):
                 try:
                     voltages_v.append(float(voltages_v_strings[i]))
-                    time_s.append((i - x_reference) * sample_interval_s + x_origin)
+                    time_s.append((i - preamble.x_reference) * preamble.sample_interval_s + preamble.x_origin)
                 except ValueError:
                     self.log(level="Error", message="An oscilloscope sample was not sent in a float format")
 
@@ -367,8 +350,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
         rms = self.ask(":MEASure:VRMS?")
         return float(rms)
 
+    def wrap_up(self):
+        self.disconnect_hardware()
 
 if __name__ == "__main__":
     import unittest
-    from Hardware.unit_tests.test_oscilloscope import TestOscilloscope
     unittest.main()

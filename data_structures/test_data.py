@@ -133,6 +133,32 @@ class TestData(QObject):
 
         self.show_results_summary.emit(self.results_summary)
 
+    def update_results_summary_with_frequency_sweep(
+            self,
+            frequency_range: FrequencyRange,
+            element: int,
+            frequency_Hz: float,
+            vsi: float,
+            units_str: str,
+    ):
+        """Add frequency sweep data to the results_summary table"""
+        if 'RMS'.upper() in units_str.upper():
+            self.results_summary[element - 1][0] = 'Vrms'
+        else:
+            self.results_summary[element - 1][0] = 'V^2s'
+
+        if frequency_range == FrequencyRange.high_frequency:
+            # High frequency
+            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][6] = "%.2f" % (vsi)
+            # HF efficiency (%)
+        else:  # Default to low frequency
+            # Low Frequency
+            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][4] = "%.2f" % (vsi)
+            # LF efficiency (%)
+        self.show_results_summary.emit(self.results_summary)
+
     def calculate_angle_average(self):
         angle_sum = 0
         count = 0

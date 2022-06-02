@@ -10,7 +10,7 @@ from Utilities.load_config import load_configuration
 class RelayBoard(AbstractRelay):
     reading_signal = pyqtSignal(bool)
 
-    def __init__(self, config=None, device_key="Pump", parent=None):
+    def __init__(self, config=None, device_key="Daq_Power_Relay", parent=None):
         super().__init__(config=config, device_key=device_key, parent=None)
         self.ser = None
         self.fields_setup()

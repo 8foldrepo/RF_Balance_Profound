@@ -23,11 +23,6 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def display_text(self, text: str) -> None:
-        """Method to display text on the oscilloscope display"""
-        ...
-
-    @abstractmethod
     def set_to_defaults(self) -> None:
         """Sets the oscilloscope's window values to default values specified in the inherited class. Other values
         such as the average counts, time of flight, external trigger, and timeout are also set"""
@@ -81,7 +76,9 @@ class AbstractOscilloscope(AbstractDevice):
 
     @abstractmethod
     def get_vertical_scale_V(self, channel: int) -> float:
-        """Method to get the vertical scale of the oscilloscope window when given the channel number (int) as a parameter"""
+        """
+        Method to get the vertical scale of the oscilloscope window when given the channel number (int) as a parameter
+        """
         ...
 
     @abstractmethod

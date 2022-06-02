@@ -1,9 +1,5 @@
 import random
-from abc import abstractmethod
-
 import numpy as np
-from termcolor import colored
-
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
@@ -13,10 +9,6 @@ class SimulatedOscilloscope(AbstractOscilloscope):
     def __init__(self, config: dict, device_key="Keysight_Oscilloscope", parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.connected = False
-        self.fields_setup()
-
-    @abstractmethod
-    def fields_setup(self):
         self.range_mV = self.config[self.device_key]["range_mV"]
         self.channel = self.config[self.device_key]["channel"]
         self.averages = self.config[self.device_key]["averages"]
@@ -108,3 +100,40 @@ class SimulatedOscilloscope(AbstractOscilloscope):
 
     def get_rms(self) -> float:
         return random.random()
+
+    def reset(self) -> None:
+        pass
+
+    def set_to_defaults(self) -> None:
+        pass
+
+    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
+              ext_trigger: bool, average_count: int) -> None:
+        pass
+
+    def set_trigger(self, external: bool) -> None:
+        pass
+
+    def get_vertical_range_V(self, channel: int) -> float:
+        return 1
+
+    def set_vertical_range_V(self, channel: int, volts: float) -> None:
+        pass
+
+    def get_vertical_scale_V(self, channel: int) -> float:
+        return 1
+
+    def set_vertical_scale_V(self, volts_per_div: float, channel: int):
+        pass
+
+    def get_vertical_offset_V(self, channel: int) -> float:
+        return 1
+
+    def set_vertical_offset_V(self, channel: int, offset: float) -> None:
+        pass
+
+    def autoScale(self):
+        pass
+
+    def wrap_up(self):
+        self.disconnect_hardware()
