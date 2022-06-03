@@ -63,7 +63,6 @@ class UAInterface(AbstractUAInterface):
     def read_data(self):
         # cal_data_signal.emit(self.cal_data_signal)
         output = self.get_command_output()
-
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], -1)
@@ -80,6 +79,8 @@ class UAInterface(AbstractUAInterface):
             return [], -3
 
         # Try to extract the status number from the output, otherwise retry
+        firmware_str = output.splitlines()[0]
+        firmware_version_str = firmware_str.split(' ')[7]
         calibration_string_pre = output.splitlines()[3]
         calibration_string_pre_list = calibration_string_pre.split(" ")
         # Search for number in the string containing "status = "
@@ -98,7 +99,9 @@ class UAInterface(AbstractUAInterface):
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
         calibration_data_list = calibration_data_quotes_removed.split(",")
 
-        if len(calibration_data_list) < 27:
+        calibration_data_list.insert(7, firmware_version_str)
+
+        if len(calibration_data_list) < 28:
             self.log(level="Error", message=f"Calibration data contained less than 27 items : {calibration_data_list}")
             return [], -5
 
@@ -108,7 +111,6 @@ class UAInterface(AbstractUAInterface):
         return calibration_data_list, status
 
     def write_data(self, ua_calibration_data=None):
-        print(ua_calibration_data)
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
@@ -165,7 +167,3 @@ class UAInterface(AbstractUAInterface):
 if __name__ == "__main__":
     wtf = UAInterface(config=None)
     print(wtf.read_data())
-    wtf.write_data(
-        ['1', 'LC0013', '20210922', '3', '4.29', '13.74', '-95.5', '42.8', '47.1', '63.6', '60.5', '54.2', '58.2',
-         '57.1',
-         '76.8', '53.2', '75.3', '38.7', '38.3', '40.9', '40.5', '37.1', '40.4', '40.1', '40.0', '39.0', '36.9'])
