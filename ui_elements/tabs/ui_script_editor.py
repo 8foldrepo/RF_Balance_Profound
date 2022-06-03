@@ -272,8 +272,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
         empty_item = QTreeWidgetItem([])
         empty_item.setFlags(
             empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsSelectable)  # should prevent user from selecting this item
-        empty_item.setFlags(
-            empty_item.flags() & ~QtCore.Qt.ItemFlag.ItemIsEnabled)  # should prevent user from interacting with this item
         self.treeWidget.invisibleRootItem().addChild(empty_item)
         self.treeWidget.setCurrentItem(empty_item)
 

@@ -1,5 +1,5 @@
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QMessageBox, QAbstractItemView, QApplication
 from PyQt5.QtWidgets import QTableWidgetItem
 
 from Hardware.ua_interface import UAInterface
@@ -10,13 +10,20 @@ from ui_elements.my_qwidget import MyQWidget
 class UACalibration(MyQWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.data = None
+        self.main_window = None
         self.ua_interface = None
         self.setupUi(self)
         self.manager = None
         self.config = None
 
-        self.High_Frequency_MHz = float("nan")
-        self.Low_Frequency_MHz = float("nan")
+        self.high_frequency_mhz = float("nan")
+        self.low_frequency_mhz = float("nan")
+
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.element_frequencies_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setEnabled(False)
+        self.element_frequencies_table.setEnabled(False)
 
     def set_config(self, config):
         self.config = config
@@ -24,25 +31,24 @@ class UACalibration(MyQWidget, Ui_Form):
     def set_manager(self, manager):
         self.manager = manager
 
-    def set_ua_interface(self, ua_interface):
-        self.ua_interface = ua_interface
+    def set_ua_interface(self, ua_interface_source):
+        self.ua_interface = ua_interface_source
         self.ua_interface.cal_data_signal.connect(self.populate_results_table)
         self.read_from_ua_button.clicked.connect(self.ua_interface.read_data)
 
         try:
             self.main_window = self.parent().parent().parent().parent().parent()
-        except:
+        except Exception:
             self.main_window = self
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
         self.read_from_ua_button.setEnabled(enabled)
-        self.tableWidget.setEnabled(enabled)  # todo: see if this interferes with program writing data to table
 
     def get_high_frequency_Mhz(self) -> float:
         return float(self.tableWidget.item(5, 0).text())
 
-    def get_low_frequecy_Mhz(self) -> float:
+    def get_low_frequency_Mhz(self) -> float:
         return float(self.tableWidget.item(4, 0).text())
 
     @pyqtSlot(list, int)
@@ -58,19 +64,20 @@ class UACalibration(MyQWidget, Ui_Form):
         # data, status = self.ua_interface.read_data() #todo is this line needed?
         if status == -2:
             self.main_window.dialog_critical(
-                "wtfib is not connected (check power and ethernet connection)"
+                "WTFiB is not connected (check power and ethernet connection)"
             )
             self.main_window.log(
                 level="Error", message="No UA connected, plug one in and try again"
             )
             return
         elif status == 0:
+            self.tableWidget.setEnabled(True)
+            self.element_frequencies_table.setEnabled(True)
             self.data = data
 
         status = 0
 
-        # todo: refactor grid display in ua calibration tab
-        for i in range(7):
+        for i in range(7):  # INFO: populates calibration data table
             item = QTableWidgetItem()
             item.setText(data[i])
             self.tableWidget.setItem(i, 0, item)
@@ -83,18 +90,22 @@ class UACalibration(MyQWidget, Ui_Form):
         item.setText(str(status))
         self.tableWidget.setItem(8, 0, item)
 
-        for i in range(10):
-            item = QTableWidgetItem()
-            item.setText(data[i + 7])
-            self.tableWidget.setItem(i, 1, item)
+        item = QTableWidgetItem()
+        item.setText(data[7])
+        self.tableWidget.setItem(9, 0, item)
 
-        for i in range(10):
+        for i in range(10):  # INFO: populates low frequency column
             item = QTableWidgetItem()
-            item.setText(data[i + 17])
-            self.tableWidget.setItem(i, 2, item)
+            item.setText(data[i + 8])
+            self.element_frequencies_table.setItem(i, 0, item)
 
-        self.High_FrequencyMHz = float(self.tableWidget.item(5, 0).text())
-        self.Low_FrequencyMHz = float(self.tableWidget.item(4, 0).text())
+        for i in range(10):  # INFO: populates high frequency column
+            item = QTableWidgetItem()
+            item.setText(data[i + 18])
+            self.element_frequencies_table.setItem(i, 1, item)
+
+        self.high_frequency_mhz = float(self.tableWidget.item(5, 0).text())
+        self.low_frequency_mhz = float(self.tableWidget.item(4, 0).text())
 
     def dialog_critical(self, text):
         dlg = QMessageBox(self)
