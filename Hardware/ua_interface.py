@@ -2,6 +2,7 @@ import re
 import subprocess
 import time as t
 from subprocess import Popen, PIPE
+from typing import Tuple, List
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
@@ -21,7 +22,6 @@ class UAInterface(AbstractUAInterface):
         self.read_result = False
         self.write_result = False
         self.path_of_exe = ROOT_DIR + "\\Hardware\\interface_box_executable\\WTFiB_Calib.exe"
-
         self.ua_calibration_data = None
         self.fields_setup()
 
@@ -62,26 +62,27 @@ class UAInterface(AbstractUAInterface):
         self.disconnect_hardware()
 
     @pyqtSlot()
-    def read_data(self):
+    def read_data(self) -> Tuple[List[str], str, int]:
         # cal_data_signal.emit(self.cal_data_signal)
         output = self.get_command_output()
-
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], -1)
-            return [], -1
+            return [], '', -1
 
         if "status=-2" in output:
             self.log(level="Error", message="wtfib is not connected (check power and ethernet connection)")
             self.cal_data_signal.emit([], -2)
-            return [], -2
+            return [], '', -2
 
         if "Calibration data" not in output:
             self.log(level="Error", message="Calibration data not found in output, read failed")
             self.cal_data_signal.emit([], -3)
-            return [], -3
+            return [], '', -3
 
         # Try to extract the status number from the output, otherwise retry
+        firmware_str = output.splitlines()[0]
+        fw_version = firmware_str.split(' ')[7]
         calibration_string_pre = output.splitlines()[3]
         calibration_string_pre_list = calibration_string_pre.split(" ")
         # Search for number in the string containing "status = "
@@ -94,7 +95,9 @@ class UAInterface(AbstractUAInterface):
         if status == 1:
             self.cal_data_signal.emit([], -1)
             self.log(level='error', message="No ua found...")
-            return [], -1
+
+            return [], '', -1
+
 
         calibration_string_pre_list2 = calibration_string_pre_list[5]
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
@@ -102,15 +105,14 @@ class UAInterface(AbstractUAInterface):
 
         if len(calibration_data_list) < 27:
             self.log(level="Error", message=f"Calibration data contained less than 27 items : {calibration_data_list}")
-            return [], -5
+            return [], '', -5
 
         self.ua_calibration_data = calibration_data_list
         self.cal_data_signal.emit(calibration_data_list, status)
         self.read_result = True
-        return calibration_data_list, status
+        return calibration_data_list, fw_version, status
 
     def write_data(self, ua_calibration_data=None):
-        print(ua_calibration_data)
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
@@ -119,7 +121,6 @@ class UAInterface(AbstractUAInterface):
         high_eff_string = f'\"{" ".join(ua_calibration_data[17:27])}\"'
 
         process_call = first_string + " " + low_eff_string + " " + high_eff_string
-        self.log(process_call)
         subprocess.call(process_call)
 
         output = self.get_command_output()
@@ -166,8 +167,6 @@ class UAInterface(AbstractUAInterface):
 
 if __name__ == "__main__":
     wtf = UAInterface(config=None)
-    print(wtf.read_data())
-    wtf.write_data(
-        ['1', 'LC0013', '20210922', '3', '4.29', '13.74', '-95.5', '42.8', '47.1', '63.6', '60.5', '54.2', '58.2',
-         '57.1',
-         '76.8', '53.2', '75.3', '38.7', '38.3', '40.9', '40.5', '37.1', '40.4', '40.1', '40.0', '39.0', '36.9'])
+    data, firmware_str, status = wtf.read_data()
+
+    wtf.write_data(data)

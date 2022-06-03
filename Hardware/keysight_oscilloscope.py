@@ -7,6 +7,7 @@ from data_structures.variable_containers import OscilloscopePreamble
 
 
 class KeysightOscilloscope(AbstractOscilloscope):
+    # These are not the only class variables, there are ones inherited from AbstractOscilloscope and AbstractDevice
     max_time_of_flight: float
     min_time_of_flight: float
     timeout_s: float
@@ -136,9 +137,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.command(":TRIG:MODE EDGE")
         if external:
             self.command(":TRIG:EDGE:SOUR EXT")
+            self.command(":TRIG:EDGE:LEV 2.5")
         else:
             self.command(":TRIG:EDGE:SOUR CHAN1")
-        self.command(":TRIG:LEV:ASET")
+            self.command(":TRIG:EDGE:LEV .1")
 
     def set_averaging(self, averages=1):
         self.averages = averages
