@@ -13,7 +13,7 @@ from definitions import ROOT_DIR
 
 class UAInterface(AbstractUAInterface):
     connected_signal = QtCore.pyqtSignal(bool)
-    cal_data_signal = QtCore.pyqtSignal(list, int)
+    cal_data_signal = QtCore.pyqtSignal(list, str, int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
@@ -67,17 +67,17 @@ class UAInterface(AbstractUAInterface):
         output = self.get_command_output()
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
-            self.cal_data_signal.emit([], -1)
+            self.cal_data_signal.emit([], '', -1)
             return [], '', -1
 
         if "status=-2" in output:
             self.log(level="Error", message="wtfib is not connected (check power and ethernet connection)")
-            self.cal_data_signal.emit([], -2)
+            self.cal_data_signal.emit([], '', -2)
             return [], '', -2
 
         if "Calibration data" not in output:
             self.log(level="Error", message="Calibration data not found in output, read failed")
-            self.cal_data_signal.emit([], -3)
+            self.cal_data_signal.emit([], '', -3)
             return [], '', -3
 
         # Try to extract the status number from the output, otherwise retry
@@ -93,7 +93,7 @@ class UAInterface(AbstractUAInterface):
             status = -4
 
         if status == 1:
-            self.cal_data_signal.emit([], -1)
+            self.cal_data_signal.emit([], '', -1)
             self.log(level='error', message="No ua found...")
 
             return [], '', -1
@@ -108,7 +108,7 @@ class UAInterface(AbstractUAInterface):
             return [], '', -5
 
         self.ua_calibration_data = calibration_data_list
-        self.cal_data_signal.emit(calibration_data_list, status)
+        self.cal_data_signal.emit(calibration_data_list, fw_version, status)
         self.read_result = True
         return calibration_data_list, fw_version, status
 

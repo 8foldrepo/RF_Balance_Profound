@@ -9,7 +9,7 @@ from Hardware.Abstract.abstract_device import AbstractDevice
 class AbstractUAInterface(AbstractDevice):
     __metaclass__ = ABCMeta
 
-    cal_data_signal = pyqtSignal(list, int)
+    cal_data_signal = pyqtSignal(list, str, int)
     read_result = False
     write_result = False
 

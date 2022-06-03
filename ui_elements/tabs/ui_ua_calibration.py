@@ -51,8 +51,8 @@ class UACalibration(MyQWidget, Ui_Form):
     def get_low_frequency_Mhz(self) -> float:
         return float(self.tableWidget.item(4, 0).text())
 
-    @pyqtSlot(list, int)
-    def populate_results_table(self, data=None, status=None):
+    @pyqtSlot(list, str, int)
+    def populate_results_table(self, data=None, fw_version=None, status=None):
         if status == -1 or status == 2:
             self.main_window.dialog_critical(
                 "UA not found, please connect UA to interface box and try again"
@@ -91,21 +91,24 @@ class UACalibration(MyQWidget, Ui_Form):
         self.tableWidget.setItem(8, 0, item)
 
         item = QTableWidgetItem()
-        item.setText(data[7])
+        item.setText(str(fw_version))
         self.tableWidget.setItem(9, 0, item)
 
         for i in range(10):  # INFO: populates low frequency column
             item = QTableWidgetItem()
-            item.setText(data[i + 8])
+            item.setText(data[i + 7])
             self.element_frequencies_table.setItem(i, 0, item)
 
         for i in range(10):  # INFO: populates high frequency column
             item = QTableWidgetItem()
-            item.setText(data[i + 18])
+            item.setText(data[i + 17])
             self.element_frequencies_table.setItem(i, 1, item)
 
         self.high_frequency_mhz = float(self.tableWidget.item(5, 0).text())
         self.low_frequency_mhz = float(self.tableWidget.item(4, 0).text())
+
+        self.tableWidget.setEnabled(True)
+        self.element_frequencies_table.setEnabled(True)
 
     def dialog_critical(self, text):
         dlg = QMessageBox(self)
