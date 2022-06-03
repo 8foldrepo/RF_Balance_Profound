@@ -7,15 +7,12 @@ import time as t
 import traceback
 from collections import OrderedDict
 from typing import List, Tuple
-
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
-from termcolor import colored
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -32,7 +29,7 @@ from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, SystemInfo
 from definitions import ROOT_DIR, WaterLevel, FrequencyRange
-from galil_motor_controller import GalilMotorController
+from Hardware.galil_motor_controller import GalilMotorController
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
@@ -134,16 +131,19 @@ class Manager(QThread):
         self.oscilloscope_averages = 1
         self.abort_guard = False
         self.oscilloscope_channel = 1
-        self.last_rfb_update_time = t.time()
-        self.last_profile_update_time = t.time()
+
         self.warn = str(logging.WARNING)  # sets variable for shorter typing
         self.error = str(logging.ERROR)  # sets variable for shorter typing
-        # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
-        self.sensor_refresh_interval_s = 0.2
-        self.last_sensor_update_time = 0.0
 
         self.config = config
         self.system_info = system_info
+
+        # variables controlling automatic sensor updates
+        self.last_rfb_update_time = t.time()
+        self.last_profile_update_time = t.time()
+        # decreasing these values improves the refresh rate of the sensors at the cost of responsiveness
+        self.sensor_refresh_interval_s = self.config['Debugging']['sensor_refresh_interval_s']
+        self.last_sensor_update_time = 0.0
 
         self.app = QApplication.instance()
         self.test_data = TestData()
@@ -336,17 +336,21 @@ class Manager(QThread):
         info = SystemInfo()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
         if info.oscilloscope_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "Oscilloscope serial number not found")
         info.awg_sn = self.AWG.get_serial_number()
         if info.awg_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.forward_power_sn = self.Forward_Power_Meter.get_serial_number()
         if info.forward_power_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "AWG serial number not found")
         info.reflected_power_sn = self.Reflected_Power_Meter.get_serial_number()
         info.thermocouple_sn = self.thermocouple.get_serial_number()
         info.rf_balance_sn = self.Balance.get_serial_number()
         if info.rf_balance_sn is None:
+            self.enable_ui_signal.emit(True)
             self.sequence_pass_fail('Interrupt action', "Balance serial number not found")
         self.system_info_signal.emit(info)
 
@@ -370,19 +374,23 @@ class Manager(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-            self.condition.wait(self.mutex, 50)
-
+            self.condition.wait(self.mutex, 1)
             if self.stay_alive is False:
                 break
 
             # code block below checks the first part of the split command_ray to see what command is
             command = self.command.upper()
             command_ray = command.split(" ")
+
+            if command != '':
+                print(command)
+                print("CAPTURE".upper() in command.upper())
+
             if command_ray[0] == "CLOSE":
                 self.wrap_up()
             elif command_ray[0] == "CONNECT":
                 self.connect_hardware()
-            elif command_ray[0] == "CAPTURE":
+            elif "CAPTURE".upper() in command.upper():
                 self.capture_oscilloscope_and_plot()
             elif command_ray[0] == "STEP":
                 self.advance_script()
@@ -400,11 +408,8 @@ class Manager(QThread):
                     else:
                         self.advance_script()
                 else:
-                    if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
-                        self.capture_oscilloscope_and_plot()
                     self.update_sensors()
-                    if self.thermocouple.connected:
-                        self.thermocouple.get_reading()
+
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
@@ -436,13 +441,18 @@ class Manager(QThread):
         self.abort_immediately_variable = False
 
     def update_sensors(self):
-        """Attempts to update the last sensor update time, the water level, thermocouple reading, and ua pump status.
+        """Attempts to update the last sensor update time, the water level, thermocouple reading, oscilloscope trace
+        (if applicable) and ua pump status. Runs according to the sensor refresh interval, if the program seems
+        unresponsive try increasing the sensor_refresh_interval_s variable in local.yaml
         Returns if the user is not looking at positional feedback"""
         if self.parent is not None and not hasattr(self.parent, "tabWidget"):
             return
 
         if t.time() - self.last_sensor_update_time > self.sensor_refresh_interval_s:
             self.last_sensor_update_time = t.time()
+
+            if self.thermocouple.connected:
+                self.thermocouple.get_reading()
 
             if self.IO_Board.connected:
                 self.IO_Board.get_water_level()
@@ -453,7 +463,12 @@ class Manager(QThread):
             if self.thermocouple.connected:
                 self.thermocouple.get_reading()
 
-    def capture_scope(self, channel: int=1, plot: bool=True):
+            if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
+                self.capture_oscilloscope_and_plot()
+            else:
+                pass
+
+    def capture_scope(self, channel: int = 1, plot: bool = True):
         """
         captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
         them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true
@@ -674,7 +689,6 @@ class Manager(QThread):
                     self.run_script_step()
                     if inside_iteration:
                         self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
-                        inside_iteration = False
 
             if not self.currently_scripting:
                 self.enable_ui_signal.emit(True)
@@ -707,7 +721,7 @@ class Manager(QThread):
         if "MEASURE ELEMENT EFFICIENCY (RFB)" in name.upper():
             self.measure_element_efficiency_rfb_multithreaded(args)
         elif "PRE-TEST INITIALISATION" in name.upper():
-            self.pretest_initialization(args)
+            self.pretest_initialization()
         elif "FIND ELEMENT" in name.upper():
             self.find_element(args)
         elif "SAVE RESULTS" in name.upper():
@@ -723,7 +737,7 @@ class Manager(QThread):
         elif "FUNCTION GENERATOR" in name.upper():
             self.configure_function_generator(args)
         elif "AUTOSET TIMEBASE" in name.upper():
-            self.autoset_timebase(args)
+            self.autoset_timebase()
         elif "MOVE SYSTEM" in name.upper():
             self.move_system(args)
         elif "SELECT CHANNEL" in name.upper() or "SELECT UA CHANNEL" in name.upper():
@@ -846,11 +860,9 @@ class Manager(QThread):
 
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
-                print("returning true")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return True
             if self.no_clicked_variable:
-                print("returning false")  # todo: remove
                 self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
                 return False
         # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
@@ -926,7 +938,7 @@ class Manager(QThread):
         self.test_data.log_script(["Script complete", "", "", ""])
         self.set_tab_signal.emit(["Results"])
 
-    def pretest_initialization(self, var_dict):
+    def pretest_initialization(self):
         """Home the UA, perform hardware checks, and prompt the user until they pass,
         takes in a variable dict as a parameter"""
 
@@ -1038,7 +1050,7 @@ class Manager(QThread):
                 if not cont:
                     return
 
-                self.IO_Board.fill_tank()
+                self.IO_Board.drain_tank_to_level()
             else:
                 # log successful water level test if we've reached this point in the code
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
@@ -1160,9 +1172,7 @@ class Manager(QThread):
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
-        # Set timebase
-        autoset_var_dict = dict()
-        self.autoset_timebase(autoset_var_dict)
+        self.autoset_timebase()
 
         if element_position_test:
             self.Motors.go_to_position(['R'], [-180], enable_ui=False)
@@ -1203,8 +1213,8 @@ class Manager(QThread):
 
     def scan_axis(self, element: int, axis, num_points, increment, ref_position, data_storage, go_to_peak,
                   storage_location,
-                  update_element_position: bool, scope_channel=1, acquisition_type='N Averaged Waveform', averages=1,
-                  filename_stub="FindElement") -> bool:
+                  update_element_position: bool, scope_channel: int = 1, acquisition_type='N Averaged Waveform',
+                  averages=1, filename_stub="FindElement") -> bool:
         """
 
         Args:
@@ -1282,9 +1292,9 @@ class Manager(QThread):
 
                 if 'entire waveform'.upper() in data_storage.upper():
                     self.__save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
-                                                  voltages_v=voltages_v, storage_location=storage_location,
-                                                  filename_stub=filename_stub, x_units_str='Time (s)',
-                                                  y_units_str=y_units_str)
+                                                    voltages_v=voltages_v, storage_location=storage_location,
+                                                    filename_stub=filename_stub, x_units_str='Time (s)',
+                                                    y_units_str=y_units_str)
 
                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1297,7 +1307,7 @@ class Manager(QThread):
 
             positions.append(position)
             vsi_values.append(vsi)
-            self.profile_plot_signal.emit(positions, vsi_values, axis_label)
+            self.__refresh_profile_plot(positions, vsi_values, axis_label)
 
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
@@ -1309,6 +1319,8 @@ class Manager(QThread):
                 self.element_x_coordinates[self.element] = max_position
             else:
                 self.element_r_coordinates[self.element] = max_position + 90
+                # Refresh the angle average in self.test_data
+                self.test_data.calculate_angle_average()
 
         self.test_data.set_max_position(axis, self.element, max_position)
 
@@ -1327,8 +1339,8 @@ class Manager(QThread):
 
         if 'Do not store'.upper() != data_storage.upper():
             self.__save_scan_profile(positions=positions, vsi_values=vsi_values,
-                                   axis=axis, storage_location=storage_location, filename_stub=filename_stub,
-                                   x_units_str=axis_label, y_units_str=y_units_str)
+                                     axis=axis, storage_location=storage_location, filename_stub=filename_stub,
+                                     x_units_str=axis_label, y_units_str=y_units_str)
 
         # ensure finished profile plot is plotted on screen
         t.sleep(.05)
@@ -1356,7 +1368,7 @@ class Manager(QThread):
         return True
 
     def __save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub,
-                                 x_units_str, y_units_str):
+                                   x_units_str, y_units_str):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1378,7 +1390,8 @@ class Manager(QThread):
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
                                        storage_location=storage_location, filename_stub=filename_stub)
 
-    def __save_scan_profile(self, axis, positions, vsi_values, storage_location, filename_stub, x_units_str, y_units_str):
+    def __save_scan_profile(self, axis, positions, vsi_values, storage_location, filename_stub, x_units_str,
+                            y_units_str):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1421,6 +1434,7 @@ class Manager(QThread):
                                              storage_location=storage_location, filename_stub=filename_stub)
 
     pyqtSlot(dict)
+
     def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         try:
@@ -1501,6 +1515,8 @@ class Manager(QThread):
         mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
         output: bool = bool(var_dict["Enable output"])
         frequency_options: str = var_dict["Set frequency options"]
+
+        self.AWG.reset()
 
         if frequency_options == "Common low frequency" or frequency_options == 'Element pk low frequency':
             frequency_mhz = self.test_data.low_frequency_MHz
@@ -1604,7 +1620,7 @@ class Manager(QThread):
         Warn the user that the UA is being retracted in x
         returns: a boolean indicating whether or not to continue the script
         """
-        if self.config["debugging"]["drain_before_retract"]:
+        if self.config["Debugging"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
 
             cont = self.cont_if_cont_clicked()
@@ -1613,7 +1629,7 @@ class Manager(QThread):
 
         return True
 
-    def move_system(self, var_dict):
+    def move_system(self, var_dict, average_angle=True):
         """
         Move motors to the specified coordinates
         """
@@ -1644,7 +1660,13 @@ class Manager(QThread):
             if "Hydrophone" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             elif "RFB" in target:
-                self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate], enable_ui=False)
+                if average_angle:
+                    self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, self.test_data.angle_average],
+                                               enable_ui=False)
+                else:
+                    self.Motors.go_to_position(['X', 'R'], [element_x_coordinate, element_r_coordinate,
+                                                            self.test_data.angle_average],
+                                               enable_ui=False)
             elif "Down" in target:
                 self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90], enable_ui=False)
 
@@ -1659,15 +1681,19 @@ class Manager(QThread):
         """
         Activate the relay for and move to a specified element
         """
-        try:
+        if "Element" in var_dict.keys():
             self.element = self.element_str_to_int(var_dict["Element"])
-        except KeyError:
+        elif "Channel" in var_dict.keys():
+            self.element = self.element_str_to_int(var_dict["Channel"])
+        else:
             self.log(
-                "No element defined in variable list for task 'select ua channel', previous self.element value preserved",
-                "info")
+                "No element defined in variable list for task 'select ua channel', "
+                "previous self.element value preserved info")
+            return
+
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
-    def frequency_sweep(self, var_dict):
+    def frequency_sweep(self, var_dict) -> bool:
         # todo: add test to results summary if include_test is True
         # todo: using this setting to decide where to put it (Low frequency or High frequency)
 
@@ -1686,7 +1712,7 @@ class Manager(QThread):
         fine_incr_MHz = float(var_dict["Fine increment (MHz)"])
         burst_count = int(var_dict["Burst count"])
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
-        scope_channel = var_dict["Scope channel"]
+        self.oscilloscope_channel = int(var_dict["Scope channel"])
         acquisition_type = var_dict["Acquisition type"]
         averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
@@ -1701,32 +1727,80 @@ class Manager(QThread):
         else:
             storage_location = data_directory
 
-        self.AWG.set_output(True)
-        self.AWG.set_amplitude_v(amplitude_mVpp / 1000)
-        self.AWG.set_burst(True)
+        # configure function generator
+        func_var_dict = dict()
+        func_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
+        func_var_dict["Frequency (MHz)"] = start_freq_MHz
+        func_var_dict["Mode"] = "Toneburst"
+        func_var_dict["Enable output"] = True
+        func_var_dict["#Cycles"] = burst_count  # Rename to burst_cycles in the future?
+        func_var_dict["Set frequency options"] = "From config cluster"
+        self.configure_function_generator(func_var_dict)
 
         if acquisition_type == "Single Waveform":
             self.Oscilloscope.set_averaging(1)
         else:
             self.Oscilloscope.set_averaging(averages)
 
-        coarse_freq_MHz_list, coarse_VSI_list, y_units_str = self.run_frequency_sweep(start_freq_MHz, end_freq_MHz,
-                                                                                      coarse_incr_MHz, burst_count,
-                                                                                      channel=scope_channel,
-                                                                                      storage_location=storage_location,
-                                                                                      data_storage=data_storage)
+        if self.config["Analysis"]["capture_rms_only"]:
+            y_units_str = 'RMS voltage (V)'
+        else:
+            y_units_str = 'VSI (Voltage Squared Integral)'
 
-        # todo: enable this in a way that makes sense and add it to the output file
-        # fine_freq_MHz_list, fine_VSI_list = self.run_frequency_sweep(start_freq_MHz,end_freq_MHz,fine_incr_MHz,
-        #                                                             burst_count, scope_channel = scope_channel)
+        list_of_frequencies_MHz = list(np.arange(start_freq_MHz, end_freq_MHz, coarse_incr_MHz))
+        coarse_freq_MHz_list, coarse_VSI_list, y_units_str, cont = self.run_frequency_sweep(list_of_frequencies_MHz,
+                                                                                            data_storage,
+                                                                                            storage_location,
+                                                                                            y_units_str)
+
+        if not cont:
+            return False
 
         if 'Do not store'.upper() != data_storage.upper():
             self.__save_frequency_sweep(frequencies=coarse_freq_MHz_list, vsi_values=coarse_VSI_list,
-                                      storage_location=storage_location, filename_stub='FrequencySweep',
-                                      y_units_str=y_units_str)
+                                        storage_location=storage_location, filename_stub='CoarseFrequencySweep',
+                                        y_units_str=y_units_str)
 
-    def run_frequency_sweep(self, lower_limit_MHz, upper_limitMHz, freq_step, bursts, data_storage, storage_location,
-                            channel=1) -> Tuple[List[float], List[float], str]:
+        # Run fine VSI sweep
+        max_coarse_VSI_index = max(range(len(coarse_VSI_list)), key=coarse_VSI_list.__getitem__)
+        fine_start_freq_MHz = max(coarse_freq_MHz_list[max_coarse_VSI_index] - 1, 0)
+        fine_stop_freq_MHz = min(coarse_freq_MHz_list[max_coarse_VSI_index] + 1, len(coarse_freq_MHz_list) - 1)
+        fine_list_of_frequencies_MHz = list(np.arange(fine_start_freq_MHz, fine_stop_freq_MHz, fine_incr_MHz))
+        fine_freq_MHz_list, fine_VSI_list, y_units_str, cont = self.run_frequency_sweep(fine_list_of_frequencies_MHz,
+                                                                                        data_storage,
+                                                                                        storage_location,
+                                                                                        y_units_str)
+        if not cont:
+            return False
+
+        # Update test results summary
+        max_vsi = max(max(coarse_VSI_list), max(fine_VSI_list))
+
+        if max_vsi in coarse_VSI_list:
+            max_vsi_index = coarse_VSI_list.index(max_vsi)
+            max_vsi_frequency = list_of_frequencies_MHz[max_vsi_index]
+        else:
+            max_vsi_index = fine_VSI_list.index(max_vsi)
+            max_vsi_frequency = fine_list_of_frequencies_MHz[max_vsi_index]
+
+        if include_test:
+            self.test_data.update_results_summary_with_frequency_sweep(
+                frequency_range=frequency_range,
+                element=self.element,
+                frequency_Hz=max_vsi_frequency,
+                units_str=y_units_str,
+                vsi=max_vsi
+            )
+
+        if 'Do not store'.upper() != data_storage.upper():
+            self.__save_frequency_sweep(frequencies=fine_freq_MHz_list, vsi_values=fine_VSI_list,
+                                        storage_location=storage_location, filename_stub='FineFrequencySweep',
+                                        y_units_str=y_units_str)
+
+        self.AWG.set_output(False)
+
+    def run_frequency_sweep(self, list_of_frequencies_MHz,
+                            data_storage, storage_location, y_units_str) -> Tuple[List[float], List[float], str, bool]:
         """
         Performs a sweep between two frequencies, capturing the oscilloscope waveform (or rms thereof)
         at each frequency. Saves each waveform to a file if specified
@@ -1734,51 +1808,45 @@ class Manager(QThread):
             a list of floats representing the frequencies in MHz
             a list of floats representing the VSI or the RMS voltage of the waveform
             a string specifying the units of the latter
+            a boolean indicating whether to continue the script
         """
         list_of_VSIs = list()
-        list_of_frequencies_MHz = list()
 
-        y_units_str = 'RMS voltage (V)'
-        for x in np.arange(lower_limit_MHz, upper_limitMHz, freq_step):
-            self.AWG.set_frequency_hz(x * 1000000)  # set frequency according to step (coarse/fine) and x increment
-            # add the frequency to the list
-            # Find the average vsi voltage at a given frequency
+        for i in range(len(list_of_frequencies_MHz)):
+            # set frequency according to step (coarse/fine) and x increment
+            self.AWG.set_frequency_hz(list_of_frequencies_MHz[i] * 1000000)
+            # Find the vsi voltage at a given frequency
             vsi_sum = 0
 
-            for i in range(bursts):
-                # populates times_s and voltages_v with set frequency
+            if self.abort_immediately_variable:
+                # Stop the current method and any parent methods that called it
+                return [], [], "", False
 
-                if self.config["Analysis"]["capture_rms_only"]:
-                    vsi = self.Oscilloscope.get_rms()
-                else:
-                    y_units_str = 'VSI (Voltage Squared Integral)'
-                    times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
-                    if times_s == [] or voltages_v == []:
-                        cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                                       error_detail='Oscilloscope capture failed')
-                        if not cont:
-                            return [], [], ""
+            # populates times_s and voltages_v with set frequency
+            if self.config["Analysis"]["capture_rms_only"]:
+                vsi = self.Oscilloscope.get_rms()
+            else:
+                times_s, voltages_v = self.capture_scope(channel=self.oscilloscope_channel)
+                if times_s == [] or voltages_v == []:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail='Oscilloscope capture failed')
+                    if not cont:
+                        return [], [], "", False
 
-                    if 'entire waveform'.upper() in data_storage.upper():
-                        self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
-                                                      voltages_v=voltages_v, storage_location=storage_location,
-                                                      filename_stub="FrequencySweep", x_units_str='Time (s)',
-                                                      y_units_str=y_units_str)
+                if 'entire waveform'.upper() in data_storage.upper():
+                    self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
+                                                    voltages_v=voltages_v, storage_location=storage_location,
+                                                    filename_stub="FrequencySweep", x_units_str='Time (s)',
+                                                    y_units_str=y_units_str)
 
-                    vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
+                vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
-                vsi_sum = vsi_sum + vsi
-            vsi_avg = vsi_sum / bursts
-
-            list_of_frequencies_MHz.append(x)
-            list_of_VSIs.append(vsi_avg)
-
-        assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
-
-        self.profile_plot_signal.emit(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
+            list_of_VSIs.append(vsi)
+            assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
+            self.__refresh_profile_plot(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
-        return list_of_frequencies_MHz, list_of_VSIs, y_units_str
+        return list_of_frequencies_MHz, list_of_VSIs, y_units_str, True
 
     def find_vsi(self, times_s, voltages_v):
         """
@@ -1973,17 +2041,18 @@ class Manager(QThread):
 
         self.retry_clicked_variable = False
 
-        self.test_data.update_results_summary_with_efficiency_results(
-            frequency_range=frequency_range,
-            element=self.element,
-            frequency_Hz=self.AWG.state["frequency_Hz"],
-            efficiency_percent=self.rfb_data.efficiency_percent,
-            reflected_power_percent=self.rfb_data.reflected_power_percent,
-            forward_power_max=self.rfb_data.forward_power_max_extrapolated,
-            water_temperature_c=self.rfb_data.water_temperature_c,
-            test_result=test_result,
-            comment=comment
-        )
+        if efficiency_test:
+            self.test_data.update_results_summary_with_efficiency_results(
+                frequency_range=frequency_range,
+                element=self.element,
+                frequency_Hz=self.AWG.state["frequency_Hz"],
+                efficiency_percent=self.rfb_data.efficiency_percent,
+                reflected_power_percent=self.rfb_data.reflected_power_percent,
+                forward_power_max=self.rfb_data.forward_power_max_extrapolated,
+                water_temperature_c=self.rfb_data.water_temperature_c,
+                test_result=test_result,
+                comment=comment
+            )
 
         self.test_data.log_script(self.rfb_data.get_result_log_entry())
 

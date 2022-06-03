@@ -1,7 +1,7 @@
 import unittest
 import random
 import time as t
-from galil_motor_controller import GalilMotorController
+from Hardware.galil_motor_controller import GalilMotorController
 
 
 class TestMotors(unittest.TestCase):

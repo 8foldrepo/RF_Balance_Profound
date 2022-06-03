@@ -1,6 +1,4 @@
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Utilities.load_config import *
 
@@ -49,10 +47,9 @@ class SimulatedAWG(AbstractAWG):
         self.set_amplitude_v(amplitude_V)
         self.set_cycles(burst_cycles)
         self.set_burst(burst)
-        self.SetTriggerInput(external=ext_trig, period_s=burst_period_s)
+        self.set_trigger_output(True)
         self.set_offset_v(offset_V)
         self.set_output_impedance(output_Impedance)
-
         self.wait_til_complete()
 
     def get_state(self):
@@ -61,7 +58,7 @@ class SimulatedAWG(AbstractAWG):
         self.get_frequency_hz()
         self.get_amplitude_v()
         self.get_burst()
-        self.GetTriggerInput()
+        self.get_trigger_output()
         self.get_offset_v()
         self.get_output_impedance()
         return self.state
@@ -110,15 +107,6 @@ class SimulatedAWG(AbstractAWG):
     def GetFunction(self):
         pass
 
-    def SetTriggerInput(self, external: bool, period_s=0.000010, delay_s=0):
-        """Sets up the condition that triggers a burst. If external is false, burst will occur at a constant period."""
-        pass
-
-    def GetTriggerInput(self):
-        """Returns info about the trigger: source, delay_s, period_s"""
-
-        pass
-
     def set_burst(self, on=True):
         self.state["burst_on"] = on
 
@@ -149,9 +137,10 @@ class SimulatedAWG(AbstractAWG):
         return self.state["burst_cycles"]
 
     def set_trigger_output(self, trigger_out: bool):
-        """Returns the last known state of the device. Use getstate to inquire the state before calling"""
+        self.state["trig_out"] = trigger_out
 
-        pass
+    def get_trigger_output(self) -> bool:
+        return self.state["trig_out"]
 
     def get_serial_number(self) -> str:
         return '"Simulated"'

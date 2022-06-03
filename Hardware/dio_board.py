@@ -1,6 +1,6 @@
 import random
 import time as t
-
+from typing import Union
 import nidaqmx
 from PyQt5.QtCore import pyqtSignal
 from nidaqmx.constants import LineGrouping
@@ -10,7 +10,8 @@ from definitions import WaterLevel
 
 
 class DIOBoard(AbstractIOBoard):
-    """Class for interfacing with an National instruments usb-6009 digital IO board"""
+    """Class for interfacing with a National instruments usb-6009 digital IO board"""
+
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(WaterLevel)
 
@@ -30,7 +31,7 @@ class DIOBoard(AbstractIOBoard):
         self.power_relay = RelayBoard(config=config, device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
         self.pump_on = False
-        self.fields_setup()
+        self.name = self.config[self.device_key]["DAQ Device name"]
         self.active_channel = 0  # 0 means all channels are off
 
     def connect_hardware(self):
@@ -43,6 +44,26 @@ class DIOBoard(AbstractIOBoard):
 
         self.connected_signal.emit(self.connected)
         return self.connected, ""
+
+    def get_serial_number(self) -> Union[str, None]:
+        with nidaqmx.Task() as task:
+
+            # Add a channel so the device is added to task.devices
+            try:
+                task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
+            except nidaqmx.errors.DaqError as e:
+                if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
+                    self.log(level='error', message='Channel not found')
+                elif 'Device identifier is invalid' in str(e):
+                    self.log(level='error', message='Device not found, check connection and device name in config')
+                else:
+                    self.log(level='error', message=f'Unknown error {str(e)}')
+                return None
+
+            if len(task.devices) > 0:
+                return task.devices[0].dev_serial_num
+            else:
+                return None
 
     def activate_relay_channel(self, channel_number: int) -> bool:
         with nidaqmx.Task() as task:
@@ -207,7 +228,8 @@ class DIOBoard(AbstractIOBoard):
     def get_water_level(self) -> WaterLevel:
         """Return the state of the water level sensor. possible values are below_level, above_level, and level"""
 
-        if self.simulate_sensors: return self.water_level
+        if self.simulate_sensors:
+            return self.water_level
 
         with nidaqmx.Task() as task:  # enabling the appropriate ports to read water levels
             # task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  #
@@ -221,11 +243,11 @@ class DIOBoard(AbstractIOBoard):
             P1_5 = list_of_values[1]
 
             if P1_2 and not P1_5:
-                level = WaterLevel.level
+                level = WaterLevel.above_level
             elif P1_5 and not P1_2:
                 level = WaterLevel.below_level
             else:
-                level = WaterLevel.above_level
+                level = WaterLevel.level
 
             self.water_level_reading_signal.emit(level)
             return level
@@ -235,5 +257,8 @@ class DIOBoard(AbstractIOBoard):
         self.disconnect_hardware()
         self.disconnect_hardware()
 
-    def fields_setup(self):
-        self.name = self.config[self.device_key]["DAQ Device name"]
+
+if __name__ == '__main__':
+    dio = DIOBoard(config=None)
+    dio.activate_relay_channel(1)
+    dio.get_serial_number()

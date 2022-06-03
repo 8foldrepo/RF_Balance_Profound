@@ -23,40 +23,42 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def display_text(self, text: str) -> None:
-        """Method to display text on the oscilloscope display"""
-        ...
-
-    @abstractmethod
     def set_to_defaults(self) -> None:
-        """Sets the oscilloscope's window values to default values specified in the inherited class. Other values
-        such as the average counts, time of flight, external trigger, and timeout are also set"""
+        """
+        Sets the oscilloscope's window values to default values specified in the inherited class. Other values
+        such as the average counts, time of flight, external trigger, and timeout are also set
+        """
         ...
 
     @abstractmethod
     def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
               ext_trigger: bool, average_count: int) -> None:
-        """Method to initialize various aspects of the oscilloscope window, such as the horizontal/vertical scales,
-        averaging value and trigger policy"""
+        """
+        Method to initialize various aspects of the oscilloscope window, such as the horizontal/vertical scales,
+        averaging value and trigger policy
+        """
         ...
 
     @abstractmethod
     def set_trigger(self, external: bool) -> None:
         """Sets whether to capture when triggered. If false the oscilloscope will capture continuously."""
-
         ...
 
     @abstractmethod
     def set_averaging(self, averages: int):
-        """Takes multiple captures triggered by something (e.g. a function generator), and averages them together
+        """
+        Takes multiple captures triggered by something (e.g. a function generator), and averages them together
         the "averages" parameter is the number of waveforms to average together, functionality is built into the
-        oscilloscope"""
+        oscilloscope
+        """
         ...
 
     @abstractmethod
     def get_vertical_range_V(self, channel: int) -> float:
-        """Method to get the vertical range of the oscilloscope window in volts (float) when given channel (int)
-        as a parameter"""
+        """
+        Method to get the vertical range of the oscilloscope window in volts (float) when given channel (int)
+        as a parameter
+        """
         ...
 
     @abstractmethod
@@ -81,7 +83,9 @@ class AbstractOscilloscope(AbstractDevice):
 
     @abstractmethod
     def get_vertical_scale_V(self, channel: int) -> float:
-        """Method to get the vertical scale of the oscilloscope window when given the channel number (int) as a parameter"""
+        """
+        Method to get the vertical scale of the oscilloscope window when given the channel number (int) as a parameter
+        """
         ...
 
     @abstractmethod
@@ -95,8 +99,10 @@ class AbstractOscilloscope(AbstractDevice):
 
     @abstractmethod
     def set_vertical_offset_V(self, channel: int, offset: float) -> None:
-        """Method to set the vertical offset of the oscilloscope window in voltage units as a parameter for given
-        channel parameter"""
+        """
+        Method to set the vertical offset of the oscilloscope window in voltage units as a parameter for given
+        channel parameter
+        """
         ...
 
     @abstractmethod
@@ -123,7 +129,6 @@ class AbstractOscilloscope(AbstractDevice):
     @abstractmethod
     def capture(self, channel: int) -> Tuple[List[float], List[float]]:
         """Captures from the specified channel and returns a list of times and a list of voltages of equal length"""
-
         ...
 
     @abstractmethod

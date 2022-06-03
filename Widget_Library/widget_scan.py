@@ -14,9 +14,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_scan_tab_widget(object):
     def setupUi(self, scan_tab_widget):
         scan_tab_widget.setObjectName("scan_tab_widget")
-        scan_tab_widget.resize(1047, 689)
+        scan_tab_widget.resize(1000, 700)
+        scan_tab_widget.setMinimumSize(QtCore.QSize(1000, 700))
+        scan_tab_widget.setMaximumSize(QtCore.QSize(1000, 16777215))
         self.scan_tabs = QtWidgets.QTabWidget(scan_tab_widget)
-        self.scan_tabs.setGeometry(QtCore.QRect(10, 5, 1026, 672))
+        self.scan_tabs.setGeometry(QtCore.QRect(10, 5, 980, 680))
+        self.scan_tabs.setMinimumSize(QtCore.QSize(980, 680))
+        self.scan_tabs.setMaximumSize(QtCore.QSize(980, 680))
         self.scan_tabs.setObjectName("scan_tabs")
         self.one_dimension_scan_tab = QtWidgets.QWidget()
         self.one_dimension_scan_tab.setObjectName("one_dimension_scan_tab")
@@ -260,7 +264,7 @@ class Ui_scan_tab_widget(object):
         self.data_directory_input.setStyleSheet("background:white")
         self.data_directory_input.setObjectName("data_directory_input")
         self.layoutWidget_5 = QtWidgets.QWidget(self.scan_details_frame)
-        self.layoutWidget_5.setGeometry(QtCore.QRect(10, 140, 181, 39))
+        self.layoutWidget_5.setGeometry(QtCore.QRect(10, 140, 189, 39))
         self.layoutWidget_5.setObjectName("layoutWidget_5")
         self.ref_end_pos_grid = QtWidgets.QGridLayout(self.layoutWidget_5)
         self.ref_end_pos_grid.setContentsMargins(0, 0, 0, 0)
@@ -412,19 +416,16 @@ class Ui_scan_tab_widget(object):
         self.scan_tabs.addTab(self.scan_setup_tab, "")
 
         self.retranslateUi(scan_tab_widget)
-        self.scan_tabs.setCurrentIndex(2)
+        self.scan_tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(scan_tab_widget)
 
     def retranslateUi(self, scan_tab_widget):
         _translate = QtCore.QCoreApplication.translate
         scan_tab_widget.setWindowTitle(_translate("scan_tab_widget", "Form"))
-        self.one_dimension_scan_tab.setToolTip(_translate("scan_tab_widget", "The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph\n"
+        self.one_dimension_scan_tab.setToolTip(_translate("scan_tab_widget", "                    "))
+        self.last_acquired_waveform_plot_label.setToolTip(_translate("scan_tab_widget", "The 1D Scan tab shows the last acquired waveform with voltage over time, and profile graph\n"
 "                        that shows the voltage squared interval over time. Both these are supplied by the oscilloscope.\n"
-"                    "))
-        self.last_acquired_waveform_plot_label.setToolTip(_translate("scan_tab_widget", "The 1D Scan tab shows the last acquired waveform with voltage over time, and profile\n"
-"                            graph that shows the voltage squared interval over time. Both these are supplied by the\n"
-"                            oscilloscope.\n"
-"                        "))
+"               "))
         self.last_acquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last Aquired Waveform"))
         self.label_55.setText(_translate("scan_tab_widget", "Profile"))
         self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab), _translate("scan_tab_widget", "1D Scan"))

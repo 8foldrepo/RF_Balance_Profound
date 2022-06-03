@@ -25,9 +25,8 @@ class SimulatedBalance(AbstractBalance):
         self.timeout_s = self.config[self.device_key]["timeout_s"]
         self.port = self.config[self.device_key]["port"]
 
-    """Zeroes the scale with the next stale weight reading"""
-
     def zero_balance_stable(self):
+        """Zeroes the scale with the next stale weight reading"""
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if not self.connected:
@@ -54,9 +53,8 @@ class SimulatedBalance(AbstractBalance):
                     return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    """Zeroes the scale with the next stale weight reading"""
-
     def zero_balance_instantly(self):
+        """Zeroes the scale with the next stale weight reading"""
         self.log("Zeroing Balance")
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".

@@ -78,6 +78,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
         """Enables or disables UI elements that could interfere with a script being run"""
+
         self.acquire_scope_trace_button.setEnabled(enabled)
         # Acquire waveform tab
         # Acquisition arg. box

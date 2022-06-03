@@ -77,7 +77,7 @@ class MT_balance(AbstractBalance):
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
-                # For some reason when debugging these can also appear as b'ES'. that is normal.
+                # For some reason when Debugging these can also appear as b'ES'. that is normal.
                 if item == b"ZI D" or item == b"ZI S":
                     self.log(level="info", message="Balance Zeroed")
                     t.sleep(.05)
@@ -217,6 +217,8 @@ class MT_balance(AbstractBalance):
     def get_serial_number(self) -> Union[str, None]:
         if not self.connected:
             return None
+
+        self.stop_continuous_reading()
 
         self.ser.write(b"\nI4\n")
 
