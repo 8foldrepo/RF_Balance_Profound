@@ -4,6 +4,7 @@ import time as t
 from subprocess import Popen, PIPE
 from typing import Tuple, List
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
@@ -11,11 +12,12 @@ from definitions import ROOT_DIR
 
 
 class UAInterface(AbstractUAInterface):
-    connected_signal = pyqtSignal(bool)
-    cal_data_signal = pyqtSignal(list, int)
+    connected_signal = QtCore.pyqtSignal(bool)
+    cal_data_signal = QtCore.pyqtSignal(list, int)
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
+        self.timeout_s = None
         self.ip_address = "192.168.3.3"
         self.read_result = False
         self.write_result = False
@@ -73,7 +75,7 @@ class UAInterface(AbstractUAInterface):
             self.cal_data_signal.emit([], -2)
             return [], '', -2
 
-        if not "Calibration data" in output:
+        if "Calibration data" not in output:
             self.log(level="Error", message="Calibration data not found in output, read failed")
             self.cal_data_signal.emit([], -3)
             return [], '', -3
@@ -87,13 +89,15 @@ class UAInterface(AbstractUAInterface):
         status_str = calibration_string_pre_list[2]
         try:
             status = int(re.search(r"\d+", status_str).group())
-        except:
+        except Exception:
             status = -4
 
         if status == 1:
             self.cal_data_signal.emit([], -1)
             self.log(level='error', message="No ua found...")
+
             return [], '', -1
+
 
         calibration_string_pre_list2 = calibration_string_pre_list[5]
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
@@ -122,7 +126,7 @@ class UAInterface(AbstractUAInterface):
         output = self.get_command_output()
 
         if "status=-2" in output:
-            self.log(level='error', message='wtfib is not connected (check power and ethernet connection)')
+            self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
             self.write_result = False
             return -2
 

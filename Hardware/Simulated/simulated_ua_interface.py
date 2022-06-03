@@ -18,7 +18,7 @@ class SimulatedUAInterface(AbstractUAInterface):
                 self.read_result = False
         except KeyError:
             pass
-        self.ua_calibration_data = ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '63.6', '65.4', '67.5',
+        self.ua_calibration_data = ['1', 'GG1138', '20201005', '3', '4.29', '13.58', '-89.6', '1.0', '63.6', '65.4', '67.5',
                                     '66.8', '65.2',
                                     '62.4', '70.0', '69.8', '71.2', '68.1', '38.7', '38.7', '42.5', '37.3', '44.6',
                                     '46.0', '45.5',
