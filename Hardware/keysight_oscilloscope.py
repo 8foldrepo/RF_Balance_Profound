@@ -138,6 +138,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":TRIG:EDGE:SOUR EXT")
         else:
             self.command(":TRIG:EDGE:SOUR CHAN1")
+        self.command(":TRIG:LEV:ASET")
 
     def set_averaging(self, averages=1):
         self.averages = averages

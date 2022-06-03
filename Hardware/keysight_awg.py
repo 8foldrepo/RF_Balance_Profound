@@ -207,6 +207,7 @@ class KeysightAWG(AbstractAWG):
             self.command("BURS ON")
         else:
             self.command("BURS OFF")
+        t.sleep(.1)
 
     def get_burst(self) -> Tuple[bool, int]:
         """Returns: bool: indicating if the AWG is in burst mode, integer containing the number of cycles per burst"""

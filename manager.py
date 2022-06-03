@@ -374,7 +374,6 @@ class Manager(QThread):
         self.stay_alive = True
 
         while self.stay_alive is True:
-            print("running")
             self.condition.wait(self.mutex, 1)
             if self.stay_alive is False:
                 break
@@ -468,8 +467,6 @@ class Manager(QThread):
                 self.capture_oscilloscope_and_plot()
             else:
                 pass
-
-            print(t.time()-self.last_sensor_update_time) #todo: remove
 
     def capture_scope(self, channel: int = 1, plot: bool = True):
         """
