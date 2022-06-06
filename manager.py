@@ -13,6 +13,8 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
+from termcolor import colored
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -121,6 +123,8 @@ class Manager(QThread):
     def __init__(self, system_info, parent, config: dict, access_level='Operator'):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.script_has_description = False
+        self.script_description = None
         self.access_level = access_level
         self.error_message = None
         self.thread_cont_mutex = None
@@ -537,6 +541,7 @@ class Manager(QThread):
         building_loop = False
         task_variables = OrderedDict()  # the list of variables for the individual task
         task_number = -2  # keeps track of the task number for indexing
+        self.script_has_description = False
         f = open(path, "r")
         for line in f:
             ray = line.split(" = ")
@@ -549,7 +554,10 @@ class Manager(QThread):
             if "CREATEDBY" in ray[0].upper():
                 self.created_by_signal.emit(ray[1].replace('"', ""))
             elif "DESCRIPTION" in ray[0].upper():
-                self.description_signal.emit(ray[1].replace('"', ""))
+                self.script_has_description = True
+                self.set_tab_signal.emit(["Edit Script"])
+                self.script_description = ray[1].replace('"', "")
+                self.description_signal.emit(self.script_description)
 
             current_line = current_line + 1
             if line == '\n':
@@ -630,6 +638,13 @@ class Manager(QThread):
             self.task_arguments.append(
                 tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
+        if not self.script_has_description:
+            self.script_description = ''
+
+        if self.script_description is None or self.script_description == '':
+            self.description_signal.emit('')
+        else:
+            self.description_signal.emit(self.script_description)
         self.script_info_signal.emit(tasks)
         self.num_tasks_signal.emit(len(self.task_names))
 

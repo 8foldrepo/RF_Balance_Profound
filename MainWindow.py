@@ -6,12 +6,15 @@ import webbrowser
 from pprint import pprint
 from typing import List
 
+import PyQt5.QtWidgets
 from PyQt5 import QtCore, Qt
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
+from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
+from termcolor import colored
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
@@ -197,6 +200,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         self.script_step_view.insertTopLevelItems(0, tree_items)
 
+        text = self.script_description_field.toPlainText()
+        if text != '' and text is not None and not text.isspace():
+            for i in range(2):
+                self.script_description_field.setStyleSheet("QFrame\n{\n	border: 2px solid lightblue;\n}")
+                self.script_description_field.setText(text)
+                QTest.qWait(250)
+                self.script_description_field.setStyleSheet("QFrame\n{\n	color: black;\n}")
+                self.script_description_field.setText(text)
+                if i != 1:
+                    QTest.qWait(250)
+
     def update_script_visual_element_number(self, element_number):
         if "Element" in element_number:
             return
@@ -314,6 +328,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.created_by_signal.connect(self.created_by_field.setText)
         self.manager.created_on_signal.connect(self.created_on_field.setText)
         self.manager.description_signal.connect(self.script_description_field.setText)
+        # self.manager.description_signal.connect(self.flash_description_box_upon_load_script)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
 
         # Calculate progress according to the index of the step, including repeats
