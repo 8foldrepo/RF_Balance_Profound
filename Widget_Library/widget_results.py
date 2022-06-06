@@ -278,9 +278,7 @@ class Ui_Form(object):
         self.results_table.setSortingEnabled(__sortingEnabled)
         self.label_130.setText(_translate("Form", "UA Test Results"))
         self.save_button.setText(_translate("Form", "Save Report"))
-        self.tool_tip_ua_results.setToolTip(_translate("Form", "This tab shows very details information gathered about each element from the\n"
-"                                    ultrasound actuator in a grid.\n"
-"                                "))
+        self.tool_tip_ua_results.setToolTip(_translate("Form", "This tab shows very detailed information gathered about each element from the ultrasound actuator in a grid."))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.ua_results_tab), _translate("Form", "UA Results"))
 
 
