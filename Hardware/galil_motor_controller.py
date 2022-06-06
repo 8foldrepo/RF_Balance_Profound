@@ -1,4 +1,3 @@
-import random
 import time as t
 from typing import List, Union
 import gclib
@@ -56,7 +55,7 @@ class GalilMotorController(AbstractMotorController):
         port_list = self.handle.GAddresses()
         self.connected = False
 
-        for port in port_list.keys():
+        for _ in port_list.keys():
             try:
                 self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
                 feedback = feedback + self.handle.GInfo() + '\n'
@@ -105,10 +104,10 @@ class GalilMotorController(AbstractMotorController):
 
             # Set the number of decimal places preceding the decimal
             self.command('PF 7')
-            # Attempt to stop motion
+            # Attempt to stop motor's motion
             self.command("ST")
 
-            # Convert speeds to counts per second and update them
+            # Convert speeds to number of counts per second and update them
             steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
 
             sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
@@ -118,13 +117,13 @@ class GalilMotorController(AbstractMotorController):
             # self.set_origin()
             self.get_position()
             self.connected = True
-        except gclib.GclibError as e:
+        except gclib.GclibError:
             self.log(level='error', message=f"Connection error: {self.check_user_fault()}")
             self.connected = False
 
     # todo: test
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: List[str], coords_mm: List[float],
+    def go_to_position(self, axes: List[str], coordinates_mm: List[float],
                        mutex_locked: bool = False, enable_ui: bool = True) -> bool:
         """
         # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
@@ -137,24 +136,21 @@ class GalilMotorController(AbstractMotorController):
                 self.ready_signal.emit()
             return False
 
-        if not len(axes) == len(coords_mm):
+        if len(axes) != len(coordinates_mm):
             self.log(level='error', message="Go to position failed axes length does not match coordinates length")
             if enable_ui:
                 self.ready_signal.emit()
             return False
 
-        if sum(coords_mm) > 1000:
-            self.log(level='error', message=
-            "Coordinates entered for the motors are too large. Double check in the code that they are given in mm"
-                     )
+        if sum(coordinates_mm) > 1000:
+            self.log(level='error', message="Coordinates entered for the motors are too large."
+                                            " Double check in the code that they are given in mm")
             if enable_ui:
                 self.ready_signal.emit()
             return False
 
-        success = True
-
         galil_ax_letters_for_move = list()
-        coords_steps = list()
+        coordinates_steps = list()
 
         # Enforce pre-move conditions
         self.command("ST")
@@ -168,12 +164,12 @@ class GalilMotorController(AbstractMotorController):
                 continue
 
             galil_ax_letters_for_move.append(galil_ax_letter)
-            target_coordinate_mm = float(coords_mm[i])
+            target_coordinate_mm = float(coordinates_mm[i])
             target_coord_steps = int(self.__position_to_steps(ax_index, target_coordinate_mm))
             print(target_coord_steps)
-            coords_steps.append(target_coord_steps)
+            coordinates_steps.append(target_coord_steps)
 
-        pa_command_str = f"PA {create_comma_string(axes, coords_steps, self.ax_letters)}"
+        pa_command_str = f"PA {create_comma_string(axes, coordinates_steps, self.ax_letters)}"
 
         try:
             # Issue position absolute command
@@ -213,10 +209,10 @@ class GalilMotorController(AbstractMotorController):
                 success = True
                 break
 
-            except gclib.GclibError as e:
+            except gclib.GclibError:
                 code = self.check_user_fault()
                 # This exception is expected to occur repeatedly until the motion is complete. This is not a bug.
-                if not 'not valid while running' in code:
+                if 'not valid while running' not in code:
                     # If the error code is different, log it as an error and return False
                     self.log(level='error', message=f"error in go to position: {code}")
                     return False
@@ -238,7 +234,11 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def set_origin(self, origin_mm: list):
-        if not len(origin_mm) == len(self.ax_letters):
+        """
+        Given a list of origin points in mm that matches the numbers of axis: tell the galil
+        motor controller where the home position is for the respective axes
+        """
+        if len(origin_mm) != len(self.ax_letters):
             self.log(level='error', message='Error in set_origin, not enough coordinates provided')
             return
 
@@ -249,6 +249,11 @@ class GalilMotorController(AbstractMotorController):
 
     # todo: test
     def set_origin_1d(self, axis, coord_mm, get_position=True):
+        """
+        Helper method for the 'set_origin' method, actually creates the command string given
+        the passed values and issues the command to the hardware, will return position if flag
+        set to true and handles various error cases
+        """
         if coord_mm > 1000:
             self.log(level='error', message='Coordinate entered is too large, double check that it is given in mm')
             return False
@@ -281,19 +286,27 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def stop_motion(self):
+        """
+        Sends the stop command to the Galil control hardware to stop all motor movement.
+        Also emits a signal of the motor positions if class flag is true
+        """
         try:
             self.command("ST")
             self.moving = False
-        except gclib.GclibError as e:
+        except gclib.GclibError:
             stop_code = self.check_user_fault()
             if stop_code is not None:
-                print(f"error in stop_motion: {stop_code}")
+                self.log(level='error', message=f"error in stop_motion, stop code: {stop_code}")
             self.moving = True
         finally:
             self.get_position()
         self.moving_signal.emit(self.moving)
 
     def __get_galil_ax_letter(self, axis: str) -> str:
+        """
+        Helper method to convert a given axis name in string format to the index
+        position in the program's internal list of axes
+        """
         galil_ax_letter = ''
 
         try:
@@ -307,15 +320,18 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot(str)
     def stop_motion_1d(self, axis: str):
+        """
+        Tells the motion controller to stop a specific axis motor, handles errors
+        """
         galil_ax_letter = self.__get_galil_ax_letter(axis)
 
         try:
             self.command(f"ST {galil_ax_letter}")
             self.moving = False
-        except gclib.GclibError as e:
+        except gclib.GclibError:
             stop_code = self.check_user_fault()
             if stop_code is not None:
-                print(f"error in stop_motion: {stop_code}")
+                self.log(level='error', message=f"error in stop_motion, stop code: {stop_code}")
             self.moving = True
         finally:
             self.get_position()
@@ -323,37 +339,46 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def go_home(self, enable_ui: bool = True) -> bool:
-        # enforce premove conditions
-        self.command("ST")
+        """
+        Moves the motors to the internally stored home position for all axis.
+        Has an optional flag to have the user see a warning prompt before motor homing.
+        Returns boolean representing successful homing.
+        """
+        # enforce pre-move conditions
+        self.command("ST")  # INFO: stops motor movement
         self.command("SH ABCD")
 
-        # Theta prehome move
+        # Theta pre-home move
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
         self.command("ST")
         self.command("SH ABCD")
         try:
-            self.command("HM")
-            self.command("BG")
-        except gclib.GclibError as e:
+            self.command("HM")  # set up for homing command
+            self.command("BG")  # begin command
+        except gclib.GclibError:
             self.log(level='error', message=self.check_user_fault())
 
-        success = self.wait_for_motion_to_complete()
-        success_2 = self.go_to_position(['R'], [-90], enable_ui=False)
+        motion_complete_success = self.wait_for_motion_to_complete()
+        go_to_position_success = self.go_to_position(['R'], [-90], enable_ui=False)
 
         if enable_ui:
             self.ready_signal.emit()
 
-        return success and success_2
+        return motion_complete_success and go_to_position_success
 
     @pyqtSlot(str)
     def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
-        # enforce premove conditions
-        self.command("ST")
+        """
+        Does the same as the go_home method except is only pertained to the theta axis.
+        """
+        # QUESTION: should this also support the x axis?
+        # enforce pre-move conditions
+        self.command("ST")  # stop command
         self.command("SH ABCD")
 
         if axis == 'R' or axis == 'Theta':
-            # Theta prehome move
+            # Theta pre-home move
             self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
             self.command("ST")
@@ -361,7 +386,7 @@ class GalilMotorController(AbstractMotorController):
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
             self.command(f"BG {self.__get_galil_ax_letter(axis)}")
-        except gclib.GclibError as e:
+        except gclib.GclibError:
             self.log(level='error', message=self.check_user_fault())
 
         success = self.wait_for_motion_to_complete()
@@ -427,7 +452,7 @@ class GalilMotorController(AbstractMotorController):
 
     def __get_ax_number(self, axis):
         """return the motor controller driver number of the axis with the specified letter"""
-
+        # QUESTION: this method is never used, is it meant to be?
         if axis.upper() in self.ax_letters:
             axis_number = self.ax_letters.index(axis.upper()) + 1
         else:
@@ -474,6 +499,10 @@ class GalilMotorController(AbstractMotorController):
         return position_deg_or_mm
 
     def check_user_fault(self) -> str:
+        """
+        Motor controller will usually have an error number and code, if it doesn't,
+        simply print out python's exception
+        """
         try:
             error = self.command("TC 1")
             return error

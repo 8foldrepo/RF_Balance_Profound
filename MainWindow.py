@@ -271,7 +271,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     def tab_text_to_index(self, text):
         """
-        Returns the index of the tab with specified text in the main tabwidget.
+        Returns the index of the tab with specified text in the main tab widget.
         If no match exists, returns -1. Not case sensitive.
         """
         for i in range(self.tabWidget.count()):
@@ -642,7 +642,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         with the option to look it up and auto-populate the LF, HF, and hardware code with an optional
         override tick, and an optional comment (hence the str in the pyqtSlot)"""
         # Read UA serial number
-        ua_read_data, _, status = self.UAInterface.read_data()
+        ua_read_data, firmware_version, status = self.UAInterface.read_data()
         # If their access level is operator, do not proceed with the script unless the read was successful.
 
         if status != 0:

@@ -88,19 +88,28 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def reset(self):
         self.command("*RST")
 
-    def disconnect_hardware(self):
-        if type(self.inst) is None:
+    def disconnect_hardware(self) -> bool:
+        """
+        Checks if already disconnected, if not, attempts to disconnect with exception handling.
+        Sets connected variable to false and emits signal
+        """
+        if self.inst is None:
             self.connected = False
             self.connected_signal.emit(False)
-            return  # already disconnected
+            return True  # already disconnected
         try:
             self.inst.close()
-        except pyvisa.errors.VisaIOError:
-            pass
-        self.connected = False
-        self.connected_signal.emit(False)
+            self.connected = False
+            self.connected_signal.emit(False)
+            return True
+        except pyvisa.errors.VisaIOError as e:
+            self.log(level='error', message=f'could not disconnect oscilloscope: {e}')
+            return False
 
     def set_to_defaults(self):
+        """
+        Sets all the internal class variables to default values specified in the config file.
+        """
         self.reset()
         self.channel = self.config[self.device_key]['channel']
         self.max_time_of_flight = self.config['Oscilloscope_timebase']["time_window_maximum"]
@@ -119,6 +128,9 @@ class KeysightOscilloscope(AbstractOscilloscope):
                    ext_trigger=self.external_trigger, average_count=self.average_count)
 
     def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
+        """
+        This method relays to the oscilloscope a given set of parameters
+        """
         self.set_horizontal_range_sec(range_s)
         self.set_horizontal_offset_sec(offset_s)
         if autorange_v:
@@ -133,41 +145,67 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.set_trigger(ext_trigger)
 
     def set_trigger(self, external):
+        """
+        Define the conditions for an internal trigger of the oscilloscope.
+        """
+        # INFO: EDGE = identifies a trigger by looking for a specified slope and voltage level on a waveform.
         self.command(":TRIG:EDGE:SLOP POS")
         self.command(":TRIG:MODE EDGE")
         if external:
-            self.command(":TRIG:EDGE:SOUR EXT")
-            self.command(":TRIG:EDGE:LEV 2.5")
-        else:
+            self.command(":TRIG:EDGE:SOUR EXT")  # sets the trigger source to external
+            self.command(":TRIG:EDGE:LEV 2.5")  # INFO: LEV = sets the trigger level voltage for the active trigger source
+        else:  # trigger is internal
             self.command(":TRIG:EDGE:SOUR CHAN1")
             self.command(":TRIG:EDGE:LEV .1")
 
     def set_averaging(self, averages=1):
+
         self.averages = averages
         if averages > 1:
             self.command(":ACQ:TYPE AVER")
             self.command(f":ACQ:COUN {averages}")
         else:
-            self.command(":ACQ:TYPE HRES")
+            self.command(":ACQ:TYPE HRES")  # sets oscilloscope in high resolution mode aka smoothing
 
-    def get_vertical_scale_V(self, channel):
+    def get_vertical_scale_V(self, channel: int) -> float:
+        """
+        Retrieves the vertical scale in volts
+        """
         return float(self.ask(f":CHAN{channel}:SCAL?"))
 
-    def set_vertical_scale_V(self, volts_per_div, channel: int) -> None:
+    def set_vertical_scale_V(self, volts_per_div: float, channel: int) -> None:
+        """
+        Sets the vertical scale of the oscilloscope screen when given the volts per division
+        """
         self.command(f":CHAN{channel}:SCAL {volts_per_div}")
         self.range_mV = volts_per_div * 1000 * 8
 
-    def get_vertical_range_V(self, channel):
+    def get_vertical_range_V(self, channel: int) -> float:
+        """
+        Retrieves the vertical range in volts
+        """
         return float(self.ask(f":CHAN{channel}:RANG?"))
 
     def set_vertical_range_V(self, channel: int, volts: float) -> None:
+        """
+        Sets the vertical range on the oscilloscope screen
+        when given a volts and channel parameter
+        """
         self.range_mV = volts * 1000
         self.command(f":CHAN{channel}:RANG {volts}")
 
     def get_vertical_offset_V(self, channel: int) -> float:
+        """
+        Retrieves the vertical offset in volts from 0 (the origin),
+        parameter is int and return value is float
+        """
         return float(self.ask(f":CHAN{channel}:OFFS?"))
 
     def set_vertical_offset_V(self, channel: int, offset: float) -> bool:
+        """
+        When given the channel and offset, this method changes the vertical
+        offset of the screen to the given value
+        """
         self.command(f":CHAN{channel}:OFFS {offset}")
         actual_offset_v = self.get_vertical_offset_V(channel=channel)
         if not error_acceptable(actual_offset_v, offset, 3, print_msg=False):
@@ -176,28 +214,44 @@ class KeysightOscilloscope(AbstractOscilloscope):
             return False
 
     def get_horizontal_scale_sec(self) -> float:
+        """
+        Retrieves the horizontal scale in seconds as a float
+        """
         scale_s = float(self.ask(f":TIM:SCAL?"))
         self.range_s = scale_s * 8
         return scale_s
 
     def set_horizontal_scale_sec(self, seconds: float) -> None:
+        """Sets the horizontal scale in seconds with it being passed as a parameter"""
         self.command(f":TIM:SCAL {seconds}")
         self.range_s = 8 * seconds
 
     def get_horizontal_range_sec(self) -> float:
+        """
+        The range is 8 times the horizontal scale in seconds,
+        so it returns the range in seconds as a float
+        """
         self.range_s = float(self.ask(":TIM:RANG?"))
         return self.range_s
 
     def set_horizontal_range_sec(self, seconds: float) -> None:
+        """Sets the horizontal range in seconds with it being passed as a float parameter"""
         self.range_s = seconds
         command = f":TIM:RANG {seconds}"
         self.command(command)
 
     def get_horizontal_offset_sec(self) -> float:
+        """
+        Retrieves the horizontal offset from 0 seconds (origin) from the oscilloscope. Return value is a float
+        """
         self.offset_s = float(self.ask(":TIM:POS?"))
         return self.offset_s
 
     def set_horizontal_offset_sec(self, offset: float) -> bool:
+        """
+        Sets the horizontal offset of the oscilloscope screen in seconds when passed
+        as a float parameter. Checks to ensure that offset does not exceed range
+        """
         self.offset_s = offset
         self.command(f":TIM:POS {offset}")
 
@@ -210,6 +264,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     # stretch: add automatic waveform finding
     def autoset_oscilloscope_timebase(self):
+        """
+        Takes the autoset min and max time of flight values from the config file and
+        calculates/sets the range and time of flight window (horizontal range and offset)
+        """
         self.max_time_of_flight = self.config['Oscilloscope_timebase']["time_window_maximum"]
         self.min_time_of_flight = self.config['Oscilloscope_timebase']["time_window_minimum"]
         range_s = self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6
@@ -219,15 +277,21 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.set_horizontal_offset_sec(offset_s)
 
     def get_frequency_Hz(self) -> float:
+        """Returns the current frequency in Hz as a float value of the oscilloscope"""
         return float(self.ask(":MEAS:FREQ?"))
 
     def get_amplitude_V(self) -> float:
+        """Returns the amplitude of the oscilloscope window in volts as a float"""
         return float(self.ask(":MEAS:VAMP?"))
 
     def autoScale(self):
+        """Issues Keysight's built-in auto-scale command to the oscilloscope"""
         self.command(":AUT")
 
     def capture(self, channel) -> Tuple[List[float], List[float]]:
+        """
+        Captures the x-axis (seconds) and y-axis (volts) and returns the two respective float lists
+        """
         # self.log(
         #     f"capture method called in keysight_oscilloscope.py, called by
         #     {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
@@ -244,9 +308,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                 preamble = OscilloscopePreamble(self.ask("WAV:PRE?").split(","))
 
             except pyvisa.errors.VisaIOError as e:
-                if "Timeout" in str(e):
-                    pass
-                else:
+                if "Timeout" not in str(e):
                     self.log(level="error",
                              message=f"Unknown error when asking for waveform preamble, retrying: {e}")
             if preamble is not None:
@@ -272,14 +334,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
             try:
                 voltages_v_strings = self.ask("WAV:DATA?").split(",")
             except pyvisa.errors.VisaIOError as e:
-                if "Timeout" in str(e):
-                    pass
-                else:
+                if "Timeout" not in str(e):
                     self.log(level="error", message="Unknown error when asking for waveform preamble")
             if voltages_v_strings is not None:
                 break
 
-        # temp = voltages_v[0].split()[-1]
+        # temp = voltages_v[0].split()[-1]  # QUESTION: do we need these two lines?
         # voltages_v[0] = temp
         # removes the metadata at the beginning
         if "#" in voltages_v_strings[0]:
