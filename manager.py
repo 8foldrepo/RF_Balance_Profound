@@ -27,8 +27,8 @@ from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data, find_int
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
-from data_structures.variable_containers import FileMetadata, SystemInfo
-from definitions import ROOT_DIR, WaterLevel, FrequencyRange
+from data_structures.variable_containers import FileMetadata, SystemInfo, WaterLevel, FrequencyRange
+from definitions import ROOT_DIR
 from Hardware.galil_motor_controller import GalilMotorController
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
@@ -71,7 +71,7 @@ class Manager(QThread):
     user_prompt_pump_not_running_signal = QtCore.pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = QtCore.pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = QtCore.pyqtSignal()
-    write_cal_data_to_ua_signal = QtCore.pyqtSignal(list)  # list is 2d array of calibration data
+    show_write_cal_data_dialog_signal = QtCore.pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = QtCore.pyqtSignal()
     # Contains a pass/fail list of booleans and a list of descriptions
     script_complete_signal = QtCore.pyqtSignal(list, list)
@@ -381,10 +381,6 @@ class Manager(QThread):
             # code block below checks the first part of the split command_ray to see what command is
             command = self.command.upper()
             command_ray = command.split(" ")
-
-            if command != '':
-                print(command)
-                print("CAPTURE".upper() in command.upper())
 
             if command_ray[0] == "CLOSE":
                 self.wrap_up()
@@ -852,7 +848,7 @@ class Manager(QThread):
                 self.abort_after_step()
                 return False
 
-    def wait_for_answer(self):
+    def wait_for_answer(self) -> bool:
         """
         Sets answer variables to false and waits for user to make selection
         """
@@ -861,15 +857,11 @@ class Manager(QThread):
 
         while not self.yes_clicked_variable and not self.no_clicked_variable:
             if self.yes_clicked_variable:
-                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
+                self.thread_cont_mutex = True
                 return True
             if self.no_clicked_variable:
-                self.thread_cont_mutex = True  # set this mutex to true, at this point, we don't need to wait for input
+                self.thread_cont_mutex = True
                 return False
-        # self.thread_cont_mutex = False  # set this mutex to false, at this point, we don't need to wait for input
-
-        return True
-
     @pyqtSlot()
     def continue_clicked(self):
         """Flags cont_clicked to continue the current step"""
@@ -1444,10 +1436,10 @@ class Manager(QThread):
             self.log(level='warning', message="no 'Save summary file' specified in script, defaulting to false")
             save_summary_file = False
         try:
-            write_uac_calibration: bool = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
+            write_ua_calibration: bool = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
         except KeyError:
             self.log(level='warning', message="no 'Write UA Calibration' specified in script, defaulting to false")
-            write_uac_calibration = False
+            write_ua_calibration = False
         try:
             prompt_for_calibration_write: bool = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
         except KeyError:
@@ -1464,19 +1456,15 @@ class Manager(QThread):
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
+
+            calibration_data = generate_calibration_data(self.test_data)
             cont = self.cont_if_answer_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return
             if self.yes_clicked_variable:
-                self.test_data.skip_write_to_ua = False
-                self.yes_clicked_variable = False
-                calibration_data = generate_calibration_data(self.test_data)
                 self.UAInterface.write_data(calibration_data)
-            else:
-                self.no_clicked_variable = False
-                self.test_data.skip_write_to_ua = True
-                return
-        elif write_uac_calibration:
+
+        elif write_ua_calibration:
             calibration_data = generate_calibration_data(self.test_data)
             self.UAInterface.write_data(calibration_data)
         else:
@@ -2083,7 +2071,7 @@ class Manager(QThread):
         calibration_data should be a 2d list: 1st col: cal data array, 2nd col: low freq, 3rd col: high freq
         , relays this data to the main window to open a GUI dialog to save calibration data.
         """
-        self.write_cal_data_to_ua_signal.emit(calibration_data)
+        self.show_write_cal_data_dialog_signal.emit(calibration_data)
 
     def wrap_up(self) -> None:
         """

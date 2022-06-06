@@ -84,7 +84,6 @@ def generate_calibration_data(test_data: TestData) -> List[str]:
     output[0] = str(test_data.schema)
     output[1] = str(test_data.serial_number)
     date_str = test_data.test_date_time[0:4] + test_data.test_date_time[5:7] + test_data.test_date_time[8:10]
-    print(date_str)
     output[2] = date_str
     output[3] = str(test_data.hardware_code)
     output[4] = str(test_data.low_frequency_MHz)
@@ -281,7 +280,6 @@ def create_test_results_summary_file(test_data: TestData, path):
         if x == 12:  # for the elements with manual HF...
             f.write("Elements with manual HF\t" + ",".join(element_data_list[x]))
     f.close()
-    print(f'create_test_results_summary_file() in useful_methods.py wrote to {path}')
 
 
 def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:

@@ -1,8 +1,7 @@
 from typing import List
-
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from definitions import FrequencyRange
+from data_structures.variable_containers import FrequencyRange
 
 
 class TestData(QObject):
@@ -133,14 +132,8 @@ class TestData(QObject):
 
         self.show_results_summary.emit(self.results_summary)
 
-    def update_results_summary_with_frequency_sweep(
-            self,
-            frequency_range: FrequencyRange,
-            element: int,
-            frequency_Hz: float,
-            vsi: float,
-            units_str: str,
-    ):
+    def update_results_summary_with_frequency_sweep(self, frequency_range: FrequencyRange, element: int,
+                                                    frequency_Hz: float, vsi: float, units_str: str, ):
         """Add frequency sweep data to the results_summary table"""
         if 'RMS'.upper() in units_str.upper():
             self.results_summary[element - 1][0] = 'Vrms'

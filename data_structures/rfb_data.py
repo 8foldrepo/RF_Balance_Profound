@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from Utilities.formulas import calculate_total_uncertainty_percent, calculate_random_uncertainty_percent, \
     calculate_standard_deviation, calculate_pf_max, calculate_efficiency_percent
-from definitions import FrequencyRange
+from data_structures.variable_containers import FrequencyRange
 
 
 class RFBData:
@@ -324,6 +324,16 @@ class RFBData:
 
         if None in self.f_meter_readings_w:
             return False, "Invalid test due to missing forward power data"
+
+        if self.efficiency_percent is None or self.efficiency_percent < 0 or self.efficiency_percent > 100:
+            return False, "Invalid test due to invalid efficiency_percent"
+
+        if self.reflected_power_percent is None or self.reflected_power_percent < 0 or self.reflected_power_percent > 100:
+            return False, "Invalid test due to invalid reflected_power_percent"
+
+        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated < 0 or \
+                self.forward_power_max_extrapolated > 100:
+            return False, "Invalid test due to invalid Pf max"
 
         if self.std_too_high:
             return False, f"Invalid test due to a possible disturbance. The standard deviation within an interval " \

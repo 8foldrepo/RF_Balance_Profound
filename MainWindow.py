@@ -17,7 +17,8 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index
 from Widget_Library import window_wet_test
-from definitions import ROOT_DIR, WaterLevel
+from data_structures.variable_containers import WaterLevel
+from definitions import ROOT_DIR
 from manager import Manager
 from ui_elements.Dialogs.draining_dialog import DrainingDialog
 from ui_elements.Dialogs.filling_dialog import FillingDialog
@@ -352,7 +353,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.user_prompt_pump_not_running_signal.connect(self.show_user_prompt_pump_not_running)
         self.manager.user_prompt_signal_water_too_low_signal.connect(self.show_user_prompt_water_too_low)
         self.manager.user_prompt_signal_water_too_high_signal.connect(self.show_user_prompt_water_too_high)
-        self.manager.write_cal_data_to_ua_signal.connect(self.show_write_cal_data_prompt)
+        self.manager.show_write_cal_data_dialog_signal.connect(self.show_write_cal_data_prompt)
         self.manager.retracting_ua_warning_signal.connect(self.show_ua_retract_warn_prompt)
         self.manager.IO_Board.filling_signal.connect(self.show_filling_tank_dialog)
         self.manager.IO_Board.draining_signal.connect(self.show_draining_tank_dialog)
@@ -792,7 +793,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.status_hi.setText(calibration_data[2][8])
         dlg.fw_version_hi.setText(calibration_data[2][9])
 
-        dlg.write_ua_signal.connect(self.manager.write_calibration_data_to_ua_button)
+        # dlg.write_ua_signal.connect(self.manager.write_calibration_data_to_ua_button)
         dlg.abort_signal.connect(self.manager.abort_after_step)
         dlg.exec()
 
