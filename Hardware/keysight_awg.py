@@ -1,3 +1,4 @@
+import time as t
 from typing import Tuple, Union
 
 import pyvisa
@@ -6,7 +7,6 @@ from PyQt5 import QtCore
 from Hardware.Simulated.simulated_awg import AbstractAWG
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import error_acceptable
-import time as t
 
 
 class KeysightAWG(AbstractAWG):

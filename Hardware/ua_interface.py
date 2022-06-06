@@ -1,5 +1,4 @@
 import re
-import subprocess
 import time as t
 from subprocess import Popen, PIPE
 from typing import Tuple, List
@@ -115,10 +114,7 @@ class UAInterface(AbstractUAInterface):
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
-
         output = self.get_write_command_output(ua_calibration_data)
-
-
 
         if "status=-2" in output:
             self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
@@ -126,7 +122,8 @@ class UAInterface(AbstractUAInterface):
             return -2
 
         if "status=-9" in output:
-            self.log(level='error', message=f'calibration data incomplete, invalid, or improperly formatted: {ua_calibration_data}')
+            self.log(level='error',
+                     message=f'calibration data incomplete, invalid, or improperly formatted: {ua_calibration_data}')
             self.write_result = False
             return -9
 
@@ -181,6 +178,7 @@ class UAInterface(AbstractUAInterface):
                 if str(e) == "\'utf-8\' codec can't decode byte 0xb8 in position 150: invalid start byte":
                     self.log("Getting output failed, retrying...")
         return None
+
 
 if __name__ == "__main__":
     wtf = UAInterface(config=None)

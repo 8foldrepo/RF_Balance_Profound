@@ -1,4 +1,5 @@
 from typing import List
+
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from data_structures.variable_containers import FrequencyRange
@@ -107,7 +108,7 @@ class TestData(QObject):
             results tab"""
         if frequency_range == FrequencyRange.high_frequency:
             # High frequency
-            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz/1000000)
+            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
             # HF efficiency (%)
             self.results_summary[element - 1][11] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][12] = "%.1f" % reflected_power_percent
@@ -117,7 +118,7 @@ class TestData(QObject):
                 comment = f"High frequency test failed: {comment}"
         else:  # Default to low frequency
             # Low Frequency
-            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz/1000000)
+            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
             # LF efficiency (%)
             self.results_summary[element - 1][7] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent

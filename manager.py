@@ -6,15 +6,14 @@ import sys
 import time as t
 import traceback
 from collections import OrderedDict
-from pprint import pprint, pformat
 from typing import List, Tuple
+
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
-from termcolor import colored
 
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
@@ -24,6 +23,7 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
+from Hardware.galil_motor_controller import GalilMotorController
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -32,7 +32,6 @@ from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, SerialNumbers, WaterLevel, FrequencyRange
 from definitions import ROOT_DIR
-from Hardware.galil_motor_controller import GalilMotorController
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
@@ -578,7 +577,8 @@ class Manager(QThread):
                     self.question_box_finished = False
                     self.yes_clicked_variable = False
                     self.no_clicked_variable = False
-                    self.user_question_signal.emit(f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
+                    self.user_question_signal.emit(
+                        f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
                     cont = self.cont_if_answer_clicked()
                     if cont:
                         if self.yes_clicked_variable:  # if the user clicked yes

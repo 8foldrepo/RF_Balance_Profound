@@ -18,7 +18,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def __init__(self, config: Union[dict, None], device_key="VIX_Motors", parent=None, lock=None):
         self.lock = lock
-        super().__init__(parent=parent, config=config, device_key=device_key, lock = lock)
+        super().__init__(parent=parent, config=config, device_key=device_key, lock=lock)
         # For refreshing UI
         self.app = QApplication.instance()
         # Serial communication object for the motor controllers
@@ -56,7 +56,7 @@ class ParkerMotorController(AbstractMotorController):
             axis_numbers.append(num)
 
             target_coordinate_mm = float(coords_mm[i])
-            target_coord_steps = self.__position_to_steps(num - 1, target_coordinate_mm)
+            target_coord_steps = self.position_to_steps(num - 1, target_coordinate_mm)
 
             coords.append(target_coord_steps)
 
@@ -119,7 +119,7 @@ class ParkerMotorController(AbstractMotorController):
         axis_number = self.__get_ax_number(axis)
         axis_index = axis_number - 1
 
-        coord_steps = self.__position_to_steps(axis_index, coord_mm)
+        coord_steps = self.position_to_steps(axis_index, coord_mm)
 
         home_coordinate = int(coord_steps)
 
@@ -210,7 +210,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def setup_home_1d(self, axis, enabled=True, reference_edge='+', normally_closed=False, speed=-5, mode=1,
                       acceleration=10):
-        axis_number = self.get_ax_number(axis)
+        axis_number = self.__get_ax_number(axis)
 
         if enabled:
             onString = "1"
@@ -596,7 +596,7 @@ class ParkerMotorController(AbstractMotorController):
 
             position_steps = float(position_string)
 
-            position_deg_or_mm = self.__steps_to_position(i, position_steps)
+            position_deg_or_mm = self.steps_to_position(i, position_steps)
 
             # Check if position has not changed. If all axes have not changed moving will be false
             if abs(position_deg_or_mm - self.coords_mm[i]) > moving_margin_ray[i]:
@@ -674,7 +674,7 @@ class ParkerMotorController(AbstractMotorController):
         if response[27] == "1":
             self.log("")
 
-    def __position_to_steps(self, axis_index: int, position_deg_or_mm: float):
+    def position_to_steps(self, axis_index: int, position_deg_or_mm: float):
         """Converts the user-facing coordinate in mm or degrees to the coordinate in motor steps"""
         i = axis_index
 
@@ -694,7 +694,7 @@ class ParkerMotorController(AbstractMotorController):
 
         return position_steps
 
-    def __steps_to_position(self, axis_index, position_steps):
+    def steps_to_position(self, axis_index, position_steps):
         """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
         i = axis_index
         position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
@@ -814,8 +814,8 @@ if __name__ == "__main__":
 
     for i in range(2):
         for item in [0, -263, -90]:
-            y = motors.__position_to_steps(i, item)
-            x = motors.__steps_to_position(i, y)
+            y = motors.position_to_steps(i, item)
+            x = motors.steps_to_position(i, y)
             print(item)
             print(x)
             print(y)

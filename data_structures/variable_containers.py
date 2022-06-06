@@ -11,6 +11,7 @@ class WaterLevel(Enum):
     level = 2
     above_level = 3
 
+
 class FileMetadata:
     element_number: int
     X: float
@@ -25,6 +26,7 @@ class FileMetadata:
     nominal_high_frequency_MHz: float
     y_units_str: str
     x_units_str: str
+
 
 class SerialNumbers:
     rf_balance_sn: str

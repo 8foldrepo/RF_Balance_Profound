@@ -1,10 +1,8 @@
 import time as t
 from typing import Union, Tuple
-import unittest
+
 import serial
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
-from termcolor import colored
 
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
@@ -256,6 +254,5 @@ class MT_balance(AbstractBalance):
 
 if __name__ == "__main__":
     import unittest
-    from Hardware.unit_tests.test_balance import TestBalance
-    unittest.main()
 
+    unittest.main()

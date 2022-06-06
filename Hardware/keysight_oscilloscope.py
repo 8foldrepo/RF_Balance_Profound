@@ -1,6 +1,8 @@
 import time as t
 from typing import Union, List, Tuple
+
 import pyvisa
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Utilities.useful_methods import error_acceptable
 from data_structures.variable_containers import OscilloscopePreamble
@@ -153,7 +155,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.command(":TRIG:MODE EDGE")
         if external:
             self.command(":TRIG:EDGE:SOUR EXT")  # sets the trigger source to external
-            self.command(":TRIG:EDGE:LEV 2.5")  # INFO: LEV = sets the trigger level voltage for the active trigger source
+            self.command(
+                ":TRIG:EDGE:LEV 2.5")  # INFO: LEV = sets the trigger level voltage for the active trigger source
         else:  # trigger is internal
             self.command(":TRIG:EDGE:SOUR CHAN1")
             self.command(":TRIG:EDGE:LEV .1")

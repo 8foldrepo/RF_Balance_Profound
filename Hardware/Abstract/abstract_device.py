@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABCMeta
 from typing import Tuple
+
 from PyQt5.QtCore import pyqtSignal, QObject
+
 from Utilities.useful_methods import log_msg
 
 

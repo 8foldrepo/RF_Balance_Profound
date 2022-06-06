@@ -1,6 +1,7 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
+
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 

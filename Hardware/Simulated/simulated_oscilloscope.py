@@ -1,5 +1,7 @@
 import random
+
 import numpy as np
+
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 
 
