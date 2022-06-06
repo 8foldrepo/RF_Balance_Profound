@@ -326,7 +326,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.created_by_signal.connect(self.created_by_field.setText)
         self.manager.created_on_signal.connect(self.created_on_field.setText)
         self.manager.description_signal.connect(self.script_description_field.setText)
-        # self.manager.description_signal.connect(self.flash_description_box_upon_load_script)
         self.manager.num_tasks_signal.connect(self.set_num_tasks)
 
         # Calculate progress according to the index of the step, including repeats
