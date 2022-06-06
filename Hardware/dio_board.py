@@ -2,7 +2,7 @@ import random
 import time as t
 from typing import Union
 import nidaqmx
-from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtCore
 from nidaqmx.constants import LineGrouping
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
@@ -12,12 +12,12 @@ from definitions import WaterLevel
 class DIOBoard(AbstractIOBoard):
     """Class for interfacing with a National instruments usb-6009 digital IO board"""
 
-    pump_reading_signal = pyqtSignal(bool)
-    water_level_reading_signal = pyqtSignal(WaterLevel)
+    pump_reading_signal = QtCore.pyqtSignal(bool)
+    water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)
 
     # used for showing UI dialogs in MainWindow
-    filling_signal = pyqtSignal()
-    draining_signal = pyqtSignal(WaterLevel)
+    filling_signal = QtCore.pyqtSignal()
+    draining_signal = QtCore.pyqtSignal(WaterLevel)
 
     def __init__(self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)

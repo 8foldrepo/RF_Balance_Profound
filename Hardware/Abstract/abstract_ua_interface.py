@@ -17,7 +17,7 @@ class AbstractUAInterface(AbstractDevice):
         super().__init__(parent=parent, config=config, device_key=device_key)
 
     @pyqtSlot()
-    def read_data(self) -> Tuple[List[str], int]:
+    def read_data(self) -> Tuple[List[str], str, int]:  # data list, firmware version, status
         """Read data from the UA, check status of the operation, return/emit these, and update read_result"""
         ...
 
