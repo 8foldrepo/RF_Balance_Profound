@@ -6,13 +6,14 @@ import webbrowser
 from pprint import pprint
 from typing import List
 
+import PyQt5.QtWidgets
 from PyQt5 import QtCore, Qt
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
+from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index
@@ -197,6 +198,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             tree_items.append(item)
 
         self.script_step_view.insertTopLevelItems(0, tree_items)
+
+        text = self.script_description_field.toPlainText()
+        if text != '' and text is not None and not text.isspace():
+            for i in range(2):
+                self.script_description_field.setStyleSheet("QFrame\n{\n	border: 2px solid lightblue;\n}")
+                self.script_description_field.setText(text)
+                QTest.qWait(250)
+                self.script_description_field.setStyleSheet("QFrame\n{\n	color: black;\n}")
+                self.script_description_field.setText(text)
+                if i != 1:
+                    QTest.qWait(250)
 
     def update_script_visual_element_number(self, element_number):
         if "Element" in element_number:
