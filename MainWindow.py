@@ -697,7 +697,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             dlg.continue_button.setText('No')
             # dlg.continue_signal.connect(self.manager.yes_clicked)
             dlg.continue_signal.connect(self.manager.no_clicked)
-            dlg.abort_button.setText('No')
+            #dlg.abort_button.setText('No')
             dlg.abort_button.setText('Yes')
             # dlg.abort_signal.connect(self.manager.no_clicked)
             dlg.abort_signal.connect(self.manager.yes_clicked)
