@@ -30,7 +30,7 @@ from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data, find_int
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
-from data_structures.variable_containers import FileMetadata, SystemInfo, WaterLevel, FrequencyRange
+from data_structures.variable_containers import FileMetadata, SerialNumbers, WaterLevel, FrequencyRange
 from definitions import ROOT_DIR
 from Hardware.galil_motor_controller import GalilMotorController
 
@@ -81,7 +81,7 @@ class Manager(QThread):
     user_info_signal = QtCore.pyqtSignal(str)
     user_question_signal = QtCore.pyqtSignal(str)  # str is question to be asked
 
-    system_info_signal = QtCore.pyqtSignal(SystemInfo)
+    system_info_signal = QtCore.pyqtSignal(SerialNumbers)
 
     # Script metadata
     description_signal = QtCore.pyqtSignal(str)
@@ -340,7 +340,7 @@ class Manager(QThread):
         Retrieve system info from devices, pass them to the system info tab, which overwrites systeminfo.ini
         with the info it finds
         """
-        info = SystemInfo()
+        info = SerialNumbers()
         info.oscilloscope_sn = self.Oscilloscope.get_serial_number()
         if info.oscilloscope_sn is None:
             self.enable_ui_signal.emit(True)

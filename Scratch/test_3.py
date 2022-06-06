@@ -7,6 +7,7 @@ x_reference = 0
 # Create time array
 times_s = [0] * num_points
 for i in range(num_points):
+    # noinspection PyTypeChecker
     times_s[i] = (i - x_reference) * sample_interval_s + x_origin
 
 print(times_s)

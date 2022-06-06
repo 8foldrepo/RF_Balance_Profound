@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
 
 from Widget_Library.widget_system_info import Ui_Form
-from data_structures.variable_containers import SystemInfo
+from data_structures.variable_containers import SerialNumbers
 from definitions import SYSTEM_INFO_INI_PATH
 from ui_elements.my_qwidget import MyQWidget
 
@@ -75,21 +75,21 @@ class SystemInfo(MyQWidget, Ui_Form):
         self.PREAMP_SN_FIELD.setText(self.parser['Hydrophone system']['Preamplifier SN'])
         self.DC_SN_FIELD.setText(self.parser['Hydrophone system']['DC Coupler SN'])
 
-    @pyqtSlot(SystemInfo)
-    def system_info_slot(self, system_info: SystemInfo):
-        if system_info.oscilloscope_sn is not None:
-            self.parser.set('Oscilloscope', 'Serial number', system_info.oscilloscope_sn)
-        if system_info.awg_sn is not None:
-            self.parser.set('Function generator', 'Serial number', system_info.awg_sn)
-        if system_info.forward_power_sn is not None:
-            self.parser.set('Forward power meter', 'Serial number', system_info.forward_power_sn)
-        if system_info.reflected_power_sn is not None:
-            self.parser.set('Reflected power meter', 'Serial number', system_info.reflected_power_sn)
-        if system_info.thermocouple_sn is not None:
-            self.parser.set('Thermocouple', 'Serial number', system_info.thermocouple_sn)
+    @pyqtSlot(SerialNumbers)
+    def serial_numbers_slot(self, serial_numbers: SerialNumbers):
+        if serial_numbers.oscilloscope_sn is not None:
+            self.parser.set('Oscilloscope', 'Serial number', serial_numbers.oscilloscope_sn)
+        if serial_numbers.awg_sn is not None:
+            self.parser.set('Function generator', 'Serial number', serial_numbers.awg_sn)
+        if serial_numbers.forward_power_sn is not None:
+            self.parser.set('Forward power meter', 'Serial number', serial_numbers.forward_power_sn)
+        if serial_numbers.reflected_power_sn is not None:
+            self.parser.set('Reflected power meter', 'Serial number', serial_numbers.reflected_power_sn)
+        if serial_numbers.thermocouple_sn is not None:
+            self.parser.set('Thermocouple', 'Serial number', serial_numbers.thermocouple_sn)
 
-        if system_info.rf_balance_sn is not None:
-            self.parser.set('RFB', 'Serial number', str(system_info.rf_balance_sn))
+        if serial_numbers.rf_balance_sn is not None:
+            self.parser.set('RFB', 'Serial number', str(serial_numbers.rf_balance_sn))
 
         # Writing our configuration file to 'example.ini'
         with open(SYSTEM_INFO_INI_PATH, 'w') as configfile:

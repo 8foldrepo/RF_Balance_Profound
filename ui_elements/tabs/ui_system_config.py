@@ -65,9 +65,6 @@ class SystemConfig(MyQWidget, Ui_Form):
         # self.show_config_button.setEnabled(enabled)
         self.save_config_button.setEnabled(enabled)
 
-    def set_config(self, config):
-        self.config = config
-
     def set_manager(self, manager):
         self.manager = manager
 

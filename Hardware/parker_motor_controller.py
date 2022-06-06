@@ -16,9 +16,9 @@ class ParkerMotorController(AbstractMotorController):
     response_history = list()
     history_length = 5
 
-    def __init__(self, config: dict, device_key="VIX_Motors", parent=None, lock=None):
+    def __init__(self, config: Union[dict, None], device_key="VIX_Motors", parent=None, lock=None):
         self.lock = lock
-        super().__init__(parent=parent, config=config, device_key=device_key)
+        super().__init__(parent=parent, config=config, device_key=device_key, lock = lock)
         # For refreshing UI
         self.app = QApplication.instance()
         # Serial communication object for the motor controllers

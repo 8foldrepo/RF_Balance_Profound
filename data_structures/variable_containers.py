@@ -26,7 +26,7 @@ class FileMetadata:
     y_units_str: str
     x_units_str: str
 
-class SystemInfo:
+class SerialNumbers:
     rf_balance_sn: str
     oscilloscope_sn: str
     wtf_sn: str
