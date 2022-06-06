@@ -1,6 +1,8 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
+
+from Hardware.Abstract.abstract_balance import AbstractBalance
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -23,15 +25,18 @@ class RFB(MyQWidget, Ui_Form):
         self.manager = manager
         self.manager.update_rfb_tab_signal.connect(self.update_rfb_tab)
 
-    def set_balance(self, balance):
+    def set_balance(self, balance: AbstractBalance) -> None:
+        """Sets the balance object of the RFB tab to the passed one"""
         self.balance = balance
 
+    # QUESTION: can we delete this method?
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
         # all buttons are already disabled by default
         pass
 
     def style_ui(self):
+        """Initializes the RFB graph along with manually correcting the legend icons"""
         # add default data to plots
         self.rfb_graph.setLabel("left", "Power (W)", **self.rfb_graph.styles)
         y = range(0, 100)
@@ -46,14 +51,13 @@ class RFB(MyQWidget, Ui_Form):
     @pyqtSlot()
     def update_rfb_tab(self):
         """
-        Updates the rfb tab, including the plot and all spinboxes.
+        Updates the rfb tab, including the plot and all spin boxes.
         Takes three time vs wattage pairs of lists for forward, reflected, and acoustic power. awg on is a
         list of booleans indicating if the output was on, grams is a float of the latest balance reading.
         """
         if not self.plot_ready:
             return
 
-        # print("graphing")
         self.plot_ready = False
         self.app.processEvents()
 

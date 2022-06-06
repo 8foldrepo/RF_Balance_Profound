@@ -1,6 +1,6 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
-from typing import List
+from typing import List, Tuple
 
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.useful_methods import log_msg
@@ -13,8 +13,8 @@ class SimulatedUAInterface(AbstractUAInterface):
 
     def __init__(self, config, device_key="UAInterface", parent=None):
         super().__init__(parent=parent, config=config, device_key=device_key)
-        self.write_result = False
-        self.read_result = True
+        self.write_result: bool = False
+        self.read_result: bool = True
         try:
             if self.config['Debugging']['simulate_ua_error']:
                 self.read_result = False
@@ -26,31 +26,40 @@ class SimulatedUAInterface(AbstractUAInterface):
                                     '46.0', '45.5',
                                     '45.0', '40.8', '39.7']
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """Sets the connected flag to true and emits a connected signal"""
         self.connected = True
         self.connected_signal.emit(self.connected)
         return self.connected, ""
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
+        """Sets the connected flag to false and emits a disconnect signal"""
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def check_connected(self):
+    def check_connected(self) -> Tuple[bool, str]:
+        """Returns boolean of whether the UA interface is connected"""
         return self.connected, ""
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """
+        calls the disconnect hardware method for the simulated UA
+        """
         self.disconnect_hardware()
 
     @pyqtSlot()
-    def read_data(self):
+    def read_data(self) -> Tuple[List[str], str, int]:
+        """emits and returns the calibration data list, version string, and status integer"""
         self.read_result = True
         self.cal_data_signal.emit(self.ua_calibration_data, 'V1.0', 0)
         return self.ua_calibration_data, 'V1.0', 0
 
     def log(self, message: str, level: str = "info"):
+        """Log messages in varying levels of importance to the console"""
         log_msg(self, self.root_logger, message=message, level=level)
 
     def write_data(self, data: List[str]) -> bool:
+        """Attempts to write the passed list of calibration data to the internal variable of the simulated UA"""
         try:
             self.ua_calibration_data = data
             self.write_result = True
@@ -60,6 +69,7 @@ class SimulatedUAInterface(AbstractUAInterface):
         return self.write_result
 
     def get_serial_number(self) -> str:
+        """Gets the serial number of the simulated UA interface"""
         return '"Simulated"'
 
 
