@@ -9,8 +9,8 @@ from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
-from data_structures.variable_containers import FileMetadata
-from definitions import ROOT_DIR, FrequencyRange
+from data_structures.variable_containers import FileMetadata, FrequencyRange
+from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")

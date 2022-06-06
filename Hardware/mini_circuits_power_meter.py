@@ -1,27 +1,29 @@
-# Control Mini-Circuits' PWR series power meters via USB
-# Requirements:
-#   1: Python.Net (pip install pythonnet)
-#   2: Mini-Circuits' DLL API file (mcl_pm_NET45.dll)
-#      https://www.minicircuits.com/softwaredownload/mcl_pm64_dll.zip
-#      Note: - Windows may block the DLL file after download as a precaution
-#            - Right-click on the file, select properties, click "Unblock" (if shown)
 import ctypes
 import sys
 import time as t
 from typing import Union
-
-import clr  # pythonnet
 from PyQt5 import QtCore
-
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
+sys.path.append(POWER_METER_DLL_PATH)
+
+# Setup power meter library (do not rearrange)
+import clr  # pythonnet
+clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
 
-sys.path.append(POWER_METER_DLL_PATH)
-clr.AddReference("mcl_pm_NET45")  # Reference the DLL
-
-
 class PowerMeter(AbstractSensor):
+    """"
+    Control Mini-Circuits' PWR series power meters via USB
+    Requirements:
+    1: Python.Net (pip install pythonnet)
+    2: Mini-Circuits' DLL API file (mcl_pm_NET45.dll)
+    https://www.minicircuits.com/softwaredownload/mcl_pm64_dll.zip
+    Note: - Windows may block the DLL file after download as a precaution
+    - Right-click on the file, select properties, click "Unblock" (if shown)
+    3: Ensure the above dll file is placed in the directory specified in definitions.py
+    """
+
     reading_signal = QtCore.pyqtSignal(float)
     connected_signal = QtCore.pyqtSignal(bool)
 
@@ -37,15 +39,14 @@ class PowerMeter(AbstractSensor):
         """Sets the class' serial number to the one specified in the config file"""
         self.serial_number = self.config[self.device_key]["serial_number"]
 
-    # QUESTION: is this method needed? It is never called
-    def declare_methods(self):
-        hllApiProto = ctypes.WINFUNCTYPE(
-            ctypes.c_int,  # Return type.
-            ctypes.c_,  # Parameters 1 ...
-            ctypes.c_void_p,
-            ctypes.c_void_p,
-            ctypes.c_void_p)  # ... thru 4.
-        hllApiParams = (1, "p1", 0), (1, "p2", 0), (1, "p3", 0), (1, "p4", 0),
+    # def declare_methods(self):
+    #     hllApiProto = ctypes.WINFUNCTYPE(
+    #         ctypes.c_int,  # Return type.
+    #         ctypes.c_,  # Parameters 1 ...
+    #         ctypes.c_void_p,
+    #         ctypes.c_void_p,
+    #         ctypes.c_void_p)  # ... thru 4.
+    #     hllApiParams = (1, "p1", 0), (1, "p2", 0), (1, "p3", 0), (1, "p4", 0),
 
     def connect_hardware(self):
         """

@@ -90,9 +90,9 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         return '"Simulated"'
 
     def autoset_oscilloscope_timebase(self):
-        self.max_time_of_flight = self.config['Autoset timebase']["Max time of flight (us)"]
-        self.min_time_of_flight = self.config['Autoset timebase']["Min time of flight (us)"]
-        range_s = self.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6
+        self.max_time_of_flight = self.config['Oscilloscope_timebase']["time_window_maximum"]
+        self.min_time_of_flight = self.config['Oscilloscope_timebase']["time_window_minimum"]
+        range_s = self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6
         time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
         offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
         self.set_horizontal_range_sec(range_s)

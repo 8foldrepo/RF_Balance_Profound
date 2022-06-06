@@ -1,3 +1,16 @@
+from enum import Enum
+
+
+class FrequencyRange(Enum):
+    high_frequency = 1
+    low_frequency = 2
+
+
+class WaterLevel(Enum):
+    below_level = 1
+    level = 2
+    above_level = 3
+
 class FileMetadata:
     element_number: int
     X: float
@@ -12,7 +25,6 @@ class FileMetadata:
     nominal_high_frequency_MHz: float
     y_units_str: str
     x_units_str: str
-
 
 class SystemInfo:
     rf_balance_sn: str

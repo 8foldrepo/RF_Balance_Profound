@@ -1,9 +1,7 @@
 from abc import abstractmethod, ABCMeta
-
 from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_device import AbstractDevice
-from definitions import WaterLevel
+from data_structures.variable_containers import WaterLevel
 
 
 class AbstractIOBoard(AbstractDevice):

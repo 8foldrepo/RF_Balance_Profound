@@ -1,17 +1,4 @@
 import os
-from enum import Enum
-
-
-class FrequencyRange(Enum):
-    high_frequency = 1
-    low_frequency = 2
-
-
-class WaterLevel(Enum):
-    below_level = 1
-    level = 2
-    above_level = 3
-
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))  # This is your Project Root
 DEFAULT_CONFIG_PATH = os.path.join(ROOT_DIR, "default.yaml")  # requires `import os`

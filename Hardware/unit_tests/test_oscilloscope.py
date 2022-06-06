@@ -21,9 +21,9 @@ class TestOscilloscope(unittest.TestCase):
         self.osc.set_to_defaults()
         self.assertAlmostEqual(self.osc.channel, self.osc.config[self.osc.device_key]['channel'],1)
         self.assertAlmostEqual(self.osc.max_time_of_flight,
-                                self.osc.config['Autoset timebase']["Max time of flight (us)"],1)
-        assert self.osc.min_time_of_flight == self.osc.config['Autoset timebase']["Min time of flight (us)"]
-        self.assertAlmostEqual(self.osc.range_s, self.osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6,1)
+                                self.osc.config['Oscilloscope_timebase']["time_window_maximum"],1)
+        assert self.osc.min_time_of_flight == self.osc.config['Oscilloscope_timebase']["time_window_minimum"]
+        self.assertAlmostEqual(self.osc.range_s, self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6,1)
         self.assertAlmostEqual(self.osc.time_of_flight_window,
                                 (self.osc.max_time_of_flight - self.osc.min_time_of_flight) / 1000000)
         self.assertAlmostEqual(self.osc.offset_s, self.osc.min_time_of_flight / 1000000 + self.osc.time_of_flight_window / 2,1)
@@ -111,10 +111,10 @@ class TestOscilloscope(unittest.TestCase):
         print(colored("running autoset timebase test", 'cyan'))
         self.osc.autoset_oscilloscope_timebase()
         self.assertAlmostEqual(self.osc.max_time_of_flight,
-                                self.osc.config['Autoset timebase']["Max time of flight (us)"],1)
+                                self.osc.config['Oscilloscope_timebase']["time_window_maximum"],1)
         self.assertAlmostEqual(self.osc.min_time_of_flight,
-                                self.osc.config['Autoset timebase']["Min time of flight (us)"],1)
-        self.assertAlmostEqual(self.osc.range_s, self.osc.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6,1)
+                                self.osc.config['Oscilloscope_timebase']["time_window_minimum"],1)
+        self.assertAlmostEqual(self.osc.range_s, self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6,1)
         self.assertAlmostEqual(self.osc.time_of_flight_window,
                                 (self.osc.max_time_of_flight - self.osc.min_time_of_flight) / 1000000,1)
         self.assertAlmostEqual(self.osc.offset_s, self.osc.min_time_of_flight / 1000000 + self.osc.time_of_flight_window / 2,1)

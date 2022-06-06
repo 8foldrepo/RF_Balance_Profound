@@ -64,7 +64,7 @@ class UAInterface(AbstractUAInterface):
     @pyqtSlot()
     def read_data(self) -> Tuple[List[str], str, int]:
         # cal_data_signal.emit(self.cal_data_signal)
-        output = self.get_command_output()
+        output = self.get_read_command_output()
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], '', -1)
@@ -115,14 +115,8 @@ class UAInterface(AbstractUAInterface):
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
-        first_string = f"{self.path_of_exe} {self.ip_address} " + " ".join(ua_calibration_data[0:7])
-        low_eff_string = f'\"{" ".join(ua_calibration_data[7:17])}\"'
-        high_eff_string = f'\"{" ".join(ua_calibration_data[17:27])}\"'
 
-        process_call = first_string + " " + low_eff_string + " " + high_eff_string
-        subprocess.call(process_call)
-
-        output = self.get_command_output()
+        output = self.get_write_command_output(ua_calibration_data)
 
         if "status=-2" in output:
             self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
@@ -130,7 +124,7 @@ class UAInterface(AbstractUAInterface):
             return -2
 
         if "status=-9" in output:
-            self.log(level='error', message='calibration data incomplete, invalid, or improperly formatted')
+            self.log(level='error', message=f'calibration data incomplete, invalid, or improperly formatted: {ua_calibration_data}')
             self.write_result = False
             return -9
 
@@ -148,7 +142,7 @@ class UAInterface(AbstractUAInterface):
         self.write_result = False
         return -3
 
-    def get_command_output(self):
+    def get_read_command_output(self):
         start_time = t.time()
         # Try to get usable data until timeout occurs
         while t.time() - start_time < self.timeout_s:
@@ -163,6 +157,26 @@ class UAInterface(AbstractUAInterface):
                     self.log("Getting output failed, retrying...")
         return None
 
+    def get_write_command_output(self, calibration_data):
+        first_string = f" " + " ".join(calibration_data[0:7])
+        low_eff_string = f'\"{" ".join(calibration_data[7:17])}\"'
+        high_eff_string = f'\"{" ".join(calibration_data[17:27])}\"'
+
+        command_str = first_string + " " + low_eff_string + " " + high_eff_string
+
+        start_time = t.time()
+        # Try to get usable data until timeout occurs
+        while t.time() - start_time < self.timeout_s:
+            # Get command prompt output, if it is illegible, retry
+            try:
+                p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address, command_str], shell=False, stdout=PIPE)
+                output = p.communicate()[0].decode()
+                return output
+            except UnicodeDecodeError as e:
+                self.log(level='error', message=str(e))
+                if str(e) == "\'utf-8\' codec can't decode byte 0xb8 in position 150: invalid start byte":
+                    self.log("Getting output failed, retrying...")
+        return None
 
 if __name__ == "__main__":
     wtf = UAInterface(config=None)

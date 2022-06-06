@@ -6,7 +6,7 @@ from PyQt5 import QtCore
 from nidaqmx.constants import LineGrouping
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
-from definitions import WaterLevel
+from data_structures.variable_containers import WaterLevel
 
 
 class DIOBoard(AbstractIOBoard):

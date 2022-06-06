@@ -100,9 +100,9 @@ class MyTestCase(unittest.TestCase):
     def test_autoset_timebase(self):
         self.manager.autoset_timebase()
         oscilloscope = self.manager.Oscilloscope
-        self.assertEqual(self.manager.config['Autoset timebase']["Max time of flight (us)"], oscilloscope.max_time_of_flight)
-        self.assertEqual(self.manager.config['Autoset timebase']["Min time of flight (us)"], oscilloscope.min_time_of_flight)
-        self.assertEqual(self.manager.config['Autoset timebase']["Horizontal scale (us)"] * 10 ** -6,
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_maximum"], oscilloscope.max_time_of_flight)
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_minimum"], oscilloscope.min_time_of_flight)
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6,
                          oscilloscope.get_horizontal_range_sec())
         time_of_flight_window = (oscilloscope.max_time_of_flight - oscilloscope.min_time_of_flight) / 1000000
         self.assertEqual(oscilloscope.get_horizontal_offset_sec(),
