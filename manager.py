@@ -24,7 +24,7 @@ from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
-from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data
+from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data, find_int
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, SystemInfo
@@ -410,7 +410,6 @@ class Manager(QThread):
                 else:
                     self.update_sensors()
 
-
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
                 self.button_enable_toggle_for_scripting.emit(True)  # enabled fields/buttons
@@ -693,6 +692,8 @@ class Manager(QThread):
             if not self.currently_scripting:
                 self.enable_ui_signal.emit(True)
                 self.button_enable_toggle_for_scripting.emit(True)
+
+        # Catch all errors while advancing the script and handle them by showing the user a dialog with the traceback
         except Exception:
             self.abort_immediately()
             self.error_message = traceback.format_exc()
@@ -1086,7 +1087,7 @@ class Manager(QThread):
     def element_str_to_int(self, element_str):
         """Looks for an integer in the string, otherwise returns the current element"""
         try:
-            self.element = int(re.search(r"\d+", str(element_str)).group())
+            self.element = find_int(element_str)
         except AttributeError:
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
@@ -1534,7 +1535,7 @@ class Manager(QThread):
             ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_mhz} MHz", "", ])
         self.AWG.set_amplitude_v(mVpp / 1000)
 
-        if mode == "N Cycle":
+        if mode == "N Cycle" or "burst".upper() in mode.upper():
             self.AWG.set_burst(True)
             cycles = int(var_dict["#Cycles"])
             self.AWG.set_cycles(cycles)
@@ -1618,7 +1619,7 @@ class Manager(QThread):
     def retract_ua_warning(self) -> bool:
         """
         Warn the user that the UA is being retracted in x
-        returns: a boolean indicating whether or not to continue the script
+        returns: a boolean indicating whether to continue the script
         """
         if self.config["Debugging"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
@@ -1712,7 +1713,7 @@ class Manager(QThread):
         fine_incr_MHz = float(var_dict["Fine increment (MHz)"])
         burst_count = int(var_dict["Burst count"])
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
-        self.oscilloscope_channel = int(var_dict["Scope channel"])
+        self.oscilloscope_channel = find_int(var_dict["Scope channel"])
         acquisition_type = var_dict["Acquisition type"]
         averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
@@ -1816,7 +1817,6 @@ class Manager(QThread):
             # set frequency according to step (coarse/fine) and x increment
             self.AWG.set_frequency_hz(list_of_frequencies_MHz[i] * 1000000)
             # Find the vsi voltage at a given frequency
-            vsi_sum = 0
 
             if self.abort_immediately_variable:
                 # Stop the current method and any parent methods that called it
@@ -1842,15 +1842,14 @@ class Manager(QThread):
                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
             list_of_VSIs.append(vsi)
-            assert len(list_of_VSIs) == len(list_of_frequencies_MHz)
-            self.__refresh_profile_plot(list_of_frequencies_MHz, list_of_VSIs, "Frequency (Hz)")
+            self.__refresh_profile_plot(list_of_frequencies_MHz[0:i], list_of_VSIs, "Frequency (Hz)")
 
         # frequencies will be on the x-axis
         return list_of_frequencies_MHz, list_of_VSIs, y_units_str, True
 
     def find_vsi(self, times_s, voltages_v):
         """
-        Returns the voltage squared integral of a oscilloscope waveform
+        Returns the voltage squared integral of an oscilloscope waveform
         """
         dx = 0
         for i in range(1, len(times_s)):
@@ -2259,7 +2258,6 @@ class Manager(QThread):
 
         self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, go_to_peak,
                        data_directory, False, source_channel, acquisition_type, averages, filename_stub)
-
         self.enable_ui_signal.emit(True)
 
 

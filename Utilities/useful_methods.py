@@ -47,6 +47,15 @@ def create_comma_string(axes: list, numbers: list, ax_letters: list):
     return answer
 
 
+def find_int(string_with_int):
+    """
+    Returns the first whole number in a given string (chops off decimal if there is one)
+    Raises AttributeError if no whole numbers exist
+    """
+    from re import search
+    return int(search(r"\d+", str(string_with_int)).group())
+
+
 def get_element_distances(element_1_index, element_pitch):
     """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
@@ -58,7 +67,7 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coordinates
 
 
-def error_acceptable(value1: float, value2: float, acceptable_error_percent= 6, print_msg=True) -> bool:
+def error_acceptable(value1: float, value2: float, acceptable_error_percent=6, print_msg=True) -> bool:
     """Returns whether the two values are approximately equal with a given acceptable error percentage"""
     if print_msg:
         print(colored(f'value1 = {value1}, value2 = {value2}', 'yellow'))
@@ -318,5 +327,6 @@ def print_list_2(list2):
     """
     print(str(list2)[1:-1])
 
-# if __name__ == "__main__":
-#     pass
+
+if __name__ == "__main__":
+     print(find_int("Channel 1.2"))

@@ -642,7 +642,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         with the option to look it up and auto-populate the LF, HF, and hardware code with an optional
         override tick, and an optional comment (hence the str in the pyqtSlot)"""
         # Read UA serial number
-        ua_read_data, status = self.UAInterface.read_data()
+        ua_read_data, _, status = self.UAInterface.read_data()
         # If their access level is operator, do not proceed with the script unless the read was successful.
 
         if status != 0:

@@ -3,10 +3,10 @@ Analysis:
   max_standard_deviation_w: 0.1
   samples_to_remove_at_end: 3
   settling_time_s: 0.001
-Autoset timebase:
+Oscilloscope_timebase:
   Horizontal scale (us): 5
-  Max time of flight (us): 50.0
-  Min time of flight (us): 42.0
+  time_window_maximum: 50.0
+  time_window_minimum: 42.0
 Daq_Power_Relay:
   on_by_default: true
   port: COM3

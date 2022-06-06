@@ -114,8 +114,8 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
         self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
 
-        self.config["Autoset timebase"]["Min time of flight (us)"] = self.min_time_of_flight.value()
-        self.config["Autoset timebase"]["Max time of flight (us)"] = self.max_time_of_flight.value()
+        self.config["Oscilloscope_timebase"]["time_window_minimum"] = self.min_time_of_flight.value()
+        self.config["Oscilloscope_timebase"]["time_window_maximum"] = self.max_time_of_flight.value()
 
         self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
         self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
@@ -158,8 +158,8 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.water_timeout.setValue(self.config["WTF_DIO"]["Water level timeout (s)"])
         self.fill_mode.setCurrentText(self.config["WTF_DIO"]["Fill/Drain mode"])
 
-        self.min_time_of_flight.setValue(self.config["Autoset timebase"]["Min time of flight (us)"])
-        self.max_time_of_flight.setValue(self.config["Autoset timebase"]["Max time of flight (us)"])
+        self.min_time_of_flight.setValue(self.config["Oscilloscope_timebase"]["time_window_minimum"])
+        self.max_time_of_flight.setValue(self.config["Oscilloscope_timebase"]["time_window_maximum"])
 
         self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
         self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
