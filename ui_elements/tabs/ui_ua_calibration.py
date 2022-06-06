@@ -61,7 +61,6 @@ class UACalibration(MyQWidget, Ui_Form):
                 level="Error", message="No UA connected, plug one in and try again"
             )
             return
-        # data, status = self.ua_interface.read_data() #todo is this line needed?
         if status == -2:
             self.main_window.dialog_critical(
                 "WTFiB is not connected (check power and ethernet connection)"

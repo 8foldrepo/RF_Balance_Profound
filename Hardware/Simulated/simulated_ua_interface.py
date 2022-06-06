@@ -25,9 +25,6 @@ class SimulatedUAInterface(AbstractUAInterface):
                                     '46.0', '45.5',
                                     '45.0', '40.8', '39.7']
 
-    def fields_setup(self):
-        pass
-
     def connect_hardware(self):
         self.connected = True
         self.connected_signal.emit(self.connected)

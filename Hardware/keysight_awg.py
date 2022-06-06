@@ -4,7 +4,7 @@ import pyvisa
 from PyQt5 import QtCore
 
 from Hardware.Simulated.simulated_awg import AbstractAWG
-from Utilities.load_config import *
+from Utilities.load_config import load_configuration
 from Utilities.useful_methods import error_acceptable
 import time as t
 
@@ -30,15 +30,15 @@ class KeysightAWG(AbstractAWG):
 
     def set_to_defaults(self):
         self.setup(
-            frequency_Hz=self.config[self.device_key]["frequency_Hz"],
-            amplitude_V=self.config[self.device_key]["amplitude_V"],
+            frequency_hz=self.config[self.device_key]["frequency_Hz"],
+            amplitude_v=self.config[self.device_key]["amplitude_V"],
             burst=self.config[self.device_key]["burst_on"],
             burst_cycles=self.config[self.device_key]["burst_cycles"],
             ext_trig=self.config[self.device_key]["trig_in"],
             burst_period_s=self.config[self.device_key]["burst_period_s"],
-            offset_V=self.config[self.device_key]["offset_V"],
-            output=True, #todo: change to false
-            output_Impedance=self.config[self.device_key]["output_Impedance"],
+            offset_v=self.config[self.device_key]["offset_V"],
+            output=True,  # todo: change to false
+            output_impedance=self.config[self.device_key]["output_Impedance"],
             trigger_out=self.config[self.device_key]["trig_out"],
         )
 
@@ -75,18 +75,18 @@ class KeysightAWG(AbstractAWG):
         self.connected = False
         self.connected_signal.emit(False)
 
-    def setup(self, frequency_Hz, amplitude_V, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
-              offset_V=0, output=False, output_Impedance=50, trigger_out=True):
+    def setup(self, frequency_hz, amplitude_v, burst=False, ext_trig=False, burst_period_s=.00001, burst_cycles=50,
+              offset_v=0, output=False, output_impedance=50, trigger_out=True):
         """Sets all settings of the awg with one command and wait until it is done configuring"""
         self.reset()
         self.set_output(output)
-        self.set_frequency_hz(frequency_Hz)
-        self.set_amplitude_v(amplitude_V)
+        self.set_frequency_hz(frequency_hz)
+        self.set_amplitude_v(amplitude_v)
         self.set_cycles(burst_cycles)
         self.set_burst(burst)
         self.set_trigger_output(trigger_out=trigger_out)
-        self.set_offset_v(offset_V)
-        self.set_output_impedance(output_Impedance)
+        self.set_offset_v(offset_v)
+        self.set_output_impedance(output_impedance)
         self.wait_til_complete()
 
     def get_state(self):
@@ -217,8 +217,8 @@ class KeysightAWG(AbstractAWG):
         self.state["burst_cycles"] = int(float(self.read()))
         return self.state["burst_on"], self.state["burst_cycles"]
 
-    def set_output_impedance(self, impedance_ohms=50, HiZ=False):
-        if HiZ:
+    def set_output_impedance(self, impedance_ohms=50, high_impedance=False):
+        if high_impedance:
             self.command("OUTP:LOAD INF")
         else:
             self.command(f"OUTP:LOAD {impedance_ohms}")
@@ -271,8 +271,8 @@ class KeysightAWG(AbstractAWG):
     def check_connected(self) -> bool:
         connected = False
         try:
-            Output = self.get_output()
-            if Output is not None:
+            output = self.get_output()
+            if output is not None:
                 connected = True
         except AssertionError:
             pass
@@ -282,12 +282,23 @@ class KeysightAWG(AbstractAWG):
         return connected
 
     def wrap_up(self):
+        """
+        Turns off the function generator via setting its output variable to false,
+        calling its disconnect hardware method, and sleep for half a millisecond before
+        program continues.
+        """
         self.set_output(False)
         self.disconnect_hardware()
         t.sleep(.05)
 
     def get_serial_number(self) -> Union[str, None]:
+        """
+        Returns the serial number via issuing the standard Keysight '*IDN?' command,
+        return nothing if not connected.
+        """
         if not self.connected:
+            self.log(message="get_serial_number method in keysight_awg class called while function generator"
+                             "is disconnected.")
             return None
 
         self.command("*IDN?")
@@ -298,7 +309,3 @@ class KeysightAWG(AbstractAWG):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
         self.get_state()
         return "Keysight 33500B Series Waveform Generator\nSettings:\n" + str(self.state)
-
-
-if __name__ == "__main__":
-    pass

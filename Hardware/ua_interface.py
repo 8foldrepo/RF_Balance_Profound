@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 from typing import Tuple, List
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from definitions import ROOT_DIR
@@ -81,23 +81,22 @@ class UAInterface(AbstractUAInterface):
             return [], '', -3
 
         # Try to extract the status number from the output, otherwise retry
-        firmware_str = output.splitlines()[0]
-        fw_version = firmware_str.split(' ')[7]
+        firmware_string = output.splitlines()[0]
+        fw_version = firmware_string.split(' ')[7]
         calibration_string_pre = output.splitlines()[3]
         calibration_string_pre_list = calibration_string_pre.split(" ")
         # Search for number in the string containing "status = "
         status_str = calibration_string_pre_list[2]
         try:
-            status = int(re.search(r"\d+", status_str).group())
+            device_status = int(re.search(r"\d+", status_str).group())
         except Exception:
-            status = -4
+            device_status = -4
 
-        if status == 1:
+        if device_status == 1:
             self.cal_data_signal.emit([], '', -1)
             self.log(level='error', message="No ua found...")
 
             return [], '', -1
-
 
         calibration_string_pre_list2 = calibration_string_pre_list[5]
         calibration_data_quotes_removed = calibration_string_pre_list2.strip('"')
@@ -108,9 +107,9 @@ class UAInterface(AbstractUAInterface):
             return [], '', -5
 
         self.ua_calibration_data = calibration_data_list
-        self.cal_data_signal.emit(calibration_data_list, fw_version, status)
+        self.cal_data_signal.emit(calibration_data_list, fw_version, device_status)
         self.read_result = True
-        return calibration_data_list, fw_version, status
+        return calibration_data_list, fw_version, device_status
 
     def write_data(self, ua_calibration_data=None):
         if ua_calibration_data is None:
@@ -150,9 +149,9 @@ class UAInterface(AbstractUAInterface):
         return -3
 
     def get_command_output(self):
-        startTime = t.time()
+        start_time = t.time()
         # Try to get usable data until timeout occurs
-        while t.time() - startTime < self.timeout_s:
+        while t.time() - start_time < self.timeout_s:
             # Get command prompt output, if it is illegible, retry
             try:
                 p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address], shell=False, stdout=PIPE)
