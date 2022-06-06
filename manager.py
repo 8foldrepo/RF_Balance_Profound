@@ -317,8 +317,9 @@ class Manager(QThread):
                     self.app.exit(-1)
             i = i + 1
 
-        self.oscilloscope_averages = self.Oscilloscope.averages
-        self.oscilloscope_channel = self.Oscilloscope.channel
+        if self.Oscilloscope.connected:
+            self.oscilloscope_averages = self.Oscilloscope.averages
+            self.oscilloscope_channel = self.Oscilloscope.channel
         self.update_system_info()
         self.enable_ui_signal.emit(True)
         self.no_script_loaded_signal.emit()
@@ -1696,8 +1697,7 @@ class Manager(QThread):
         self.IO_Board.activate_relay_channel(channel_number=self.element)
 
     def frequency_sweep(self, var_dict) -> bool:
-        # todo: add test to results summary if include_test is True
-        # todo: using this setting to decide where to put it (Low frequency or High frequency)
+        self.set_tab_signal.emit(['Scan'])
 
         if "Frequency Range" in var_dict.keys():
             range_str = "Frequency Range"
@@ -1718,7 +1718,6 @@ class Manager(QThread):
         acquisition_type = var_dict["Acquisition type"]
         averages = int(var_dict["Averages"])
         data_storage = var_dict["Data storage"]
-        # todo: implement these settings
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
         peak_VSI_threshold = float(var_dict["Peak VSI threshold"])
@@ -1785,11 +1784,14 @@ class Manager(QThread):
             max_vsi_index = fine_VSI_list.index(max_vsi)
             max_vsi_frequency = fine_list_of_frequencies_MHz[max_vsi_index]
 
+        print(f"Max vsi frequency: {max_vsi_frequency}")
+        print(f"VSI: {max_vsi}")
+
         if include_test:
             self.test_data.update_results_summary_with_frequency_sweep(
                 frequency_range=frequency_range,
                 element=self.element,
-                frequency_Hz=max_vsi_frequency,
+                frequency_mHz=max_vsi_frequency,
                 units_str=y_units_str,
                 vsi=max_vsi
             )
@@ -2008,6 +2010,9 @@ class Manager(QThread):
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
+        self.rfb_data.trim_data()
+        self.rfb_data.end_of_test_data_analysis()
+
         data_is_valid, feedback = self.rfb_data.data_is_valid()
 
         if not data_is_valid:
@@ -2015,9 +2020,6 @@ class Manager(QThread):
                                            error_detail=f'Element_{self.element:02} {feedback}')
             if not cont:
                 return
-
-        self.rfb_data.trim_data()
-        self.rfb_data.end_of_test_data_analysis()
 
         test_result, comment = self.rfb_data.get_pass_result()
 

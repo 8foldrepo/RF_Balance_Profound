@@ -24,6 +24,7 @@ class TestData(QObject):
     write_result: bool
     skip_write_to_ua: bool
     schema: str
+    angle_average: float
 
     def __init__(self):
         super().__init__()
@@ -46,7 +47,7 @@ class TestData(QObject):
         self.high_frequency_MHz = float("nan")
         self.hardware_code = ""
         self.results_summary = list()
-        self.write_result = None
+        self.write_result = False
         self.skip_write_to_ua = False
         self.schema = '1'
         self.angle_average = -90
@@ -106,7 +107,7 @@ class TestData(QObject):
             results tab"""
         if frequency_range == FrequencyRange.high_frequency:
             # High frequency
-            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz/1000000)
             # HF efficiency (%)
             self.results_summary[element - 1][11] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][12] = "%.1f" % reflected_power_percent
@@ -116,7 +117,7 @@ class TestData(QObject):
                 comment = f"High frequency test failed: {comment}"
         else:  # Default to low frequency
             # Low Frequency
-            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz/1000000)
             # LF efficiency (%)
             self.results_summary[element - 1][7] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
@@ -133,7 +134,7 @@ class TestData(QObject):
         self.show_results_summary.emit(self.results_summary)
 
     def update_results_summary_with_frequency_sweep(self, frequency_range: FrequencyRange, element: int,
-                                                    frequency_Hz: float, vsi: float, units_str: str, ):
+                                                    frequency_mHz: float, vsi: float, units_str: str, ):
         """Add frequency sweep data to the results_summary table"""
         if 'RMS'.upper() in units_str.upper():
             self.results_summary[element - 1][0] = 'Vrms'
@@ -142,13 +143,13 @@ class TestData(QObject):
 
         if frequency_range == FrequencyRange.high_frequency:
             # High frequency
-            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
-            self.results_summary[element - 1][6] = "%.2f" % (vsi)
+            self.results_summary[element - 1][5] = "%.2f" % frequency_mHz
+            self.results_summary[element - 1][6] = "%.2f" % vsi
             # HF efficiency (%)
         else:  # Default to low frequency
             # Low Frequency
-            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
-            self.results_summary[element - 1][4] = "%.2f" % (vsi)
+            self.results_summary[element - 1][3] = "%.2f" % (frequency_mHz / 1000000)
+            self.results_summary[element - 1][4] = "%.2f" % vsi
             # LF efficiency (%)
         self.show_results_summary.emit(self.results_summary)
 

@@ -118,6 +118,8 @@ class UAInterface(AbstractUAInterface):
 
         output = self.get_write_command_output(ua_calibration_data)
 
+
+
         if "status=-2" in output:
             self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
             self.write_result = False
@@ -158,19 +160,21 @@ class UAInterface(AbstractUAInterface):
         return None
 
     def get_write_command_output(self, calibration_data):
-        first_string = f" " + " ".join(calibration_data[0:7])
+        first_string = " ".join(calibration_data[0:7])
         low_eff_string = f'\"{" ".join(calibration_data[7:17])}\"'
         high_eff_string = f'\"{" ".join(calibration_data[17:27])}\"'
 
-        command_str = first_string + " " + low_eff_string + " " + high_eff_string
+        command_str = self.path_of_exe + " " + self.ip_address + " " + first_string + " " + low_eff_string + " " + high_eff_string
 
         start_time = t.time()
         # Try to get usable data until timeout occurs
+
         while t.time() - start_time < self.timeout_s:
             # Get command prompt output, if it is illegible, retry
             try:
-                p = Popen(["cmd", "/C", self.path_of_exe, self.ip_address, command_str], shell=False, stdout=PIPE)
+                p = Popen(command_str, shell=False, stdout=PIPE)
                 output = p.communicate()[0].decode()
+                print(output)
                 return output
             except UnicodeDecodeError as e:
                 self.log(level='error', message=str(e))
@@ -182,4 +186,8 @@ if __name__ == "__main__":
     wtf = UAInterface(config=None)
     data, firmware_str, status = wtf.read_data()
 
-    wtf.write_data(data)
+    print(data)
+
+    wtf.write_data(['1', 'LC0013', '20220606', '3', '4.29', '13.74', '-90.0', '86.0', '86.0', '86.0', '86.0', '86.0',
+                    '86.0', '86.0', '86.0', '86.0',
+                    '86.0', '86.0', '86.0', '86.0', '86.0', '86.0', '86.0', '86.0', '86.0', '86.0', '86.0'])
