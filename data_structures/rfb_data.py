@@ -325,13 +325,16 @@ class RFBData:
         if None in self.f_meter_readings_w:
             return False, "Invalid test due to missing forward power data"
 
-        if self.efficiency_percent is None or self.efficiency_percent < 0 or self.efficiency_percent > 100:
+        if self.efficiency_percent is None or self.efficiency_percent == float('nan') or \
+                self.efficiency_percent < 0:
             return False, "Invalid test due to invalid efficiency_percent"
 
-        if self.reflected_power_percent is None or self.reflected_power_percent < 0 or self.reflected_power_percent > 100:
+        if self.reflected_power_percent is None or self.reflected_power_percent == float('nan') or \
+                self.reflected_power_percent < 0 or self.reflected_power_percent > 100:
             return False, "Invalid test due to invalid reflected_power_percent"
 
-        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated < 0 or \
+        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated == float('nan') \
+                or self.forward_power_max_extrapolated < 0 or \
                 self.forward_power_max_extrapolated > 100:
             return False, "Invalid test due to invalid Pf max"
 

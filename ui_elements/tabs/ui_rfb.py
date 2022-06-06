@@ -1,9 +1,6 @@
-import time as t
-
 from PyQt5 import QtGui
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
-
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -46,7 +43,6 @@ class RFB(MyQWidget, Ui_Form):
         self.xsition_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/xsition pts.png"))
         self.forward_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/forward power.png"))
 
-
     @pyqtSlot()
     def update_rfb_tab(self):
         """
@@ -56,8 +52,6 @@ class RFB(MyQWidget, Ui_Form):
         """
         if not self.plot_ready:
             return
-
-        start_time = t.time()
 
         # print("graphing")
         self.plot_ready = False
@@ -69,34 +63,29 @@ class RFB(MyQWidget, Ui_Form):
         forward_w = rfb_data.f_meter_readings_w
         reflected_w = rfb_data.r_meter_readings_w
         acoustic_w = rfb_data.acoustic_powers_w
-        awg_on = rfb_data.awg_on_ray
         grams = rfb_data.grams
         forward_power_w = rfb_data.forward_power_w
         reflected_power_w = rfb_data.reflected_power_w
         p_on_rand_unc = rfb_data.p_on_rand_unc
         p_off_rand_unc = rfb_data.p_off_rand_unc
-        p_on_total_unc = rfb_data.p_on_total_unc
-        p_off_total_unc = rfb_data.p_off_total_unc
-        p_com_rand_unc = rfb_data.p_com_rand_unc
-        p_com_total_unc = rfb_data.p_com_total_unc
         acoustic_power_off_mean = rfb_data.acoustic_power_off_mean
         acoustic_power_on_mean = rfb_data.acoustic_power_on_mean
-        acoustic_power_mean = rfb_data.acoustic_power_mean
 
         if grams is not None:
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
         self.power_on_rand_uc_field.setText(str(round(p_on_rand_unc, 2)))
-        self.power_on_total_uc_field.setText(str(round(p_on_total_unc, 2)))
+        # Commented lines were UI fields removed because they were confusing or not useful
+        # self.power_on_total_uc_field.setText(str(round(p_on_total_unc, 2)))
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean, 2)))
         self.power_off_rand_uc_field.setText(str(round(p_off_rand_unc, 2)))
-        self.power_off_total_uc_field.setText(str(round(p_off_total_unc, 2)))
+        # self.power_off_total_uc_field.setText(str(round(p_off_total_unc, 2)))
 
-        self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))
-        self.power_combined_rand_uc_field.setText(str(round(p_com_rand_unc, 2)))
-        self.power_combined_total_uc_field.setText(str(round(p_com_total_unc, 2)))
+        # self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))
+        # self.power_combined_rand_uc_field.setText(str(round(p_com_rand_unc, 2)))
+        # self.power_combined_total_uc_field.setText(str(round(p_com_total_unc, 2)))
 
         if not (len(times_s) == 0 or len(acoustic_w) == 0):
             self.power_w_field.setText(str(round((acoustic_w[len(acoustic_w) - 1]), 2)))
