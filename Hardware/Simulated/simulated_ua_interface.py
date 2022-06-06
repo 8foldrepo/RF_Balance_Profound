@@ -1,5 +1,6 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
+from typing import List
 
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
 from Utilities.useful_methods import log_msg
@@ -46,12 +47,17 @@ class SimulatedUAInterface(AbstractUAInterface):
         self.cal_data_signal.emit(self.ua_calibration_data, 'V1.0', 0)
         return self.ua_calibration_data, 'V1.0', 0
 
-    def log(self, message, level="info"):
+    def log(self, message: str, level: str = "info"):
         log_msg(self, self.root_logger, message=message, level=level)
 
-    def write_data(self, data):
-        self.write_result = True
-        return True
+    def write_data(self, data: List[str]) -> bool:
+        try:
+            self.ua_calibration_data = data
+            self.write_result = True
+        except Exception as e:
+            self.log(level='error', message=f'could not write data to UA: {e}')
+            self.write_result = False
+        return self.write_result
 
     def get_serial_number(self) -> str:
         return '"Simulated"'
