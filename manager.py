@@ -6,6 +6,7 @@ import sys
 import time as t
 import traceback
 from collections import OrderedDict
+from pprint import pprint, pformat
 from typing import List, Tuple
 import numpy as np
 import pyvisa
@@ -13,6 +14,8 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
+from termcolor import colored
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -121,6 +124,7 @@ class Manager(QThread):
     def __init__(self, system_info, parent, config: dict, access_level='Operator'):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
+        self.question_box_finished = None
         self.script_has_description = False
         self.script_description = None
         self.access_level = access_level
@@ -570,7 +574,20 @@ class Manager(QThread):
             else:  # above ensures we're not parsing a task header nor blank line
                 x0 = ray[0].strip()  # remove trailing/leading spaces
                 x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
-                task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
+                if x0 == 'Element' and x1 != 'Current' and building_loop:
+                    self.question_box_finished = False
+                    self.yes_clicked_variable = False
+                    self.no_clicked_variable = False
+                    self.user_question_signal.emit(f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
+                    cont = self.cont_if_answer_clicked()
+                    if cont:
+                        if self.yes_clicked_variable:  # if the user clicked yes
+                            x1 = 'Current'
+                            task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
+                        else:
+                            task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
+                else:
+                    task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
 
                 if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
                     building_loop = True  # set a flag that we're building a loop for the script
@@ -628,7 +645,6 @@ class Manager(QThread):
 
         self.task_arguments = list()  # makes the task_arguments object into a list
         for i in range(len(self.task_execution_order)):
-            # tasks[self.taskExecOrder[i][0] + 1].pop("Task type", None)
             self.task_arguments.append(
                 tasks[self.task_execution_order[i][0] + 1])  # task_arguments and task_execution_order are offset by 1
 
@@ -866,16 +882,14 @@ class Manager(QThread):
         """
         Sets answer variables to false and waits for user to make selection
         """
-        self.yes_clicked_variable = False
-        self.no_clicked_variable = False
-
-        while not self.yes_clicked_variable and not self.no_clicked_variable:
+        while not self.question_box_finished:
             if self.yes_clicked_variable:
                 self.thread_cont_mutex = True
                 return True
             if self.no_clicked_variable:
                 self.thread_cont_mutex = True
                 return False
+
     @pyqtSlot()
     def continue_clicked(self):
         """Flags cont_clicked to continue the current step"""
@@ -898,12 +912,14 @@ class Manager(QThread):
         """Flags yes_selected to allow user to consent to question"""
         self.yes_clicked_variable = True
         self.no_clicked_variable = False
+        self.question_box_finished = True
 
     @pyqtSlot()
     def no_clicked(self):
         """Flags yes_selected to allow user to consent to question"""
         self.no_clicked_variable = True
         self.yes_clicked_variable = False
+        self.question_box_finished = True
 
     def script_complete(self, finished=False):
         """Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI"""
@@ -1469,6 +1485,8 @@ class Manager(QThread):
         self.test_data.calculate_angle_average()
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
+            self.yes_clicked_variable = False
+            self.no_clicked_variable = False
             self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
 
             calibration_data = generate_calibration_data(self.test_data)
