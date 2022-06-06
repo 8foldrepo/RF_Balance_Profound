@@ -266,14 +266,16 @@ class Ui_Form(object):
         self.label_126.setText(_translate("Form", "Acoustic Power"))
         self.tooltip.setToolTip(_translate("Form", "This tab shows the data captured by the radiation force balance ("
                                                    "RFB) and organizes the\n "
-"                    information into a grid and graph fashion, with a graph legend to explain what various lines\n"
-"                    represent\n"
-"                "))
-from ui_elements.ui_oscilloscope_plot import Plot
+                                                   "                    information into a grid and graph fashion, with a graph legend to explain what various lines\n"
+                                                   "                    represent\n"
+                                                   "                "))
 
+
+from ui_elements.ui_oscilloscope_plot import Plot
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

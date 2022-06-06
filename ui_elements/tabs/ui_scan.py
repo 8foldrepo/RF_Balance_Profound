@@ -1,4 +1,5 @@
 from typing import List
+from typing import Union
 
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
@@ -13,7 +14,7 @@ from ui_elements.my_qwidget import MyQWidget
 # noinspection PyUnresolvedReferences
 class Scan(MyQWidget, Ui_scan_tab_widget):
     command_signal = pyqtSignal(str)
-    manager: Manager
+    manager: Union[Manager, None]
 
     x_data_type: str
     y_data_type: str

@@ -1,4 +1,5 @@
 from PyQt5 import QtCore
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Utilities.load_config import *
 

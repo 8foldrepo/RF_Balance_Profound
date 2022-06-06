@@ -19,7 +19,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.run_routine)
 
     def run_routine(self):
-        self.logger.start(priority=4)
+        self.logger.start(priority=QThread.HighPriority)
 
 
 if __name__ == "__main__":

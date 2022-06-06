@@ -1,6 +1,7 @@
-import unittest
 import random
 import time as t
+import unittest
+
 from Hardware.galil_motor_controller import GalilMotorController
 
 
@@ -9,6 +10,7 @@ class TestMotors(unittest.TestCase):
     Warning, if connected to motors this program will move the motors around randomly.
     Tests all core functionality of the motion controller
     """
+
     def setUp(self):
         self.Motors = GalilMotorController(config=None, lock=None)
         self.Motors.connect_hardware()
@@ -86,7 +88,8 @@ class TestMotors(unittest.TestCase):
 
         start_time = t.time()
         successful = self.Motors.go_home_1d(axis)
-        self.assertLessEqual(t.time() - start_time, self.Motors.config[self.Motors.device_key]['move_timeout_s']*3 + 3)
+        self.assertLessEqual(t.time() - start_time,
+                             self.Motors.config[self.Motors.device_key]['move_timeout_s'] * 3 + 3)
 
     def test_go_home(self):
         if True not in self.Motors.config[self.Motors.device_key]['enable_homing_ray']:
@@ -98,7 +101,8 @@ class TestMotors(unittest.TestCase):
         # assumes that there is no home switch
 
         # Flip this check to True when limit switches are installed
-        self.assertLessEqual(t.time()- start_time, self.Motors.config[self.Motors.device_key]['move_timeout_s'] * 3 + 3)
+        self.assertLessEqual(t.time() - start_time,
+                             self.Motors.config[self.Motors.device_key]['move_timeout_s'] * 3 + 3)
 
 
 if __name__ == '__main__':

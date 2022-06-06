@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Tuple, Union
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_device import AbstractDevice
 
@@ -146,3 +146,14 @@ class AbstractAWG(AbstractDevice):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""
         self.get_state()
         return "Waveform Generator\nSettings:\n" + str(self.state)
+
+    def SetTriggerOutput(self, external:bool, period_s:float, delay_s:float):
+        """
+        Enables or disables the external trigger output of the AWG in burst mode, as well as the period of the burst
+        and a delay between the beginning of the burst and the trigger signal if desired.
+        """
+        ...
+
+    def GetTriggerOutput(self)->bool:
+        """Returns whether the AWG is outputting a trigger pulse in burst mode"""
+        ...

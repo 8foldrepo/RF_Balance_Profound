@@ -1,14 +1,12 @@
 import os
 import random
 import unittest
-
-from termcolor import colored
+from random import randrange, choice, uniform
+from unittest.mock import patch
 
 from Utilities.load_config import load_configuration
 from data_structures.test_data import TestData
 from manager import Manager
-from random import randrange, choice, uniform
-from unittest.mock import patch
 
 
 class MyTestCase(unittest.TestCase):
@@ -34,7 +32,8 @@ class MyTestCase(unittest.TestCase):
 
         axis = choice(self.manager.Motors.ax_letters)
         self.manager.scan_axis(element=element, axis=axis, num_points=randrange(2, 100), increment=uniform(.04, 2),
-                               ref_position=-90, data_storage='Store entire waveform', go_to_peak=True, storage_location='', update_element_position=True)
+                               ref_position=-90, data_storage='Store entire waveform', go_to_peak=True,
+                               storage_location='', update_element_position=True)
 
         if axis == 'R':
             self.assertNotEqual(self.manager.element_r_coordinates[element], 0)
@@ -49,17 +48,22 @@ class MyTestCase(unittest.TestCase):
             self.fail("This application is meant to be ran on Windows machines only, "
                       "directory specifications in program will not work")
         try:
-            var_dict: dict = {"Save summary file": "True", "Write UA Calibration": "False", "PromptForCalWrite": "False"}
-            self.manager.save_results(var_dict=var_dict)  # INFO: results_summary should be default values specified in test_data.py
+            var_dict: dict = {"Save summary file": "True", "Write UA Calibration": "False",
+                              "PromptForCalWrite": "False"}
+            self.manager.save_results(
+                var_dict=var_dict)  # INFO: results_summary should be default values specified in test_data.py
         except Exception as e:
             self.fail(f"save_results method ran into an exception when it shouldn't have: {e}")
 
         self.manager.config['Paths']['UA results root directory'] = "C:\\Users\\Public\\Documents\\UA results"
-        results_summary = ("C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Results Summary.txt')
-        script_results = ("C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
+        results_summary = (
+                    "C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Results Summary.txt')
+        script_results = (
+                    "C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
         self.assertTrue(exists(results_summary))  # TEST: tests if files exist
         self.assertTrue(exists(script_results))
-        self.assertTrue(os.stat(results_summary).st_size != 0)  # TEST: this file should have default information within it
+        self.assertTrue(
+            os.stat(results_summary).st_size != 0)  # TEST: this file should have default information within it
         self.assertTrue(os.stat(script_results).st_size == 0)  # TEST: this file should be empty since no tests ran
 
     def test_configure_function_generator(self):
@@ -74,8 +78,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(frequency_mhz * 1000000, self.manager.AWG.get_frequency_hz())
         self.assertTrue(self.manager.AWG.get_output())
 
-        self.assertTrue(["", "Configure FGen+PwrMeters", f"Frequency set to {self.manager.AWG.get_frequency_hz() / 1000000} MHz", "", ]
-                        in self.manager.test_data.script_log)
+        self.assertTrue(
+            ["", "Configure FGen+PwrMeters", f"Frequency set to {self.manager.AWG.get_frequency_hz() / 1000000} MHz",
+             "", ]
+            in self.manager.test_data.script_log)
 
         self.assertEqual(mVpp, self.manager.AWG.get_amplitude_v() * 1000)
         self.assertFalse(self.manager.AWG.get_burst()[0])
@@ -100,8 +106,10 @@ class MyTestCase(unittest.TestCase):
     def test_autoset_timebase(self):
         self.manager.autoset_timebase()
         oscilloscope = self.manager.Oscilloscope
-        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_maximum"], oscilloscope.max_time_of_flight)
-        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_minimum"], oscilloscope.min_time_of_flight)
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_maximum"],
+                         oscilloscope.max_time_of_flight)
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_minimum"],
+                         oscilloscope.min_time_of_flight)
         self.assertEqual(self.manager.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6,
                          oscilloscope.get_horizontal_range_sec())
         time_of_flight_window = (oscilloscope.max_time_of_flight - oscilloscope.min_time_of_flight) / 1000000
@@ -122,18 +130,14 @@ class MyTestCase(unittest.TestCase):
     # WARNING: them via GitHub's commit history
     def test_update_sensors(self):
         if self.manager.config['Debugging']['simulate_thermocouple']:
-            from Hardware.Simulated.simulated_thermocouple import SimulatedThermocouple
             with_clause_thermocouple = 'Hardware.Simulated.simulated_thermocouple.SimulatedThermocouple.get_reading'
         else:
-            from Hardware.ni_thermocouple import NIThermocouple
             with_clause_thermocouple = 'Hardware.ni_thermocouple.NIThermocouple.get_water_level'
 
         if self.manager.config['Debugging']['simulate_io_board']:
-            from Hardware.Simulated.simulated_io_board import SimulatedIOBoard
             with_clause_water_level = 'Hardware.Simulated.simulated_io_board.SimulatedIOBoard.get_water_level'
             with_clause_ua_pump = 'Hardware.Simulated.simulated_io_board.SimulatedIOBoard.get_ua_pump_reading'
         else:
-            from Hardware.dio_board import DIOBoard
             with_clause_water_level = 'Hardware.dio_board.DIOBoard.get_water_level'
             with_clause_ua_pump = 'Hardware.dio_board.DIOBoard.get_ua_pump_reading'
 
@@ -161,6 +165,7 @@ class MyTestCase(unittest.TestCase):
         self.manager.Oscilloscope.disconnect_hardware()
         self.assertRaises(TypeError, self.manager.capture_scope(plot=False))
         self.manager.Oscilloscope.connect_hardware()
+
 
 if __name__ == '__main__':
     unittest.main()

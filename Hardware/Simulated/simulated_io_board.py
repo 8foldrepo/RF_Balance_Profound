@@ -1,5 +1,7 @@
 import time as t
+
 from PyQt5.QtCore import pyqtSignal
+
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.Simulated.simulated_relay import SimulatedRelay
 from data_structures.variable_containers import WaterLevel

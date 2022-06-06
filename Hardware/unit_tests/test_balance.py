@@ -1,8 +1,10 @@
+import time as t
 import unittest
+
 import serial.serialutil
 from termcolor import colored
+
 from Hardware.mt_balance import MT_balance
-import time as t
 
 
 class TestBalance(unittest.TestCase):
@@ -108,7 +110,8 @@ class TestBalance(unittest.TestCase):
         try:
             self.balance.connect_hardware()
         except serial.serialutil.SerialException:
-            self.fail("connect_hardware threw an exception in test_connect_hardware_except_handling even though port was corrected")
+            self.fail(
+                "connect_hardware threw an exception in test_connect_hardware_except_handling even though port was corrected")
 
     @classmethod
     def tearDownClass(cls) -> None:
