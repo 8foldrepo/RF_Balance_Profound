@@ -14,6 +14,8 @@ from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
+from termcolor import colored
+
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index
@@ -692,10 +694,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
         if message == "Do you want to write calibration data to UA?":
-            dlg.continue_button.setText('Yes')
-            dlg.continue_signal.connect(self.manager.yes_clicked)
+            # dlg.continue_button.setText('Yes')
+            dlg.continue_button.setText('No')
+            # dlg.continue_signal.connect(self.manager.yes_clicked)
+            dlg.continue_signal.connect(self.manager.no_clicked)
             dlg.abort_button.setText('No')
-            dlg.abort_signal.connect(self.manager.no_clicked)
+            dlg.abort_button.setText('Yes')
+            # dlg.abort_signal.connect(self.manager.no_clicked)
+            dlg.abort_signal.connect(self.manager.yes_clicked)
             dlg.retry_button.hide()
             dlg.retry_button.setVisible(False)
             dlg.retry_button.setEnabled(False)

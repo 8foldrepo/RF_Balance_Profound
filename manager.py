@@ -1487,13 +1487,14 @@ class Manager(QThread):
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.yes_clicked_variable = False
             self.no_clicked_variable = False
+            self.question_box_finished = False
             self.user_prompt_signal.emit("Do you want to write calibration data to UA?", False)
 
-            calibration_data = generate_calibration_data(self.test_data)
             cont = self.cont_if_answer_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return
             if self.yes_clicked_variable:
+                calibration_data = generate_calibration_data(self.test_data)
                 self.UAInterface.write_data(calibration_data)
 
         elif write_ua_calibration:
