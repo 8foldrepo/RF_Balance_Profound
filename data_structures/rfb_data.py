@@ -326,7 +326,7 @@ class RFBData:
             return False, "Invalid test due to missing forward power data"
 
         if self.efficiency_percent is None or self.efficiency_percent == float('nan') or \
-                self.efficiency_percent < 0 or self.efficiency_percent > 100:
+                self.efficiency_percent < 0:
             return False, "Invalid test due to invalid efficiency_percent"
 
         if self.reflected_power_percent is None or self.reflected_power_percent == float('nan') or \
