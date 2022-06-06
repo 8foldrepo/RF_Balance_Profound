@@ -187,10 +187,7 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label_131.setText(_translate("Form", "UA Script Log"))
-        self.tooltip_script_log.setToolTip(_translate("Form", "This tab shows detailed information about the script parsing process, including\n"
-"                                    whether certain tests succeeded and other intricate details about various script\n"
-"                                    operations\n"
-"                                "))
+        self.tooltip_script_log.setToolTip(_translate("Form", "This tab shows detailed information about the script parsing process, including whether certain tests succeeded and other intricate details about various script operations"))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.scriptlog_tab), _translate("Form", "ScriptLog"))
         item = self.results_table.verticalHeaderItem(1)
         item.setText(_translate("Form", "Element_01"))
