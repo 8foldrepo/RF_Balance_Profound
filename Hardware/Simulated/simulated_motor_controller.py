@@ -1,6 +1,6 @@
 import time as t
 from abc import abstractmethod
-
+from PyQt5.QtWidgets import QApplication as QApp
 from PyQt5.QtCore import *
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
@@ -13,6 +13,7 @@ class SimulatedMotorController(AbstractMotorController):
 
     def __init__(self, config: dict, device_key="VIX_Motors", parent=None, lock=None):
         super().__init__(parent=parent, config=config, device_key=device_key, lock=lock)
+        self.app = QApp.instance()
         self.fields_setup()
 
     def go_home_1d(self, axis, enable_ui: bool = True) -> bool:
@@ -20,6 +21,11 @@ class SimulatedMotorController(AbstractMotorController):
             if enable_ui:
                 self.ready_signal.emit()
             return False
+
+        start_time = t.time()
+
+        while t.time()-start_time < 20:
+            self.app.processEvents()
 
         if axis == "R":
             self.coords_mm[1] = -90

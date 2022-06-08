@@ -15,6 +15,7 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
 
+
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -79,7 +80,6 @@ class Manager(QThread):
     script_complete_signal = QtCore.pyqtSignal(list, list)
     user_info_signal = QtCore.pyqtSignal(str)
     user_question_signal = QtCore.pyqtSignal(str)  # str is question to be asked
-
     system_info_signal = QtCore.pyqtSignal(SerialNumbers)
 
     # Script metadata
@@ -150,6 +150,7 @@ class Manager(QThread):
         self.sensor_refresh_interval_s = self.config['Debugging']['sensor_refresh_interval_s']
         self.last_sensor_update_time = 0.0
 
+        # Get the currently running application (force UI updates using self.app.processEvents)
         self.app = QApplication.instance()
         self.test_data = TestData()
         self.file_saver = FileSaver(config=self.config)
