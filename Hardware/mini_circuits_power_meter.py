@@ -1,6 +1,6 @@
 import sys
 import time as t
-from typing import Union
+from typing import Union, Any, Tuple
 
 from PyQt5 import QtCore
 
@@ -40,7 +40,7 @@ class PowerMeter(AbstractSensor):
         self.connected = False
         self.fields_setup()
 
-    def fields_setup(self):
+    def fields_setup(self) -> None:
         """Sets the class' serial number to the one specified in the config file"""
         self.serial_number = self.config[self.device_key]["serial_number"]
 
@@ -53,7 +53,7 @@ class PowerMeter(AbstractSensor):
     #         ctypes.c_void_p)  # ... thru 4.
     #     hllApiParams = (1, "p1", 0), (1, "p2", 0), (1, "p3", 0), (1, "p4", 0),
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
         """
         Sets the model name, serial number, power average, frequency,
         and format of the power meter. Also sends connected signals.
@@ -77,13 +77,13 @@ class PowerMeter(AbstractSensor):
         self.connected_signal.emit(self.connected)
         return self.connected, ""
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
         """Closes the sensors, and changes/emits the connected variable to false"""
         self.pwr.Close_Sensor()
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def get_reading(self):
+    def get_reading(self) -> Any:
         """Gets an immediate reading from the power meter"""
         power = self.pwr.ReadImmediatePower()
         self.reading_signal.emit(power)

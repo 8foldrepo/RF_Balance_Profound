@@ -1,7 +1,7 @@
 import re
 import time as t
 from subprocess import Popen, PIPE
-from typing import Tuple, List
+from typing import Tuple, List, Union, Optional
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
@@ -25,9 +25,18 @@ class UAInterface(AbstractUAInterface):
         self.fields_setup()
 
     def fields_setup(self):
-        self.timeout_s = self.config[self.device_key]["timeout_s"]
+        """Initializes the timeout_s value from the config dictionary"""
+        try:
+            self.timeout_s = self.config[self.device_key]["timeout_s"]
+        except KeyError:
+            self.log(level='warning', message='value for [UAInterface][timeout_s] in either config does not exist, defaulting to 10 seconds')
+            self.timeout_s = 10
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """
+        Attempts to connect/communicate with ua interface, returns
+        and emits resulting connection flag and feedback
+        """
         self.connected = True
 
         self.log("Attempting to connect to WTFIB... ")
@@ -50,20 +59,23 @@ class UAInterface(AbstractUAInterface):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
+        """Sets connected flag to false and emits it"""
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def check_connected(self):
+    def check_connected(self) -> bool:
+        """Getter for class' connected boolean variable"""
         return self.connected
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """Relay method that calls disconnect_hardware()"""
         self.disconnect_hardware()
 
     @pyqtSlot()
     def read_data(self) -> Tuple[List[str], str, int]:
-        # cal_data_signal.emit(self.cal_data_signal)
-        output = self.get_read_command_output()
+        """Sends command to read full data from ua interface, returns device feedback, firmware, and status"""
+        output = self.__get_read_command_output()
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], '', -1)
@@ -110,7 +122,11 @@ class UAInterface(AbstractUAInterface):
         self.read_result = True
         return calibration_data_list, fw_version, device_status
 
-    def write_data(self, ua_calibration_data=None):
+    def write_data(self, ua_calibration_data: Union[None, List[str]] = None) -> int:
+        """
+        Writes ua calibration data (list of strings) to the ua interface
+        via a command through its executable, has error handling
+        """
         if ua_calibration_data is None:
             ua_calibration_data = self.ua_calibration_data
 
@@ -127,11 +143,6 @@ class UAInterface(AbstractUAInterface):
             self.write_result = False
             return -9
 
-        # if "status=2" in output:
-        #     self.log(level="error", message="No UA connected, write failed")
-        #     self.write_result = False
-        #     return 2
-
         if "status=0" in output:
             self.log("UA write successful")
             self.write_result = True
@@ -141,7 +152,8 @@ class UAInterface(AbstractUAInterface):
         self.write_result = False
         return -3
 
-    def get_read_command_output(self):
+    def __get_read_command_output(self) -> Union[None, str]:
+        """Helper method to read the device's feedback data after querying it"""
         start_time = t.time()
         # Try to get usable data until timeout occurs
         while t.time() - start_time < self.timeout_s:
@@ -156,7 +168,8 @@ class UAInterface(AbstractUAInterface):
                     self.log("Getting output failed, retrying...")
         return None
 
-    def get_write_command_output(self, calibration_data):
+    def get_write_command_output(self, calibration_data: List[str]) -> Optional[str]:
+        """Retrieves/decodes the device feedback after issuing a write command to it"""
         first_string = " ".join(calibration_data[0:7])
         low_eff_string = f'\"{" ".join(calibration_data[7:17])}\"'
         high_eff_string = f'\"{" ".join(calibration_data[17:27])}\"'
@@ -171,7 +184,6 @@ class UAInterface(AbstractUAInterface):
             try:
                 p = Popen(command_str, shell=False, stdout=PIPE)
                 output = p.communicate()[0].decode()
-                print(output)
                 return output
             except UnicodeDecodeError as e:
                 self.log(level='error', message=str(e))

@@ -23,6 +23,7 @@ class MT_balance(AbstractBalance):
         self.fields_setup()
 
     def fields_setup(self):
+        """Initializes config, timeout_s, and port variables"""
         if self.config is None:
             self.config = load_configuration()
 
@@ -59,6 +60,7 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def wrap_up(self):
+        """Runs the disconnect_hardware() method"""
         self.disconnect_hardware()
 
     def zero_balance_instantly(self):
@@ -93,6 +95,10 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def connect_hardware(self) -> Tuple[bool, str]:
+        """
+        Attempts to establish a serial communication line using
+        Python's serial library, also has error exception handling.
+        """
         feedback = ""
         try:
             self.ser = serial.Serial(
@@ -119,6 +125,7 @@ class MT_balance(AbstractBalance):
         return self.connected, feedback
 
     def disconnect_hardware(self) -> None:
+        """Closes the serial connection, sets the connected flag to false and emits disconnection signal"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -127,7 +134,8 @@ class MT_balance(AbstractBalance):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def get_reading(self):
+    def get_reading(self) -> Union[None, float]:
+        """Sets the balance to continuous read mode and sends the immediately detected weight via signal and return"""
         if self.ser is None or not self.connected:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -164,6 +172,7 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def reset(self) -> None:
+        """Sends the MT pre-defined reset command to the balance, has error exception handling"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -180,6 +189,7 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def get_stable_reading(self) -> Union[float, None]:
+        """Sends the MT pre-defined stable reading command and returns the weight once ready via signal and return statements"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -213,6 +223,10 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def get_serial_number(self) -> Union[str, None]:
+        """
+        Sends the MT pre-defined get serial number command, decodes
+        the response to utf-8 and returns value, has error handling
+        """
         if not self.connected:
             return None
 
@@ -244,10 +258,12 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def start_continuous_reading(self):
+        """Sends the continuous reading command to the balance, and sets the continuous reading flag to false"""
         self.ser.write(b"\nSIR\n")
         self.continuously_reading = True
 
     def stop_continuous_reading(self):
+        """Sends the stop continuous reading command to the balance, and sets the continuous reading flag to false"""
         self.ser.write(b"\n@\n")
         self.continuously_reading = False
 

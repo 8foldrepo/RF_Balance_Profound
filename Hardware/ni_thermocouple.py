@@ -17,8 +17,10 @@ class NIThermocouple(AbstractSensor):
         self.fields_setup()
 
     def fields_setup(self):
-        """Takes the name value from the default or local.yaml config file and set's the local name
-        variable to that"""
+        """
+        Takes the name value from the default or local.yaml
+        config file and set's the local name variable to that
+        """
         self.name = self.config[self.device_key]["DeviceName"]
 
     def connect_hardware(self) -> Tuple[bool, str]:
@@ -37,15 +39,19 @@ class NIThermocouple(AbstractSensor):
         return self.connected, ""
 
     def disconnect_hardware(self) -> None:
-        """Sets the connected flag to false and relays the boolean status to MainWindow which connects it
-        to the manager's hardware thermocouple variable"""
+        """
+        Sets the connected flag to false and relays the boolean status to MainWindow
+        which connects it to the manager's hardware thermocouple variable
+        """
         self.connected = False
         self.connected_signal.emit(self.connected)
 
     def get_reading(self) -> None:
-        """Ensures device is connected, then adds a channel from the thermocouple, takes a reading from
+        """
+        Ensures device is connected, then adds a channel from the thermocouple, takes a reading from
         the device's channel, and emits the signal to the main window which connects it to the manager's
-        device variable."""
+        device variable.
+        """
         if not self.connected:
             return
 
@@ -61,9 +67,9 @@ class NIThermocouple(AbstractSensor):
         """Method retrieves serial number from device and returns it as a string value"""
         pass
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """Calls the disconnect hardware method"""
         self.disconnect_hardware()
-        pass
 
 
 if __name__ == "__main__":

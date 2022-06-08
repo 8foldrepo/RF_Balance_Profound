@@ -29,7 +29,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.rm = pyvisa.ResourceManager()
         self.inst = None
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """Attempts to connect to the oscilloscope, handles errors and returns connection status and feedback"""
         self.log("Attempting to connect to oscilloscope...")
         feedback = ""
         try:
@@ -84,10 +85,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    def clear(self):
+    def clear(self) -> None:
+        """Sends the pre-written Keysight clear command to the oscilloscope"""
         self.inst.clear()
 
-    def reset(self):
+    def reset(self) -> None:
+        """Sends the pre-written Keysight reset command to the oscilloscope"""
         self.command("*RST")
 
     def disconnect_hardware(self) -> bool:
@@ -108,7 +111,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.log(level='error', message=f'could not disconnect oscilloscope: {e}')
             return False
 
-    def set_to_defaults(self):
+    def set_to_defaults(self) -> None:
         """
         Sets all the internal class variables to default values specified in the config file.
         """
@@ -129,7 +132,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
                    range_v=self.range_mV / 1000,
                    ext_trigger=self.external_trigger, average_count=self.average_count)
 
-    def setup(self, channel, range_s, offset_s, autorange_v, range_v, ext_trigger, average_count):
+    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float, ext_trigger: bool, average_count: int) -> None:
         """
         This method relays to the oscilloscope a given set of parameters
         """
@@ -146,7 +149,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         # Set trigger
         self.set_trigger(ext_trigger)
 
-    def set_trigger(self, external):
+    def set_trigger(self, external: bool) -> None:
         """
         Define the conditions for an internal trigger of the oscilloscope.
         """
@@ -161,7 +164,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":TRIG:EDGE:SOUR CHAN1")
             self.command(":TRIG:EDGE:LEV .1")
 
-    def set_averaging(self, averages=1):
+    def set_averaging(self, averages: int = 1) -> None:
 
         self.averages = averages
         if averages > 1:
@@ -266,7 +269,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return True
 
     # stretch: add automatic waveform finding
-    def autoset_oscilloscope_timebase(self):
+    def autoset_oscilloscope_timebase(self) -> None:
         """
         Takes the autoset min and max time of flight values from the config file and
         calculates/sets the range and time of flight window (horizontal range and offset)
@@ -287,17 +290,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
         """Returns the amplitude of the oscilloscope window in volts as a float"""
         return float(self.ask(":MEAS:VAMP?"))
 
-    def autoScale(self):
+    def autoScale(self) -> None:
         """Issues Keysight's built-in auto-scale command to the oscilloscope"""
         self.command(":AUT")
 
-    def capture(self, channel) -> Tuple[List[float], List[float]]:
+    def capture(self, channel: int) -> Tuple[List[float], List[float]]:
         """
         Captures the x-axis (seconds) and y-axis (volts) and returns the two respective float lists
         """
-        # self.log(
-        #     f"capture method called in keysight_oscilloscope.py, called by
-        #     {inspect.getouterframes(inspect.currentframe(), 2)[1][3]}, channel is: {channel}")
         if not self.connected:
             self.log(f"Could not capture, {self.device_key} is not connected")
             return [0.0], [0.0]
@@ -383,7 +383,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             if str(e) == "\'NoneType\' object has no attribute \'write\'":
                 self.log(f"Could not send command {command}, {self.device_key} not connected")
 
-    def read(self):
+    def read(self) -> str:
         """reads the current data that the oscilloscope has pending, handles device not being connected """
         try:
             return self.inst.read()
@@ -401,6 +401,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return reply
 
     def get_serial_number(self) -> Union[str, None]:
+        """Returns the serial number device reports after issuing Keysight command"""
         if not self.connected:
             return None
 
@@ -408,12 +409,15 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return out_str.split(",")[2]
 
     def get_rms(self) -> float:
-        """asks the oscilloscope what the voltage root mean squared of the current window is and returns it as a
-        float"""
+        """
+        asks the oscilloscope what the voltage root mean squared
+        of the current window is and returns it as a float
+        """
         rms = self.ask(":MEASure:VRMS?")
         return float(rms)
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """Calls the disconnect hardware method"""
         self.disconnect_hardware()
 
 

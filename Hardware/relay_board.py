@@ -1,14 +1,14 @@
 import time as t
+from typing import Tuple, Union
 
 import serial
-from PyQt5.QtCore import pyqtSignal
-
+from PyQt5 import QtCore
 from Hardware.Abstract.abstract_relay import AbstractRelay
 from Utilities.load_config import load_configuration
 
 
 class RelayBoard(AbstractRelay):
-    reading_signal = pyqtSignal(bool)
+    reading_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, config=None, device_key="Daq_Power_Relay", parent=None):
         super().__init__(config=config, device_key=device_key, parent=None)
@@ -16,7 +16,8 @@ class RelayBoard(AbstractRelay):
         self.fields_setup()
         self.on = False
 
-    def fields_setup(self):
+    def fields_setup(self) -> None:
+        """Initializes config, timeout_s, on_by_default, and port variables (latter 3 come from config)"""
         if self.config is None:
             self.config = load_configuration()
 
@@ -24,7 +25,11 @@ class RelayBoard(AbstractRelay):
         self.on_by_default = self.config[self.device_key]["on_by_default"]
         self.port = self.config[self.device_key]["port"]
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """
+        Attempts to make serial communication, sends the on command,
+        updates flags and returns connected boolean and feedback
+        """
         feedback = ""
         try:
             self.ser = serial.Serial(
@@ -47,7 +52,8 @@ class RelayBoard(AbstractRelay):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
+        """Sets connected flag to false and emits it if serial variable is not none"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -55,7 +61,8 @@ class RelayBoard(AbstractRelay):
         self.connected = False
         self.connected_signal.emit(self.connected)
 
-    def relay_read(self):
+    def relay_read(self) -> Union[bool, None]:
+        """Returns whether relay board is on or off"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -77,7 +84,8 @@ class RelayBoard(AbstractRelay):
                 return False
         return False
 
-    def relay_write(self, on: bool):
+    def relay_write(self, on: bool) -> None:
+        """Writes on or off command depending on passed boolean value"""
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -89,9 +97,8 @@ class RelayBoard(AbstractRelay):
             self.ser.write(b"\xFF\x01\x00\n")  # Off command
             self.relay_read()
 
-        # self.on = on
-
-    def wrap_up(self):
+    def wrap_up(self) -> None:
+        """Calls the relay_write method with false parameter and calls disconnect_hardware method"""
         self.relay_write(False)
         self.disconnect_hardware()
 
