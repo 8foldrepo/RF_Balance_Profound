@@ -172,6 +172,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_editor.set_manager(self.manager)
 
     # Display the task names and arguments from the script parser with a QTreeView
+    # noinspection PyArgumentList
     def visualize_script(self, var_dicts: list):
         self.upon_script_reloaded()
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
@@ -269,8 +270,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.access_level_combo.setCurrentText(access_level)
         self.access_level = access_level
 
-        if access_level == "Administrator":
-            return
         if access_level == "Engineer":
             self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
         elif access_level == "Operator":
@@ -279,6 +278,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.tabWidget.removeTab(self.tab_text_to_index("Position"))
             self.tabWidget.removeTab(self.tab_text_to_index("Edit Script"))
             self.run_step_button.setEnabled(False)
+        elif access_level == "Administrator":
+            pass
         else:
             sys.exit()
 
@@ -519,6 +520,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         popup.exec()
         self.cont_signal.emit()
 
+    # noinspection PyTypeChecker
     def setupUi(self, MainWindow):
         super().setupUi(self)
 

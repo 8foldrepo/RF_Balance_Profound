@@ -1,4 +1,5 @@
 import time as t
+from typing import Union
 
 import serial
 from PyQt5.QtCore import *
