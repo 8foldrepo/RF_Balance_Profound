@@ -287,7 +287,6 @@ def log_msg(self, root_logger, message: str, level: str = None, line_number=None
 
     """
     Convenience function to log messages in a compact way with useful info.
-
         Parameters:
             level (str): A string indicating the logger level, can be either
             'info', 'debug' or 'error'

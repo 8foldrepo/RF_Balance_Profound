@@ -62,7 +62,7 @@ class AbstractDevice(QObject):
         """Safely stop or turn off hardware and disconnect"""
         self.disconnect_hardware()
 
-    def log(self, message, level="info"):
+    def log(self, message: str, level: str = "info"):
         """Log a message to the WTF.log file (the hardware log)"""
         from inspect import getframeinfo, stack
         log_msg(self, self.root_logger, message=message, level=level, line_number=getframeinfo(stack()[1][0]).lineno)

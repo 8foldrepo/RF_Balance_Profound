@@ -6,7 +6,7 @@ import sys
 import time as t
 import traceback
 from collections import OrderedDict
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import pyvisa
@@ -61,6 +61,12 @@ class Manager(QThread):
     # Output file handler
     file_saver: FileSaver
     rfb_logger: RFBDataLogger
+
+    # These lists will store all information about the script being run. Looped steps appear multiple times with their
+    # Element numbers updated accordingly.
+    task_names: Union[List[str], None]  # a list of strings containing the task names (and repetition number)
+    task_execution_order: Union[ List[int], None]  # list containing the task number of each script action
+    task_arguments: Union[List[str], None]  # a list containing the arguments for each script action
 
     # Used for polling sensors while software is idle
     sensor_refresh_interval_s: float
@@ -517,6 +523,7 @@ class Manager(QThread):
         self.plot_scope(time, voltage)
         self.start_time = t.time()
 
+    @pyqtSlot(str)
     def load_script(self, path):
         """
         takes the script file and parses the info within it into various lists and dictionaries so the program can
@@ -667,8 +674,6 @@ class Manager(QThread):
             self.no_script_loaded_signal.emit()
         else:
             self.set_tab_signal.emit(["Edit Script"])
-
-    # get UA serial no. and append behind date
 
     @pyqtSlot()
     def advance_script(self):
