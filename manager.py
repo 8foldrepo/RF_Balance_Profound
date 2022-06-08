@@ -1266,7 +1266,7 @@ class Manager(QThread):
 
         if axis == 'X':
             axis_letter = 'X'
-        elif axis == 'Theta':
+        elif axis == 'Theta' or axis == 'R':
             axis_letter = 'R'
         else:
             self.user_prompt_signal.emit("Invalid axis parameter, aborting", False)

@@ -22,7 +22,7 @@ class DrainingDialog(MyQDialog, Ui_Dialog):
         self.style_ui()
 
     @pyqtSlot(WaterLevel)
-    def water_level_slot(self, water_level):
+    def water_level_slot(self, water_level: WaterLevel):
         if water_level == self.target_level:
             # Set dialog resolved to true so the script does not abort upon closing
             self.dialog_resolved = True
