@@ -219,7 +219,6 @@ class Position(MyQWidget, Ui_Form):
     @pyqtSlot(str, int)
     def begin_motion(self, axis, direction):
         """Begin motion in with the specified axis letter is the specified direction. Example text: X+ """
-
         # Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
         # self.motors.moving = True
         self.set_buttons_enabled_signal.emit(False)
