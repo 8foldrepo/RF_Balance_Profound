@@ -4,7 +4,7 @@ import time as t
 
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
-from test import Ui_MainWindow
+from Examples.test import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
