@@ -173,7 +173,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.results_tab.set_manager(self.manager)
         self.script_editor.set_manager(self.manager)
 
-    # Display the task names and arguments from the script parser with a QTreeView
     def visualize_script(self, var_dicts: list):
         """
         Generates the various parent and child nodes for tree view on the
