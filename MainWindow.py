@@ -336,6 +336,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         )
         self.set_scan_tab_signal.connect(self.scan_tab_widget.set_tab_slot)
 
+    # noinspection PyTypeChecker
     def configure_manager_signals(self):
         """
         Connects all the signals to and from the manager thread.
@@ -401,7 +402,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.IO_Board.water_level_reading_signal.connect(self.update_water_level_indicator)
         self.manager.Motors.moving_signal.connect(self.update_motors_moving_indicator)
         self.manager.AWG.output_signal.connect(self.update_ua_indicator)
-        self.manager.system_info_signal.connect(self.system_info_tab.system_info_slot)
+        self.manager.system_info_signal.connect(self.system_info_tab.serial_numbers_slot)
         self.manager.user_question_signal.connect(self.dialog_question)
 
         # Manager communication signals
@@ -767,7 +768,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             dlg.continue_button.setText('No')
             # dlg.continue_signal.connect(self.manager.yes_clicked)
             dlg.continue_signal.connect(self.manager.no_clicked)
-            dlg.abort_button.setText('No')
+            #dlg.abort_button.setText('No')
             dlg.abort_button.setText('Yes')
             # dlg.abort_signal.connect(self.manager.no_clicked)
             dlg.abort_signal.connect(self.manager.yes_clicked)

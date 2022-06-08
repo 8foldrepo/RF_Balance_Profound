@@ -1,16 +1,21 @@
-import ctypes
 import sys
 import time as t
 from typing import Union
+
 from PyQt5 import QtCore
+
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
+
 sys.path.append(POWER_METER_DLL_PATH)
 
 # Setup power meter library (do not rearrange)
 import clr  # pythonnet
+
 clr.AddReference("mcl_pm_NET45")  # Reference the DLL
+# noinspection PyUnresolvedReferences
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
+
 
 class PowerMeter(AbstractSensor):
     """"

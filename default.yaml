@@ -52,40 +52,40 @@ FrequencyParameters:
     FineIncr(MHz): 0.01
 Galil_Motors:
   axes:
-  - X
-  - R
+    - X
+    - R
   calibrate_ray:
-  - 1000
-  - 11.111111111 #4000/360
+    - 1000
+    - 11.111111111 #4000/360
   enable_homing_ray:
-  - true
-  - true
+    - true
+    - true
   encoder_installed_ray:
-  - false
-  - true
+    - false
+    - true
   encoder_resolution_ray:
-  - 1000
-  - 4000
+    - 1000
+    - 4000
   gearing_ray:
-  - 1
-  - 1.92
+    - 1
+    - 1.92
   increment_ray:
-  - 5
-  - 2
+    - 5
+    - 2
   ip_address: 192.168.42.100
   move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
-  - false
-  - false
+    - false
+    - false
   rotational_ray:
-  - false
-  - true
+    - false
+    - true
   speeds_ray:
-  - 5 #mm/s
-  - 5 #deg/s
+    - 5 #mm/s
+    - 5 #deg/s
   time_limit_s: 2
   timeout_s: 0.1
 Keysight_AWG:
@@ -138,39 +138,39 @@ User Accounts:
   Operator: Operator
 VIX_Motors:
   axes:
-  - X
-  - R
+    - X
+    - R
   calibrate_ray:
-  - 30.0
-  - 15.0
+    - 30.0
+    - 15.0
   enable_homing_ray:
-  - true
-  - true
+    - true
+    - true
   encoder_installed_ray:
-  - false
-  - true
+    - false
+    - true
   encoder_resolution_ray:
-  - 4000
-  - 1000
+    - 4000
+    - 1000
   gearing_ray:
-  - 1
-  - 1.92
+    - 1
+    - 1.92
   increment_ray:
-  - 5
-  - 2
+    - 5
+    - 2
   move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
-  - false
-  - false
+    - false
+    - false
   rotational_ray:
-  - false
-  - true
+    - false
+    - true
   speeds_ray:
-  - 5.0
-  - 5.0
+    - 5.0
+    - 5.0
   time_limit_s: 2
   timeout_s: 0.1
 WTF_DIO:

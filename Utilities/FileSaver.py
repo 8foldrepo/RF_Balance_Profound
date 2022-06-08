@@ -338,7 +338,7 @@ class FileSaver:
         file.close()
 
     def save_find_element_profile(self, metadata, positions, vsi_values,
-                                  storage_location,filename_stub="FindElement") -> bool:
+                                  storage_location, filename_stub="FindElement") -> bool:
         if storage_location != '' and storage_location is not None:
             try:
                 path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
@@ -351,9 +351,9 @@ class FileSaver:
                 os.path.join(self.waveform_data_path, "ElementScans", f"E{metadata.element_number:02}")
             )
 
-        full_path = os.path.join(path,f"{filename_stub}{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt")
+        full_path = os.path.join(path, f"{filename_stub}{metadata.element_number:02}_{metadata.axis}__UMSProfile.txt")
 
-        with open(full_path,"w+") as file:
+        with open(full_path, "w+") as file:
             file.write(f"UASerialNumber={self.test_data.serial_number}\n")
             file.write("[File Format]\n")
             file.write(f"Version={self.config['Software_Version']}\n")
@@ -390,7 +390,7 @@ class FileSaver:
                     formatted_voltage = "{:.6e}".format(vsi_values[x])
                     file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
-    def save_frequency_sweep(self, metadata, frequencies, vsi_values, storage_location,filename_stub="FindElement"):
+    def save_frequency_sweep(self, metadata, frequencies, vsi_values, storage_location, filename_stub="FindElement"):
         if storage_location != '' and storage_location is not None:
             try:
                 path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
@@ -403,7 +403,7 @@ class FileSaver:
                 os.path.join(self.waveform_data_path, "ElementScans", f"E{metadata.element_number:02}")
             )
 
-        full_path = os.path.join(path,f"{filename_stub}{metadata.element_number:02}_FrequencyProfile.txt",)
+        full_path = os.path.join(path, f"{filename_stub}{metadata.element_number:02}_FrequencyProfile.txt", )
 
         with open(full_path, 'w+') as file:
             file.write(f"UASerialNumber={self.test_data.serial_number}\n")

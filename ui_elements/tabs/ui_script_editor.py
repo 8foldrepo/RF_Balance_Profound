@@ -9,7 +9,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication as QApp
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
-from termcolor import colored
 
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR

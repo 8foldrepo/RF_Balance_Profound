@@ -1,5 +1,6 @@
 import time as t
 from typing import List, Union
+
 import gclib
 from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
@@ -165,7 +166,7 @@ class GalilMotorController(AbstractMotorController):
 
             galil_ax_letters_for_move.append(galil_ax_letter)
             target_coordinate_mm = float(coordinates_mm[i])
-            target_coord_steps = int(self.__position_to_steps(ax_index, target_coordinate_mm))
+            target_coord_steps = int(self.position_to_steps(ax_index, target_coordinate_mm))
             print(target_coord_steps)
             coordinates_steps.append(target_coord_steps)
 
@@ -264,7 +265,7 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message='Axis not found in set_origin_1d')
             return False
 
-        coord_steps = self.__position_to_steps(axis_index, coord_mm)
+        coord_steps = self.position_to_steps(axis_index, coord_mm)
         home_coordinate = int(coord_steps)
 
         # issue set home command
@@ -430,13 +431,13 @@ class GalilMotorController(AbstractMotorController):
         moving_ray = [False, False]
         moving_margin_ray = [0.001, 0.001]
 
-        x_pos = self.__steps_to_position(0, float(self.command('RP A')))
+        x_pos = self.steps_to_position(0, float(self.command('RP A')))
         if abs(x_pos - self.coords_mm[0]) > moving_margin_ray[0]:
             moving_ray[0] = True
         self.coords_mm[0] = x_pos
         self.x_pos_mm_signal.emit(round(x_pos, 2))
 
-        r_pos = self.__steps_to_position(1, float(self.command('RP B')))
+        r_pos = self.steps_to_position(1, float(self.command('RP B')))
         if abs(r_pos - self.coords_mm[1]) > moving_margin_ray[1]:
             moving_ray[1] = True
         self.coords_mm[1] = r_pos
@@ -459,7 +460,7 @@ class GalilMotorController(AbstractMotorController):
             axis_number = 0
         return axis_number
 
-    def __position_to_steps(self, axis_index: int, position_deg_or_mm: float):
+    def position_to_steps(self, axis_index: int, position_deg_or_mm: float):
         """Converts the user-facing coordinate in mm or degrees to the coordinate in motor steps"""
         i = axis_index
 
@@ -479,7 +480,7 @@ class GalilMotorController(AbstractMotorController):
 
         return position_steps
 
-    def __steps_to_position(self, axis_index, position_steps):
+    def steps_to_position(self, axis_index, position_steps):
         """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
         i = axis_index
         position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] * self.gearing_ray[i]

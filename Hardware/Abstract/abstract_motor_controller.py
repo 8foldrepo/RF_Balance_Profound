@@ -21,7 +21,7 @@ class AbstractMotorController(AbstractDevice):
 
     movement_mode: List[str]
     timeout_s: List[float]
-    time_limit_s: List[float]
+    time_limit_s: float
     on_by_default: List[bool]
     port: str
 

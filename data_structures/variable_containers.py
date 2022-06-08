@@ -11,6 +11,7 @@ class WaterLevel(Enum):
     level = 2
     above_level = 3
 
+
 class FileMetadata:
     element_number: int
     X: float
@@ -26,7 +27,8 @@ class FileMetadata:
     y_units_str: str
     x_units_str: str
 
-class SystemInfo:
+
+class SerialNumbers:
     rf_balance_sn: str
     oscilloscope_sn: str
     wtf_sn: str
