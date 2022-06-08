@@ -4,7 +4,7 @@ import os
 import yaml
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QApplication
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import is_number
@@ -196,8 +196,8 @@ class Position(MyQWidget, Ui_Form):
         self.save_settings_button.clicked.connect(self.save_config_ui)
 
         # Hardware info signals
-        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_postion)
-        self.manager.Motors.r_pos_mm_signal.connect(self.update_r_postion)
+        self.manager.Motors.x_pos_mm_signal.connect(self.update_x_position)
+        self.manager.Motors.r_pos_mm_signal.connect(self.update_r_position)
 
     def axis_changed(self):
         """Change the settings displayed in the UI to reflect the current axis"""
@@ -255,14 +255,14 @@ class Position(MyQWidget, Ui_Form):
         self.go_to_signal.emit(['X'], [int(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])])
 
     @pyqtSlot(float)
-    def update_x_postion(self, mm):
+    def update_x_position(self, mm):
         try:
             self.x_pos_lineedit.setText(str(mm))
         except KeyboardInterrupt:
             pass
 
     @pyqtSlot(float)
-    def update_r_postion(self, mm):
+    def update_r_position(self, mm):
         try:
             self.theta_pos_lineedit.setText(str(mm))
         except KeyboardInterrupt:

@@ -2,8 +2,6 @@ import os
 import random
 import unittest
 
-from termcolor import colored
-
 from Utilities.load_config import load_configuration
 from data_structures.test_data import TestData
 from manager import Manager
@@ -33,7 +31,7 @@ class MyTestCase(unittest.TestCase):
         self.manager.element_x_coordinates[element] = 0
 
         axis = choice(self.manager.Motors.ax_letters)
-        self.manager.scan_axis(element=element, axis=axis, num_points=randrange(2, 100), increment=uniform(.04, 2),
+        self.manager.scan_axis(element=element, axis=axis, num_points=randrange(2, 10), increment=uniform(.04, 2),
                                ref_position=-90, data_storage='Store entire waveform', go_to_peak=True, storage_location='', update_element_position=True)
 
         if axis == 'R':
@@ -60,7 +58,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(exists(results_summary))  # TEST: tests if files exist
         self.assertTrue(exists(script_results))
         self.assertTrue(os.stat(results_summary).st_size != 0)  # TEST: this file should have default information within it
-        self.assertTrue(os.stat(script_results).st_size == 0)  # TEST: this file should be empty since no tests ran
+        # INFO: cannot check whether script results should be empty since tests are ran in random order
 
     def test_configure_function_generator(self):
         mVpp = randrange(1000, 10000)
@@ -68,7 +66,7 @@ class MyTestCase(unittest.TestCase):
         frequency_mhz = randrange(1, 10)
 
         var_dict = {"Amplitude (mVpp)": mVpp, "Mode": mode, 'Enable output': True,
-                    'Set frequency options': 'From config cluster', 'Frequency (MHz)': frequency_mhz}
+                    'Set frequency options': 'From config cluster', 'Frequency (MHz)': frequency_mhz, '#Cycles': '3'}
 
         self.manager.configure_function_generator(var_dict=var_dict)
         self.assertEqual(frequency_mhz * 1000000, self.manager.AWG.get_frequency_hz())
@@ -78,7 +76,7 @@ class MyTestCase(unittest.TestCase):
                         in self.manager.test_data.script_log)
 
         self.assertEqual(mVpp, self.manager.AWG.get_amplitude_v() * 1000)
-        self.assertFalse(self.manager.AWG.get_burst()[0])
+        self.assertTrue(self.manager.AWG.get_burst()[0])
 
         self.assertTrue(["", "Config FGen", f"{mVpp}mVpp;{self.manager.AWG.get_frequency_hz() / 1000000}MHz,{mode}"]
                         in self.manager.test_data.script_log)
@@ -146,9 +144,9 @@ class MyTestCase(unittest.TestCase):
                 self.fail(f"test_update_sensors method in manager raised exception when it shouldn't have: {e}")
             self.assertTrue(self.manager.IO_Board.connected)
             self.assertTrue(self.manager.thermocouple.connected)
-            mock_get_water_level.assert_called_once()
-            mock_get_pump_reading.assert_called_once()
-            mock_get_reading.assert_called_once()
+            mock_get_water_level.assert_called()
+            mock_get_pump_reading.assert_called()
+            mock_get_reading.assert_called()
 
     def test_capture_scope(self):
         try:
@@ -161,6 +159,7 @@ class MyTestCase(unittest.TestCase):
         self.manager.Oscilloscope.disconnect_hardware()
         self.assertRaises(TypeError, self.manager.capture_scope(plot=False))
         self.manager.Oscilloscope.connect_hardware()
+
 
 if __name__ == '__main__':
     unittest.main()
