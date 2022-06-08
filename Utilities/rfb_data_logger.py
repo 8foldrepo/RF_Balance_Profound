@@ -21,7 +21,6 @@ class RFBDataLogger(QThread):
     Reflected_Power_Meter: AbstractSensor
     rfb_data: RFBData
 
-    # noinspection PyTypeChecker
     def __init__(self, rfb_data, balance: AbstractBalance, forward_power_meter: AbstractSensor,
                  reflected_power_meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
@@ -35,7 +34,7 @@ class RFBDataLogger(QThread):
         self.mutex = QMutex()
         self.sensor_mutex = QMutex()
         self.condition = QWaitCondition()
-        # QThread.currentThread().setObjectName("Manager_thread")
+        QThread.currentThread().setObjectName("rfb_logger_thread")
         self.sensor_mutex.lock()
         self.sensor_mutex.unlock()
 
@@ -54,22 +53,22 @@ class RFBDataLogger(QThread):
         self.f_meter_ready = True
         self.r_meter_ready = True
 
-        self.BalanceThread = SensorThread(config=self.config, sensor=balance)
+        self.Balance_Thread = SensorThread(config=self.config, sensor=balance)
         self.F_Meter_Thread = SensorThread(config=self.config, sensor=forward_power_meter)
         self.R_Meter_Thread = SensorThread(config=self.config, sensor=reflected_power_meter)
         self.thread_list = list()
-        self.thread_list.append(self.BalanceThread)
+        self.thread_list.append(self.Balance_Thread)
         self.thread_list.append(self.F_Meter_Thread)
         self.thread_list.append(self.R_Meter_Thread)
 
-        self.trigger_capture_signal.connect(self.BalanceThread.trigger_capture_slot)
+        self.trigger_capture_signal.connect(self.Balance_Thread.trigger_capture_slot)
         self.trigger_capture_signal.connect(self.F_Meter_Thread.trigger_capture_slot)
         self.trigger_capture_signal.connect(self.R_Meter_Thread.trigger_capture_slot)
-        self.BalanceThread.reading_signal.connect(self.log_balance)
+        self.Balance_Thread.reading_signal.connect(self.log_balance)
         self.F_Meter_Thread.reading_signal.connect(self.log_f_meter)
         self.R_Meter_Thread.reading_signal.connect(self.log_r_meter)
 
-        self.BalanceThread.start(priority=QThread.HighPriority)
+        self.Balance_Thread.start(priority=QThread.HighPriority)
         self.F_Meter_Thread.start(priority=QThread.HighPriority)
         self.R_Meter_Thread.start(priority=QThread.HighPriority)
 
