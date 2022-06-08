@@ -1,7 +1,6 @@
 import sys
-
+from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QMainWindow, QApplication
-
 from Utilities.rfb_data_logger import RFBDataLogger
 from test import Ui_MainWindow
 

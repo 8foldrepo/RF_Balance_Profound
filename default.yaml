@@ -30,7 +30,7 @@ Debugging:
   simulate_thermocouple_error: false
   simulate_ua_error: false
   simulate_ua_interface: true
-  drain_before_retract: false
+  drain_before_retract: true
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
   sensor_refresh_interval_s: .5

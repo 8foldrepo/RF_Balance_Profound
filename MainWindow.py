@@ -269,6 +269,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.access_level_combo.setCurrentText(access_level)
         self.access_level = access_level
 
+        if access_level == "Administrator":
+            return
         if access_level == "Engineer":
             self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
         elif access_level == "Operator":
@@ -277,8 +279,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.tabWidget.removeTab(self.tab_text_to_index("Position"))
             self.tabWidget.removeTab(self.tab_text_to_index("Edit Script"))
             self.run_step_button.setEnabled(False)
-        elif access_level == "Administrator":
-            pass
         else:
             sys.exit()
 
