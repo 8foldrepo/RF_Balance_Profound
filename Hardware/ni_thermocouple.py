@@ -61,10 +61,6 @@ class NIThermocouple(AbstractSensor):
         """Method retrieves serial number from device and returns it as a string value"""
         pass
 
-    def wrap_up(self):
-        self.disconnect_hardware()
-        pass
-
 
 if __name__ == "__main__":
     therm = NIThermocouple(config=None)

@@ -15,7 +15,6 @@ from PyQt5.QtCore import QMutex, QThread, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QComboBox
 from scipy import integrate
 
-
 from Hardware.Abstract.abstract_awg import AbstractAWG
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Hardware.Abstract.abstract_device import AbstractDevice
@@ -65,7 +64,7 @@ class Manager(QThread):
     # These lists will store all information about the script being run. Looped steps appear multiple times with their
     # Element numbers updated accordingly.
     task_names: Union[List[str], None]  # a list of strings containing the task names (and repetition number)
-    task_execution_order: Union[ List[int], None]  # list containing the task number of each script action
+    task_execution_order: Union[List[int], None]  # list containing the task number of each script action
     task_arguments: Union[List[str], None]  # a list containing the arguments for each script action
 
     # Used for polling sensors while software is idle

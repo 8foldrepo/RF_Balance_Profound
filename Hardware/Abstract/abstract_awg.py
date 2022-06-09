@@ -147,13 +147,13 @@ class AbstractAWG(AbstractDevice):
         self.get_state()
         return "Waveform Generator\nSettings:\n" + str(self.state)
 
-    def SetTriggerOutput(self, external:bool, period_s:float, delay_s:float):
+    def SetTriggerOutput(self, external: bool, period_s: float, delay_s: float):
         """
         Enables or disables the external trigger output of the AWG in burst mode, as well as the period of the burst
         and a delay between the beginning of the burst and the trigger signal if desired.
         """
         ...
 
-    def GetTriggerOutput(self)->bool:
+    def GetTriggerOutput(self) -> bool:
         """Returns whether the AWG is outputting a trigger pulse in burst mode"""
         ...

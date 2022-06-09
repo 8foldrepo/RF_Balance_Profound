@@ -23,6 +23,7 @@ class MT_balance(AbstractBalance):
         self.fields_setup()
 
     def fields_setup(self):
+        """Load the config file if one is not provided and populates class variables therefrom"""
         if self.config is None:
             self.config = load_configuration()
 
@@ -59,6 +60,7 @@ class MT_balance(AbstractBalance):
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def wrap_up(self):
+        """Class shutdown sequence"""
         self.disconnect_hardware()
 
     def zero_balance_instantly(self):

@@ -111,7 +111,7 @@ Keysight_Oscilloscope:
   range_mV: 6000
   retries: 5
   set_on_startup: true
-  timeout_s: 10
+  timeout_s: 1
 MT_Balance:
   port: COM4
   timeout_s: 10

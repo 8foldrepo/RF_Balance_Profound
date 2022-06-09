@@ -139,7 +139,7 @@ class SimpleSensorThread(QThread):
         self.ready = False
         # print(f"Beginning capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
         reading = random.random()
-        time.sleep(random.random()/20)
+        time.sleep(random.random() / 20)
         self.reading_signal.emit(reading)
         # print(f"Finishing capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
         self.ready = True

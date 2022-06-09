@@ -46,6 +46,7 @@ class simpleMainWindow(QMainWindow):
     def button_clicked(self):
         self.begin_small_job_signal.emit()
 
+
 class simpleManager(QThread):
     """Simplified representation of the manager class"""
 
@@ -80,7 +81,7 @@ class simpleManager(QThread):
         print(f"Running small job in: {QThread.currentThread().objectName()}")
 
         start_time = time.time()
-        while time.time()-start_time < 20:
+        while time.time() - start_time < 20:
             time.sleep(.1)
             self.app.processEvents()
 

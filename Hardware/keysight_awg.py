@@ -269,6 +269,7 @@ class KeysightAWG(AbstractAWG):
                 self.log(level="error", message=f"error in read: {e}")
 
     def check_connected(self) -> bool:
+        """Returns whether the device is connected"""
         connected = False
         try:
             output = self.get_output()
@@ -280,16 +281,6 @@ class KeysightAWG(AbstractAWG):
             pass
         self.connected = connected
         return connected
-
-    def wrap_up(self):
-        """
-        Turns off the function generator via setting its output variable to false,
-        calling its disconnect hardware method, and sleep for half a millisecond before
-        program continues.
-        """
-        self.set_output(False)
-        self.disconnect_hardware()
-        t.sleep(.05)
 
     def get_serial_number(self) -> Union[str, None]:
         """
@@ -304,6 +295,17 @@ class KeysightAWG(AbstractAWG):
         self.command("*IDN?")
         read_str = self.read()
         return read_str.split(",")[2]
+
+    def wrap_up(self):
+        """
+        Turns off the function generator via setting its output variable to false,
+        calling its disconnect hardware method, and sleep for half a millisecond before
+        program continues.
+        """
+        self.log(f"Wrapping up {self.device_key}")
+        self.set_output(False)
+        self.disconnect_hardware()
+        t.sleep(.05)
 
     def __str__(self):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""

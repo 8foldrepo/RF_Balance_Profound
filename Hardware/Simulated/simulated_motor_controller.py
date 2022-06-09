@@ -24,7 +24,7 @@ class SimulatedMotorController(AbstractMotorController):
 
         start_time = t.time()
 
-        while t.time()-start_time < 20:
+        while t.time() - start_time < 20:
             self.app.processEvents()
 
         if axis == "R":

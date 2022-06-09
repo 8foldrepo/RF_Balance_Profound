@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -224,10 +225,11 @@ class Ui_Form(object):
         item.setText(_translate("Form", "FWVersion"))
         item = self.tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("Form", "Cal Data Array"))
-        self.tooltip.setToolTip(_translate("Form", "The table on the left displays the calibration data stored internally in the ultrasound\n"
-"                    actuator. The table on the right shows the efficiency of each element for both high and low\n"
-"                    frequency tests\n"
-"                "))
+        self.tooltip.setToolTip(_translate("Form",
+                                           "The table on the left displays the calibration data stored internally in the ultrasound\n"
+                                           "                    actuator. The table on the right shows the efficiency of each element for both high and low\n"
+                                           "                    frequency tests\n"
+                                           "                "))
         item = self.element_frequencies_table.verticalHeaderItem(0)
         item.setText(_translate("Form", "Element 1"))
         item = self.element_frequencies_table.verticalHeaderItem(1)
@@ -256,10 +258,10 @@ class Ui_Form(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())
-

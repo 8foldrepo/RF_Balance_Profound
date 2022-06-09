@@ -254,11 +254,6 @@ class DIOBoard(AbstractIOBoard):
             self.water_level_reading_signal.emit(level)
             return level
 
-    def wrap_up(self):
-        self.power_relay.wrap_up()
-        self.disconnect_hardware()
-        self.disconnect_hardware()
-
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)

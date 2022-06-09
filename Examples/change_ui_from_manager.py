@@ -37,7 +37,7 @@ class simpleMainWindow(QMainWindow):
         self.manager.elapsed_time_text_signal.connect(self.update_ui_text)
 
     @pyqtSlot(str)
-    def update_ui_text(self, text:str):
+    def update_ui_text(self, text: str):
         """Updates the text output in the UI. Note that this should not be called directly by a non-ui class"""
         self.text_display.setText(text)
 
@@ -65,8 +65,9 @@ class simpleManager(QThread):
             self.condition.wait(self.mutex, 50)  # This loop will run every 50 milliseconds
 
             # Emit the elapsed time as a text signal to be received and displayed by a UI class
-            self.elapsed_time_text_signal.emit(f"Elapsed time is {'%.2f' % (time.time()-start_time)} s")
+            self.elapsed_time_text_signal.emit(f"Elapsed time is {'%.2f' % (time.time() - start_time)} s")
         pass
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

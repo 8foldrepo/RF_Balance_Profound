@@ -9,6 +9,8 @@ from data_structures.variable_containers import OscilloscopePreamble
 
 
 class KeysightOscilloscope(AbstractOscilloscope):
+    """Class for interfacing with a Keysight InfiniVision 2002A Oscilloscope"""
+
     # These are not the only class variables, there are ones inherited from AbstractOscilloscope and AbstractDevice
     max_time_of_flight: float
     min_time_of_flight: float
@@ -416,11 +418,14 @@ class KeysightOscilloscope(AbstractOscilloscope):
     def wrap_up(self):
         self.disconnect_hardware()
 
+    def __del__(self):
+        if self.inst is not None:
+            self.inst.close()
+
 
 if __name__ == "__main__":
     osc = KeysightOscilloscope()
     osc.connect_hardware()
-    osc.capture(1)
 
-    # import unittest
-    # unittest.main()
+    while True:
+        osc.capture(1)
