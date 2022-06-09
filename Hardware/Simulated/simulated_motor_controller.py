@@ -57,6 +57,13 @@ class SimulatedMotorController(AbstractMotorController):
     @pyqtSlot(dict)
     def setup(self, settings):
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+        if settings is not None:
+            self.increment_ray[0] = settings["lin_incr"]
+            self.increment_ray[1] = settings["ang_incr"]
+            self.speeds_ray[0] = settings["lin_speed"]
+            self.speeds_ray[1] = settings["rot_speed"]
+            self.calibrate_ray_steps_per[0] = settings["steps_per_mm"]
+            self.calibrate_ray_steps_per[1] = settings["steps_per_deg"]
         t.sleep(0.1)
         self.ready_signal.emit()
 

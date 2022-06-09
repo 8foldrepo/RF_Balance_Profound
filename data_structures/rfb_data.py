@@ -41,6 +41,8 @@ class RFBData:
     p_off_total_unc: float
     p_com_rand_unc: float
     p_com_total_unc: float
+    p_on_standard_deviation: float
+    p_off_standard_deviation: float
     acoustic_power_off_mean: float
     acoustic_power_on_mean: float
     acoustic_power_mean: float
@@ -79,7 +81,7 @@ class RFBData:
         self.off_indices = self.get_off_interval_indices()
 
         # List containing an average during each of the intervals while the UA was on
-        self.acoustic_power_on_means, self.p_on_rand_unc, self.p_on_total_unc, std_too_high = (
+        self.acoustic_power_on_means, self.p_on_rand_unc, self.p_on_total_unc, self.p_on_standard_deviation, std_too_high = (
             self.analyze_intervals(self.acoustic_powers_w, self.on_indices)
         )
         # Mean acoustic power while on
@@ -89,7 +91,7 @@ class RFBData:
             self.acoustic_power_on_mean = float('nan')
 
         # List containing an average during each of the intervals while the UA was off
-        self.acoustic_power_off_means, self.p_off_rand_unc, self.p_off_total_unc, a_std_too_high = (
+        self.acoustic_power_off_means, self.p_off_rand_unc, self.p_off_total_unc, self.p_off_standard_deviation, a_std_too_high = (
             self.analyze_intervals(self.acoustic_powers_w, self.off_indices)
         )
 
@@ -105,7 +107,7 @@ class RFBData:
             self.acoustic_power_off_mean = float('nan')
 
         # List containing all readings while AWG was on
-        forward_power_on_means, _, _, f_std_too_high = self.analyze_intervals(self.f_meter_readings_w,
+        forward_power_on_means, _, _, _, f_std_too_high = self.analyze_intervals(self.f_meter_readings_w,
                                                                               self.on_indices)
         # Mean acoustic power while on
         if len(forward_power_on_means) > 0:
@@ -114,7 +116,7 @@ class RFBData:
             self.forward_power_on_mean = float('nan')
 
         # List containing all readings while AWG was on
-        reflected_power_on_means, _, _, r_std_too_high = self.analyze_intervals(self.r_meter_readings_w,
+        reflected_power_on_means, _, _, _, r_std_too_high = self.analyze_intervals(self.r_meter_readings_w,
                                                                                 self.on_indices)
         # Mean reflected power while on
         if len(reflected_power_on_means) > 0:
@@ -345,7 +347,7 @@ class RFBData:
         return True, ""
 
     def analyze_intervals(self, data: List[float], intervals: List[Tuple[int, int]]) \
-            -> Tuple[List[float], float, float, bool]:
+            -> Tuple[List[float], float, float, float, bool]:
         """
         Takes a  list of integer pairs, each represents an interval of data to return, including the first index and
         not including the last. For example if the interval is (0,3)  this method will analyze indices 0,1,
@@ -357,7 +359,7 @@ class RFBData:
         """
 
         if len(data) == 0 or len(intervals) == 0 or len(intervals[0]) == 0:
-            return [], float('nan'), float('nan'), False
+            return [], float('nan'), float('nan'), float('nan'), False
 
         averages = []
         random_uncertainties = []
@@ -390,6 +392,12 @@ class RFBData:
         else:
             total_uncertainty = float('nan')
 
+
+        if len(standard_deviations) > 0:
+            standard_deviation = mean(standard_deviations)
+        else:
+            standard_deviation = float('nan')
+
         std_too_high = False
 
         for standard_deviation in standard_deviations:
@@ -397,4 +405,4 @@ class RFBData:
                 std_too_high = True
                 break
 
-        return averages, random_uncertainty, total_uncertainty, std_too_high,
+        return averages, random_uncertainty, total_uncertainty, standard_deviation, std_too_high,
