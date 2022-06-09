@@ -64,8 +64,9 @@ class Manager(QThread):
     # These lists will store all information about the script being run. Looped steps appear multiple times with their
     # Element numbers updated accordingly.
     task_names: Union[List[str], None]  # a list of strings containing the task names (and repetition number)
-    task_execution_order: Union[List[int], None]  # list containing the task number of each script action
-    task_arguments: Union[List[str], None]  # a list containing the arguments for each script action
+    # list containing the task number of each script action
+    task_execution_order: Union[List[Union[List[int], int]], None]
+    task_arguments: Union[List[dict], None]  # a list containing the arguments for each script action
 
     # Used for polling sensors while software is idle
     sensor_refresh_interval_s: float
@@ -321,10 +322,10 @@ class Manager(QThread):
                 try:
                     self.wait_for_cont()
                 except RetryException:
-                    i = i - 1
+                    i -= 1
                 except AbortException:
                     self.app.exit(-1)
-            i = i + 1
+            i += 1
 
         if self.Oscilloscope.connected:
             self.oscilloscope_averages = self.Oscilloscope.averages
@@ -563,7 +564,7 @@ class Manager(QThread):
                 self.script_description = ray[1].replace('"', "")
                 self.description_signal.emit(self.script_description)
 
-            current_line = current_line + 1
+            current_line += 1
             if line == '\n':
                 if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main
                     # list
@@ -574,7 +575,7 @@ class Manager(QThread):
                     adding_elements_to_loop = False  # we're done with the block so set the flag to false
                 continue  # move forward one line
             elif '[' in line:  # if the line we're on is a task line
-                task_number = task_number + 1  # increments the task number counter since we've moved to the next task
+                task_number += 1  # increments the task number counter since we've moved to the next task
                 if "Task" in line and not building_loop:
                     self.task_execution_order.append(task_number)  # adding task number to the execution list
             else:  # above ensures we're not parsing a task header nor blank line
@@ -585,7 +586,8 @@ class Manager(QThread):
                     self.yes_clicked_variable = False
                     self.no_clicked_variable = False
                     self.user_question_signal.emit(
-                        f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
+                        f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it "
+                        f"should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
                     cont = self.cont_if_answer_clicked()
                     if cont:
                         if self.yes_clicked_variable:  # if the user clicked yes
@@ -623,7 +625,7 @@ class Manager(QThread):
                             self.task_execution_order.append(
                                 [self.loops[len(self.loops) - 1][1][j], self.loops[len(self.loops) - 1][0][i],
                                  loop_index_tracker])
-                    loop_index_tracker = loop_index_tracker + 1
+                    loop_index_tracker += 1
 
                 # if we're building a loop & are not in the name adding phase
                 if building_loop and not adding_elements_to_loop:
@@ -633,7 +635,7 @@ class Manager(QThread):
                         # add the current task no. to the list of tasks we need to run in loop
                         task_number_for_loop.append(task_number)
         f.close()
-
+        print(self.task_execution_order)
         if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main list
             tasks.append(OrderedDict(task_variables))
             task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
@@ -684,12 +686,12 @@ class Manager(QThread):
                 return  # exit this method
 
             if self.retry_clicked_variable is True:  # if the user clicked retry on a prompt
-                self.step_index = self.step_index - 1  # retry the step via decrementing the step index
+                self.step_index -= 1  # retry the step via decrementing the step index
                 self.retry_clicked_variable = False  # sets the retry variable to false so the retry function may happen
                 # again
 
             # advance to the next step if the previous has been completed
-            self.step_index = self.step_index + 1
+            self.step_index += 1
 
             # if a script is being executed, and the step index is valid, and the previous step is complete,
             # run the next script step
@@ -1360,9 +1362,9 @@ class Manager(QThread):
         if go_to_peak:
             status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             if status:
-                status_str = status_str + f" moved to {axis} = {max_position} {pos_units_str}"
+                status_str += f" moved to {axis} = {max_position} {pos_units_str}"
             else:
-                status_str = status_str + f"move to {axis} = {max_position} {pos_units_str} failed"
+                status_str += f"move to {axis} = {max_position} {pos_units_str} failed"
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
@@ -2226,7 +2228,7 @@ class Manager(QThread):
             max_retries = 5
 
         if self.retry_count < max_retries:
-            self.retry_count = self.retry_count + 1
+            self.retry_count += 1
             return
         else:
             self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
