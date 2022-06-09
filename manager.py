@@ -525,15 +525,14 @@ class Manager(QThread):
         self.abort_immediately(log=False)  # we don't want the save prompt for this use of abort
 
         # Send name of script to UI
-        split_path = path.split("/")
-        self.test_data.script_name = split_path[len(split_path) - 1]
-        self.script_name_signal.emit(self.test_data.script_name)
+        split_path = path.split("/")  # splits the directory into a list with the '/' as a delimiter
+        self.test_data.script_name = split_path[len(split_path) - 1]  # the file name is in the last position of the list
+        self.script_name_signal.emit(self.test_data.script_name)  # emit the signal to main window so it can fill in the script name box
 
         tasks = []  # the upper layer of our task list
         self.task_execution_order = []
         element_names_for_loop = []
         task_number_for_loop = []
-        current_line = -1
         loop_index_tracker = 0
         adding_elements_to_loop = False
         building_loop = False
@@ -542,11 +541,13 @@ class Manager(QThread):
         self.script_has_description = False
         f = open(path, "r")
         for line in f:
-            ray = line.split(" = ")
+            ray = line.split(" = ")  # for every line in the script file, split it by the equal sign to a list called ray
 
             # Populate script metadata to UI using signals
+            # See if the first element in the ray matches one of the top level metadata attributes
+            # if so, emit the signal and pass the value to the main window class
             if "# OF TASKS" in ray[0].upper():
-                self.num_tasks_signal.emit(int(ray[1].replace('"', "")))
+                self.num_tasks_signal.emit(int(ray[1].replace('"', "")))  # removes leftover quotation marks
             elif "CREATEDON" in ray[0].upper():
                 self.created_on_signal.emit(ray[1].replace('"', ""))
             if "CREATEDBY" in ray[0].upper():
@@ -557,57 +558,53 @@ class Manager(QThread):
                 self.script_description = ray[1].replace('"', "")
                 self.description_signal.emit(self.script_description)
 
-            current_line = current_line + 1
-            if line == '\n':
-                if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main
-                    # list
-                    tasks.append(OrderedDict(task_variables))
-                    # empties out variable list for task since we're ready to move to the next set
-                    task_variables.clear()
-                if adding_elements_to_loop:  # detects if we're done with the element name block for the loop in script
-                    adding_elements_to_loop = False  # we're done with the block so set the flag to false
+            if line == '\n':  # if the line we're on right now is a blank line
+                if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main tasks list
+                    tasks.append(OrderedDict(task_variables))  # ordered dictionary preserves order of placed items
+                    task_variables.clear()  # empties out variable list for task since we're ready to move to the next set
+                if adding_elements_to_loop:  # if we're done with a 'Loop over elements' task block
+                    adding_elements_to_loop = False  # set its indicator flag to false
                 continue  # move forward one line
-            elif '[' in line:  # if the line we're on is a task line
+            elif '[' in line:  # if the line we're on is a task line: [TaskX]
                 task_number = task_number + 1  # increments the task number counter since we've moved to the next task
-                if "Task" in line and not building_loop:
-                    self.task_execution_order.append(task_number)  # adding task number to the execution list
-            else:  # above ensures we're not parsing a task header nor blank line
-                x0 = ray[0].strip()  # remove trailing/leading spaces
-                x1 = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
-                if x0 == 'Element' and x1 != 'Current' and building_loop:
+                if "Task" in line and not building_loop:  # if we're not currently in loop building mode
+                    self.task_execution_order.append(task_number)  # add the task number to execution order list
+            else:  # if the line we're on is neither a blank line nor a task header line
+                attribute_name = ray[0].strip()  # we're defining variables for a task, remove trailing/leading spaces
+                value = ray[1].strip().replace('"', "")  # does above but also removes quotation marks
+                if attribute_name == 'Element' and value != 'Current' and building_loop:  # if we're in a loop, the element value should be 'current'
                     self.question_box_finished = False
                     self.yes_clicked_variable = False
-                    self.no_clicked_variable = False
+                    self.no_clicked_variable = False  # offer the user a chance to fix it
                     self.user_question_signal.emit(
                         f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
                     cont = self.cont_if_answer_clicked()
                     if cont:
                         if self.yes_clicked_variable:  # if the user clicked yes
-                            x1 = 'Current'
-                            task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
+                            value = 'Current'
+                            task_variables[attribute_name] = value  # add the temporary variable pair to the task's variable list
                         else:
-                            task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
-                else:
-                    task_variables[x0] = x1  # add the temporary variable pair to the task's variable list
+                            task_variables[attribute_name] = value
+                else:  # store the attribute name and value pair into our ordered dictionary of task variables
+                    task_variables[attribute_name] = value
 
-                if "Loop over elements" in x1:  # detects if we've encountered a loop builder task
+                if "Loop over elements" in value:  # detects if we've encountered a loop builder task
                     building_loop = True  # set a flag that we're building a loop for the script
                     adding_elements_to_loop = True  # set a flag that we're adding element names from script for loop
 
-                # if we're on a line that adds an element name for the loop
-                if adding_elements_to_loop and "Element" in x0:
-                    # split the left side of the variable assigner by space
-                    element_name_to_split = x0.split(" ")
-                    # retrieve the second word of the left side, that's the element name
-                    element_name = element_name_to_split[1]
-                    if x1.upper() == 'TRUE':  # we only want to add elements in the loop if it equals "True"
+                if adding_elements_to_loop and "Element" in attribute_name:  # if we're on a line that adds an element name for the loop
+                    element_name_to_split = attribute_name.split(" ")  # there is a space between 'element' and the number, split it
+                    element_name = element_name_to_split[1]  # retrieve the second word of the left side, that's the element name
+                    if value.upper() == 'TRUE':  # we only want to add elements in the loop if it equals "True"
                         element_names_for_loop.append(int(element_name))
 
-                if "End loop" in x1:  # script will have "End loop" in right side of task type to end loop block
+                if "End loop" in value:  # script will have "End loop" in right side of task type to end loop block
                     building_loop = False  # set the building loop flag to false since the loop block is done
                     self.loops.append(list([list(element_names_for_loop), list(task_number_for_loop)]))
-                    element_names_for_loop.clear()
-                    task_number_for_loop.clear()
+                    # above: in our loops list, append a tuple where the first value represents the elements to be subject
+                    # to the loop and the second value is the task numbers to be applied to the targeted elements
+                    element_names_for_loop.clear()  # clear this list in case we run across another loop building task
+                    task_number_for_loop.clear()  # same for this list
                     self.task_execution_order.pop()
 
                     # appends a 3 item list in taskExecOrder, the first part being the task number
