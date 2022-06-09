@@ -108,7 +108,7 @@ class RFBData:
 
         # List containing all readings while AWG was on
         forward_power_on_means, _, _, _, f_std_too_high = self.analyze_intervals(self.f_meter_readings_w,
-                                                                              self.on_indices)
+                                                                                 self.on_indices)
         # Mean acoustic power while on
         if len(forward_power_on_means) > 0:
             self.forward_power_on_mean = mean(forward_power_on_means)
@@ -117,7 +117,7 @@ class RFBData:
 
         # List containing all readings while AWG was on
         reflected_power_on_means, _, _, _, r_std_too_high = self.analyze_intervals(self.r_meter_readings_w,
-                                                                                self.on_indices)
+                                                                                   self.on_indices)
         # Mean reflected power while on
         if len(reflected_power_on_means) > 0:
             self.reflected_power_on_mean = mean(reflected_power_on_means)
@@ -391,7 +391,6 @@ class RFBData:
             total_uncertainty = mean(total_uncertainties)
         else:
             total_uncertainty = float('nan')
-
 
         if len(standard_deviations) > 0:
             standard_deviation = mean(standard_deviations)

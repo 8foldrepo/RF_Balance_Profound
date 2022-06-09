@@ -20,7 +20,7 @@ enable_ui_signal in Manager for practical examples.
 
 
 class simpleMainWindow(QMainWindow):
-    """Simplified representation of the mainwindow class"""
+    """Simplified representation of the MainWindow class"""
 
     begin_small_job_signal = pyqtSignal()
 

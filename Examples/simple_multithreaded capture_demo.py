@@ -58,12 +58,11 @@ class SimpleRFBDataLogger(QThread):
             # Repeat every 1 ms
             wait_bool = self.condition.wait(self.mutex, 1)
             if time.time() - start_time < 30 and self.sensors_ready():
-
+                current_time = time.time() - start_time
                 self.trigger_capture_signal.emit(current_time, len(self.times_s))
                 self.a_ready = self.b_ready = self.c_ready = False
 
                 # Keep track of the times captures were initiated
-                current_time = time.time() - start_time
                 self.times_s.append(current_time)
 
                 # Print the number of items and current time for demonstration
@@ -100,6 +99,7 @@ class SimpleRFBDataLogger(QThread):
 
 
 class SimpleSensorThread(QThread):
+    """Simplified version of a sensor thread"""
     reading_signal = pyqtSignal(float)
     capture_command = False
 
@@ -120,19 +120,26 @@ class SimpleSensorThread(QThread):
         self.mutex.lock()
         self.ready = True
         while self.stay_alive is True:
+            # Core event loop
+
             wait_bool = self.condition.wait(self.mutex, 1)
+
+            # If capture flag has been activated by the signal from the logger
             if self.capture_command:
                 self.capture()
                 self.capture_command = False
+
             if self.stay_alive is False:
                 break
         self.mutex.unlock()
         return super().run()
 
     def capture(self):
+        #
         self.ready = False
         # print(f"Beginning capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
         reading = random.random()
+        time.sleep(random.random()/20)
         self.reading_signal.emit(reading)
         # print(f"Finishing capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
         self.ready = True
@@ -140,6 +147,7 @@ class SimpleSensorThread(QThread):
     # Float is time in s, int is the index of the capture
     @pyqtSlot(float, int)
     def trigger_capture_slot(self, time_s, index):
+        """If a signal from the logger is received, capture upon the next iteration of the run loop"""
         self.index = index
         self.capture_command = True
 
