@@ -751,7 +751,7 @@ class Manager(QThread):
             args['Element'] = self.task_execution_order[self.step_index][1]
 
         if "MEASURE ELEMENT EFFICIENCY (RFB)" in name.upper():
-            self.measure_element_efficiency_rfb_multithreaded(args)
+            self.measure_element_efficiency_rfb(args)
         elif "PRE-TEST INITIALISATION" in name.upper():
             self.pretest_initialization()
         elif "FIND ELEMENT" in name.upper():
@@ -1892,7 +1892,7 @@ class Manager(QThread):
 
         return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
 
-    def measure_element_efficiency_rfb_multithreaded(self, var_dict):
+    def measure_element_efficiency_rfb(self, var_dict):
         """Measure the efficiency of an element"""
         self.element = self.element_str_to_int(var_dict["Element"])
         self.set_tab_signal.emit(['RFB'])
