@@ -7,15 +7,21 @@ from Examples.test import Ui_MainWindow
 
 
 class SimpleRFBDataLogger(QThread):
+    """A simplified example of how multithreading is used in the measure_element_efficiency_rfb method"""
+
     # Float is time in s, int is the index of the capture
-    capture_time_signal = pyqtSignal(float, int)
+    trigger_capture_signal = pyqtSignal(float, int)
+
+    # Lists containing readings from 3 different sensors, they all share the same time array
     a = list()
     b = list()
     c = list()
+    times_s = list()
+
+    # Variables keeping track of when the sensors are ready for the next capture
     a_ready = True
     b_ready = True
     c_ready = True
-    times_s = list()
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -26,16 +32,14 @@ class SimpleRFBDataLogger(QThread):
         # QThread.currentThread().setObjectName("Manager_thread")
         self.sensor_mutex.lock()
         self.sensor_mutex.unlock()
+
+        # Create the sensor threads, connect the trigger capture signal, and reading signal, and start the threads
         self.A = SimpleSensorThread(device_key='A')
         self.B = SimpleSensorThread(device_key='B')
         self.C = SimpleSensorThread(device_key='C')
-        self.thread_list = list()
-        self.thread_list.append(self.A)
-        self.thread_list.append(self.B)
-        self.thread_list.append(self.C)
-        self.capture_time_signal.connect(self.A.capture_slot)
-        self.capture_time_signal.connect(self.B.capture_slot)
-        self.capture_time_signal.connect(self.C.capture_slot)
+        self.trigger_capture_signal.connect(self.A.trigger_capture_slot)
+        self.trigger_capture_signal.connect(self.B.trigger_capture_slot)
+        self.trigger_capture_signal.connect(self.C.trigger_capture_slot)
         self.A.reading_signal.connect(self.log_a)
         self.B.reading_signal.connect(self.log_b)
         self.C.reading_signal.connect(self.log_c)
@@ -49,34 +53,48 @@ class SimpleRFBDataLogger(QThread):
         stay_alive = True
         self.mutex.lock()
         while stay_alive is True:
-            wait_bool = self.condition.wait(self.mutex, 50)
+            # Core event loop of logger
+
+            # Repeat every 1 ms
+            wait_bool = self.condition.wait(self.mutex, 1)
             if time.time() - start_time < 30 and self.sensors_ready():
+
+                self.trigger_capture_signal.emit(current_time, len(self.times_s))
                 self.a_ready = self.b_ready = self.c_ready = False
+
+                # Keep track of the times captures were initiated
                 current_time = time.time() - start_time
-                print(f"Capture time: {'%.2f' % current_time}")
-                self.capture_time_signal.emit(current_time, len(self.times_s))
                 self.times_s.append(current_time)
+
+                # Print the number of items and current time for demonstration
+                print(f"Capture time: {'%.2f' % current_time}")
                 print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
+
+            # Setting stay_alive to false with a slot is a way to end the logger prematurely
             if stay_alive is False:
                 break
         self.mutex.unlock()
         return super().run()
 
     def sensors_ready(self):
+        """Returns true if all of the sensors are ready"""
         return self.a_ready and self.b_ready and self.c_ready
 
     @pyqtSlot(float)
     def log_a(self, reading):
+        """If sensor A emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.a.append(reading)
         self.a_ready = True
 
     @pyqtSlot(float)
     def log_b(self, reading):
+        """If sensor B emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.b.append(reading)
         self.b_ready = True
 
     @pyqtSlot(float)
     def log_c(self, reading):
+        """If sensor C emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.c.append(reading)
         self.c_ready = True
 
@@ -121,7 +139,7 @@ class SimpleSensorThread(QThread):
 
     # Float is time in s, int is the index of the capture
     @pyqtSlot(float, int)
-    def capture_slot(self, time_s, index):
+    def trigger_capture_slot(self, time_s, index):
         self.index = index
         self.capture_command = True
 

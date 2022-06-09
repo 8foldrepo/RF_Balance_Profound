@@ -117,7 +117,7 @@ MT_Balance:
   timeout_s: 10
 Paths:
   Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
-  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial numbers.txt
+  UA Serial numbers file: \Program_Data\UA serial number and frequency data.txt
   UA results root directory: C:\Users\Isaiah\Documents\UA results
 Reflected_Power_Meter:
   serial_number: '11506210019'
