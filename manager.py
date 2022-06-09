@@ -1202,8 +1202,9 @@ class Manager(QThread):
 
         self.autoset_timebase()
 
+        self.Motors.go_to_position(['R'], [-180], enable_ui=False)
+
         if element_position_test:
-            self.Motors.go_to_position(['R'], [-180], enable_ui=False)
             cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                                   ref_position=element_x_coordinate,
                                   go_to_peak=True, data_storage=data_storage, update_element_position=True,
@@ -1893,7 +1894,14 @@ class Manager(QThread):
         return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
 
     def measure_element_efficiency_rfb(self, var_dict):
-        """Measure the efficiency of an element"""
+        """
+        This method cycles the ultrasound output from the ultrasound applicator on and off for specified intervals
+        while continuously capturing data from the forward power meter, reflected power meter, and radiation force
+        balance. The readings are captured from all 3 sensors at the same time using 4 additional threads directed by
+        using a RFBDataLogger object. The refresh_rfb_tab helper method scrapes data from the RFBDataLogger and sends
+        it as a signal to be displayed in the RFBTab of the UI. Finally, this method analyzes the data (stored in a
+        RFBData object) and sends it to the FileSaver to be saved.
+        """
         self.element = self.element_str_to_int(var_dict["Element"])
         self.set_tab_signal.emit(['RFB'])
 
@@ -2002,7 +2010,7 @@ class Manager(QThread):
         self.AWG.set_output(False)
         # for the duration of rfb off time
         while t.time() - start_time < rfb_off_time:
-            cont = self.refresh_rfb_tab()
+            cont = self.__refresh_rfb_tab()
             if not cont:
                 return False
 
@@ -2014,7 +2022,7 @@ class Manager(QThread):
             self.AWG.set_output(True)
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
-                cont = self.refresh_rfb_tab()
+                cont = self.__refresh_rfb_tab()
                 if not cont:
                     return
 
@@ -2023,7 +2031,7 @@ class Manager(QThread):
             self.AWG.set_output(False)
             # for the duration of rfb off time
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
-                cont = self.refresh_rfb_tab()
+                cont = self.__refresh_rfb_tab()
                 if not cont:
                     return
 
@@ -2130,7 +2138,7 @@ class Manager(QThread):
         log_msg(self, root_logger=root_logger, message=message, level=level,
                 line_number=getframeinfo(stack()[1][0]).lineno)
 
-    def refresh_rfb_tab(self) -> bool:
+    def __refresh_rfb_tab(self) -> bool:
         """
         Helper function which retrieves data from the rfb_logger and tells the rfb tab to update
         returns a boolean indicating whether to continue the script
