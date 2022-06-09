@@ -3,7 +3,6 @@ import os
 import sys
 import time as t
 import webbrowser
-from pprint import pprint
 from typing import List
 
 from PyQt5 import QtCore, Qt
@@ -618,9 +617,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @staticmethod
     def show_help() -> None:
         """Opens the help document"""
-        # WARNING: Help.txt does not exist in root project directory
-        # todo: create Help.txt
-        webbrowser.open("Help.txt")
+        # todo: fill in help.txt
+        webbrowser.open("help.txt")
 
     # QUESTION: this method is never used, delete?
     def file_save_as(self) -> None:

@@ -22,10 +22,10 @@ class SimulatedMotorController(AbstractMotorController):
                 self.ready_signal.emit()
             return False
 
-        start_time = t.time()
-
-        while t.time()-start_time < 20:
-            self.app.processEvents()
+        # start_time = t.time()
+        #
+        # while t.time()-start_time < 20:
+        #     self.app.processEvents()
 
         if axis == "R":
             self.coords_mm[1] = -90
