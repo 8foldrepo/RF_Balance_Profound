@@ -53,7 +53,7 @@ class KeysightAWG(AbstractAWG):
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log(level='error', message=feedback)
+                    self.log('error', str(feedback))
                     break
 
                 if self.config[self.device_key]["set_on_startup"]:

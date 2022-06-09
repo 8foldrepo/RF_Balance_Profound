@@ -752,7 +752,7 @@ class ParkerMotorController(AbstractMotorController):
         self.set_motors_on(False)
         self.command("1MOTOR(718,1,1000,500,5,0.63,2)")
         self.command("2MOTOR(718,0.1,2000,100,5,3.2,2)")
-        self.print("Motors set, use a serial terminal to confirm smooth operation, then command 0SV and 0Z")
+        self.log("Motors set, use a serial terminal to confirm smooth operation, then command 0SV and 0Z")
 
     # def setup_motor(self):
     #     self.command("0Z")

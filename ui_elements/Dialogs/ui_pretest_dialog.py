@@ -108,8 +108,8 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.close()
 
 
-def print_info(dict):
-    print(f"metadate {dict}")
+def print_info(info_dict):
+    print(f"metadate {info_dict}")
 
 
 if __name__ == "__main__":
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     app.setStyle("Fusion")
 
-    form = PretestDialog(config=None)
+    form = PretestDialog(config=None, access_level='Operator', serial_no='', schema='')
     today = date.today()
     formatted_date = today.strftime("%m/%d/%Y")
     form.date_output.setText(formatted_date)
