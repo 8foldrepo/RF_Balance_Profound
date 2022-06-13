@@ -533,15 +533,18 @@ class Manager(QThread):
 
         # Send name of script to UI
         split_path = path.split("/")  # splits the directory into a list with the '/' as a delimiter
-        self.test_data.script_name = split_path[len(split_path) - 1]  # the file name is in the last position of the list
-        self.script_name_signal.emit(self.test_data.script_name)  # emit the signal to main window, so it can fill in the script name box
+        # the file name is in the last position of the list
+        self.test_data.script_name = split_path[len(split_path) - 1]
+        # emit the signal to main window, so it can fill in the script name box
+        self.script_name_signal.emit(self.test_data.script_name)
 
         tasks = []  # the upper layer of our task list
         self.task_execution_order = []
         element_names_for_loop = []  # contains the list of elements subject to task in loops, empties for the next loop
         task_number_for_loop = []  # contains the task numbers contained in the loop, empties for the next loop
         loop_index_tracker = 0  # keeps track of the order of loops
-        adding_elements_to_loop = False  # flag for the code to know when we're actively adding elements to a loop structure
+        # flag for the code to know when we're actively adding elements to a loop structure
+        adding_elements_to_loop = False
         building_loop = False  # flag for the code to know we're in the process of developing a loop structure
         task_variables = OrderedDict()  # the list of variables for the individual task
         task_number = -2  # keeps track of the task number for indexing
@@ -700,17 +703,20 @@ class Manager(QThread):
                     inside_iteration = False  # we don't know if we're inside an iteration yet
                     iteration_number = None  # set the iteration number to None
 
-                    if len(self.task_execution_order[self.step_index]) == 3:  # elements that are a part of a loop will have a third sub element notating which loop it's from
+                    # elements that are a part of a loop will have a third sub element notating which loop it's from
+                    if len(self.task_execution_order[self.step_index]) == 3:
                         self.test_data.log_script(
                             [f"Iteration {self.task_execution_order[self.step_index][1]} of "
                              f"{len(self.loops[self.task_execution_order[self.step_index][2]][0])}", "", "", "", ]
                         )  # mark iteration count for loop in log file
                         inside_iteration = True  # we are inside a loop, enable this flag
-                        iteration_number = self.task_execution_order[self.step_index][1]  # take the iteration number from the task_exec_order list
+                        # take the iteration number from the task_exec_order list
+                        iteration_number = self.task_execution_order[self.step_index][1]
 
                     self.run_script_step()  # call helper method to execute the current task
                     if inside_iteration:  # if we're inside a loop iteration
-                        self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])  # notate that in the log
+                        # notate that in the log
+                        self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
 
             if not self.currently_scripting:  # if we're not currently scripting at this point
                 self.enable_ui_signal.emit(True)  # toggle appropriate buttons in main window and its tabs
@@ -728,22 +734,28 @@ class Manager(QThread):
         """
         Helper method for advance_script(); Executes script step with given step index in taskNames/taskArgs
         """
-        if self.task_arguments is None or self.task_names is None or self.task_execution_order is None:  # if task entry is malformed
+        # if task entry is malformed
+        if self.task_arguments is None or self.task_names is None or self.task_execution_order is None:
             self.abort_after_step()  # exit after this step
             self.enable_ui_signal.emit(True)  # re-enable various main window buttons since we are no longer scripting
             return  # exit this method
 
-        task_name = self.task_names[self.step_index]  # sets task_name (str) to current iteration in taskNames list
-        task_arguments = self.task_arguments[self.step_index]  # sets task_arguments (list) to current iteration in taskArgs list
+        # sets task_name (str) to current iteration in taskNames list
+        task_name = self.task_names[self.step_index]
+        # sets task_arguments (list) to current iteration in taskArgs list
+        task_arguments = self.task_arguments[self.step_index]
 
-        self.task_number_signal.emit(self.task_execution_order[self.step_index][0])  # send the task number to the main window
+        # send the task number to the main window
+        self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)  # as well as the step index
 
-        if self.task_execution_order[self.step_index][1] is not None:  # if the element in the self.taskExecOrder isn't None
-            task_arguments['Element'] = self.task_execution_order[self.step_index][1]  # set the element to be operated on to the one in self.taskExecOrder
+        # if the element in the self.taskExecOrder isn't None
+        if self.task_execution_order[self.step_index][1] is not None:
+            # set the element to be operated on to the one in self.taskExecOrder
+            task_arguments['Element'] = self.task_execution_order[self.step_index][1]
 
-
-        if "MEASURE ELEMENT EFFICIENCY (RFB)" in task_name.upper():  # switch case for various task types, launches appropriate method and passes arguments
+        # switch case for various task types, launches appropriate method and passes arguments
+        if "MEASURE ELEMENT EFFICIENCY (RFB)" in task_name.upper():
             self.measure_element_efficiency_rfb(task_arguments)
         elif "PRE-TEST INITIALISATION" in task_name.upper():  # all checks will be case-insensitive
             self.pretest_initialization()
@@ -1936,7 +1948,7 @@ class Manager(QThread):
 
         return integrate.simps(y=voltages_v_squared, dx=dx, axis=0)
 
-    def measure_element_efficiency_rfb(self, var_dict: OrderedDict) -> bool:
+    def measure_element_efficiency_rfb(self, var_dict: dict) -> bool:
         """
         This method cycles the ultrasound output from the ultrasound applicator on and off for specified intervals
         while continuously capturing data from the forward power meter, reflected power meter, and radiation force

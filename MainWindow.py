@@ -549,7 +549,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # adding Help on menu bar and open a specific file saved as "Help"
         file_menu = self.menuBar().addMenu("&Help")
 
-        Show_Help_action = QAction(
+        show_help_action = QAction(
             QIcon(os.path.join("images", "blue-folder-open-document.png")),
             "Open Help",
             self,
