@@ -79,7 +79,7 @@ class RFBDataLogger(QThread):
         race condition. Also appends values to awg_on_ray and times_s.
         """
         # Setup event loop
-        start_time = t.time()
+        start_time = t.time()  # capture current time
         self.stay_alive = True
         self.mutex.lock()
         while self.stay_alive is True:
@@ -89,7 +89,6 @@ class RFBDataLogger(QThread):
             if self.sensors_ready():
                 self.balance_ready = self.f_meter_ready = self.r_meter_ready = False
                 current_time = t.time() - start_time
-                # print(f"current_time in rfb_data_logger.py is {current_time}")
                 self.times_s.append(current_time)
                 self.awg_on_ray.append(self.awg_on)
                 self.trigger_capture_signal.emit()
@@ -108,8 +107,10 @@ class RFBDataLogger(QThread):
         """
         return self.balance_ready and self.f_meter_ready and self.r_meter_ready
 
-    def update_realtime_data(self):
+    def update_realtime_data(self) -> None:
         """copy lists by value to avoid length mismatch race condition"""
+
+        # create method contained variables that mirror class-wide variables
         times_s = list(self.times_s)
         acoustic_powers_w = list(self.acoustic_powers_w)
         awg_on_ray = list(self.awg_on_ray)
@@ -133,10 +134,12 @@ class RFBDataLogger(QThread):
         self.rfb_data.update_realtime_data()
 
     @pyqtSlot(float)
-    def log_balance(self, reading_g):
+    def log_balance(self, reading_g: float):
         """
         appends a balance reading to the balance_readings_g list, as well as
         append a calculated acoustic power reading to acoustic_powers_w
+
+        :param reading_g: Balance reading in grams (float)
         """
         if self.awg_on:
             reading_g = reading_g / 500 + .053
@@ -148,10 +151,12 @@ class RFBDataLogger(QThread):
         self.balance_ready = True
 
     @pyqtSlot(float)
-    def log_f_meter(self, reading_w):
+    def log_f_meter(self, reading_w: float) -> None:
         """
         adds reading from waveform generator in watts to a list called
         f_meter_readings_w, a variable contained in the rfb_data_logger class
+
+        :param reading_w: forward power reading in watts
         """
         # todo: remove this block
         if self.awg_on:
@@ -163,7 +168,14 @@ class RFBDataLogger(QThread):
         self.f_meter_ready = True
 
     @pyqtSlot(float)
-    def log_r_meter(self, reading_w):
+    def log_r_meter(self, reading_w: float) -> None:
+        """
+        If the AWG is on, updates the internal reading variable to passed variable / 50 + .1; if off: same as
+        previous but without adding .1; Passed value is appended to list of reverse readings and reverse meter ready
+        flag is set to true
+
+        :param reading_w: Reverse power meter reading in watts
+        """
         # todo: remove this block
         if self.awg_on:
             reading_w = reading_w / 50 + .1
@@ -174,10 +186,18 @@ class RFBDataLogger(QThread):
         self.r_meter_ready = True
 
     @pyqtSlot(bool)
-    def update_awg_on(self, on):
+    def update_awg_on(self, on: bool):
+        """
+        Set the boolean awg_on flag to passed value
+
+        :param on: Should represent whether the AWG is on/active or not
+        """
         self.awg_on = on
 
-    def quit(self):
+    def quit(self) -> None:
+        """
+        Sets the stay alive flag to false, and issues a close thread command while excepting runtime errors
+        """
         self.stay_alive = False
         try:
             super().quit()  # closes the thread
