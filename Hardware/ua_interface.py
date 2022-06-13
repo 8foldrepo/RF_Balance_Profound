@@ -179,6 +179,10 @@ class UAInterface(AbstractUAInterface):
                     self.log("Getting output failed, retrying...")
         return None
 
+    def get_serial_number(self) -> str:
+        # todo: implement
+        return ""
+
 
 if __name__ == "__main__":
     wtf = UAInterface(config=None)

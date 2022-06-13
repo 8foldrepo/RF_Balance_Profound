@@ -2,11 +2,8 @@ import collections.abc
 import datetime
 import os
 from typing import Tuple, List
-
-import numpy as np
 from PyQt5.QtWidgets import QTabWidget
 from termcolor import colored
-
 from data_structures.test_data import TestData
 
 
@@ -41,13 +38,13 @@ def create_comma_string(axes: list, numbers: list, ax_letters: list):
         if ax_letters[i] in axes:
             index = axes.index(ax_letters[i])
             if len(numbers) == len(axes):
-                answer = answer + str((numbers[index]))
+                answer += str((numbers[index]))
 
-        answer = answer + ","
+        answer += ","
     return answer
 
 
-def find_int(string_with_int):
+def find_int(string_with_int: str) -> int:
     """
     Returns the first whole number in a given string (chops off decimal if there is one)
     Raises AttributeError if no whole numbers exist
@@ -56,7 +53,7 @@ def find_int(string_with_int):
     return int(search(r"\d+", str(string_with_int)).group())
 
 
-def get_element_distances(element_1_index, element_pitch):
+def get_element_distances(element_1_index: float, element_pitch: float) -> list:
     """Generate presumed x positions for all elements given the pitch and the position of element 1, used by manager"""
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coordinates = [None, None, None, None, None, None, None, None, None, None, None]
@@ -67,7 +64,7 @@ def get_element_distances(element_1_index, element_pitch):
     return element_coordinates
 
 
-def error_acceptable(value1: float, value2: float, acceptable_error_percent=6, print_msg=True) -> bool:
+def error_acceptable(value1: float, value2: float, acceptable_error_percent: float = 6, print_msg=True) -> bool:
     """Returns whether the two values are approximately equal with a given acceptable error percentage"""
     if print_msg:
         print(colored(f'value1 = {value1}, value2 = {value2}', 'yellow'))
@@ -97,7 +94,8 @@ def generate_calibration_data(test_data: TestData) -> List[str]:
     return output
 
 
-def update(dictionary: dict, u):
+def update(dictionary: dict, u) -> dict:
+    """Updates a nested dictionary with another nested dictionary"""
     for key, value in u.items():
         if isinstance(value, collections.abc.Mapping):
             dictionary[key] = update(dictionary.get(key, {}), value)
@@ -106,7 +104,8 @@ def update(dictionary: dict, u):
     return dictionary
 
 
-def is_number(s):
+def is_number(s) -> bool:
+    """Returns whether the given variable can be typecast as a float"""
     try:
         float(s)
         return True
@@ -207,24 +206,6 @@ def trim(lists: List[List]) -> Tuple:
     return tuple(trimmed_lists)
 
 
-def list_to_ray(x_coordinates, y_coordinates, z_coordinates, intensity):
-    unique_x_coordinates = unique(list_to_analyze=x_coordinates)
-    unique_y_coordinates = unique(list_to_analyze=y_coordinates)
-    unique_z_coordinates = unique(list_to_analyze=z_coordinates)
-
-    coordinates = (unique_x_coordinates, unique_y_coordinates, unique_z_coordinates)
-    coordinate_map = np.zeros((len(unique_x_coordinates), len(unique_y_coordinates), len(unique_z_coordinates)))
-
-    for i in range(len(x_coordinates)):
-        x = unique_x_coordinates.index(x_coordinates[i])
-        y = unique_y_coordinates.index(y_coordinates[i])
-        z = unique_z_coordinates.index(z_coordinates[i])
-
-        coordinate_map[x][y][z] = intensity[i]
-
-    return coordinate_map, coordinates
-
-
 def search_for(filename):
     """
     Searches from current directory to grandparent directory for the specified file
@@ -283,18 +264,19 @@ def create_test_results_summary_file(test_data: TestData, path):
 
 
 def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:
-    from PyQt5.QtCore import QThread
-
     """
     Convenience function to log messages in a compact way with useful info.
         Parameters:
+            root_logger: logger instance passed from the calling class
             level (str): A string indicating the logger level, can be either
             'info', 'debug' or 'error'
             message (str): A string that contains the message to be logged
+            line_number (int): number of the line that called this log method
 
         Returns:
             None
     """
+    from PyQt5.QtCore import QThread
 
     thread_name = QThread.currentThread().objectName()
     log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
