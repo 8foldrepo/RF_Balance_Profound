@@ -70,8 +70,8 @@ class RFB(MyQWidget, Ui_Form):
         grams = rfb_data.grams
         forward_power_w = rfb_data.forward_power_w
         reflected_power_w = rfb_data.reflected_power_w
-        p_on_rand_unc = rfb_data.p_on_rand_unc
-        p_off_rand_unc = rfb_data.p_off_rand_unc
+        p_on_standard_deviation = rfb_data.p_on_standard_deviation
+        p_off_standard_deviation = rfb_data.p_off_standard_deviation
         acoustic_power_off_mean = rfb_data.acoustic_power_off_mean
         acoustic_power_on_mean = rfb_data.acoustic_power_on_mean
 
@@ -79,12 +79,12 @@ class RFB(MyQWidget, Ui_Form):
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
-        self.power_on_rand_uc_field.setText(str(round(p_on_rand_unc, 2)))
+        self.power_on_rand_uc_field.setText(str(round(p_on_standard_deviation, 2)))
         # Commented lines were UI fields removed because they were confusing or not useful
         # self.power_on_total_uc_field.setText(str(round(p_on_total_unc, 2)))
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean, 2)))
-        self.power_off_rand_uc_field.setText(str(round(p_off_rand_unc, 2)))
+        self.power_off_rand_uc_field.setText(str(round(p_off_standard_deviation, 2)))
         # self.power_off_total_uc_field.setText(str(round(p_off_total_unc, 2)))
 
         # self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))

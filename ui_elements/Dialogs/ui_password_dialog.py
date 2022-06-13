@@ -79,8 +79,8 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
             self.logger_signal.emit(str(Progress))
 
 
-def print_access(str):
-    print(f"access: {str}")
+def print_access(access_str):
+    print(f"access: {access_str}")
 
 
 if __name__ == "__main__":

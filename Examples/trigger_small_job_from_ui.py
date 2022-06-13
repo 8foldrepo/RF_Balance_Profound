@@ -20,7 +20,7 @@ enable_ui_signal in Manager for practical examples.
 
 
 class simpleMainWindow(QMainWindow):
-    """Simplified representation of the mainwindow class"""
+    """Simplified representation of the MainWindow class"""
 
     begin_small_job_signal = pyqtSignal()
 
@@ -45,6 +45,7 @@ class simpleMainWindow(QMainWindow):
     @pyqtSlot()
     def button_clicked(self):
         self.begin_small_job_signal.emit()
+
 
 class simpleManager(QThread):
     """Simplified representation of the manager class"""
@@ -80,7 +81,7 @@ class simpleManager(QThread):
         print(f"Running small job in: {QThread.currentThread().objectName()}")
 
         start_time = time.time()
-        while time.time()-start_time < 20:
+        while time.time() - start_time < 20:
             time.sleep(.1)
             # This command periodically forces UI updates, if this was not done the UI would freeze since the code is running in the UI thread
             self.app.processEvents()

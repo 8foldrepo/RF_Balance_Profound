@@ -28,9 +28,11 @@ class SensorThread(QThread):
         self.mutex.lock()
         self.ready = True
         while self.stay_alive is True:
+            # Core event loop
             wait_bool = self.condition.wait(self.mutex, 1)
 
             if self.capture_command:
+                # As soon as the capture_command flag is true, capture the sensor
                 self.capture()
                 self.capture_command = False
 
@@ -40,6 +42,7 @@ class SensorThread(QThread):
         return super().run()
 
     def capture(self):
+        """Capture the sensor reading and emit it to the logger"""
         self.ready = False
         reading = float('nan')
 
@@ -53,7 +56,7 @@ class SensorThread(QThread):
         self.reading_signal.emit(reading)
         self.ready = True
 
-    # Trigger a capture
     @pyqtSlot()
     def trigger_capture_slot(self):
+        """Trigger a capture (which will initate via the run loop of the sensor thread)"""
         self.capture_command = True

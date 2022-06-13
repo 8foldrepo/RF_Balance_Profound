@@ -106,7 +106,8 @@ class AbstractAWG(AbstractDevice):
 
     @abstractmethod
     def set_output_impedance(self, impedance_ohms: int, HiZ: bool) -> None:
-        """Sets the impedance (resistance in ohms) of the AWG when given an int value and boolean float for infinite resistance"""
+        """Sets the impedance (resistance in ohms) of the AWG when given an int value and boolean float for infinite
+        resistance """
         ...
 
     @abstractmethod
@@ -124,12 +125,14 @@ class AbstractAWG(AbstractDevice):
 
     @abstractmethod
     def set_cycles(self, cycles: int) -> None:
-        """Sets the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each burst, assuming it's in burst mode)"""
+        """Sets the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each burst,
+        assuming it's in burst mode) """
         ...
 
     @abstractmethod
     def get_cycles(self) -> int:
-        """Retrieves the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each burst, assuming it's in burst mode)"""
+        """Retrieves the number of cycles the AWG is set to (cycles is the number of sine waves cycles inside each
+        burst, assuming it's in burst mode) """
         ...
 
     @abstractmethod
@@ -147,13 +150,13 @@ class AbstractAWG(AbstractDevice):
         self.get_state()
         return "Waveform Generator\nSettings:\n" + str(self.state)
 
-    def SetTriggerOutput(self, external:bool, period_s:float, delay_s:float):
+    def SetTriggerOutput(self, external: bool, period_s: float, delay_s: float):
         """
         Enables or disables the external trigger output of the AWG in burst mode, as well as the period of the burst
         and a delay between the beginning of the burst and the trigger signal if desired.
         """
         ...
 
-    def GetTriggerOutput(self)->bool:
+    def GetTriggerOutput(self) -> bool:
         """Returns whether the AWG is outputting a trigger pulse in burst mode"""
         ...

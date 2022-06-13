@@ -53,7 +53,7 @@ class KeysightAWG(AbstractAWG):
                     self.inst = self.rm.open_resource(resource)
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log(level='error', message=feedback)
+                    self.log('error', str(feedback))
                     break
 
                 if self.config[self.device_key]["set_on_startup"]:
@@ -295,16 +295,6 @@ class KeysightAWG(AbstractAWG):
         self.connected = connected
         return connected
 
-    def wrap_up(self) -> None:
-        """
-        Turns off the function generator via setting its output variable to false,
-        calling its disconnect hardware method, and sleep for half a millisecond before
-        program continues.
-        """
-        self.set_output(False)
-        self.disconnect_hardware()
-        t.sleep(.05)
-
     def get_serial_number(self) -> Union[str, None]:
         """
         Returns the serial number via issuing the standard Keysight '*IDN?' command,
@@ -318,6 +308,17 @@ class KeysightAWG(AbstractAWG):
         self.command("*IDN?")
         read_str = self.read()
         return read_str.split(",")[2]
+
+    def wrap_up(self) -> None:
+        """
+        Turns off the function generator via setting its output variable to false,
+        calling its disconnect hardware method, and sleep for half a millisecond before
+        program continues.
+        """
+        self.log(f"Wrapping up {self.device_key}")
+        self.set_output(False)
+        self.disconnect_hardware()
+        t.sleep(.05)
 
     def __str__(self):
         """Returns the last known state of the device. Use getstate to inquire the state before calling"""

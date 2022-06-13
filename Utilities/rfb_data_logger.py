@@ -21,6 +21,7 @@ class RFBDataLogger(QThread):
     Reflected_Power_Meter: AbstractSensor
     rfb_data: RFBData
 
+    # noinspection PyTypeChecker
     def __init__(self, rfb_data, balance: AbstractBalance, forward_power_meter: AbstractSensor,
                  reflected_power_meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)

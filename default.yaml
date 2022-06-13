@@ -30,7 +30,7 @@ Debugging:
   simulate_thermocouple_error: false
   simulate_ua_error: false
   simulate_ua_interface: true
-  drain_before_retract: false
+  drain_before_retract: true
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
   sensor_refresh_interval_s: .5
@@ -111,13 +111,13 @@ Keysight_Oscilloscope:
   range_mV: 6000
   retries: 5
   set_on_startup: true
-  timeout_s: 10
+  timeout_s: 1
 MT_Balance:
   port: COM4
   timeout_s: 10
 Paths:
   Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
-  UA Serial numbers file: C:\Users\Isaiah\Documents\UA Serial Numbers\Serial numbers.txt
+  UA Serial numbers file: \Program_Data\UA serial number and frequency data.txt
   UA results root directory: C:\Users\Isaiah\Documents\UA results
 Reflected_Power_Meter:
   serial_number: '11506210019'
