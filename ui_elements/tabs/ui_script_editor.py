@@ -102,7 +102,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.edit_menu = LoopOverElements()
         elif "Measure element efficiency (RFB)" in task_type:
             self.edit_menu = MeasureElementEfficiency()
-        elif "Save results" in task_type:
+        elif "Save results".upper() in task_type.upper():
             self.edit_menu = SaveResults()
         elif "Prompt user for action" in task_type:
             self.edit_menu = PromptUserForAction()
@@ -325,7 +325,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
                         else:
                             # And number each one after the first one
                             list_of_var_dicts_copy[i]["Task type"] = f"{task_name}_{counter}"
-                        counter = counter + 1
+                        counter += 1
 
         # Refresh the visualizer
         self.visualize_script(list_of_var_dicts_copy)
@@ -370,13 +370,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
-            current_index_row = current_index_row + 1  # offset to account for header
-            temporary_item_to_save = list_of_var_dicts_copy[
-                current_index_row + 1]  # since moving item "down," it's actually moving up in the list, save the next item
-            list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[
-                current_index_row]  # set next item in list to previous item
-            list_of_var_dicts_copy[
-                current_index_row] = temporary_item_to_save  # restore previous contents of next item to current index (swapping)
+            current_index_row += 1  # offset to account for header
+            # since moving item "down," it's actually moving up in the list, save the next item
+            temporary_item_to_save = list_of_var_dicts_copy[current_index_row + 1]
+            # set next item in list to previous item
+            list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[current_index_row]
+            # restore previous contents of next item to current index (swapping)
+            list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
         else:  # if script does not have a header, no offset is needed
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row + 1]
             list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[current_index_row]
@@ -444,7 +444,7 @@ class ScriptEditor(MyQWidget, Ui_Form):
             self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
-            current_index_row = current_index_row + 1  # offset to account for header
+            current_index_row += 1  # offset to account for header
             # since moving item "up," it's actually moving down in the list, save the previous item
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
             # set next item in list to previous item
@@ -497,9 +497,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
         # if the widget has an ui_to_orderedDict method
         new_var_dict = self.edit_menu.ui_to_orderedDict()
 
-        # INFO: the previous code below this line was 'if new_var_dict is not None', but what
-        # INFO: I think was meant to be written is 'if new_var_dict is None' because you're
-        # INFO: potentially overwriting a perfectly good dictionary
         if new_var_dict is None:
             if task_name == 'Pre-test initialisation':
                 new_var_dict = pre_test_dict()
@@ -523,8 +520,6 @@ class ScriptEditor(MyQWidget, Ui_Form):
                 new_var_dict = select_UA_channel_dict()
             elif task_name == 'Run "Auto Gain Control"':
                 new_var_dict = auto_gain_control_dict()
-            # todo: create autoset timebase method in oscilloscope hardware class,
-            #  INFO: feature will possibly not even be implemented
             elif task_name == "Autoset timebase":
                 new_var_dict = autoset_timebase_dict()
             else:

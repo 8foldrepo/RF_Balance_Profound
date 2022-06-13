@@ -587,7 +587,8 @@ class Manager(QThread):
                     self.yes_clicked_variable = False  # set the yes and no clicked variables to false so user input can be taken into account
                     self.no_clicked_variable = False  # offer the user a chance to fix it
                     self.user_question_signal.emit(
-                        f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
+                        f"The script has a static 'Element' value for task '{task_variables['Task type']}' when it "
+                        f"should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
                     cont = self.cont_if_answer_clicked()  # wait until the user makes a decision or inappropriately closes the dialog
                     if cont:  # if the user has made a valid decision
                         if self.yes_clicked_variable:  # if the user clicked yes
@@ -782,12 +783,15 @@ class Manager(QThread):
         elif 'FREQUENCY SWEEP' in task_name.upper():
             self.frequency_sweep(task_arguments)
         else:  # if the task name does not match any of those in the above switch case
-            self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")  # inform the user of this issue
+            # inform the user of this issue
+            self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")
             self.critical_error_flag = True  # we've encountered a critical error, set the flag to true
-            self.error_message = f"{task_name} is not a valid task task_name in the script"  # sets the error message string to be shown in the script_complete method
+            # sets the error message string to be shown in the script_complete method
+            self.error_message = f"{task_name} is not a valid task task_name in the script"
             self.abort_immediately()  # abort scripting immediately
 
-        self.task_index_signal.emit(self.step_index + 1)  # at this point, we're done with the step, move on to the next one
+        self.task_index_signal.emit(self.step_index + 1)  # at this point, we're done with the step, move on to the
+        # next one
 
         # below helps explain loop and list logic
         # if len(self.taskExecOrder[self.step_index]) == 3:
@@ -805,7 +809,8 @@ class Manager(QThread):
         if self.retry_clicked_variable:  # if the user has clicked the retry button
             return  # exit this method
         if log:  # if the log parameter is true
-            self.log(level='warning', message="Aborting script after step")  # inform the user the script will abort after step in verbose
+            # inform the user the script will abort after step in verbose
+            self.log(level='warning', message="Aborting script after step")
         # Reset script control variables
         self.currently_scripting = False  # we are no longer scripting
         self.button_enable_toggle_for_scripting.emit(True)  # turn on fields/buttons in main window
@@ -823,7 +828,8 @@ class Manager(QThread):
         :param log: Whether to signify an abort immediately event took place in the console
         """
         if log:  # if the log parameter equals true
-            self.log(level='warning', message="Aborting script")  # inform user script is being immediately aborted in verbose
+            # inform user script is being immediately aborted in verbose
+            self.log(level='warning', message="Aborting script")
         # Reset script control variables
 
         self.Motors.stop_motion()

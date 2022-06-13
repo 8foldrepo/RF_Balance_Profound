@@ -4,7 +4,6 @@ import sys
 import time as t
 import webbrowser
 from typing import List
-
 from PyQt5 import QtCore, Qt
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSlot
@@ -12,7 +11,6 @@ from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index
@@ -147,9 +145,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.script_editor.set_tree_widget(self.script_step_view)
 
     def begin_manager_thread(self):
-        self.manager = Manager(
-            parent=self, config=self.config, system_info=self.system_info_tab.parser
-        )
+        self.manager = Manager(parent=self, config=self.config, system_info=self.system_info_tab.parser)
         self.thread_list.append(self.manager)
         self.configure_manager_signals()
         self.pass_manager_and_hardware_to_tabs()
@@ -308,9 +304,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         # enable/disable buttons signals
         self.position_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
-        self.ua_calibration_tab.set_buttons_enabled_signal.connect(
-            self.set_buttons_enabled
-        )
+        self.ua_calibration_tab.set_buttons_enabled_signal.connect(self.set_buttons_enabled)
         self.set_scan_tab_signal.connect(self.scan_tab_widget.set_tab_slot)
 
     # noinspection PyTypeChecker
@@ -519,8 +513,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         popup.exec()
         self.cont_signal.emit()
 
-    # noinspection PyTypeChecker
-    def setupUi(self, MainWindow):
+    def setupUi(self, win):
         super().setupUi(self)
 
         file_menu = self.menuBar().addMenu("&File")
@@ -707,7 +700,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             dlg.retry_button.hide()
             dlg.retry_button.setVisible(False)
             dlg.retry_button.setEnabled(False)
-        elif message == "Warning: the on or off intervals are less than the sensor settling time specified in the config file. Either change it or load a different script":
+        elif message == "Warning: the on or off intervals are less than the sensor settling time specified in the " \
+                        "config file. Either change it or load a different script":
             dlg.abort_signal.connect(self.manager.abort_immediately)
         else:
             dlg.abort_signal.connect(self.manager.abort_clicked)
@@ -745,8 +739,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
     @pyqtSlot(str)
     def dialog_critical(self, text: str) -> None:
-        """Method to show a customizable critical error dialog for the user. Sets text of dialog to string text parameter,
-        and sets the buttons and icon of the dialog popup."""
+        """
+        Method to show a customizable critical error dialog for the user. Sets text of dialog to string text
+        parameter, and sets the buttons and icon of the dialog popup.
+        """
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Error")
         dlg.setText("The application has encountered a critical error")
@@ -917,7 +913,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    I = MainWindow()
+    window = MainWindow()
     app.setStyle("fusion")
-    I.show()
+    window.show()
     sys.exit(app.exec_())

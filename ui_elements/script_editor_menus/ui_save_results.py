@@ -1,9 +1,8 @@
 from collections import OrderedDict
-
 from PyQt5.QtWidgets import QApplication
+from ui_elements.my_qwidget import MyQWidget
 
 from Widget_Library.widget_save_results import Ui_Form
-from ui_elements.my_qwidget import MyQWidget
 
 
 class SaveResults(MyQWidget, Ui_Form):
