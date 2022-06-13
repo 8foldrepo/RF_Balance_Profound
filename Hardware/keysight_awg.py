@@ -217,7 +217,7 @@ class KeysightAWG(AbstractAWG):
         self.state["burst_cycles"] = int(float(self.read()))
         return self.state["burst_on"], self.state["burst_cycles"]
 
-    def set_output_impedance(self, impedance_ohms=50, high_impedance=False):
+    def set_output_impedance(self, impedance_ohms: int = 50, high_impedance: bool = False) -> None:
         if high_impedance:
             self.command("OUTP:LOAD INF")
         else:
@@ -239,17 +239,24 @@ class KeysightAWG(AbstractAWG):
         self.state["phase degrees"] = float(self.read())
         return self.state["phase degrees"]
 
-    def set_cycles(self, cycles: int):
+    def set_cycles(self, cycles: int) -> bool:
         self.state["burst_cycles"] = cycles
         self.command(f"BURS:NCYC {cycles}")
         return self.get_cycles == cycles
 
     def get_cycles(self) -> int:
+        """
+        Getter method to get number of cycles stored in the
+        hardware, returns the result as an int and stores it
+        """
         self.command(f"BURS:NCYC?")
         self.state["burst_cycles"] = self.read()
         return int(float(self.state["burst_cycles"]))
 
-    def command(self, command: str):
+    def command(self, command: str) -> None:
+        """
+        Uses pyvisa's write command to send a string to the device, handles errors/exceptions
+        """
         try:
             self.inst.write(command)
             t.sleep(.03)
@@ -260,6 +267,9 @@ class KeysightAWG(AbstractAWG):
                 self.log(level="error", message=f"error in command: {e}")
 
     def read(self) -> str:
+        """
+        calls pyvisa's read method for the AWG, return type is string, handles errors/exceptions
+        """
         try:
             return self.inst.read()
         except AttributeError as e:
@@ -269,7 +279,10 @@ class KeysightAWG(AbstractAWG):
                 self.log(level="error", message=f"error in read: {e}")
 
     def check_connected(self) -> bool:
-        """Returns whether the device is connected"""
+        """
+        Checks and returns whether the function generator is
+        connected via looking at its output, handlers exceptions/errors
+        """
         connected = False
         try:
             output = self.get_output()
@@ -296,7 +309,7 @@ class KeysightAWG(AbstractAWG):
         read_str = self.read()
         return read_str.split(",")[2]
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
         """
         Turns off the function generator via setting its output variable to false,
         calling its disconnect hardware method, and sleep for half a millisecond before

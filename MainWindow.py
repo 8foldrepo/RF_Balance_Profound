@@ -3,7 +3,6 @@ import os
 import sys
 import time as t
 import webbrowser
-from pprint import pprint
 from typing import List
 
 from PyQt5 import QtCore, Qt
@@ -555,13 +554,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             "Open Help",
             self,
         )
-        Show_Help_action.setStatusTip("Open Help")
-        Show_Help_action.triggered.connect(self.Show_Help)
-        file_menu.addAction(Show_Help_action)
+        show_help_action.setStatusTip("Open Help")
+        show_help_action.triggered.connect(self.show_help)
+        file_menu.addAction(show_help_action)
 
-    # Open help document
-    def Show_Help(self):
-        webbrowser.open("Help.txt")
+    @staticmethod
+    def show_help() -> None:
+        """Opens the help document"""
+        # todo: fill in help.txt
+        webbrowser.open("help.txt")
 
     # Menu bar Actions
     def file_saveas(self):
@@ -736,8 +737,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def show_script_complete_dialog(self, passed_ray: list, description_ray: list) -> None:
         """Launches the script complete message that shows the various details of the tests for all the elements
         and connects various """
-        pprint(passed_ray)
-        pprint(description_ray)
         dlg = ScriptCompleteDialog(
             passed_ray=passed_ray, description_ray=description_ray, config=self.config
         )

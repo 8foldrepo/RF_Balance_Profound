@@ -16,7 +16,7 @@ class WTFUserPrompt(MyQDialog, wtf_user_prompt.Ui_wtf_user_prompt):
         self.configure_signals()
         if access_level == 'Operator' and restrict_continue:
             self.continue_button.setEnabled(False)
-        self.setWindowFlags(Qt.Qt.WindowType.WindowStaysOnTopHint)
+        # self.setWindowFlags(Qt.Qt.WindowType.WindowStaysOnTopHint)
 
     def configure_signals(self):
         self.continue_button.clicked.connect(self.continue_clicked)
