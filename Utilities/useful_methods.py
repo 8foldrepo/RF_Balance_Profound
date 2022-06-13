@@ -299,15 +299,24 @@ def log_msg(self, root_logger, message: str, level: str = None, line_number=None
 
     thread_name = QThread.currentThread().objectName()
     log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
+    color = ''
     if level == "debug":
         root_logger.debug(log_entry)
+        color = 'magenta'
     elif level == "error":
+        color = 'red'
         root_logger.error(log_entry)
     elif level == "warning":
+        color = 'yellow'
         root_logger.warning(log_entry)
-    else:
+    elif level == 'info':
+        color = 'green'
         root_logger.info(log_entry)
-    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{level}] {log_entry}")
+    else:
+        color = 'cyan'
+        level = 'other'
+        root_logger.info(log_entry)
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{colored(level, color)}] [{type(self).__name__}] [{line_number}] [{thread_name}] : " + colored(message, color))
 
 
 def print_list(list2):
