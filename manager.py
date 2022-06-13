@@ -573,7 +573,7 @@ class Manager(QThread):
                     adding_elements_to_loop = False  # set its indicator flag to false
                 continue  # move forward one line
             elif '[' in line:  # if the line we're on is a task line: [TaskX]
-                task_number = task_number + 1  # increments the task number counter since we've moved to the next task
+                task_number += 1  # increments the task number counter since we've moved to the next task
                 if "Task" in line and not building_loop:  # if we're not currently in loop building mode
                     self.task_execution_order.append(task_number)  # add the task number to execution order list
             else:  # if the line we're on is neither a blank line nor a task header line
