@@ -77,6 +77,7 @@ class Manager(QThread):
 
     # str is message for user to read, bool is whether to restrict the user from clicking continue/ignore
     user_prompt_signal = QtCore.pyqtSignal(str, bool)  # continue button
+
     user_prompt_pump_not_running_signal = QtCore.pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = QtCore.pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = QtCore.pyqtSignal()
@@ -318,7 +319,7 @@ class Manager(QThread):
             device = self.devices[i]
             connected, feedback = device.connect_hardware()
             if not connected:
-                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", False)
+                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", True)
                 try:
                     self.wait_for_cont()
                 except RetryException:
@@ -1046,11 +1047,11 @@ class Manager(QThread):
         if self.abort_immediately_variable:
             return False
 
-        self.user_prompt_signal.emit("Please ensure that the power amplifier is on",
-                                     False)  # this task cannot be automated
+        self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)
         cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
         if not cont:  # if the user did not click continue
             return False  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
+
         self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])  # at this point, the prompt ran successfully
 
         if self.file_saver.directories_created:  # check if the saving directories were successfully created
@@ -1968,7 +1969,6 @@ class Manager(QThread):
             error_detail = "Warning: the on or off intervals are less than the sensor settling time specified in the " \
                            "config file. Either change it or load a different script"
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail=error_detail)
-
             if not cont:
                 return False
 
