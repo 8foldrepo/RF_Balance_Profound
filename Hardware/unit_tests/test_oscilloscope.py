@@ -22,15 +22,10 @@ class TestOscilloscope(unittest.TestCase):
         print(colored("running set to default test", 'cyan'))
         self.osc.set_to_defaults()
         self.assertAlmostEqual(self.osc.channel, self.osc.config[self.osc.device_key]['channel'], 1)
-        self.assertAlmostEqual(self.osc.max_time_of_flight,
-                               self.osc.config['Oscilloscope_timebase']["time_window_maximum"], 1)
-        assert self.osc.min_time_of_flight == self.osc.config['Oscilloscope_timebase']["time_window_minimum"]
         self.assertAlmostEqual(self.osc.range_s,
-                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6, 1)
-        self.assertAlmostEqual(self.osc.time_of_flight_window,
-                               (self.osc.max_time_of_flight - self.osc.min_time_of_flight) / 1000000)
+                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8, 1)
         self.assertAlmostEqual(self.osc.offset_s,
-                               self.osc.min_time_of_flight / 1000000 + self.osc.time_of_flight_window / 2, 1)
+                               self.osc.config['Oscilloscope_timebase']['Time offset (us)']* 10 ** -6)
         assert self.osc.autorange_v == bool(self.osc.config[self.osc.device_key]["autorange_v_startup"])
         self.assertAlmostEqual(self.osc.range_mV, self.osc.config[self.osc.device_key]["range_mV"])
         self.assertAlmostEqual(self.osc.average_count, self.osc.config[self.osc.device_key]["averages"], 1)
@@ -85,10 +80,10 @@ class TestOscilloscope(unittest.TestCase):
     def test_horizontal_offset(self):
         print(colored("running horizontal offset test", 'cyan'))
         offset_seconds = random.uniform(-1, 1)
-        in_range = self.osc.set_horizontal_offset_sec(offset=offset_seconds)
+        in_range = self.osc.set_horizontal_offset_sec(offset_s=offset_seconds)
         if in_range:
             self.assertAlmostEqual(self.osc.get_horizontal_offset_sec(), offset_seconds, 1)
-        self.assertAlmostEqual(self.osc.offset_s, offset_seconds, 1)
+            self.assertAlmostEqual(self.osc.offset_s, offset_seconds, 1)
 
     def test_vertical_scale(self):
         print(colored("running vertical scale test", 'cyan'))
@@ -114,16 +109,10 @@ class TestOscilloscope(unittest.TestCase):
     def test_set_timebase(self):
         print(colored("running autoset timebase test", 'cyan'))
         self.osc.autoset_oscilloscope_timebase()
-        self.assertAlmostEqual(self.osc.max_time_of_flight,
-                               self.osc.config['Oscilloscope_timebase']["time_window_maximum"], 1)
-        self.assertAlmostEqual(self.osc.min_time_of_flight,
-                               self.osc.config['Oscilloscope_timebase']["time_window_minimum"], 1)
         self.assertAlmostEqual(self.osc.range_s,
-                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6, 1)
-        self.assertAlmostEqual(self.osc.time_of_flight_window,
-                               (self.osc.max_time_of_flight - self.osc.min_time_of_flight) / 1000000, 1)
+                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8 , 1)
         self.assertAlmostEqual(self.osc.offset_s,
-                               self.osc.min_time_of_flight / 1000000 + self.osc.time_of_flight_window / 2, 1)
+                               self.osc.config['Oscilloscope_timebase']["Time offset (us)"]* 10 ** -6, 1)
         self.osc.set_horizontal_range_sec(self.osc.range_s)
         self.osc.set_horizontal_offset_sec(self.osc.offset_s)
         self.assertAlmostEqual(self.osc.get_horizontal_range_sec(), self.osc.range_s, 1)

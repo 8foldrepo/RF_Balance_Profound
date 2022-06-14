@@ -1,7 +1,6 @@
-from typing import List
-
+from typing import List, Union
 from PyQt5.QtCore import pyqtSignal, QObject
-
+from Utilities.useful_methods import mean_of_non_none_values
 from data_structures.variable_containers import FrequencyRange
 
 
@@ -154,14 +153,9 @@ class TestData(QObject):
             # LF efficiency (%)
         self.show_results_summary.emit(self.results_summary)
 
-    def calculate_angle_average(self):
-        angle_sum = 0
-        count = 0
-        for i in range(10):
-            angle_sum = angle_sum + float(self.results_summary[i][2])
-            count = count + 1
-
-        self.angle_average = angle_sum / count
+    def calculate_angle_average(self, measured_element_r_coords: List[Union[float, None]]):
+        """Calculates the average of all measured element theta positions from find element"""
+        self.angle_average = mean_of_non_none_values(measured_element_r_coords)
         self.results_summary[10][2] = str(self.angle_average)
 
         # update UI representation

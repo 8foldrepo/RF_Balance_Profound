@@ -540,9 +540,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         open_result_file_action.triggered.connect(self.load_results)
         file_menu.addAction(open_result_file_action)
 
-        print_action = QAction(
-            QIcon(os.path.join("images", "printer.png")), "Print notes", self
-        )
+        print_action = QAction(QIcon(os.path.join("images", "printer.png")), "Print notes", self)
         print_action.setStatusTip("Print current page")
         print_action.triggered.connect(self.file_print)
         file_menu.addAction(print_action)

@@ -6,6 +6,7 @@ import sys
 import time as t
 import traceback
 from collections import OrderedDict
+from statistics import mean
 from typing import List, Tuple, Union
 import numpy as np
 import pyvisa
@@ -26,9 +27,11 @@ from Hardware.galil_motor_controller import GalilMotorController
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
-from Utilities.useful_methods import log_msg, get_element_distances, generate_calibration_data, find_int
+from Utilities.test_data_helper_methods import generate_calibration_data
+from Utilities.useful_methods import log_msg, get_element_distances, find_int
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
+
 from data_structures.variable_containers import FileMetadata, SerialNumbers, WaterLevel, FrequencyRange
 from definitions import ROOT_DIR
 
@@ -121,9 +124,10 @@ class Manager(QThread):
     # versa 
     set_abort_buttons_enabled_signal = QtCore.pyqtSignal(bool)
 
-    Motors = None
-
-    # Global variables section
+    assumed_element_x_coords: List[float]
+    assumed_element_r_coords: List[float]
+    measured_element_x_coords: List[Union[float, None]]
+    measured_element_r_coords: List[Union[float, None]]
 
     def __init__(self, system_info, parent, config: dict, access_level='Operator'):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
@@ -172,7 +176,7 @@ class Manager(QThread):
         # fill in default theta home coordinates
         for _ in range(10):
             self.assumed_element_r_coords.append(self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
-        self.measured_element_r_coords = list(self.assumed_element_r_coords)
+        self.measured_element_r_coords = [None] * 11
 
         # Used to prevent other threads from accessing the motor class
         self.motor_control_lock = QMutex()
@@ -1145,7 +1149,7 @@ class Manager(QThread):
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
-                self.IO_Board.fill_tank()  # if user clicked continue, send the fill tank command
+                self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
             elif water_level == WaterLevel.above_level:  # if the water level is above level
                 # launch the dialog box signifying this issue
                 self.user_prompt_signal_water_too_high_signal.emit()
@@ -1153,7 +1157,7 @@ class Manager(QThread):
                 if not cont:
                     return False
 
-                self.IO_Board.drain_tank_to_level()
+                self.IO_Board.bring_tank_to_level()
             else:
                 # log successful water level test if we've reached this point in the code
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
@@ -1226,6 +1230,8 @@ class Manager(QThread):
         max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
+        autoset_timebase = var_dict["Autoset Timebase"]
+
         frequency_mhz = float(var_dict["Frequency (MHz)"])
         amplitude_mVpp = float(var_dict["Amplitude (mV)"])
         burst_count = int(float(var_dict["Burst count"]))
@@ -1277,7 +1283,8 @@ class Manager(QThread):
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
-        self.autoset_timebase()
+        if autoset_timebase:
+            self.autoset_timebase()
 
         self.Motors.go_to_position(['R'], [-180], enable_ui=False)
 
@@ -1306,8 +1313,10 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
 
-        if abs(self.measured_element_r_coords[self.element] + 90) > max_angle_variation_degrees:
-            self.log(level='warning', message=f'Maximum theta coordinate of {self.measured_element_r_coords[self.element]} '
+        if self.element <= 1 or abs(self.measured_element_r_coords[self.element] -
+                                    mean(self.measured_element_r_coords[1:self.element])) > max_angle_variation_degrees:
+            self.log(level='warning', message=f'Maximum theta coordinate of '
+                                              f'{"%.2f" % self.measured_element_r_coords[self.element]} '
                                               f'deviates from -90 more than the allowed maximum of '
                                               f'{max_angle_variation_degrees}')
         return True
@@ -1394,7 +1403,7 @@ class Manager(QThread):
                     if not cont:
                         return False
 
-                if 'entire waveform'.upper() in data_storage.upper():
+                if 'entire waveform'.upper() in data_storage.upper() or 'all'.upper() in data_storage.upper():
                     self.__save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
                                                     voltages_v=voltages_v, storage_location=storage_location,
                                                     filename_stub=filename_stub, x_units_str='Time (s)',
@@ -1425,7 +1434,7 @@ class Manager(QThread):
                 max_position += 90
                 self.measured_element_r_coords[self.element] = max_position
                 # Refresh the angle average in self.test_data
-                self.test_data.calculate_angle_average()
+                self.test_data.calculate_angle_average(self.measured_element_r_coords)
 
         self.test_data.set_max_position(axis, self.element, max_position)
 
@@ -1564,7 +1573,7 @@ class Manager(QThread):
             self.log("'Software_Version' value not found in config file, defaulting to version 1.0")
             self.test_data.software_version = "1.0"
 
-        self.test_data.calculate_angle_average()
+        self.test_data.calculate_angle_average(self.measured_element_r_coords)
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.yes_clicked_variable = False
@@ -1745,8 +1754,8 @@ class Manager(QThread):
         If move type is "Go To", the system will move to specific x and theta coordinates. If the move type is
         "Move to element", the system will move that element's measured x position (or assumed x if it has not been
         measured). The R coordinate will depend on the "Target" key, which can be "RFB", "Down", or "Hydrophone".
-        Down and Hydrophone move Theta to -90 and -180 degrees respectively. RFB moves the theta coordinate to either the
-        measured theta position from find element, or the average of all measured theta positions.
+        Down and Hydrophone move Theta to -90 and -180 degrees respectively. RFB moves the theta coordinate to either
+        the measured theta position from find element, or the average of all measured theta positions.
         (any elements that have not had theta measured will default to -90)
         """
         move_type = var_dict["Move Type"]
@@ -1768,8 +1777,16 @@ class Manager(QThread):
         else:
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
-            element_x_coordinate = self.measured_element_x_coords[self.element]
-            element_r_coordinate = self.measured_element_r_coords[self.element]
+
+            if self.measured_element_x_coords[self.element] is not None:
+                element_x_coordinate = self.measured_element_x_coords[self.element]
+            else:
+                element_x_coordinate = self.assumed_element_x_coords[self.element]
+
+            if self.measured_element_r_coords[self.element] is not None:
+                element_r_coordinate = self.measured_element_r_coords[self.element]
+            else:
+                element_r_coordinate = self.assumed_element_r_coords[self.element]
 
             success = True
             # todo: make sure these names match theirs
@@ -1778,7 +1795,7 @@ class Manager(QThread):
                 success = self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             elif "RFB" in target:
                 if average_angle:
-                    self.test_data.calculate_angle_average()
+                    self.test_data.calculate_angle_average(self.measured_element_r_coords)
                     success = self.Motors.go_to_position(['X', 'R'],
                                                          [element_x_coordinate, self.test_data.angle_average],
                                                          enable_ui=False)
@@ -1959,7 +1976,7 @@ class Manager(QThread):
                     if not cont:
                         return [], [], "", False
 
-                if 'entire waveform'.upper() in data_storage.upper():
+                if 'entire waveform'.upper() in data_storage.upper() or 'all'.upper() in data_storage.upper():
                     self.__save_hydrophone_waveform(axis='', waveform_number=i + 1, times_s=times_s,
                                                     voltages_v=voltages_v, storage_location=storage_location,
                                                     filename_stub="FrequencySweep", x_units_str='Time (s)',
@@ -2369,6 +2386,7 @@ class Manager(QThread):
         """
         # self.test_data.set_blank_values()
         self.enable_ui_signal.emit(False)
+        self.set_abort_buttons_enabled_signal.emit(True)
         self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.file_saver = FileSaver(self.config)
         self.test_data.serial_number = "Unknown"  # todo
@@ -2427,9 +2445,12 @@ class Manager(QThread):
         cont = self.scan_axis(element, axis, pts, increment, ref_pos, data_storage, go_to_peak,
                               data_directory, True, source_channel, acquisition_type, averages, filename_stub)
         if not cont:
+            self.enable_ui_signal.emit(True)
+            self.set_abort_buttons_enabled_signal.emit(False)
             return False
 
         self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)
         return True
 
 

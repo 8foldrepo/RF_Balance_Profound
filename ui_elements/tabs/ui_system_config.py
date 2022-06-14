@@ -1,15 +1,17 @@
 import os
-
+from typing import Union
 import yaml
 from PyQt5.QtCore import pyqtSlot
-
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
 
 class SystemConfig(MyQWidget, Ui_Form):
+    config: Union[dict, None]
+
     def __init__(self, parent=None, config=None):
         super().__init__(parent=parent)
+        self.config = None
         self.setupUi(self)
         self.configure_signals()
 
@@ -47,9 +49,6 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.pass_fail_action.setEnabled(enabled)
         self.interrupt_action.setEnabled(enabled)
         self.dialog_timeout.setEnabled(enabled)
-        # Autoset timebase
-        self.min_time_of_flight.setEnabled(enabled)
-        self.max_time_of_flight.setEnabled(enabled)
         # Frequency parameters
         self.lf_lowlimit.setEnabled(enabled)
         self.lf_highlimit.setEnabled(enabled)
@@ -64,6 +63,9 @@ class SystemConfig(MyQWidget, Ui_Form):
         # Buttons
         # self.show_config_button.setEnabled(enabled)
         self.save_config_button.setEnabled(enabled)
+        # Oscilloscope timebase
+        self.oscilloscope_scale_us.setEnabled(enabled)
+        self.oscilloscope_offset_us.setText(enabled)
 
     def set_manager(self, manager):
         self.manager = manager
@@ -111,11 +113,12 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.config["WTF_DIO"]["Water level timeout (s)"] = self.water_timeout.value()
         self.config["WTF_DIO"]["Fill/Drain mode"] = self.fill_mode.currentText()
 
-        self.config["Oscilloscope_timebase"]["time_window_minimum"] = self.min_time_of_flight.value()
-        self.config["Oscilloscope_timebase"]["time_window_maximum"] = self.max_time_of_flight.value()
-
         self.config["Paths"]["UA results root directory"] = self.ua_results_directory.text()
         self.config["Paths"]["UA Serial numbers file"] = self.ua_serial_numbers_path.text()
+
+        # Oscilloscope timebase
+        self.config["Oscilloscope_timebase"]["Horizontal scale (us)"] = self.oscilloscope_scale_us.value()
+        self.config["Oscilloscope_timebase"]["Time offset (us)"] = self.oscilloscope_offset_us.value()
 
         with open('local.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -155,8 +158,9 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.water_timeout.setValue(self.config["WTF_DIO"]["Water level timeout (s)"])
         self.fill_mode.setCurrentText(self.config["WTF_DIO"]["Fill/Drain mode"])
 
-        self.min_time_of_flight.setValue(self.config["Oscilloscope_timebase"]["time_window_minimum"])
-        self.max_time_of_flight.setValue(self.config["Oscilloscope_timebase"]["time_window_maximum"])
-
         self.ua_results_directory.setText(self.config["Paths"]["UA results root directory"])
         self.ua_serial_numbers_path.setText(self.config["Paths"]["UA Serial numbers file"])
+
+        # Oscilloscope timebase
+        self.oscilloscope_scale_us.setValue(self.config["Oscilloscope_timebase"]["Horizontal scale (us)"])
+        self.oscilloscope_offset_us.setValue(self.config["Oscilloscope_timebase"]["Time offset (us)"])

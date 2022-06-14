@@ -1,1743 +1,1743 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Form</class>
-    <widget class="QWidget" name="Form">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>646</width>
-                <height>649</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
-        </property>
-        <widget class="QPushButton" name="save_config_button">
-            <property name="geometry">
-                <rect>
-                    <x>260</x>
-                    <y>600</y>
-                    <width>201</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>Save</string>
-            </property>
-        </widget>
-        <widget class="QFrame" name="gridFrame_8">
-            <property name="geometry">
-                <rect>
-                    <x>230</x>
-                    <y>40</y>
-                    <width>391</width>
-                    <height>91</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_20">
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_94">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>UA results root directory</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_97">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>UA Serial numbers file</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLineEdit" name="ua_results_directory">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>C:\Users\Isaiah\OneDrive\Documents\UA results</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="0">
-                    <widget class="QLineEdit" name="ua_serial_numbers_path">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="gridFrame_10">
-            <property name="geometry">
-                <rect>
-                    <x>220</x>
-                    <y>150</y>
-                    <width>211</width>
-                    <height>125</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_22">
-                <item row="4" column="1">
-                    <widget class="QComboBox" name="interrupt_action">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <item>
-                            <property name="text">
-                                <string>No dialog (abort)</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Prompt for retry</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Retry automatically</string>
-                            </property>
-                        </item>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_99">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Retries</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_101">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Sequence Pass/fail</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_100">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Pass fail action</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="1">
-                    <widget class="QSpinBox" name="retries">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>0</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="0">
-                    <widget class="QLabel" name="label_102">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Interrupt action</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QComboBox" name="pass_fail_action">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <item>
-                            <property name="text">
-                                <string>No dialog (abort)</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Prompt for retry</string>
-                            </property>
-                        </item>
-                        <item>
-                            <property name="text">
-                                <string>Retry automatically</string>
-                            </property>
-                        </item>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QSpinBox" name="dialog_timeout">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="0">
-                    <widget class="QLabel" name="label_92">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Dialog Timeout (s)</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QPushButton" name="show_config_button">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>600</y>
-                    <width>201</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-            <property name="text">
-                <string>Show Configuration</string>
-            </property>
-        </widget>
-        <widget class="QFrame" name="gridFrame_6">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>190</y>
-                    <width>201</width>
-                    <height>122</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_18">
-                <item row="7" column="1">
-                    <widget class="QComboBox" name="fill_mode">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <item>
-                            <property name="text">
-                                <string>Automatic</string>
-                            </property>
-                        </item>
-                    </widget>
-                </item>
-                <item row="7" column="0">
-                    <widget class="QLabel" name="label_78">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Fill/drain mode</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_81">
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <widget class="QSpinBox" name="water_timeout">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>230</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QLineEdit" name="daq_devicename">
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>WTF3</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_76">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>WTF_DIO config</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="0">
-                    <widget class="QLabel" name="label_75">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Water level timeout (s)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_77">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>DAQ Device Name</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="gridFrame_9">
-            <property name="geometry">
-                <rect>
-                    <x>440</x>
-                    <y>150</y>
-                    <width>181</width>
-                    <height>91</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_21">
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_93">
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_98">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Min time of flight (us)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_95">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Autoset timebase</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="0">
-                    <widget class="QLabel" name="label_96">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Max time of flight (us)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <widget class="QDoubleSpinBox" name="max_time_of_flight">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>50</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-99999999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>9999999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QDoubleSpinBox" name="min_time_of_flight">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>50</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-99999999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>9999999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="gridFrame_4">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>201</width>
-                    <height>141</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_16">
-                <item row="3" column="0">
-                    <widget class="QLabel" name="label_56">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Operator</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_63">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>User Accounts</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QLineEdit" name="admin_pass_field">
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>PMI_Admin</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="0">
-                    <widget class="QLabel" name="label_57">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Account</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="0">
-                    <widget class="QLabel" name="label_60">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Engineer</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="0">
-                    <widget class="QLabel" name="label_61">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Administrator</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QLabel" name="label_62">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Password</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <widget class="QLineEdit" name="engineer_pass_field">
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Engineer</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="1">
-                    <widget class="QLineEdit" name="operator_pass_field">
-                        <property name="enabled">
-                            <bool>true</bool>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Operator</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_64">
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="gridFrame_5">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>340</y>
-                    <width>201</width>
-                    <height>238</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_17">
-                <item row="5" column="0">
-                    <widget class="QLabel" name="label_65">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Theta_HomeCoord</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="9" column="0">
-                    <widget class="QLabel" name="label_69">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>X-Element1</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="7" column="0">
-                    <widget class="QLabel" name="label_68">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>X-TankInsertionPoint</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_71">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-                <item row="10" column="0">
-                    <widget class="QLabel" name="label_70">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>X-Element pitch (mm)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="10" column="1">
-                    <widget class="QSpinBox" name="x_elementpitch">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>5</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="11" column="1">
-                    <widget class="QSpinBox" name="theta_prehomemove">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>2</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="9" column="1">
-                    <widget class="QSpinBox" name="x_element1">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="11" column="0">
-                    <widget class="QLabel" name="label_72">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>ThetaPreHomeMove</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="0">
-                    <widget class="QLabel" name="label_67">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>XHomeCoord</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="1">
-                    <widget class="QSpinBox" name="x_homecoord">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>263</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="7" column="1">
-                    <widget class="QSpinBox" name="x_insertionpoint">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>108</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QSpinBox" name="theta_homecoord">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>-90</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="12" column="1">
-                    <widget class="QCheckBox" name="thetaloadenc">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_66">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>WTF_PositionParameters</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="12" column="0">
-                    <widget class="QLabel" name="label_73">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>ThetaLoadEnc?</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="13" column="0">
-                    <widget class="QLabel" name="label_74">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>CentreHomeTheta?</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="13" column="1">
-                    <widget class="QCheckBox" name="centerhometheta">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string/>
-                        </property>
-                        <property name="checked">
-                            <bool>true</bool>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QFrame" name="gridFrame_7">
-            <property name="geometry">
-                <rect>
-                    <x>220</x>
-                    <y>290</y>
-                    <width>201</width>
-                    <height>301</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_19">
-                <item row="11" column="0">
-                    <widget class="QLabel" name="label_85">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>HF.LowFreqLimit(MHz)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="9" column="1">
-                    <widget class="QSpinBox" name="lf_burstcount">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="0">
-                    <widget class="QLabel" name="label_86">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>LF.LowFreqLimit(MHz)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="0" colspan="2">
-                    <widget class="QLabel" name="label_87">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>50</weight>
-                                <bold>false</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>FrequencyParameters</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="13" column="0">
-                    <widget class="QLabel" name="label_89">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>HF.Amplitude(mVpp)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="12" column="0">
-                    <widget class="QLabel" name="label_88">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>HF.HighFreqLimit(MHz)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="16" column="0">
-                    <widget class="QLabel" name="label_91">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Search.FineIncr(MHz)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="14" column="1">
-                    <widget class="QSpinBox" name="hf_burstcount">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <number>-999999999</number>
-                        </property>
-                        <property name="maximum">
-                            <number>999999999</number>
-                        </property>
-                        <property name="value">
-                            <number>2</number>
-                        </property>
-                    </widget>
-                </item>
-                <item row="14" column="0">
-                    <widget class="QLabel" name="label_90">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>HF.BurstCount</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="0">
-                    <widget class="QLabel" name="label_79">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>LF.HighFreqLimit(MHz)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label_83">
-                        <property name="maximumSize">
-                            <size>
-                                <width>16777215</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string/>
-                        </property>
-                    </widget>
-                </item>
-                <item row="7" column="0">
-                    <widget class="QLabel" name="label_82">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>LF.Amplitude(mVpp)</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="9" column="0">
-                    <widget class="QLabel" name="label_80">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>LF.BurstCount</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="15" column="0">
-                    <widget class="QLabel" name="label_84">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>15</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Search.CoarseIncr</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="15" column="1">
-                    <widget class="QDoubleSpinBox" name="search_coarseincr">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="singleStep">
-                            <double>0.100000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="16" column="1">
-                    <widget class="QDoubleSpinBox" name="search_fineincr">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="singleStep">
-                            <double>0.010000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="12" column="1">
-                    <widget class="QDoubleSpinBox" name="hf_highlimit">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="11" column="1">
-                    <widget class="QDoubleSpinBox" name="hf_lowlimit">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="13" column="1">
-                    <widget class="QDoubleSpinBox" name="hf_amplitude">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="1">
-                    <widget class="QDoubleSpinBox" name="lf_lowlimit">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QDoubleSpinBox" name="lf_highlimit">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-                <item row="7" column="1">
-                    <widget class="QDoubleSpinBox" name="lf_amplitude">
-                        <property name="minimumSize">
-                            <size>
-                                <width>0</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                        <property name="maximumSize">
-                            <size>
-                                <width>60</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>7</pointsize>
-                            </font>
-                        </property>
-                        <property name="minimum">
-                            <double>-9999999999.000000000000000</double>
-                        </property>
-                        <property name="maximum">
-                            <double>999999999.000000000000000</double>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QWidget" name="sys_config_tooltip" native="true">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>644</width>
-                    <height>40</height>
-                </rect>
-            </property>
-            <property name="toolTip">
-                <string>In this tab, you may see and set several parameters that are stored in the configuration
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>646</width>
+    <height>649</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="save_config_button">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>600</y>
+     <width>201</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="gridFrame_8">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>40</y>
+     <width>391</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_20">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_94">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>UA results root directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_97">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>UA Serial numbers file</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="ua_results_directory">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>C:\Users\Isaiah\OneDrive\Documents\UA results</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLineEdit" name="ua_serial_numbers_path">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>C:\Users\Isaiah\OneDrive\Documents\UA Serial Numbers\Serial numbers.txt</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrame_10">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>150</y>
+     <width>211</width>
+     <height>125</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_22">
+    <item row="4" column="1">
+     <widget class="QComboBox" name="interrupt_action">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>No dialog (abort)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Prompt for retry</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Retry automatically</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_99">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Retries</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_101">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Sequence Pass/fail</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_100">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Pass fail action</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSpinBox" name="retries">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_102">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Interrupt action</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="pass_fail_action">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>No dialog (abort)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Prompt for retry</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Retry automatically</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QSpinBox" name="dialog_timeout">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_92">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Dialog Timeout (s)</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="show_config_button">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>600</y>
+     <width>201</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Show Configuration</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="gridFrame_6">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>201</width>
+     <height>122</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_18">
+    <item row="7" column="1">
+     <widget class="QComboBox" name="fill_mode">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>Automatic</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_78">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Fill/drain mode</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_81">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QSpinBox" name="water_timeout">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>230</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="daq_devicename">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>WTF3</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_76">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>WTF_DIO config</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_75">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Water level timeout (s)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_77">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>DAQ Device Name</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrame_9">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>150</y>
+     <width>181</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_21">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_93">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="oscilloscope_scale_us_label">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Scale (us/div)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_95">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Oscilloscope timebase</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="oscilloscope_offset_us">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Offset (us)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QDoubleSpinBox" name="oscilloscope_offset_us_2">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-99999999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>9999999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QDoubleSpinBox" name="oscilloscope_scale_us">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-99999999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>9999999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrame_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>201</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_16">
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_56">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Operator</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_63">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>User Accounts</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="admin_pass_field">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PMI_Admin</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_57">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Account</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_60">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Engineer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_61">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Administrator</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label_62">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Password</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="engineer_pass_field">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Engineer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="operator_pass_field">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Operator</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_64">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrame_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>340</y>
+     <width>201</width>
+     <height>238</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_17">
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_65">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Theta_HomeCoord</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_69">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>X-Element1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_68">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>X-TankInsertionPoint</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_71">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_70">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>X-Element pitch (mm)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QSpinBox" name="x_elementpitch">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>5</number>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="1">
+     <widget class="QSpinBox" name="theta_prehomemove">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>2</number>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QSpinBox" name="x_element1">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0">
+     <widget class="QLabel" name="label_72">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>ThetaPreHomeMove</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_67">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>XHomeCoord</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="x_homecoord">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>263</number>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QSpinBox" name="x_insertionpoint">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>108</number>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QSpinBox" name="theta_homecoord">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>-90</number>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <widget class="QCheckBox" name="thetaloadenc">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_66">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>WTF_PositionParameters</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="label_73">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>ThetaLoadEnc?</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="0">
+     <widget class="QLabel" name="label_74">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>CentreHomeTheta?</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1">
+     <widget class="QCheckBox" name="centerhometheta">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="gridFrame_7">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>290</y>
+     <width>201</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_19">
+    <item row="11" column="0">
+     <widget class="QLabel" name="label_85">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>HF.LowFreqLimit(MHz)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QSpinBox" name="lf_burstcount">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_86">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>LF.LowFreqLimit(MHz)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_87">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>FrequencyParameters</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="0">
+     <widget class="QLabel" name="label_89">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>HF.Amplitude(mVpp)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="label_88">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>HF.HighFreqLimit(MHz)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="0">
+     <widget class="QLabel" name="label_91">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Search.FineIncr(MHz)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="1">
+     <widget class="QSpinBox" name="hf_burstcount">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <number>-999999999</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="value">
+       <number>2</number>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="0">
+     <widget class="QLabel" name="label_90">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>HF.BurstCount</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_79">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>LF.HighFreqLimit(MHz)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_83">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_82">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>LF.Amplitude(mVpp)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_80">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>LF.BurstCount</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="0">
+     <widget class="QLabel" name="label_84">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Search.CoarseIncr</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="1">
+     <widget class="QDoubleSpinBox" name="search_coarseincr">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="1">
+     <widget class="QDoubleSpinBox" name="search_fineincr">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="singleStep">
+       <double>0.010000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <widget class="QDoubleSpinBox" name="hf_highlimit">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="1">
+     <widget class="QDoubleSpinBox" name="hf_lowlimit">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1">
+     <widget class="QDoubleSpinBox" name="hf_amplitude">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDoubleSpinBox" name="lf_lowlimit">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QDoubleSpinBox" name="lf_highlimit">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QDoubleSpinBox" name="lf_amplitude">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>7</pointsize>
+       </font>
+      </property>
+      <property name="minimum">
+       <double>-9999999999.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="sys_config_tooltip" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>644</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>In this tab, you may see and set several parameters that are stored in the configuration
                     (default/local.yaml) for the application
                 </string>
-            </property>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

@@ -1,6 +1,4 @@
-from PyQt5 import Qt
 from PyQt5.QtCore import pyqtSignal
-
 from Widget_Library import wtf_user_prompt
 from ui_elements.Dialogs.my_qdialog import MyQDialog
 

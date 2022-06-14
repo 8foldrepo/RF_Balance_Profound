@@ -6,7 +6,8 @@ from statistics import mean
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
-from Utilities.useful_methods import log_msg, check_directory, create_test_results_summary_file
+from Utilities.test_data_helper_methods import create_test_results_summary_file
+from Utilities.useful_methods import log_msg, check_directory
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 from data_structures.variable_containers import FileMetadata, FrequencyRange

@@ -68,6 +68,12 @@ class DIOBoard(AbstractIOBoard):
                 return None
 
     def activate_relay_channel(self, channel_number: int) -> bool:
+        """
+        Activates the specified channel number of the RF switcher in the power module box.
+        This creates continuity between the RF power amp and the selected channel on the UA interface box,
+        providing power to said element if the AWG is on.
+        Breaks continuity for all other channels.
+        """
         with nidaqmx.Task() as task:
             try:
                 task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
@@ -76,6 +82,7 @@ class DIOBoard(AbstractIOBoard):
                 if 0 < channel_number < 11:
                     pin_ray[channel_number - 1] = True
                 task.write(pin_ray, auto_start=True)
+                self.active_channel = channel_number
                 return True
             except nidaqmx.errors.DaqError as e:
                 if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
@@ -87,34 +94,11 @@ class DIOBoard(AbstractIOBoard):
                 return False
 
     def get_active_relay_channel(self) -> int:
+        """Returns the number of the last relay channel that was activated. Returns zero if no channel is active"""
         return self.active_channel
 
-    def fill_tank(self):
-        water_level = self.get_water_level()
-
-        if water_level == WaterLevel.above_level:
-            self.log("Tank is already full")
-            return True
-        if water_level == WaterLevel.below_level or WaterLevel.level:
-            self.log("Filling tank, please wait...")
-            self.set_tank_pump_on(on=True, clockwise=True)
-            self.filling_signal.emit()
-
-            start_time = t.time()
-            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
-                elapsed_time_s = t.time() - start_time
-                # If we are simulating hardware wait 10 seconds and then change the simulated water level
-                if self.simulate_sensors:
-                    if elapsed_time_s >= 10:
-                        self.water_level = WaterLevel.level
-                        self.water_level_reading_signal.emit(self.water_level)
-
-                if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
-                    self.log("Tank full")
-                    return True
-        return False
-
     def drain_tank(self):
+        """Drains the tank until it is below the active range of the water level sensor"""
         water_level = self.get_water_level()
 
         if water_level == WaterLevel.below_level:
@@ -142,7 +126,8 @@ class DIOBoard(AbstractIOBoard):
                     return True
         return False
 
-    def drain_tank_to_level(self):
+    def bring_tank_to_level(self):
+        """Drains or fills the tank until it is within the active range of the water level sensor"""
         water_level = self.get_water_level()
 
         if water_level == WaterLevel.level:
@@ -174,10 +159,7 @@ class DIOBoard(AbstractIOBoard):
             self.filling_signal.emit()
             start_time = t.time()
 
-            while (
-                    t.time() - start_time
-                    < self.config[self.device_key]["Water level timeout (s)"]
-            ):
+            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -237,7 +219,7 @@ class DIOBoard(AbstractIOBoard):
             # task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  #
             # P1.2
             task.di_channels.add_di_chan(f"{self.name}/port1/line5:5", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.5
-            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P2.2
+            task.di_channels.add_di_chan(f"{self.name}/port1/line2:2", line_grouping=LineGrouping.CHAN_PER_LINE)  # P1.2
 
             list_of_values = task.read()
 
@@ -254,6 +236,8 @@ class DIOBoard(AbstractIOBoard):
             self.water_level_reading_signal.emit(level)
             return level
 
+    def wrap_up(self):
+        self.disconnect_hardware()
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)

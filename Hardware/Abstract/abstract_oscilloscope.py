@@ -13,8 +13,6 @@ class AbstractOscilloscope(AbstractDevice):
 
     def __init__(self, device_key="Keysight_Oscilloscope", config=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
-        self.min_time_of_flight: float = float('nan')
-        self.max_time_of_flight: float = float('nan')
 
     @abstractmethod
     def reset(self) -> None:
@@ -25,7 +23,7 @@ class AbstractOscilloscope(AbstractDevice):
     def set_to_defaults(self) -> None:
         """
         Sets the oscilloscope's window values to default values specified in the inherited class. Other values
-        such as the average counts, time of flight, external trigger, and timeout are also set
+        such as the average counts, time axis, external trigger, and timeout are also set
         """
         ...
 
