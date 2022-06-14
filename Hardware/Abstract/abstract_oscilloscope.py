@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from typing import Tuple, List
-
 from Hardware.Abstract.abstract_device import AbstractDevice
 
 

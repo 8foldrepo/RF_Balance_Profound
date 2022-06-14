@@ -121,7 +121,7 @@ class Manager(QThread):
 
     # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice 
     # versa 
-    button_enable_toggle_for_scripting = QtCore.pyqtSignal(bool)
+    set_abort_buttons_enabled_signal = QtCore.pyqtSignal(bool)
 
     Motors = None
 
@@ -204,7 +204,8 @@ class Manager(QThread):
 
         # Tracks whether a script is being executed
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons/fields
         self.was_scripting = False
 
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
@@ -319,7 +320,7 @@ class Manager(QThread):
             device = self.devices[i]
             connected, feedback = device.connect_hardware()
             if not connected:
-                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", False)
+                self.user_prompt_signal.emit(f"{device.device_key} Could not connect\n\n{feedback}", True)
                 try:
                     self.wait_for_cont()
                 except RetryException:
@@ -411,7 +412,7 @@ class Manager(QThread):
             else:  # What to do when there is no command
                 # If a script has just ended, show script_complete dialog
                 if self.currently_scripting:
-                    self.button_enable_toggle_for_scripting.emit(False)  # disable buttons/fields
+                    self.set_abort_buttons_enabled_signal.emit(True)  # enable abort buttons
                     if self.task_names is None:
                         self.abort_after_step()
                         self.enable_ui_signal.emit(True)
@@ -422,7 +423,8 @@ class Manager(QThread):
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
-                self.button_enable_toggle_for_scripting.emit(True)  # enabled fields/buttons
+                self.enable_ui_signal.emit(True)
+                self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
                 if self.task_names is not None:
                     finished = self.step_index == len(self.task_names) - 1
                 else:
@@ -445,7 +447,8 @@ class Manager(QThread):
         self.abort_immediately(log=False)
         log_msg(self, root_logger, level="info", message="Running script")
         self.currently_scripting = True
-        self.button_enable_toggle_for_scripting.emit(False)  # disables main window fields/buttons during test
+        self.enable_ui_signal.emit(False)
+        self.set_abort_buttons_enabled_signal.emit(True)  # enables main window abort buttons during test
         self.was_scripting = True
         self.abort_immediately_variable = False
 
@@ -616,7 +619,7 @@ class Manager(QThread):
                     # retrieve the second word of the left side, that's the element name
                     element_name = element_name_to_split[1]
                     if value.upper() == 'TRUE':  # if the second value equals "True"
-                        element_names_for_loop.append(int(element_name))  # add element to the loop 
+                        element_names_for_loop.append(int(element_name))  # add element to the loop
 
                 if "End loop" in value:
                     building_loop = False
@@ -712,8 +715,8 @@ class Manager(QThread):
 
             if self.step_index > len(self.task_names):  # if scripting is done
                 self.currently_scripting = False
-                self.button_enable_toggle_for_scripting.emit(True)  # re-enable various buttons in main window
-                return
+                self.set_abort_buttons_enabled_signal.emit(False)  # Disable abort buttons in main window
+                return  # exit this method
 
             # below: if a script with valid, non-empty contents has been loaded, and we're in the middle of script
             # advancement
@@ -739,7 +742,7 @@ class Manager(QThread):
 
             if not self.currently_scripting:
                 self.enable_ui_signal.emit(True)  # toggle appropriate buttons in main window and its tabs
-                self.button_enable_toggle_for_scripting.emit(True)  # same as above
+                self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
 
         # Catch all errors while advancing the script and handle them by showing the user a dialog with the traceback
         except Exception:
@@ -801,13 +804,10 @@ class Manager(QThread):
         elif 'FREQUENCY SWEEP' in task_name.upper():
             self.frequency_sweep(task_arguments)
         else:  # if the task name is invalid
-
             self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")
             self.critical_error_flag = True
-
             # string to be shown in the script_complete method
             self.error_message = f"{task_name} is not a valid task task_name in the script"  # sets the error message
-
             self.abort_immediately()
 
         self.task_index_signal.emit(self.step_index + 1)  # inform main window step is done
@@ -818,7 +818,7 @@ class Manager(QThread):
         #     [self.step_index][1]} from loop {self.loops[self.taskExecOrder[self.step_index][2]]}")
 
     @pyqtSlot()
-    def abort_after_step(self, log: bool = True) -> None:
+    def abort_after_step(self, log:bool = True) -> None:
         """
         Aborts script when current step is done running
 
@@ -831,7 +831,8 @@ class Manager(QThread):
             self.log(level='warning', message="Aborting script after step")
         # Reset script control variables
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # turn on fields/buttons in main window
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
         self.step_index = -1  # reset the step index variable
         self.abort_immediately_variable = False
         self.task_number_signal.emit(0)  # tell the main window we're in the 0th task number/index
@@ -845,14 +846,13 @@ class Manager(QThread):
 
         :param log: Whether to signify an abort immediately event took place in the console
         """
-
-        if log:
-            self.log(level='warning', message="Aborting script")
-
+        if log:  # if the log parameter equals true
+            self.log(level='warning', message="Aborting script")  # inform user script is being immediately aborted in verbose
         # Reset script control variables
         self.Motors.stop_motion()
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # enable buttons/fields for no scripting
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons for no scripting
         self.step_index = -1  # reset step index variable
         self.abort_immediately_variable = True
         self.task_number_signal.emit(0)  # tell main window we're on the 0th task number & step index
@@ -1009,7 +1009,8 @@ class Manager(QThread):
         # same mechanism will work
         self.error_message = ""
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # not scripting, turn on buttons/fields
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # not scripting, disable abort buttons
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
@@ -1114,6 +1115,7 @@ class Manager(QThread):
         cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
         if not cont:  # if the user did not click continue
             return False  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
+
         self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])  # at this point, the prompt ran successfully
 
         if self.file_saver.directories_created:  # check if the saving directories were successfully created
@@ -1157,8 +1159,8 @@ class Manager(QThread):
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
                 break
 
-    @pyqtSlot(TestData)
-    def begin_script_slot(self, test_data: TestData):
+    @pyqtSlot(TestData, bool)
+    def test_metadata_slot(self, test_data: TestData, run_script):
         """Receive test metadata from the MainWindow, and begin a script."""
 
         # reset test data to default values
@@ -1182,7 +1184,9 @@ class Manager(QThread):
             self.user_prompt_signal.emit("Access to the results folder is denied, change it in local.yaml."
                                          "Copy default.yaml if local.yaml does not exist.", False)
             return self.abort_after_step()
-        self.run_script()
+
+        if run_script:
+            self.run_script()
 
     def element_str_to_int(self, element_str):
         """Looks for an integer in the string, otherwise returns the current element"""
@@ -1277,27 +1281,24 @@ class Manager(QThread):
 
         self.Motors.go_to_position(['R'], [-180], enable_ui=False)
 
-        if element_position_test:
-            cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
-                                  ref_position=element_x_coordinate,
-                                  go_to_peak=True, data_storage=data_storage, update_element_position=True,
-                                  acquisition_type=acquisition_type,
-                                  averages=averages, storage_location=storage_location)
-            if not cont:
-                return False
+        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
+                              ref_position=element_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=element_position_test,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            return False
 
         self.home_system({'Axis to home': 'Theta'})
 
-        if beam_angle_test:
-            cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
-                                  increment=theta_increment_degrees,
-                                  ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                                  go_to_peak=False, update_element_position=True, data_storage=data_storage,
-                                  acquisition_type=acquisition_type,
-                                  averages=averages, storage_location=storage_location)
-
-            if not cont:
-                return False
+        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
+                              increment=theta_increment_degrees,
+                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                              go_to_peak=False, update_element_position=beam_angle_test, data_storage=data_storage,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            return False
 
         self.home_system({"Axis to home": "Theta"})
 
@@ -1348,7 +1349,8 @@ class Manager(QThread):
             axis_letter = 'R'
         else:
             self.user_prompt_signal.emit("Invalid axis parameter, aborting", False)
-            return self.abort_after_step()
+            self.abort_after_step()
+            return False
         if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
             pos_units_str = "deg"
             axis_label = "Angle (deg)"
@@ -2173,7 +2175,8 @@ class Manager(QThread):
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             # inform the user of this issue
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
-            return self.abort_after_step()
+            self.abort_after_step()
+            return False
 
         self.retry_clicked_variable = False  # needed in case we encounter a retry possibility again
 
