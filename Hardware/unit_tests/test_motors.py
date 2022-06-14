@@ -3,17 +3,19 @@ import time as t
 import unittest
 
 from Hardware.galil_motor_controller import GalilMotorController
+from Utilities.load_config import load_configuration
 
 
 class TestMotors(unittest.TestCase):
     """
-    Warning, if connected to motors this program will move the motors around randomly.
+    Warning, if connected to the motors this program will move the motors around randomly.
     Tests all core functionality of the motion controller
     """
 
-    def setUp(self):
+    def setUpClass(self):
         self.Motors = GalilMotorController(config=None, lock=None)
         self.Motors.connect_hardware()
+        self.config = load_configuration()
 
     def test_connected(self):
         self.assertTrue(self.Motors.connected)
