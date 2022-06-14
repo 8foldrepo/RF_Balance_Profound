@@ -13,7 +13,8 @@ from data_structures.rfb_data import RFBData
 
 
 class RFBDataLogger(QThread):
-    # Trigger a capture from all sensors at once
+    # INFO: Trigger a capture from all sensors at once
+    # needed for communication with the three power meters in parallel and being synchronized
     trigger_capture_signal = QtCore.pyqtSignal()
 
     Balance: AbstractBalance
@@ -25,7 +26,7 @@ class RFBDataLogger(QThread):
     def __init__(self, rfb_data, balance: AbstractBalance, forward_power_meter: AbstractSensor,
                  reflected_power_meter: AbstractSensor, config, parent=None):
         super().__init__(parent=parent)
-        self.stay_alive = None
+        self.stay_alive = None  # initialize stay alive variable
         self.app = QApplication.instance()
         self.config = config
         # Encapsulates all data relevant to the RFB efficiency test Polled by the manager and shared with the
