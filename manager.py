@@ -713,7 +713,7 @@ class Manager(QThread):
             # run the next script step
 
             if self.step_index > len(self.task_names):  # if scripting is done
-                self.currently_scripting = False  # set the currently scripting flag to false
+                self.currently_scripting = False
                 self.set_abort_buttons_enabled_signal.emit(False)  # Disable abort buttons in main window
                 return  # exit this method
 
@@ -766,9 +766,9 @@ class Manager(QThread):
         task_name = self.task_names[self.step_index]
         task_arguments = self.task_arguments[self.step_index]
 
-        # send the task number to the main window
+        # send task number & index to the main window
         self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
-        self.task_index_signal.emit(self.step_index)  # as well as the step index
+        self.task_index_signal.emit(self.step_index)
 
         # if the element in the self.taskExecOrder isn't None
         if self.task_execution_order[self.step_index][1] is not None:
@@ -829,7 +829,7 @@ class Manager(QThread):
         if log:
             self.log(level='warning', message="Aborting script after step")
         # Reset script control variables
-        self.currently_scripting = False  # we are no longer scripting
+        self.currently_scripting = False
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
         self.step_index = -1  # reset the step index variable
@@ -850,7 +850,7 @@ class Manager(QThread):
             self.log(level='warning', message="Aborting script")
         # Reset script control variables
         self.Motors.stop_motion()
-        self.currently_scripting = False  # we are no longer scripting
+        self.currently_scripting = False
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons for no scripting
         self.step_index = -1  # reset step index variable
