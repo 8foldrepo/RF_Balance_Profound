@@ -274,10 +274,10 @@ class Position(MyQWidget, Ui_Form):
 
         if self.manager is not None:
             if is_number(self.go_element_combo.currentText()):
-                target_position = self.manager.element_x_coordinates[int(self.go_element_combo.currentText())]
+                target_position = self.manager.assumed_element_x_coords[int(self.go_element_combo.currentText())]
                 self.go_to_signal.emit(["X"], [target_position])
             else:
-                target_position = self.manager.element_x_coordinates[self.manager.element]
+                target_position = self.manager.assumed_element_x_coords[self.manager.element]
                 self.go_to_signal.emit(["X"], [target_position])
         else:
             if is_number(self.go_element_combo.currentText()):

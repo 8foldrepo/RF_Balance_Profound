@@ -27,8 +27,8 @@ class MyTestCase(unittest.TestCase):
 
         element = randrange(1, 10)
 
-        self.manager.element_r_coordinates[element] = 0
-        self.manager.element_x_coordinates[element] = 0
+        self.manager.assumed_element_r_coords[element] = 0
+        self.manager.assumed_element_x_coords[element] = 0
 
         axis = choice(self.manager.Motors.ax_letters)
         self.manager.scan_axis(element=element, axis=axis, num_points=randrange(2, 10), increment=uniform(.04, 2),
@@ -36,9 +36,9 @@ class MyTestCase(unittest.TestCase):
                                storage_location='', update_element_position=True)
 
         if axis == 'R':
-            self.assertNotEqual(self.manager.element_r_coordinates[element], 0)
+            self.assertNotEqual(self.manager.assumed_element_r_coords[element], 0)
         elif axis == 'X':
-            self.assertNotEqual(self.manager.element_x_coordinates[element], 0)
+            self.assertNotEqual(self.manager.assumed_element_x_coords[element], 0)
 
     def test_save_log_and_results_summary(self):
         from os.path import exists

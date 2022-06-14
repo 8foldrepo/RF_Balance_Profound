@@ -1,585 +1,603 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Form</class>
-    <widget class="QWidget" name="Form">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>537</width>
-                <height>480</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
-        </property>
-        <widget class="QLabel" name="label">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>10</y>
-                    <width>85</width>
-                    <height>13</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Frequency sweep</string>
-            </property>
-        </widget>
-        <widget class="QFrame" name="freq_sweep_frame">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>331</width>
-                    <height>421</height>
-                </rect>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">background:rgb(220, 242, 255)</string>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-            </property>
-            <widget class="QFrame" name="peak_vsi_thresh_frame">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>350</y>
-                        <width>225</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <property name="frameShape">
-                    <enum>QFrame::Box</enum>
-                </property>
-                <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                </property>
-                <widget class="QCheckBox" name="incl_test_check">
-                    <property name="geometry">
-                        <rect>
-                            <x>150</x>
-                            <y>34</y>
-                            <width>66</width>
-                            <height>13</height>
-                        </rect>
-                    </property>
-                    <property name="text">
-                        <string/>
-                    </property>
-                </widget>
-                <widget class="QSpinBox" name="peak_vsi_spinbox">
-                    <property name="geometry">
-                        <rect>
-                            <x>10</x>
-                            <y>29</y>
-                            <width>60</width>
-                            <height>18</height>
-                        </rect>
-                    </property>
-                    <property name="maximumSize">
-                        <size>
-                            <width>60</width>
-                            <height>16777215</height>
-                        </size>
-                    </property>
-                    <property name="styleSheet">
-                        <string notr="true">background:white</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" name="label_15">
-                    <property name="geometry">
-                        <rect>
-                            <x>10</x>
-                            <y>10</y>
-                            <width>90</width>
-                            <height>13</height>
-                        </rect>
-                    </property>
-                    <property name="text">
-                        <string>Peak VSI threshold</string>
-                    </property>
-                </widget>
-                <widget class="QLabel" name="label_16">
-                    <property name="geometry">
-                        <rect>
-                            <x>150</x>
-                            <y>10</y>
-                            <width>66</width>
-                            <height>18</height>
-                        </rect>
-                    </property>
-                    <property name="text">
-                        <string>Include test</string>
-                    </property>
-                </widget>
-            </widget>
-            <widget class="QPushButton" name="data_direc_button">
-                <property name="geometry">
-                    <rect>
-                        <x>280</x>
-                        <y>320</y>
-                        <width>30</width>
-                        <height>21</height>
-                    </rect>
-                </property>
-                <property name="styleSheet">
-                    <string notr="true">background:white</string>
-                </property>
-                <property name="text">
-                    <string>📁</string>
-                </property>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>20</y>
-                        <width>280</width>
-                        <height>164</height>
-                    </rect>
-                </property>
-                <layout class="QFormLayout" name="freq_incr_subframe">
-                    <item row="0" column="0">
-                        <widget class="QLabel" name="label_2">
-                            <property name="text">
-                                <string>Frequency range</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="0" column="1">
-                        <widget class="QComboBox" name="freq_range_combo">
-                            <property name="toolTip">
-                                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>537</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>85</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Frequency sweep</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="freq_sweep_frame">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>331</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(220, 242, 255)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QFrame" name="peak_vsi_thresh_frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>350</y>
+      <width>225</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QCheckBox" name="incl_test_check">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>34</y>
+       <width>66</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="peak_vsi_spinbox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>29</y>
+       <width>60</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>60</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:white</string>
+     </property>
+     <property name="maximum">
+      <number>9999999</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>90</width>
+       <height>13</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Peak VSI threshold</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_16">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>10</y>
+       <width>66</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Include test</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="data_direc_button">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>320</y>
+      <width>30</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:white</string>
+    </property>
+    <property name="text">
+     <string>📁</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>280</width>
+      <height>164</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="freq_incr_subframe">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Frequency range</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="freq_range_combo">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
                                     font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;-
                                     From config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;-
                                     Element pk high frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;-
                                     Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                 </string>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white;
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
                                     selection-color:rgb(255, 255, 255);
                                     selection-background-color:rgb(85, 170, 255);
                                 </string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>From config cluster</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Element pk low frequency</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Element pk high frequency</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Common low frequency</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Common high frequency</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                    <item row="1" column="0">
-                        <widget class="QLabel" name="label_3">
-                            <property name="text">
-                                <string>Start frequency (MHz)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="2" column="0">
-                        <widget class="QLabel" name="label_4">
-                            <property name="text">
-                                <string>End frequency (MHz)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="2" column="1">
-                        <widget class="QDoubleSpinBox" name="end_freq_doublespin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                            <property name="decimals">
-                                <number>2</number>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="3" column="0">
-                        <widget class="QLabel" name="label_5">
-                            <property name="text">
-                                <string>Coarse increment (MHz)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="3" column="1">
-                        <widget class="QDoubleSpinBox" name="coarse_inc_doublespin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                            <property name="decimals">
-                                <number>2</number>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="4" column="0">
-                        <widget class="QLabel" name="label_6">
-                            <property name="text">
-                                <string>Fine increment (MHz)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="4" column="1">
-                        <widget class="QDoubleSpinBox" name="fine_incr_doublespin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="5" column="0">
-                        <widget class="QLabel" name="label_7">
-                            <property name="text">
-                                <string>Burst count</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="5" column="1">
-                        <widget class="QSpinBox" name="burst_count_spin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                            <property name="maximum">
-                                <number>500</number>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="6" column="0">
-                        <widget class="QLabel" name="label_8">
-                            <property name="text">
-                                <string>Amplitude (mVpp)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="1" column="1">
-                        <widget class="QDoubleSpinBox" name="start_freq_spin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="6" column="1">
-                        <widget class="QSpinBox" name="amplitude_spin">
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>190</y>
-                        <width>291</width>
-                        <height>51</height>
-                    </rect>
-                </property>
-                <layout class="QGridLayout" name="scope_acq_arg_grid">
-                    <property name="verticalSpacing">
-                        <number>6</number>
-                    </property>
-                    <item row="0" column="0">
-                        <widget class="QLabel" name="label_9">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>13</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>16777215</width>
-                                    <height>10</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Scope channel</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="0" column="1">
-                        <widget class="QLabel" name="label_10">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>13</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>16777215</width>
-                                    <height>10</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Acquisition type</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="0" column="2">
-                        <widget class="QLabel" name="label_11">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>13</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>16777215</width>
-                                    <height>10</height>
-                                </size>
-                            </property>
-                            <property name="text">
-                                <string>Averages</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="1" column="0">
-                        <widget class="QComboBox" name="scope_channel_combo">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white;
+       </property>
+       <item>
+        <property name="text">
+         <string>From config cluster</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Element pk low frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Element pk high frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Common low frequency</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Common high frequency</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Start frequency (MHz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>End frequency (MHz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="end_freq_doublespin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="decimals">
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <double>24.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Coarse increment (MHz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="coarse_inc_doublespin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="decimals">
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <double>24.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Fine increment (MHz)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="fine_incr_doublespin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="maximum">
+        <double>24.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Burst count</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="burst_count_spin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="maximum">
+        <number>500</number>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Amplitude (mVpp)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="start_freq_spin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="maximum">
+        <double>24.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QSpinBox" name="amplitude_spin">
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>291</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="scope_acq_arg_grid">
+     <property name="verticalSpacing">
+      <number>6</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>13</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>10</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Scope channel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_10">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>13</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>10</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Acquisition type</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_11">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>13</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>10</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Averages</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="scope_channel_combo">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
                                     selection-color:rgb(255, 255, 255);
                                     selection-background-color:rgb(85, 170, 255);
                                 </string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>Channel 1</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Channel 2</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                    <item row="1" column="1">
-                        <widget class="QComboBox" name="acq_type_combo">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                            <property name="toolTip">
-                                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
+       </property>
+       <item>
+        <property name="text">
+         <string>Channel 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Channel 2</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="acq_type_combo">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
                                     font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;-
                                     Single Waveform &lt;/p&gt;&lt;p&gt;- N Averaged Waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                 </string>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white;
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
                                     selection-color:rgb(255, 255, 255);
                                     selection-background-color:rgb(85, 170, 255);
                                 </string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>Single Waveform</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>N Averaged Waveform</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                    <item row="1" column="2">
-                        <widget class="QSpinBox" name="averages_spinbox">
-                            <property name="minimumSize">
-                                <size>
-                                    <width>0</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                            <property name="maximumSize">
-                                <size>
-                                    <width>60</width>
-                                    <height>16777215</height>
-                                </size>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>300</y>
-                        <width>261</width>
-                        <height>41</height>
-                    </rect>
-                </property>
-                <layout class="QVBoxLayout" name="data_direc_vert_layout">
-                    <item>
-                        <widget class="QLabel" name="label_14">
-                            <property name="text">
-                                <string>Data directory</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QLineEdit" name="data_direc_input">
-                            <property name="styleSheet">
-                                <string notr="true">background-color: white</string>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>12</x>
-                        <y>252</y>
-                        <width>281</width>
-                        <height>39</height>
-                    </rect>
-                </property>
-                <layout class="QGridLayout" name="storage_grid">
-                    <item row="0" column="0">
-                        <widget class="QLabel" name="label_12">
-                            <property name="text">
-                                <string>Data storage</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="0" column="1">
-                        <widget class="QLabel" name="label_13">
-                            <property name="text">
-                                <string>Storage location</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item row="1" column="0">
-                        <widget class="QComboBox" name="data_storage_combo">
-                            <property name="toolTip">
-                                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
+       </property>
+       <item>
+        <property name="text">
+         <string>Single Waveform</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>N Averaged Waveform</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QSpinBox" name="averages_spinbox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>300</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="data_direc_vert_layout">
+     <item>
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Data directory</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="data_direc_input">
+       <property name="styleSheet">
+        <string notr="true">background-color: white</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>252</y>
+      <width>281</width>
+      <height>39</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="storage_grid">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Data storage</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Storage location</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QComboBox" name="data_storage_combo">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;
                                     font-size:10pt; text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;-
                                     Do not store&lt;/p&gt;&lt;p&gt;- Store profiles only&lt;/p&gt;&lt;p&gt;- Store
                                     entire waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                                 </string>
-                            </property>
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white;
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
                                     selection-color:rgb(255, 255, 255);
                                     selection-background-color:rgb(85, 170, 255);
                                 </string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>Do not store</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Store profiles only</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Store entire waveform</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                    <item row="1" column="1">
-                        <widget class="QComboBox" name="storage_loc_combo">
-                            <property name="styleSheet">
-                                <string notr="true">background-color:white;
+       </property>
+       <item>
+        <property name="text">
+         <string>Do not store</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Store profiles only</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Store entire waveform</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="storage_loc_combo">
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
                                     selection-color:rgb(255, 255, 255);
                                     selection-background-color:rgb(85, 170, 255);
                                 </string>
-                            </property>
-                            <item>
-                                <property name="text">
-                                    <string>UA results directory</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Custom directory</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+       </property>
+       <item>
+        <property name="text">
+         <string>UA results directory</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Custom directory</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
