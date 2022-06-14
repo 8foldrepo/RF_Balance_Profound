@@ -74,7 +74,7 @@ class AbstractOscilloscope(AbstractDevice):
         ...
 
     @abstractmethod
-    def autoset_oscilloscope_timebase(self):
+    def set_oscilloscope_timebase_to_default(self):
         """Automatically sets the horizontal scale and range of the oscilloscope with a predetermined procedure"""
         ...
 

@@ -1230,7 +1230,12 @@ class Manager(QThread):
         max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
-        autoset_timebase = var_dict["Autoset Timebase"]
+        if "Autoset Timebase" in var_dict.keys():
+            autoset_timebase = var_dict["Autoset Timebase"]
+        else:
+            autoset_timebase = var_dict["Auto set timebase"]
+        capture_cycles = float(var_dict["#Cycles.Capture"])
+        delay_cycles = float(var_dict["#Cycles.Delay"])
 
         frequency_mhz = float(var_dict["Frequency (MHz)"])
         amplitude_mVpp = float(var_dict["Amplitude (mV)"])
@@ -1284,7 +1289,7 @@ class Manager(QThread):
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
 
         if autoset_timebase:
-            self.autoset_timebase()
+            self.autoset_timebase(capture_cycles, delay_cycles)
 
         self.Motors.go_to_position(['R'], [-180], enable_ui=False)
 
@@ -1682,9 +1687,25 @@ class Manager(QThread):
         self.Oscilloscope.set_horizontal_offset_sec(delay_us / 1000000)
         return True
 
-    def autoset_timebase(self) -> bool:
-        """Sets the oscilloscope timebase according to the config file"""
-        self.Oscilloscope.autoset_oscilloscope_timebase()
+    def autoset_timebase(self, capture_cycles: Union[float, None] = None,
+                         delay_cycles: Union[float, None] = None) -> bool:
+        """
+        Sets the oscilloscope timebase according to the config file, or if capture cycles and delay cycles are
+        provided, sets takes the default time offset, adds a delay according to delay cycles and the AWG frequency,
+        and sets the time axis range according to capture_cycles
+        """
+
+        if capture_cycles is None or delay_cycles is None:
+            self.Oscilloscope.set_oscilloscope_timebase_to_default()
+            return True
+
+        capture_range_s = capture_cycles * 1 / self.AWG.get_frequency_hz()
+        self.Oscilloscope.set_horizontal_range_sec(capture_range_s)
+
+        standard_offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6
+        additional_delay_s = delay_cycles * 1 / self.AWG.get_frequency_hz()
+        self.Oscilloscope.set_horizontal_offset_sec(standard_offset_s + additional_delay_s)
+
         return True
 
     def home_system(self, var_dict: dict, show_prompt=False) -> bool:
@@ -1860,6 +1881,7 @@ class Manager(QThread):
         data_storage = var_dict["Data storage"]
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
+        # todo: add peak VSI test (min or max?) to UA pass/fail and results summary
         peak_VSI_threshold = float(var_dict["Peak VSI threshold"])
         include_test = var_dict["Include test"]
 

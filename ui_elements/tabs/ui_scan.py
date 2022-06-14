@@ -1,10 +1,7 @@
 from typing import List
 from typing import Union
-
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import *
-
-from Utilities.formulas import calculate_random_uncertainty_percent
 from Utilities.useful_methods import tab_text_to_index
 from Widget_Library.widget_scan import Ui_scan_tab_widget
 from manager import Manager
@@ -115,7 +112,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
             self.x_data_view.setText("{:.4e}".format(self.x_data[index]))
         if not index > len(self.y_data):
             self.y_data_view.setText("{:.4e}".format(self.y_data[index]))
-            self.y_uncertainty_view.setText("{:.4e}".format(calculate_random_uncertainty_percent(self.y_data)))
+            # self.y_uncertainty_view.setText("{:.4e}".format(calculate_random_uncertainty_percent(self.y_data)))
 
     def source_channel_combo_changed(self):
         self.manager.oscilloscope_channel = int(self.source_channel_combo_box.currentText())

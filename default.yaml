@@ -4,8 +4,10 @@ Analysis:
   samples_to_remove_at_end: 3
   settling_time_s: 0.001
 Oscilloscope_timebase:
-  Horizontal scale (us): .2     # Default should be .2 us for low frequency and .1 us for high frequency
-  Time offset (us): 43           # 43 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
+  # Default should be .2 us for low frequency and .1 us for high frequency
+  Horizontal scale (us): .2
+  # 43 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
+  Time offset (us): 43
 Daq_Power_Relay:
   on_by_default: true
   port: COM3

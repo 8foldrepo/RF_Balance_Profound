@@ -108,7 +108,7 @@ class TestOscilloscope(unittest.TestCase):
 
     def test_set_timebase(self):
         print(colored("running autoset timebase test", 'cyan'))
-        self.osc.autoset_oscilloscope_timebase()
+        self.osc.set_oscilloscope_timebase_to_default()
         self.assertAlmostEqual(self.osc.range_s,
                                self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8 , 1)
         self.assertAlmostEqual(self.osc.offset_s,

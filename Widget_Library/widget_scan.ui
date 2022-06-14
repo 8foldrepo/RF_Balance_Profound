@@ -50,7 +50,7 @@
     <number>0</number>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
     <property name="toolTip">
@@ -422,6 +422,19 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <layout class="QGridLayout" name="x_data_grid">
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="y_data_view">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:lightgrey</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_41">
          <property name="text">
@@ -436,8 +449,8 @@ p, li { white-space: pre-wrap; }
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="y_data_view">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="x_data_view">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -462,39 +475,6 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="maximum">
           <number>1000000000</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="x_data_view">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background:lightgrey</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_43">
-         <property name="text">
-          <string>Y Uncertainty</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="y_uncertainty_view">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background:lightgrey</string>
-         </property>
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>

@@ -14,8 +14,6 @@ class KeysightOscilloscope(AbstractOscilloscope):
     # These are not the only class variables, there are ones inherited from AbstractOscilloscope and AbstractDevice
     timeout_s: float
 
-    autoset_timebase = "Autoset_timebase"
-
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
         self.external_trigger = None
@@ -266,7 +264,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         return True
 
     # stretch: add automatic waveform finding
-    def autoset_oscilloscope_timebase(self) -> None:
+    def set_oscilloscope_timebase_to_default(self) -> None:
         """
         Sets the range and offset of the oscilloscope's time axis according to the config
         """

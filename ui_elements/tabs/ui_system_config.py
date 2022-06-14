@@ -65,7 +65,7 @@ class SystemConfig(MyQWidget, Ui_Form):
         self.save_config_button.setEnabled(enabled)
         # Oscilloscope timebase
         self.oscilloscope_scale_us.setEnabled(enabled)
-        self.oscilloscope_offset_us.setText(enabled)
+        self.oscilloscope_offset_us.setEnabled(enabled)
 
     def set_manager(self, manager):
         self.manager = manager

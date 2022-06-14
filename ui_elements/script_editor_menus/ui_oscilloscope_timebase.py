@@ -14,15 +14,15 @@ class OscilloscopeTimebase(MyQWidget, Ui_Form):
             OrderedDict(
                 [
                     ("Task type", "Configure Oscilloscope Timebase"),
-                    ("Timebase", "2"),
-                    ("Delay", "0"),
+                    ("Timebase", ".2"),
+                    ("Delay", "43"),
                 ]
             )
         )
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
-        self.timebase_spinbox.setValue(int(var_dict["Timebase"]))
-        self.delay_spinbox.setValue(int(var_dict["Delay"]))
+        self.timebase_spinbox.setValue(float(var_dict["Timebase"]))
+        self.delay_spinbox.setValue(float(var_dict["Delay"]))
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()

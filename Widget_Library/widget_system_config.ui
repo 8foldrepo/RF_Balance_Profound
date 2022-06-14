@@ -560,7 +560,7 @@
      </widget>
     </item>
     <item row="4" column="0">
-     <widget class="QLabel" name="oscilloscope_offset_us">
+     <widget class="QLabel" name="oscilloscope_offset_us_label">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -578,7 +578,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QDoubleSpinBox" name="oscilloscope_offset_us_2">
+     <widget class="QDoubleSpinBox" name="oscilloscope_offset_us">
       <property name="minimumSize">
        <size>
         <width>0</width>
