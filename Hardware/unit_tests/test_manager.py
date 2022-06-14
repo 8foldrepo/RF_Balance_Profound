@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         cls.manager = Manager(config=cls.config, parent=None, system_info=None, access_level='Administrator')
         cls.manager.add_devices()
         test_data = TestData()
-        cls.manager.begin_script_slot(test_data=test_data)
+        cls.manager.test_metadata_slot(test_data=test_data)
         cls.manager.connect_hardware()
 
     def test_scan_axis(self):

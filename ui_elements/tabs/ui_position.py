@@ -256,14 +256,14 @@ class Position(MyQWidget, Ui_Form):
     @pyqtSlot(float)
     def update_x_position(self, mm):
         try:
-            self.x_pos_lineedit.setText(str(mm))
+            self.x_pos_lineedit.setText("%.2f" % mm)
         except KeyboardInterrupt:
             pass
 
     @pyqtSlot(float)
     def update_r_position(self, mm):
         try:
-            self.theta_pos_lineedit.setText(str(mm))
+            self.theta_pos_lineedit.setText("%.2f" % mm)
         except KeyboardInterrupt:
             pass
 

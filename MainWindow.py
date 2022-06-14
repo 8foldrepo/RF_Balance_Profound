@@ -374,8 +374,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Manager communication signals
         self.load_script_signal.connect(self.manager.load_script)
         self.manager.set_tab_signal.connect(self.set_tab_slot)
-        self.manager.button_enable_toggle_for_scripting.connect(self.set_buttons_enabled)
-        self.manager.button_enable_toggle_for_scripting.connect(self.script_running_buttons_toggle)
+        self.manager.set_abort_buttons_enabled_signal.connect(self.abort_buttons_toggle)
         self.manager.no_script_loaded_signal.connect(self.no_script_loaded)
         self.manager.critical_error_signal.connect(self.dialog_critical)
 
@@ -394,9 +393,17 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def run_button_clicked(self):
         """sets the buttons to disabled once a script is running"""
         self.set_buttons_enabled(False)
-        self.show_pretest_dialog()
+        self.show_pretest_dialog(begin_script=True)
 
     def run_step_clicked(self):
+        """Tell the manager to advance the script once. If the manager does not have test metadata this will load
+        data from the UA and prompt the user for more info"""
+
+        # If the manager has not yet received test metadata
+        if self.manager.test_data.serial_number == "":
+            self.show_pretest_dialog(begin_script=False)
+
+        self.abort_buttons_toggle(True)
         self.set_buttons_enabled(False)
         self.command_signal.emit("STEP")
 
@@ -647,10 +654,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg.exec()
 
     @pyqtSlot(str)
-    def show_pretest_dialog(self) -> None:
+    def show_pretest_dialog(self, begin_script = True) -> None:
         """Launches the pretest initialisation dialog where the user may input their operator name, UA serial number
         with the option to look it up and auto-populate the LF, HF, and hardware code with an optional
-        override tick, and an optional comment (hence the str in the pyqtSlot)"""
+        override tick, and an optional comment (hence the str in the pyqtSlot).
+        The boolean is whether or not the manager should begin scripting after the dialog is handled.
+        If The run button was clicked this will be true, if the run step button was clicked this will be false.
+        """
         # Read UA serial number
         ua_read_data, firmware_version, status = self.UAInterface.read_data()
         # If their access level is operator, do not proceed with the script unless the read was successful.
@@ -674,10 +684,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             ua_read_data.append("UA Not Connected")
 
         dlg = PretestDialog(serial_no=serial_no, schema=ua_read_data[0],
-                            access_level=self.access_level_combo.currentText(), config=self.config)
+                            access_level=self.access_level_combo.currentText(),
+                            config=self.config, begin_script=begin_script)
         # below: calls method in manager that latches all input variables from dialog box to variables in manager class
         # when OK button is clicked
-        dlg.pretest_metadata_signal.connect(self.manager.begin_script_slot)
+        dlg.pretest_metadata_signal.connect(self.manager.test_metadata_slot)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.abort_signal.connect(lambda: self.set_buttons_enabled(True))
         dlg.exec()
@@ -870,9 +881,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.abort_immediately_button.setEnabled(False)
 
     @pyqtSlot(bool)
-    def script_running_buttons_toggle(self, enabled):
-        self.abort_button.setEnabled(not enabled)
-        self.abort_immediately_button.setEnabled(not enabled)
+    def abort_buttons_toggle(self, enabled):
+        self.abort_button.setEnabled(enabled)
+        self.abort_immediately_button.setEnabled(enabled)
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled: bool) -> None:

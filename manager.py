@@ -120,7 +120,7 @@ class Manager(QThread):
 
     # controls whether the buttons in various tabs are enabled, should be emitting false whenever scripting and vice 
     # versa 
-    button_enable_toggle_for_scripting = QtCore.pyqtSignal(bool)
+    set_abort_buttons_enabled_signal = QtCore.pyqtSignal(bool)
 
     Motors = None
 
@@ -203,7 +203,8 @@ class Manager(QThread):
 
         # Tracks whether a script is being executed
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # turn on buttons/fields
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons/fields
         self.was_scripting = False
 
         # Flags for the wait_for_cont method, when a dialog is waiting for user action
@@ -410,7 +411,7 @@ class Manager(QThread):
             else:  # What to do when there is no command
                 # If a script has just ended, show script_complete dialog
                 if self.currently_scripting:
-                    self.button_enable_toggle_for_scripting.emit(False)  # disable buttons/fields
+                    self.set_abort_buttons_enabled_signal.emit(True)  # enable abort buttons
                     if self.task_names is None:
                         self.abort_after_step()
                         self.enable_ui_signal.emit(True)
@@ -421,7 +422,8 @@ class Manager(QThread):
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
-                self.button_enable_toggle_for_scripting.emit(True)  # enabled fields/buttons
+                self.enable_ui_signal.emit(True)
+                self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
                 if self.task_names is not None:
                     finished = self.step_index == len(self.task_names) - 1
                 else:
@@ -444,7 +446,8 @@ class Manager(QThread):
         self.abort_immediately(log=False)
         log_msg(self, root_logger, level="info", message="Running script")
         self.currently_scripting = True
-        self.button_enable_toggle_for_scripting.emit(False)  # disables main window fields/buttons during test
+        self.enable_ui_signal.emit(False)
+        self.set_abort_buttons_enabled_signal.emit(True)  # enables main window abort buttons during test
         self.was_scripting = True
         self.abort_immediately_variable = False
 
@@ -564,9 +567,12 @@ class Manager(QThread):
             if "CREATEDBY" in ray[0].upper():
                 self.created_by_signal.emit(ray[1].replace('"', ""))
             elif "DESCRIPTION" in ray[0].upper():
-                self.script_has_description = True  # set the boolean flag indicating whether the script has a description
-                self.script_description = ray[1].replace('"', "")  # remove unneeded quotation marks
-                self.description_signal.emit(self.script_description)  # send the script description to main window
+                # set the boolean flag indicating whether the script has a description
+                self.script_has_description = True
+                # remove unneeded quotation marks
+                self.script_description = ray[1].replace('"', "")
+                # send the script description to main window
+                self.description_signal.emit(self.script_description)
 
             if line == '\n':  # if the line we're on right now is a blank line
                 if task_variables:  # ensures task variable list isn't empty; prevents adding empty sub lists to main tasks list
@@ -695,7 +701,7 @@ class Manager(QThread):
 
             if self.step_index > len(self.task_names):  # if scripting is done
                 self.currently_scripting = False  # set the currently scripting flag to false
-                self.button_enable_toggle_for_scripting.emit(True)  # re-enable various buttons in main window
+                self.set_abort_buttons_enabled_signal.emit(False)  # Disable abort buttons in main window
                 return  # exit this method
 
             # below: if a script with valid, non-empty contents has been loaded
@@ -721,7 +727,7 @@ class Manager(QThread):
 
             if not self.currently_scripting:  # if we're not currently scripting at this point
                 self.enable_ui_signal.emit(True)  # toggle appropriate buttons in main window and its tabs
-                self.button_enable_toggle_for_scripting.emit(True)  # same as above
+                self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
 
         # Catch all errors while advancing the script and handle them by showing the user a dialog with the traceback
         except Exception:
@@ -799,7 +805,7 @@ class Manager(QThread):
         #     [self.step_index][1]} from loop {self.loops[self.taskExecOrder[self.step_index][2]]}")
 
     @pyqtSlot()
-    def abort_after_step(self, log: bool = True) -> None:
+    def abort_after_step(self, log:bool = True) -> None:
         """
         Aborts script when current step is done running
 
@@ -813,7 +819,8 @@ class Manager(QThread):
             self.log(level='warning', message="Aborting script after step")
         # Reset script control variables
         self.currently_scripting = False  # we are no longer scripting
-        self.button_enable_toggle_for_scripting.emit(True)  # turn on fields/buttons in main window
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
         self.step_index = -1  # reset the step index variable
         self.abort_immediately_variable = False  # we're not aborting immediately
         self.task_number_signal.emit(0)  # tell the main window we're in the 0th task number
@@ -834,7 +841,8 @@ class Manager(QThread):
 
         self.Motors.stop_motion()
         self.currently_scripting = False  # we are no longer scripting
-        self.button_enable_toggle_for_scripting.emit(True)  # enable buttons/fields for no scripting
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons for no scripting
         self.step_index = -1  # reset step index variable
         self.abort_immediately_variable = True  # set the abort_immediately variable to true
         self.task_number_signal.emit(0)  # tell the main window we're on the 0th step
@@ -990,7 +998,8 @@ class Manager(QThread):
         self.critical_error_flag = False  # set and the next two variables back to false so if user repeats test, same mechanism will work
         self.error_message = ""
         self.currently_scripting = False
-        self.button_enable_toggle_for_scripting.emit(True)  # not scripting, turn on buttons/fields
+        self.enable_ui_signal.emit(True)
+        self.set_abort_buttons_enabled_signal.emit(False)  # not scripting, disable abort buttons
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
@@ -1129,8 +1138,8 @@ class Manager(QThread):
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
                 break
 
-    @pyqtSlot(TestData)
-    def begin_script_slot(self, test_data: TestData):
+    @pyqtSlot(TestData, bool)
+    def test_metadata_slot(self, test_data: TestData, run_script):
         """Receive test metadata from the MainWindow, and begin a script."""
 
         # reset test data to default values
@@ -1154,7 +1163,9 @@ class Manager(QThread):
             self.user_prompt_signal.emit("Access to the results folder is denied, change it in local.yaml."
                                          "Copy default.yaml if local.yaml does not exist.", False)
             return self.abort_after_step()
-        self.run_script()
+
+        if run_script:
+            self.run_script()
 
     def element_str_to_int(self, element_str):
         """Looks for an integer in the string, otherwise returns the current element"""
@@ -1249,27 +1260,24 @@ class Manager(QThread):
 
         self.Motors.go_to_position(['R'], [-180], enable_ui=False)
 
-        if element_position_test:
-            cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
-                                  ref_position=element_x_coordinate,
-                                  go_to_peak=True, data_storage=data_storage, update_element_position=True,
-                                  acquisition_type=acquisition_type,
-                                  averages=averages, storage_location=storage_location)
-            if not cont:
-                return False
+        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
+                              ref_position=element_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=element_position_test,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            return False
 
         self.home_system({'Axis to home': 'Theta'})
 
-        if beam_angle_test:
-            cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
-                                  increment=theta_increment_degrees,
-                                  ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                                  go_to_peak=False, update_element_position=True, data_storage=data_storage,
-                                  acquisition_type=acquisition_type,
-                                  averages=averages, storage_location=storage_location)
-
-            if not cont:
-                return False
+        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
+                              increment=theta_increment_degrees,
+                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                              go_to_peak=False, update_element_position=beam_angle_test, data_storage=data_storage,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            return False
 
         self.home_system({"Axis to home": "Theta"})
 
@@ -1320,7 +1328,8 @@ class Manager(QThread):
             axis_letter = 'R'
         else:
             self.user_prompt_signal.emit("Invalid axis parameter, aborting", False)
-            return self.abort_after_step()
+            self.abort_after_step()
+            return False
         if self.Motors.rotational_ray[self.Motors.ax_letters.index(axis_letter)]:
             pos_units_str = "deg"
             axis_label = "Angle (deg)"
@@ -2135,7 +2144,8 @@ class Manager(QThread):
         else:
             self.log("self.rfb_data.get_pass_result() has returned an invalid result, aborting", self.warn)
             self.user_info_signal.emit("self.rfb_data.get_pass_result() has returned an invalid result, aborting")
-            return self.abort_after_step()
+            self.abort_after_step()
+            return False
 
         self.retry_clicked_variable = False
 
