@@ -1,3 +1,4 @@
+from pprint import pformat
 from typing import List
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -178,3 +179,26 @@ class TestData(QObject):
 
         # update UI representation
         self.show_results_summary.emit(self.results_summary)
+
+    def __repr__(self):
+        to_return = 'TestData\n'
+        to_return += f'script_log (type: {type(self.script_log)} length: {len(self.script_log)}): {pformat(self.script_log)}\n'
+        to_return += f'results_summary (type: {type(self.results_summary)} length: {len(self.results_summary)}):' \
+                     f' {pformat(self.results_summary)}\n'
+        to_return += '\n'
+        to_return += f'test_date_time (type: {type(self.test_date_time)}): {self.test_date_time}\n'
+        to_return += f'software_version (type: {type(self.software_version)}): {self.software_version}\n'
+        to_return += f'test_comment (type: {type(self.test_comment)}): {self.test_comment}\n'
+        to_return += f'serial_number (type: {type(self.serial_number)}): {self.serial_number}\n'
+        to_return += f'operator_name (type: {type(self.operator_name)}): {self.operator_name}\n'
+        to_return += f'script_name (type: {type(self.script_name)}): {self.script_name}\n'
+        to_return += f'script_log (type: {type(self.script_log)}): {self.script_log}\n'
+        to_return += f'low_frequency_MHz (type: {type(self.low_frequency_MHz)}): {self.low_frequency_MHz}\n'
+        to_return += f'high_frequency_MHz (type: {type(self.high_frequency_MHz)}): {self.high_frequency_MHz}\n'
+        to_return += f'hardware_code (type: {type(self.hardware_code)}): {self.hardware_code}\n'
+        to_return += f'write_result (type: {type(self.write_result)}): {self.write_result}\n'
+        to_return += f'skip_write_to_ua (type: {type(self.skip_write_to_ua)}): {self.skip_write_to_ua}\n'
+        to_return += f'schema (type: {type(self.schema)}): {self.schema}\n'
+        to_return += f'angle_average (type: {type(self.angle_average)}): {self.angle_average}\n'
+
+        return to_return

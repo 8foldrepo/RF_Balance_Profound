@@ -1,3 +1,4 @@
+from pprint import pformat
 from statistics import mean
 from typing import List, Tuple
 
@@ -81,7 +82,8 @@ class RFBData:
         self.off_indices = self.get_off_interval_indices()
 
         # List containing an average during each of the intervals while the UA was on
-        self.acoustic_power_on_means, self.p_on_rand_unc, self.p_on_total_unc, self.p_on_standard_deviation, std_too_high = (
+        self.acoustic_power_on_means, self.p_on_rand_unc, self.p_on_total_unc, self.p_on_standard_deviation, \
+        std_too_high = (
             self.analyze_intervals(self.acoustic_powers_w, self.on_indices)
         )
         # Mean acoustic power while on
@@ -91,7 +93,8 @@ class RFBData:
             self.acoustic_power_on_mean = float('nan')
 
         # List containing an average during each of the intervals while the UA was off
-        self.acoustic_power_off_means, self.p_off_rand_unc, self.p_off_total_unc, self.p_off_standard_deviation, a_std_too_high = (
+        self.acoustic_power_off_means, self.p_off_rand_unc, self.p_off_total_unc, self.p_off_standard_deviation, \
+        a_std_too_high = (
             self.analyze_intervals(self.acoustic_powers_w, self.off_indices)
         )
 
@@ -405,3 +408,74 @@ class RFBData:
                 break
 
         return averages, random_uncertainty, total_uncertainty, standard_deviation, std_too_high,
+
+    def __repr__(self):
+        to_return: str = 'RFBData\n'
+        to_return += f'element (type: {type(self.element)}): {self.element}\n'
+        to_return += f'frequency_range (type: {type(self.frequency_range)}): {self.frequency_range}\n'
+        to_return += f'water_temperature_c (type: {type(self.water_temperature_c)}): {self.water_temperature_c}\n'
+        to_return += "*********************** Test criteria *************************\n"
+        to_return += f'Pf_max (type: {type(self.Pf_max)}): {self.Pf_max}\n'
+        to_return += f'Pa_max (type: {type(self.Pa_max)}): {self.Pa_max}\n'
+        to_return += f'ref_limit (type: {type(self.ref_limit)}): {self.ref_limit}\n'
+        to_return += '\n'
+        to_return += f'times_s (type: {type(self.times_s)} length: {len(self.times_s)}): {pformat(self.times_s)}\n'
+        to_return += f'f_meter_readings_w (type: {type(self.f_meter_readings_w)} length: ' \
+                     f'{len(self.f_meter_readings_w)}):' \
+                     f' {pformat(self.f_meter_readings_w)}\n'
+        to_return += f'r_meter_readings_w (type: {type(self.r_meter_readings_w)} length' \
+                     f': {len(self.r_meter_readings_w)}):' \
+                     f' {pformat(self.r_meter_readings_w)}\n'
+        to_return += f'acoustic_powers_w (type: {type(self.acoustic_powers_w)} length: ' \
+                     f'{len(self.acoustic_powers_w)}):' \
+                     f' {pformat(self.acoustic_powers_w)}\n'
+        to_return += f'balance_readings_g (type: {type(self.balance_readings_g)} length' \
+                     f': {len(self.balance_readings_g)}):' \
+                     f' {pformat(self.balance_readings_g)}\n'
+        to_return += f'awg_on_ray (type: {type(self.awg_on_ray)} length: {len(self.awg_on_ray)}):' \
+                     f' {pformat(self.awg_on_ray)}\n'
+        to_return += "*************************Instantaneous readings to be shown in the UI*************************\n"
+        to_return += f'grams (type: {type(self.grams)}): {self.grams}\n'
+        to_return += f'forward_power_w (type: {type(self.forward_power_w)}): {self.forward_power_w}\n'
+        to_return += f'reflected_power_w (type: {type(self.reflected_power_w)}): {self.reflected_power_w}\n'
+        to_return += "*************************Analysis metrics of the graph as a whole*************************\n"
+        to_return += f'p_on_rand_unc (type: {type(self.p_on_rand_unc)}): {self.p_on_rand_unc}\n'
+        to_return += f'p_on_rand_unc (type: {type(self.p_on_rand_unc)}): {self.p_on_rand_unc}\n'
+        to_return += f'p_on_total_unc (type: {type(self.p_on_total_unc)}): {self.p_on_total_unc}\n'
+        to_return += f'p_off_total_unc (type: {type(self.p_off_total_unc)}): {self.p_off_total_unc}\n'
+        to_return += f'p_com_rand_unc (type: {type(self.p_com_rand_unc)}): {self.p_com_rand_unc}\n'
+        to_return += f'p_com_total_unc (type: {type(self.p_com_total_unc)}): {self.p_com_total_unc}\n'
+        to_return += f'p_on_standard_deviation (type: {type(self.p_on_standard_deviation)}): ' \
+                     f'{self.p_on_standard_deviation}\n'
+        to_return += f'p_off_standard_deviation (type: {type(self.p_off_standard_deviation)}): ' \
+                     f'{self.p_off_standard_deviation}\n'
+        to_return += f'acoustic_power_off_mean (type: {type(self.acoustic_power_off_mean)}): ' \
+                     f'{self.acoustic_power_off_mean}\n'
+        to_return += f'acoustic_power_on_mean (type: {type(self.acoustic_power_on_mean)}): {self.acoustic_power_on_mean}\n'
+        to_return += f'acoustic_power_mean (type: {type(self.acoustic_power_mean)}): {self.acoustic_power_mean}\n'
+        to_return += f'forward_power_on_mean (type: {type(self.forward_power_on_mean)}): {self.forward_power_on_mean}\n'
+        to_return += f'reflected_power_on_mean (type: {type(self.reflected_power_on_mean)}): ' \
+                     f'{self.reflected_power_on_mean}\n'
+        to_return += f'efficiency_percent (type: {type(self.efficiency_percent)}): {self.efficiency_percent}\n'
+        to_return += f'reflected_power_percent (type: {type(self.reflected_power_percent)}): ' \
+                     f'{self.reflected_power_percent}\n'
+        to_return += f'forward_power_max_extrapolated (type: {type(self.forward_power_max_extrapolated)}): ' \
+                     f'{self.forward_power_max_extrapolated}\n'
+        to_return += '\n'
+        to_return += f'on_indices (type: {type(self.on_indices)} length: {len(self.on_indices)}):' \
+                     f' {pformat(self.on_indices)}\n'
+        to_return += f'off_indices (type: {type(self.off_indices)} length: {len(self.off_indices)}):' \
+                     f' {pformat(self.off_indices)}\n'
+        to_return += '\n'
+        to_return += f'on_time_intervals_s (type: {type(self.on_time_intervals_s)} length: {len(self.on_time_intervals_s)}):' \
+                     f' {pformat(self.on_time_intervals_s)}\n'
+        to_return += f'off_time_intervals_s (type: {type(self.off_time_intervals_s)} length: {len(self.off_time_intervals_s)}):' \
+                     f' {pformat(self.off_time_intervals_s)}\n'
+        to_return += '\n'
+        to_return += f'acoustic_power_on_mean (type: {type(self.acoustic_power_on_mean)}): {self.acoustic_power_on_mean}\n'
+        to_return += f'acoustic_power_off_mean (type: {type(self.acoustic_power_off_mean)}): ' \
+                     f'{self.acoustic_power_off_mean}\n'
+        to_return += '\n'
+        to_return += f'std_too_high (type: {type(self.std_too_high)}): {self.std_too_high}\n'
+
+        return to_return

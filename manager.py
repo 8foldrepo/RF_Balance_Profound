@@ -1014,6 +1014,8 @@ class Manager(QThread):
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=repr(self.test_data), level='debug')
         self.set_tab_signal.emit(["Results"])  # change the main window tab to the results tab automatically
         return True
 
@@ -2202,6 +2204,8 @@ class Manager(QThread):
                                           storage_location=storage_location)
 
         self.test_data.log_script(["", "End", "", ""])
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=repr(self.rfb_data), level='debug')
 
         return True  # at this point in the code, the test finished without errors
 
