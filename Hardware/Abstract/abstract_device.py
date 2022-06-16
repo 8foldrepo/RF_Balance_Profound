@@ -27,7 +27,9 @@ class AbstractDevice(QObject):
 
         log_formatter = logging.Formatter(LOGGER_FORMAT)
         balance_logger = logging.getLogger('wtf_log')
-        file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode='w')
+        with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
+            pass
+        file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
         file_handler.setFormatter(log_formatter)
         balance_logger.addHandler(file_handler)
         balance_logger.setLevel(logging.INFO)
