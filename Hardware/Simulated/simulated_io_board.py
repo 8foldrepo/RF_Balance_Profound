@@ -35,13 +35,6 @@ class SimulatedIOBoard(AbstractIOBoard):
         self.pump_reading_signal.emit(self.ua_pump_on)
         return self.ua_pump_on
 
-    def fill_tank(self):
-        self.filling_signal.emit()
-        t.sleep(2)
-        self.water_level = WaterLevel.level
-        self.get_water_level()
-        return True
-
     def drain_tank(self):
         self.draining_signal.emit(WaterLevel.below_level)
         t.sleep(2)
@@ -51,8 +44,16 @@ class SimulatedIOBoard(AbstractIOBoard):
                 return True
         return False
 
-    def drain_tank_to_level(self):
-        self.draining_signal.emit(WaterLevel.level)
+    def bring_tank_to_level(self):
+        if self.water_level == WaterLevel.level:
+            self.log("WaterLevel is already level")
+            return True
+
+        if self.water_level == WaterLevel.below_level:
+            self.filling_signal.emit()
+        else:
+            self.draining_signal.emit(WaterLevel.level)
+
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:

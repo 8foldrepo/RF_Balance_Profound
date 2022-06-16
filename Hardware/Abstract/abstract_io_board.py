@@ -30,15 +30,11 @@ class AbstractIOBoard(AbstractDevice):
         ...
 
     @abstractmethod
-    def fill_tank(self):
-        ...
-
-    @abstractmethod
     def drain_tank(self):
         ...
 
     @abstractmethod
-    def drain_tank_to_level(self):
+    def bring_tank_to_level(self):
         ...
 
     @abstractmethod

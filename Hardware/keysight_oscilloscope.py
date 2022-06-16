@@ -12,11 +12,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
     """Class for interfacing with a Keysight InfiniVision 2002A Oscilloscope"""
 
     # These are not the only class variables, there are ones inherited from AbstractOscilloscope and AbstractDevice
-    max_time_of_flight: float
-    min_time_of_flight: float
     timeout_s: float
-
-    autoset_timebase = "Autoset_timebase"
 
     def __init__(self, device_key='Keysight_Oscilloscope', config=None, resource_manager=None, parent=None):
         super().__init__(device_key=device_key, config=config, parent=parent)
@@ -119,11 +115,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         """
         self.reset()
         self.channel = self.config[self.device_key]['channel']
-        self.max_time_of_flight = self.config['Oscilloscope_timebase']["time_window_maximum"]
-        self.min_time_of_flight = self.config['Oscilloscope_timebase']["time_window_minimum"]
-        self.range_s = self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6
-        self.time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
-        self.offset_s = self.min_time_of_flight / 1000000 + self.time_of_flight_window / 2
+        self.range_s = (self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6) * 8
+        self.offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6
         self.autorange_v = self.config[self.device_key]["autorange_v_startup"]
         self.range_mV = self.config[self.device_key]["range_mV"]
         self.average_count = self.config[self.device_key]["averages"]
@@ -167,7 +160,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             self.command(":TRIG:EDGE:LEV .1")
 
     def set_averaging(self, averages: int = 1) -> None:
-
+        """Sets the number of waveforms for the oscilloscope to average together (occurs in the oscilloscope itself)"""
         self.averages = averages
         if averages > 1:
             self.command(":ACQ:TYPE AVER")
@@ -255,32 +248,28 @@ class KeysightOscilloscope(AbstractOscilloscope):
         self.offset_s = float(self.ask(":TIM:POS?"))
         return self.offset_s
 
-    def set_horizontal_offset_sec(self, offset: float) -> bool:
+    def set_horizontal_offset_sec(self, offset_s: float) -> bool:
         """
         Sets the horizontal offset of the oscilloscope screen in seconds when passed
         as a float parameter. Checks to ensure that offset does not exceed range
         """
-        self.offset_s = offset
-        self.command(f":TIM:POS {offset}")
-
+        self.offset_s = offset_s
+        self.command(f":TIM:POS {offset_s}")
+        t.sleep(.03)
         actual_offset_s = self.get_horizontal_offset_sec()
-        if not error_acceptable(actual_offset_s, self.offset_s, 2, print_msg=False):
-            self.log(level='error', message=f'Offset of {offset}s out of range, '
+        if not error_acceptable(actual_offset_s, offset_s, 2, print_msg=False):
+            self.log(level='error', message=f'Offset of {offset_s}s out of range, '
                                             f'oscilloscope time offset set to: {actual_offset_s} seconds')
             return False
         return True
 
     # stretch: add automatic waveform finding
-    def autoset_oscilloscope_timebase(self) -> None:
+    def set_oscilloscope_timebase_to_default(self) -> None:
         """
-        Takes the autoset min and max time of flight values from the config file and
-        calculates/sets the range and time of flight window (horizontal range and offset)
+        Sets the range and offset of the oscilloscope's time axis according to the config
         """
-        self.max_time_of_flight = self.config['Oscilloscope_timebase']["time_window_maximum"]
-        self.min_time_of_flight = self.config['Oscilloscope_timebase']["time_window_minimum"]
-        range_s = self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6
-        time_of_flight_window = (self.max_time_of_flight - self.min_time_of_flight) / 1000000
-        offset_s = self.min_time_of_flight / 1000000 + time_of_flight_window / 2
+        range_s = (self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6) * 8
+        offset_s = self.config['Oscilloscope_timebase']["Time offset (us)"]* 10 ** -6
         self.set_horizontal_range_sec(range_s)
         self.set_horizontal_offset_sec(offset_s)
 

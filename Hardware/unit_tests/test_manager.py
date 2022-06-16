@@ -19,7 +19,7 @@ class MyTestCase(unittest.TestCase):
         cls.manager = Manager(config=cls.config, parent=None, system_info=None, access_level='Administrator')
         cls.manager.add_devices()
         test_data = TestData()
-        cls.manager.test_metadata_slot(test_data=test_data)
+        cls.manager.test_metadata_slot(test_data=test_data, run_script=False)
         cls.manager.connect_hardware()
 
     def test_scan_axis(self):
@@ -27,8 +27,8 @@ class MyTestCase(unittest.TestCase):
 
         element = randrange(1, 10)
 
-        self.manager.element_r_coordinates[element] = 0
-        self.manager.element_x_coordinates[element] = 0
+        self.manager.measured_element_r_coords[element] = 0
+        self.manager.measured_element_x_coords[element] = 0
 
         axis = choice(self.manager.Motors.ax_letters)
         self.manager.scan_axis(element=element, axis=axis, num_points=randrange(2, 10), increment=uniform(.04, 2),
@@ -36,9 +36,9 @@ class MyTestCase(unittest.TestCase):
                                storage_location='', update_element_position=True)
 
         if axis == 'R':
-            self.assertNotEqual(self.manager.element_r_coordinates[element], 0)
+            self.assertNotEqual(self.manager.measured_element_r_coords[element], 0)
         elif axis == 'X':
-            self.assertNotEqual(self.manager.element_x_coordinates[element], 0)
+            self.assertNotEqual(self.manager.measured_element_x_coords[element], 0)
 
     def test_save_log_and_results_summary(self):
         from os.path import exists
@@ -55,15 +55,16 @@ class MyTestCase(unittest.TestCase):
         except Exception as e:
             self.fail(f"save_results method ran into an exception when it shouldn't have: {e}")
 
-        self.manager.config['Paths']['UA results root directory'] = "C:\\Users\\Public\\Documents\\UA results"
         results_summary = (
-                    "C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Results Summary.txt')
+                    self.manager.config['Paths']['UA results root directory'] + "\\" +
+                    self.manager.file_saver.folder_name + '\\Results Summary.txt')
         script_results = (
-                    "C:\\Users\\Public\\Documents\\UA results\\" + self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
+                    self.manager.config['Paths']['UA results root directory'] + "\\" +
+                    self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
         self.assertTrue(exists(results_summary))  # TEST: tests if files exist
         self.assertTrue(exists(script_results))
-        self.assertTrue(
-            os.stat(results_summary).st_size != 0)  # TEST: this file should have default information within it
+        # TEST: this file should have default information within it
+        self.assertTrue(os.stat(results_summary).st_size != 0)
         # INFO: cannot check whether script results should be empty since tests are ran in random order
 
     def test_configure_function_generator(self):
@@ -100,21 +101,16 @@ class MyTestCase(unittest.TestCase):
             self.fail(f"manager's configure_oscilloscope_timebase() method "
                       f"raised exception when it shouldn't have: {e}")
 
-        self.assertEqual(timebase_us / 1000000 * 8, self.manager.Oscilloscope.get_horizontal_scale_sec())
+        self.assertEqual(timebase_us / 1000000, self.manager.Oscilloscope.get_horizontal_scale_sec())
         self.assertEqual(delay_us / 1000000, self.manager.Oscilloscope.get_horizontal_offset_sec())
 
     def test_autoset_timebase(self):
         self.manager.autoset_timebase()
         oscilloscope = self.manager.Oscilloscope
-        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_maximum"],
-                         oscilloscope.max_time_of_flight)
-        self.assertEqual(self.manager.config['Oscilloscope_timebase']["time_window_minimum"],
-                         oscilloscope.min_time_of_flight)
-        self.assertEqual(self.manager.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6,
+        self.assertEqual(self.manager.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8,
                          oscilloscope.get_horizontal_range_sec())
-        time_of_flight_window = (oscilloscope.max_time_of_flight - oscilloscope.min_time_of_flight) / 1000000
-        self.assertEqual(oscilloscope.get_horizontal_offset_sec(),
-                         oscilloscope.min_time_of_flight / 1000000 + time_of_flight_window / 2)
+        self.assertAlmostEqual(oscilloscope.get_horizontal_offset_sec(),
+                         self.manager.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6, 2)
 
     def test_disconnect_hardware(self):
         try:
@@ -134,7 +130,7 @@ class MyTestCase(unittest.TestCase):
             with_clause_thermocouple = 'Hardware.Simulated.simulated_thermocouple.SimulatedThermocouple.get_reading'
         else:
             from Hardware.ni_thermocouple import NIThermocouple
-            with_clause_thermocouple = 'Hardware.ni_thermocouple.NIThermocouple.get_water_level'
+            with_clause_thermocouple = 'Hardware.ni_thermocouple.NIThermocouple.get_reading'
 
         if self.manager.config['Debugging']['simulate_io_board']:
             from Hardware.Simulated.simulated_io_board import SimulatedIOBoard

@@ -1,4 +1,5 @@
 import time as t
+from abc import ABC
 from typing import Tuple, Union
 
 import serial
@@ -8,6 +9,8 @@ from Utilities.load_config import load_configuration
 
 
 class RelayBoard(AbstractRelay):
+    """A class for interfacing with the relay in the power module box which provides power to the RF power switcher"""
+
     reading_signal = QtCore.pyqtSignal(bool)
 
     def __init__(self, config=None, device_key="Daq_Power_Relay", parent=None):
@@ -102,6 +105,9 @@ class RelayBoard(AbstractRelay):
         self.relay_write(False)
         self.disconnect_hardware()
 
+    def get_serial_number(self) -> str:
+        # stretch: implement
+        return ""
 
 if __name__ == "__main__":
     switch = RelayBoard()

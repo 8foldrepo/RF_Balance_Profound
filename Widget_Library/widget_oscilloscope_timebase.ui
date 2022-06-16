@@ -1,158 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Form</class>
-    <widget class="QWidget" name="Form">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>604</width>
-                <height>451</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
-        </property>
-        <widget class="QLabel" name="label">
-            <property name="geometry">
-                <rect>
-                    <x>20</x>
-                    <y>10</y>
-                    <width>89</width>
-                    <height>13</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Horizontal settings</string>
-            </property>
-        </widget>
-        <widget class="QFrame" name="horizontal_settings_frame">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>111</width>
-                    <height>91</height>
-                </rect>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">background:rgb(220, 242, 255)</string>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-            </property>
-            <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>5</y>
-                        <width>91</width>
-                        <height>82</height>
-                    </rect>
-                </property>
-                <layout class="QVBoxLayout" name="horz_set_vert_layout">
-                    <item>
-                        <widget class="QLabel" name="label_2">
-                            <property name="text">
-                                <string>Timebase (us/div)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QDoubleSpinBox" name="timebase_spinbox">
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                            <property name="decimals">
-                                <number>3</number>
-                            </property>
-                            <property name="minimum">
-                                <double>0.005000000000000</double>
-                            </property>
-                            <property name="maximum">
-                                <double>500.000000000000000</double>
-                            </property>
-                            <property name="value">
-                                <double>2.000000000000000</double>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QLabel" name="label_3">
-                            <property name="text">
-                                <string>Delay (0.0 us)</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item>
-                        <widget class="QDoubleSpinBox" name="delay_spinbox">
-                            <property name="styleSheet">
-                                <string notr="true">background:white</string>
-                            </property>
-                            <property name="minimum">
-                                <double>-500.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                                <double>500.000000000000000</double>
-                            </property>
-                        </widget>
-                    </item>
-                </layout>
-            </widget>
-        </widget>
-        <widget class="QTextBrowser" name="config_osc_note">
-            <property name="geometry">
-                <rect>
-                    <x>190</x>
-                    <y>30</y>
-                    <width>271</width>
-                    <height>192</height>
-                </rect>
-            </property>
-            <property name="styleSheet">
-                <string notr="true">background:lightyellow</string>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="html">
-                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-                    &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style
-                    type=&quot;text/css&quot;&gt;
-                    p, li { white-space: pre-wrap; }
-                    &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt;
-                    font-weight:400; font-style:normal;&quot;&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Note:&lt;/span&gt;
-                    &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;This step can be used to ensure the acoustic signal is
-                    &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;visible within the scope window. &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;Default values: &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;LF: Timebase = 0.2 us/div; Delay = 43 us &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;HF: Timebase = 0.1 us/div; Delay = 34.75 &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;(the time delay in particular may need to change &lt;/p&gt;
-                    &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                    -qt-block-indent:0; text-indent:0px;&quot;&gt;depending on the positioning of the hydrophone). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                </string>
-            </property>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>604</width>
+    <height>451</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>89</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Horizontal settings</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="horizontal_settings_frame">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>111</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:rgb(220, 242, 255)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>5</y>
+      <width>91</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="horz_set_vert_layout">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Timebase (us/div)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="timebase_spinbox">
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>0.005000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>43.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Delay (0.0 us)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="delay_spinbox">
+       <property name="styleSheet">
+        <string notr="true">background:white</string>
+       </property>
+       <property name="minimum">
+        <double>-500.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.200000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTextBrowser" name="config_osc_note">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>30</y>
+     <width>271</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background:lightyellow</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="html">
+    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                    &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;Note:&lt;/span&gt;                                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This step can be used to ensure the acoustic signal is                                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;visible within the scope window.                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Default values:                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;LF: Timebase = 0.2 us/div; Delay = 43 us                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;HF: Timebase = 0.1 us/div; Delay = 34.75                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;(the time delay in particular may need to change                     &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;depending on the positioning of the hydrophone).                 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
