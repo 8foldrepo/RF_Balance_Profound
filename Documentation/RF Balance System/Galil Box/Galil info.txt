@@ -6,8 +6,12 @@ Reversed
 
 Commands:
 
-# Disable B limit switches
-LD B = 3
 
 # Save settings
 BN
+
+# Step smoothing
+KSA=16
+KSB=16
+
+Axis b reversed
