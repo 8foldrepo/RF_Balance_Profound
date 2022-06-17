@@ -23,7 +23,6 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
-from Hardware.galil_motor_controller import GalilMotorController
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -248,6 +247,7 @@ class Manager(QThread):
             from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
             self.Motors = SimulatedMotorController(config=self.config, lock=self.motor_control_lock)
         else:
+            from Hardware.galil_motor_controller import GalilMotorController
             self.Motors = GalilMotorController(config=self.config, lock=self.motor_control_lock)
 
         if self.config["Debugging"]["simulate_oscilloscope"] and simulate_access:
@@ -1020,6 +1020,8 @@ class Manager(QThread):
         self.enable_ui_signal.emit(True)
 
         self.test_data.log_script(["Script complete", "", "", ""])
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=repr(self.test_data), level='debug')
         self.set_tab_signal.emit(["Results"])  # change the main window tab to the results tab automatically
         return True
 
@@ -2250,6 +2252,8 @@ class Manager(QThread):
                                           storage_location=storage_location)
 
         self.test_data.log_script(["", "End", "", ""])
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=repr(self.rfb_data), level='debug')
 
         return True  # at this point in the code, the test finished without errors
 
