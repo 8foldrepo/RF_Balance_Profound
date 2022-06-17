@@ -1,0 +1,13 @@
+IP address:
+192.168.42.2
+
+Switch polarity:
+Reversed
+
+Commands:
+
+# Disable B limit switches
+LD B = 3
+
+# Save settings
+BN
