@@ -23,7 +23,6 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
-from Hardware.galil_motor_controller import GalilMotorController
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -37,7 +36,9 @@ from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-file_handler = logging.FileHandler(os.path.join(ROOT_DIR, "./logs/wtf.log"), mode="w")
+with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
+    pass
+file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
@@ -246,6 +247,7 @@ class Manager(QThread):
             from Hardware.Simulated.simulated_motor_controller import (SimulatedMotorController)
             self.Motors = SimulatedMotorController(config=self.config, lock=self.motor_control_lock)
         else:
+            from Hardware.galil_motor_controller import GalilMotorController
             self.Motors = GalilMotorController(config=self.config, lock=self.motor_control_lock)
 
         if self.config["Debugging"]["simulate_oscilloscope"] and simulate_access:
