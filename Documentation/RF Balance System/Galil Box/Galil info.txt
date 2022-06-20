@@ -25,8 +25,11 @@ YB ,400
 # Lower amplifier gain for B
 AGB=0
 
-# Enable Low current stepper mode
+# Enable Low current stepper mode for B
 LCB=1
+
+#Change polarity of limit inputs and home switches
+CN1,1
 
 # Save settings
 BN
