@@ -139,7 +139,6 @@ class GalilMotorController(AbstractMotorController):
 
             # Convert speeds to number of counts per second and update them
             steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
-
             sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
             self.command(sp_command_str)
 
@@ -179,7 +178,7 @@ class GalilMotorController(AbstractMotorController):
                 self.ready_signal.emit()
             return False
 
-        if sum(coordinates_mm) > 1000:
+        if sum(coordinates_mm) > 100000:
             self.log(level='error', message="Coordinates entered for the motors are too large."
                                             " Double check in the code that they are given in mm")
             if enable_ui:
@@ -244,7 +243,14 @@ class GalilMotorController(AbstractMotorController):
             self.app.processEvents()
             try:
                 stop_code = self.command("SC AB")
-                if '0' not in stop_code:
+
+                stop_code_ray = stop_code.split(', ')
+                zero_in_ray = False
+                for code in stop_code_ray:
+                    if code == '0':
+                        zero_in_ray = True
+
+                if not zero_in_ray:
                     success = True
                     break
             except gclib.GclibError as e:
@@ -405,13 +411,13 @@ class GalilMotorController(AbstractMotorController):
         """
         # enforce pre-move conditions
         self.command("ST")  # INFO: stops motor movement
-        self.command("SH ABCD")
+        self.command("SH AB")
 
         # Theta pre-home move
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
         self.command("ST")
-        self.command("SH ABCD")
+        self.command("SH AB")
         try:
             self.command("HM")  # set up for homing command
             self.command("BG")  # begin command
@@ -421,6 +427,7 @@ class GalilMotorController(AbstractMotorController):
         motion_complete_success = self.wait_for_motion_to_complete()
         go_to_position_success = self.go_to_position(['R'], [-90], enable_ui=False)
 
+        self.get_position()
         if enable_ui:
             self.ready_signal.emit()
 
@@ -446,7 +453,7 @@ class GalilMotorController(AbstractMotorController):
             self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
             self.command("ST")
-            self.command("SH ABCD")
+            self.command("SH AB")
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
             self.command(f"BG {self.__get_galil_ax_letter(axis)}")
