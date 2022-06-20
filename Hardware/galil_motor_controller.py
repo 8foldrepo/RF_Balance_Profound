@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_comma_string
+from Utilities.useful_methods import create_comma_string, is_number
 
 
 class GalilMotorController(AbstractMotorController):
@@ -241,6 +241,7 @@ class GalilMotorController(AbstractMotorController):
         success = False
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
             self.app.processEvents()
+            self.get_position()
             try:
                 stop_code = self.command("SC AB")
 
@@ -296,7 +297,6 @@ class GalilMotorController(AbstractMotorController):
 
         self.get_position()
 
-    # todo: test
     def set_origin_1d(self, axis, coord_mm, get_position=True):
         """
         Helper method for the 'set_origin' method, actually creates the command string given
@@ -425,6 +425,10 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message=self.check_user_fault())
 
         motion_complete_success = self.wait_for_motion_to_complete()
+        self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord']+
+                                                self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
+        self.get_position()
+
         go_to_position_success = self.go_to_position(['R'], [self.config["WTF_PositionParameters"]['ThetaHomeCoord']], enable_ui=False)
 
         self.get_position()
@@ -463,7 +467,13 @@ class GalilMotorController(AbstractMotorController):
         success = self.wait_for_motion_to_complete()
 
         if axis == 'R' or axis == 'Theta':
-            success = success and self.go_to_position(['R'], [-90], enable_ui=False)
+            self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord'] +
+                                                         self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
+            self.get_position()
+            success = success and self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]], enable_ui=False)
+
+        t.sleep(.1)
+        self.get_position()
 
         if enable_ui:
             self.ready_signal.emit()
@@ -506,7 +516,13 @@ class GalilMotorController(AbstractMotorController):
         moving_ray = [False, False]
         moving_margin_ray = [0.001, 0.001]
 
-        x_pos = self.steps_to_position(0, float(self.command('RP A')))
+        x_pos_str = self.command('RP A')
+        if is_number(x_pos_str):
+            x_pos = self.steps_to_position(0, float())
+        else:
+            self.ready_signal.emit()
+            return
+
         if abs(x_pos - self.coords_mm[0]) > moving_margin_ray[0]:
             moving_ray[0] = True
         self.coords_mm[0] = x_pos
@@ -603,6 +619,16 @@ class GalilMotorController(AbstractMotorController):
         :param command: the command in string form you wish to send to the motor controller
         :return: response of galil motor controller to issues command
         """
-        output = self.handle.GCommand(command)
+        print(command)
+        try:
+            output = self.handle.GCommand(command)
+        except gclib.GclibError as e:
+            if "device read error" in str(e) or 'device write error' in str(e):
+                self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
+            else:
+                code = self.check_user_fault()
+                self.log(level='error', message=f'Error in command device {code}.')
+            return ""
+
         t.sleep(.01)
-        return output
+        return output.replace('\r\n','')
