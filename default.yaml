@@ -188,6 +188,7 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
+  ThetaHomeEdgeOffset: 20
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: 2

@@ -425,7 +425,7 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message=self.check_user_fault())
 
         motion_complete_success = self.wait_for_motion_to_complete()
-        go_to_position_success = self.go_to_position(['R'], [-90], enable_ui=False)
+        go_to_position_success = self.go_to_position(['R'], [self.config["WTF_PositionParameters"]['ThetaHomeCoord']], enable_ui=False)
 
         self.get_position()
         if enable_ui:
@@ -544,7 +544,9 @@ class GalilMotorController(AbstractMotorController):
             position_steps = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']-\
+                             self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+
         else:
             return
 
@@ -575,7 +577,8 @@ class GalilMotorController(AbstractMotorController):
             self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']+\
+                                 self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
             self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
         return position_deg_or_mm
