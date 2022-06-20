@@ -146,6 +146,10 @@ def precision_round(number: float, digits: int = 3) -> float:
     return round(number, -(int(power) - digits))
 
 
+def in_range(my_index: int, my_list: list) -> bool:
+    """returns whether the given index is valid for the given list"""
+    return 0 <= my_index < len(my_list)
+
 def bound(x: float) -> float:
     """
     If passed int x is between -.001 and .001, it turns x to 0 and returns it,
