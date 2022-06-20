@@ -46,8 +46,15 @@ class GalilMotorController(AbstractMotorController):
         self.connected = False
         self.connected_signal.emit(False)
 
-    def check_connected(self):
-        return self.connected
+    def check_connected(self) -> bool:
+        """Returns whether a galil motor controller is connected. Also updates self.connected"""
+        try:
+            info = self.handle.GInfo()
+            self.connected = True
+            return True
+        except:
+            self.connected = False
+            return False
 
     def connect_hardware(self):
         feedback = ""
@@ -82,6 +89,7 @@ class GalilMotorController(AbstractMotorController):
     @pyqtSlot(dict)
     def setup(self, settings: Union[dict, None]):
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+
         # Update settings according to the dict
         if settings is not None:
             self.increment_ray[0] = settings["lin_incr"]
@@ -90,9 +98,16 @@ class GalilMotorController(AbstractMotorController):
             self.speeds_ray[1] = settings["rot_speed"]
             self.calibrate_ray_steps_per[0] = settings["steps_per_mm"]
             self.calibrate_ray_steps_per[1] = settings["steps_per_deg"]
-            self.movement_mode = settings["movement_mode"]
             self.gearing_ray[0] = settings["x_gearing"]
             self.gearing_ray[1] = settings["r_gearing"]
+
+        # Ensure motors are connected, if not return
+        self.check_connected()
+        if not self.connected:
+            self.connect_hardware()
+            if not self.connected:
+                self.ready_signal.emit()
+                return
 
         # Turn Motors on
         self.handle.GCommand("SH")
@@ -120,6 +135,7 @@ class GalilMotorController(AbstractMotorController):
         except gclib.GclibError:
             self.log(level='error', message=f"Connection error: {self.check_user_fault()}")
             self.connected = False
+        self.ready_signal.emit()
 
     # todo: test
     @pyqtSlot(list, list)
@@ -166,7 +182,6 @@ class GalilMotorController(AbstractMotorController):
             galil_ax_letters_for_move.append(galil_ax_letter)
             target_coordinate_mm = float(coordinates_mm[i])
             target_coord_steps = int(self.position_to_steps(ax_index, target_coordinate_mm))
-            print(target_coord_steps)
             coordinates_steps.append(target_coord_steps)
 
         pa_command_str = f"PA {create_comma_string(axes, coordinates_steps, self.ax_letters)}"
@@ -199,23 +214,17 @@ class GalilMotorController(AbstractMotorController):
         # todo: this method seems to return true even if only one axis makes it to the origin
         start_time = t.time()
         success = False
+
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
             try:
-                self.get_position()
-                # current_pos_str = self.command('RP')
-                # this command is intended to have no effect, by telling the motors to go to the current position.
-                # It will raise an exception if the motors are moving. If there is no exception the motion is complete
-                self.command(f"BG {''.join(self.galil_ax_letters)}")
-                success = True
-                break
-
-            except gclib.GclibError:
+                stop_code = self.command("SC AB")
+                if '0' not in stop_code:
+                    success = True
+                    break
+            except gclib.GclibError as e:
                 code = self.check_user_fault()
-                # This exception is expected to occur repeatedly until the motion is complete. This is not a bug.
-                if 'not valid while running' not in code:
-                    # If the error code is different, log it as an error and return False
-                    self.log(level='error', message=f"error in go to position: {code}")
-                    return False
+                self.log(level='error', message=f"error in wait_for_motion_to_complete: {code}")
+                return False
 
         if not success:
             self.log(level='error', message='movement timed out')
@@ -375,7 +384,7 @@ class GalilMotorController(AbstractMotorController):
         # QUESTION: should this also support the x axis?
         # enforce pre-move conditions
         self.command("ST")  # stop command
-        self.command("SH ABCD")
+        self.command("SH AB")
 
         if axis == 'R' or axis == 'Theta':
             # Theta pre-home move
@@ -510,6 +519,7 @@ class GalilMotorController(AbstractMotorController):
             return str(e)
 
     def command(self, command):
+        print(command)
         output = self.handle.GCommand(command)
         t.sleep(.01)
         return output
