@@ -90,8 +90,10 @@ class Position(MyQWidget, Ui_Form):
         else:
             self.type_combobox.setCurrentText("Translational")
 
-    # Enable ui to control motors unless the manager is running a script
-    def motors_ready(self):
+    def motors_ready(self) -> None:
+        """
+        Enable ui to control motors unless the manager is running a script
+        """
         if not self.manager.currently_scripting:
             self.set_buttons_enabled_signal.emit(True)
 

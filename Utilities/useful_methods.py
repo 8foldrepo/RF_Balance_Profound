@@ -1,3 +1,6 @@
+"""
+A class that provides a wide variety of useful methods throughout the entire project
+"""
 import collections.abc
 import datetime
 import os
@@ -6,15 +9,16 @@ from PyQt5.QtWidgets import QTabWidget
 from termcolor import colored
 
 
-def create_coord_rays(coordinates: str, ax_letters: list):
-    """
-    For use with the galil motion controller class
-    Inputs:
-    A string containing comma delimited coordinates, some of which may be empty, for example [,,3,2]
-    A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
-    Output:
-    A list containing the axis letters of the coordinates provided, and a list of equal length containing the
-    coordinates. With the given inputs the output should be axes: [Z,R] coordinates [3,2]
+def create_coord_rays(coordinates: str, ax_letters: list) -> Tuple[list, List[str]]:
+    """ For use with the galil motion controller class
+
+    :param coordinates: A string containing comma delimited coordinates, some of which may be empty, for example [,,3,2]
+    :param ax_letters:
+        A list containing the letters of all axes. The length must be greater than the number of commas. Ex: [X,Y,Z,R]
+
+    :returns:
+        A list containing the axis letters of the coordinates provided, and a list of equal length containing
+        the coordinates. With the given inputs the output should be axes: [Z,R] coordinates [3,2]
     """
     axes = list()
     coordinates = coordinates.split(",")
@@ -27,10 +31,17 @@ def create_coord_rays(coordinates: str, ax_letters: list):
     return axes, coordinates
 
 
-def create_comma_string(axes: list, numbers: list, ax_letters: list):
+def create_comma_string(axes: list, numbers: list, ax_letters: list) -> str:
     """
     For use with the galil motion controller class
     Inverse of create coord_rays
+
+    :param axes: list of axis/axes user wants to create command string for galil motor controller
+    :param numbers: the list of steps/coordinate(s) the user wants to turn into a list for given axis/axes
+    :param ax_letters:
+        the letters representing the axis/axes the user wants to make a list for (can be same as axes
+        parameter)
+    :returns: string representation of axis/axes step(s)/coordinate(s)
     """
     answer = ""
     for i in range(len(ax_letters)):
@@ -47,24 +58,32 @@ def find_int(string_with_int: str) -> int:
     """
     Returns the first whole number in a given string (chops off decimal if there is one)
     Raises AttributeError if no whole numbers exist
+
+    :param string_with_int: the string that contains the integer we are going to extract with this method
+    :returns: integer from passed string; or raises attribute error if no such integer exists
     """
     from re import search
     return int(search(r"\d+", str(string_with_int)).group())
 
 
 def mean_of_non_none_values(list_of_values: List[Union[int, float, None]]) -> float:
-    """Returns the average of all values that are not None. Returns float('nan') if there are no non-None values."""
-    sum = 0
+    """
+    Returns the average of all values that are not None. Returns float('nan') if there are no non-None values.
+
+    :param list_of_values: 1D-list of integer/float values to calculate the mean from
+    :returns: mean of the passed ints/floats list
+    """
+    sum_to_return = 0
     count = 0
     for value in list_of_values:
         if value is not None:
-            sum += value
+            sum_to_return += value
             count += 1
 
     if count < 1:
         return float('nan')
 
-    return sum / count
+    return sum_to_return / count
 
 
 def get_element_distances(element_1_index: float, element_pitch: float) -> list:
@@ -145,6 +164,9 @@ def unique(list_to_analyze: list) -> list:
     """
     Takes a list that might have duplicate elements in it and returns
     a list with the duplicates removed
+
+    :param list_to_analyze: list that may have duplicate elements in it
+    :returns: list that does not have duplicate elements in it guaranteed
     """
     # initialize a null list
     unique_list = []
@@ -175,6 +197,10 @@ def tab_text_to_index(text: str, tab_widget: QTabWidget) -> int:
     """
     Returns the index of the tab with specified text in the main tab widget.
     If no match exists, returns -1. Not case sensitive.
+
+    :param text: the name of the tab one wishes to switch to
+    :param tab_widget: the tab widget to scan and see if there's a match between passed text and name of tabs
+    :returns: integer representing the tab number of tabWidget if found, -1 if not found
     """
     for i in range(tab_widget.count()):
         if tab_widget.tabText(i).upper() == text.upper():
@@ -182,7 +208,12 @@ def tab_text_to_index(text: str, tab_widget: QTabWidget) -> int:
     return -1
 
 
-def clear_layout(layout):
+def clear_layout(layout) -> None:
+    """
+    Clears contents of passed layout widget
+
+    :param layout: layout QWidget to be cleared
+    """
     while layout.count():
         child = layout.takeAt(0)
         if child.edit_menu():
@@ -226,21 +257,17 @@ def search_for(filename):
 def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:
     """
     Convenience function to log messages in a compact way with useful info.
-        Parameters:
-            root_logger: logger instance passed from the calling class
-            level (str): A string indicating the logger level, can be either
-            'info', 'debug' or 'error'
-            message (str): A string that contains the message to be logged
-            line_number (int): number of the line that called this log method
 
-        Returns:
-            None
+    :param self: auto-passed scope of caller
+    :param root_logger: logger instance passed from the calling class
+    :param level: A string indicating the logger level, can be either 'info', 'debug' or 'error'
+    :param message: A string that contains the message to be logged
+    :param line_number: number of the line that called this log method
     """
     from PyQt5.QtCore import QThread
 
     thread_name = QThread.currentThread().objectName()
     log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
-    color = ''
     if level == "debug":
         root_logger.debug(log_entry)
         color = 'magenta'
@@ -257,9 +284,8 @@ def log_msg(self, root_logger, message: str, level: str = None, line_number=None
         color = 'cyan'
         level = 'other'
         root_logger.info(log_entry)
-    print(
-        f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{colored(level, color)}] [{type(self).__name__}] [{line_number}] [{thread_name}] : " + colored(
-            message, color))
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] [{colored(level, color)}] [{type(self).__name__}]"
+          f" [{line_number}] [{thread_name}] : " + colored(message, color))
 
 
 def print_list(list2):
