@@ -1,13 +1,12 @@
 import distutils.util
 import logging
-import os
 import re
 import sys
 import time as t
 import traceback
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Optional
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
@@ -138,7 +137,6 @@ class Manager(QThread):
         self.script_description = None
         self.access_level = access_level
         self.error_message = None
-        self.thread_cont_mutex = None
         self.critical_error_flag = False
         self.rfb_data = None
         self.no_clicked_variable = None
@@ -457,7 +455,7 @@ class Manager(QThread):
         self.was_scripting = True
         self.abort_immediately_variable = False
 
-    def update_sensors(self):
+    def update_sensors(self) -> None:
         """Attempts to update the last sensor update time, the water level, thermocouple reading, oscilloscope trace
         (if applicable) and ua pump status. Runs according to the sensor refresh interval, if the program seems
         unresponsive try increasing the sensor_refresh_interval_s variable in local.yaml
@@ -482,8 +480,6 @@ class Manager(QThread):
 
             if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
                 self.capture_oscilloscope_and_plot()
-            else:
-                pass
 
     def capture_scope(self, channel: int = 1, plot: bool = True):
         """
@@ -505,9 +501,12 @@ class Manager(QThread):
             self.log(level='error', message="Could not capture")
         return [], []
 
-    def plot_scope(self, time, voltage):
+    def plot_scope(self, time: List[float], voltage: List[float]) -> None:
         """
         takes the time and voltage data (lists) from the oscilloscope and sends a signal to main window to plot them
+
+        :param time: the points of the x-axis (time) that were taken during capture to be plotted
+        :param voltage: the y-values (voltage) of the x-axis points (time) that were taken during capture to be plotted
         """
         time_elapsed = t.time() - self.start_time
         if time_elapsed == 0:
@@ -522,7 +521,9 @@ class Manager(QThread):
         Captures an oscilloscope trace and plots it to the scan tab, assuming the plot is ready
         """
 
+        # compares local class average value with one stored in oscilloscope class
         if self.oscilloscope_averages != self.Oscilloscope.averages:
+            # if not matching, update oscilloscope's class variable with manager's variable to synchronize
             self.Oscilloscope.set_averaging(self.oscilloscope_averages)
 
         # Only capture if the scan tab is selected
@@ -541,6 +542,8 @@ class Manager(QThread):
         """
         takes the script file and parses the info within it into various lists and dictionaries so the program can
         run the script, requires a path argument to the script
+
+        :param path: Windows directory path of the script (.WTF) file
         """
         self.abort_immediately(log=False)  # we don't want the save prompt for this use of abort
 
@@ -555,14 +558,14 @@ class Manager(QThread):
         task_number_for_loop = []  # contains the task numbers contained in the loop, empties for the next loop
         loop_index_tracker = 0  # keeps track of the order of loops
         adding_elements_to_loop = False
-        building_loop = False  # initialize flag
+        building_loop = False
         task_variables = OrderedDict()  # the list of variables for the individual task
         task_number = -2  # keeps track of the task number for indexing
-        self.script_has_description = False  # initialize flag
+        self.script_has_description = False
         self.set_tab_signal.emit(["Edit Script"])
-        f = open(path, "r")  # we're not altering anything
-        for line in f:
-            ray = line.split(" = ")
+        script_file = open(path, "r")  # open in reading more, we're not altering anything
+        for current_line in script_file:
+            ray = current_line.split(" = ")
 
             # Populate script metadata to UI using signals
             # See if the first element in the ray matches one of the top level metadata attributes
@@ -578,16 +581,16 @@ class Manager(QThread):
                 self.script_description = ray[1].replace('"', "")
                 self.description_signal.emit(self.script_description)
 
-            if line == '\n':  # if the line we're on right now is a blank line
+            if current_line == '\n':
                 if task_variables:  # prevents adding empty variable lists to main tasks list
                     tasks.append(OrderedDict(task_variables))
                     task_variables.clear()  # empties out variable list for task since we're ready to move onto next set
                 if adding_elements_to_loop:  # if we're done with a 'Loop over elements' task block
-                    adding_elements_to_loop = False  # set its indicator flag to false
-                continue  # move forward one line
-            elif '[' in line:  # if the line we're on is a task line: [TaskX]
-                task_number += 1  # increments the task number counter since we've moved to the next task
-                if "Task" in line and not building_loop:
+                    adding_elements_to_loop = False
+                continue
+            elif '[' in current_line:  # if the line we're on is a task line: [TaskX]
+                task_number += 1
+                if "Task" in current_line and not building_loop:
                     self.task_execution_order.append(task_number)
             else:  # if the line we're on is neither a blank line nor a task header line
                 attribute_name = ray[0].strip()
@@ -603,27 +606,24 @@ class Manager(QThread):
                         f"should be 'Current' since it's in a loop. Temporarily change it to 'Current'?")
                     # wait until the user makes a decision or inappropriately closes the dialog
                     cont = self.cont_if_answer_clicked()
-                    if cont:  # if the user has made a valid decision
-                        if self.yes_clicked_variable:  # if the user clicked yes
+                    if cont:
+                        if self.yes_clicked_variable:
                             # correct the previously incorrect value (local data only, does not change file)
                             value = 'Current'
-                            # add the temporary variable pair to the task's variable list
                             task_variables[attribute_name] = value
-                        else:  # if the user clicked no
-                            task_variables[attribute_name] = value  # preserve the value
-                else:  # store the attribute name and value pair into our ordered dictionary of task variables
+                        else:
+                            task_variables[attribute_name] = value
+                else:  # We're not in loop, don't need to check if "Element" value is "Current"
                     task_variables[attribute_name] = value
 
                 if "Loop over elements" in value:
                     building_loop = True
                     adding_elements_to_loop = True
-                # if we're on a line that adds an element name for the loop
                 if adding_elements_to_loop and "Element" in attribute_name:
-                    # there is a space between 'element' and the number, split it
                     element_name_to_split = attribute_name.split(" ")
                     # retrieve the second word of the left side, that's the element name
                     element_name = element_name_to_split[1]
-                    if value.upper() == 'TRUE':  # if the second value equals "True"
+                    if value.upper() == 'TRUE':
                         element_names_for_loop.append(int(element_name))  # add element to the loop
 
                 if "End loop" in value:
@@ -633,8 +633,8 @@ class Manager(QThread):
                     # to the loop and the second value is the task numbers to be applied to the targeted elements
                     self.loops.append(list([list(element_names_for_loop), list(task_number_for_loop)]))
 
-                    element_names_for_loop.clear()  # clear this list in case we run across another loop building task
-                    task_number_for_loop.clear()  # same for this list
+                    element_names_for_loop.clear()  # clear these lists in case we run across another loop building task
+                    task_number_for_loop.clear()
                     self.task_execution_order.pop()  # end loop isn't a task we want in our task execution order
 
                     # appends a 3 item list in taskExecOrder, the first part being the task number
@@ -647,9 +647,11 @@ class Manager(QThread):
                                  loop_index_tracker])
                     loop_index_tracker += 1  # increment the loop index since we're done with a loop
 
+                # prevents adding duplicate task numbers to loop list and making sure we're not adding the "add
+                # elements to loop" to our task numbers for the loop
                 if (building_loop and not adding_elements_to_loop) and (task_number not in task_number_for_loop):
                     task_number_for_loop.append(task_number)
-        f.close()
+        script_file.close()
 
         if task_variables:  # if task variable list isn't empty (which happens with empty scripts)
             tasks.append(OrderedDict(task_variables))  # append it to the over-arching tasks list
@@ -662,15 +664,14 @@ class Manager(QThread):
         self.task_names = list()
         for i in range(len(self.task_execution_order)):
             # INFO: tasks and task_execution_order are offset by 1
-            # ensures key exists, so we don't run into a key index error
-            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():
+            if "Task type" in tasks[self.task_execution_order[i][0] + 1].keys():  # prevent key index exception
                 # copy task name value from list and put it into task names list
                 self.task_names.append(tasks[self.task_execution_order[i][0] + 1]["Task type"])
 
         self.task_arguments = list()
 
         for i in range(len(self.task_execution_order)):
-            # INFO: task_arguments and task_execution_order are offset by 1
+            # INFO: task_arguments and tasks lists are offset by 1
             # copy all task variables from upper-level tasks list to more specific task_arguments list
             self.task_arguments.append(tasks[self.task_execution_order[i][0] + 1])
 
@@ -710,18 +711,16 @@ class Manager(QThread):
 
             if self.retry_clicked_variable is True:
                 self.step_index -= 1  # retry the step via decrementing the step index
-                self.retry_clicked_variable = False  # sets the retry variable to false so the retry function may
-                # happen again
+
+                # sets the retry variable to false so the retry function may happen again
+                self.retry_clicked_variable = False
 
             self.step_index += 1  # advance to the next step if the previous has been completed
-
-            # if a script is being executed, and the step index is valid, and the previous step is complete,
-            # run the next script step
 
             if self.step_index > len(self.task_names):  # if scripting is done
                 self.currently_scripting = False
                 self.set_abort_buttons_enabled_signal.emit(False)  # Disable abort buttons in main window
-                return  # exit this method
+                return
 
             # below: if a script with valid, non-empty contents has been loaded, and we're in the middle of script
             # advancement
@@ -768,7 +767,6 @@ class Manager(QThread):
             self.enable_ui_signal.emit(True)  # re-enable various main window buttons since we are no longer scripting
             return
 
-        # make local method variables from class variables
         task_name = self.task_names[self.step_index]
         task_arguments = self.task_arguments[self.step_index]
 
@@ -776,7 +774,7 @@ class Manager(QThread):
         self.task_number_signal.emit(self.task_execution_order[self.step_index][0])
         self.task_index_signal.emit(self.step_index)
 
-        # if the element in the self.taskExecOrder isn't None
+        # if the element in the list isn't None
         if self.task_execution_order[self.step_index][1] is not None:
             # set the element to be operated on to the one in self.taskExecOrder
             task_arguments['Element'] = self.task_execution_order[self.step_index][1]
@@ -808,11 +806,11 @@ class Manager(QThread):
             self.select_ua_channel(task_arguments)
         elif 'FREQUENCY SWEEP' in task_name.upper():
             self.frequency_sweep(task_arguments)
-        else:  # if the task name is invalid
+        else:
             self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")
             self.critical_error_flag = True
-            # string to be shown in the script_complete method
-            self.error_message = f"{task_name} is not a valid task task_name in the script"  # sets the error message
+            # string will be shown to user in the script_complete method
+            self.error_message = f"{task_name} is not a valid task task_name in the script, aborting immediately"
             self.abort_immediately()
 
         self.task_index_signal.emit(self.step_index + 1)  # inform main window step is done
@@ -838,7 +836,7 @@ class Manager(QThread):
         self.currently_scripting = False
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
-        self.step_index = -1  # reset the step index variable
+        self.step_index = -1
         self.abort_immediately_variable = False
         self.task_number_signal.emit(0)  # tell the main window we're in the 0th task number/index
         self.task_index_signal.emit(0)
@@ -851,17 +849,16 @@ class Manager(QThread):
 
         :param log: Whether to signify an abort immediately event took place in the console
         """
-        if log:  # if the log parameter equals true
-            # inform user script is being immediately aborted in verbose
+        if log:
             self.log(level='warning', message="Aborting script")
         # Reset script control variables
         self.Motors.stop_motion()
         self.currently_scripting = False
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons for no scripting
-        self.step_index = -1  # reset step index variable
+        self.step_index = -1
         self.abort_immediately_variable = True
-        self.task_number_signal.emit(0)  # tell main window we're on the 0th task number & step index
+        self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
 
     def cont_if_cont_clicked(self) -> bool:
@@ -873,13 +870,12 @@ class Manager(QThread):
         """
         try:  # abort and retry are handled as exceptions
             self.wait_for_cont()  # calls helper method to wait for user's input
-            return True  # return true if abort nor retry are clicked (handled below)
+            return True  # return true if neither abort nor retry are clicked (handled below)
         except AbortException:  # if the user clicked the abort button or closed the prompt inappropriately
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
             if self.abort_immediately_variable:
                 self.abort_immediately()
-                return False  # return false, we aren't continuing
-
+                return False
             else:
                 self.abort_after_step()
                 return False
@@ -900,17 +896,17 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
-        while not self.continue_clicked_variable:  # while the user hasn't clicked continue
-            if self.retry_clicked_variable:  # if the user clicked the retry button
+        while not self.continue_clicked_variable:
+            if self.retry_clicked_variable:
                 self.retry_clicked_variable = False
-                raise RetryException  # raise the retry exception for the cont_if_cont_clicked method
-            if self.abort_clicked_variable:  # if the user clicked the abort button
+                raise RetryException
+            if self.abort_clicked_variable:
                 self.abort_clicked_variable = False
-                raise AbortException  # raise the abort exception for the cont_if_answer_clicked method
-            if self.abort_immediately_variable:  # if the abort_immediately flag is true
-                self.abort_immediately()  # call the helper method for aborting immediately
-                return False  # return false since we're not continuing
-        return True  # at this point, the user has clicked continue, so return true
+                raise AbortException
+            if self.abort_immediately_variable:
+                self.abort_immediately()
+                return False
+        return True
 
     def cont_if_answer_clicked(self) -> bool:
         """
@@ -920,16 +916,16 @@ class Manager(QThread):
         :return: True if user clicked an answer, false if user aborted
         """
         try:
-            self.wait_for_answer()  # waits for user input
-            return True  # if we've reached this point in the code, user has clicked an answer so return true
+            self.wait_for_answer()
+            return True
         except AbortException:  # if user inappropriately closed question box
             self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])  # log the event
-            if self.abort_immediately_variable:  # if abort immediately is true
-                self.abort_immediately()  # call the abort immediately helper method
-                return False  # return false because user didn't answer dialog question
-            else:  # if abort immediately is not true
-                self.abort_after_step()  # call abort after step helper method
-                return False  # return false because user didn't answer dialog question'
+            if self.abort_immediately_variable:
+                self.abort_immediately()
+                return False
+            else:
+                self.abort_after_step()
+                return False
 
     def wait_for_answer(self) -> bool:
         """
@@ -937,50 +933,49 @@ class Manager(QThread):
 
         :return: True if user clicked yes, false if clicked no
         """
-        while not self.question_box_finished:  # while the user hasn't clicked an answer
-            if self.yes_clicked_variable:  # if the user clicked the yes button
-                self.thread_cont_mutex = True
-                return True  # return true, user answered yes
-            if self.no_clicked_variable:  # if the user clicked the no button
-                self.thread_cont_mutex = True
-                return False  # return false, user answered no
+        while not self.question_box_finished:
+            if self.yes_clicked_variable:
+                return True
+            if self.no_clicked_variable:
+                return False
 
     @pyqtSlot()
     def continue_clicked(self) -> None:
-        """Flags cont_clicked to continue the current step"""
+        """Adjusts the response flags to reflect continue"""
         self.continue_clicked_variable = True
         self.abort_clicked_variable = False
         self.abort_immediately_variable = False
 
     @pyqtSlot()
     def retry_clicked(self) -> None:
-        """Flags cont_clicked to retry the current step"""
+        """sets retry_clicked_variable to true"""
         self.retry_clicked_variable = True
 
     @pyqtSlot()
     def abort_clicked(self) -> None:
-        """Flags cont_clicked to abort the current step"""
+        """sets abort_clicked_variable to true"""
         self.abort_clicked_variable = True
 
     @pyqtSlot()
     def yes_clicked(self) -> None:
-        """Flags yes_selected to allow user to consent to question"""
+        """adjusts answer flags to 'yes'"""
         self.yes_clicked_variable = True
         self.no_clicked_variable = False
         self.question_box_finished = True
 
     @pyqtSlot()
     def no_clicked(self) -> None:
-        """Flags yes_selected to allow user to consent to question"""
+        """adjusts answer flags to 'no'"""
         self.no_clicked_variable = True
         self.yes_clicked_variable = False
         self.question_box_finished = True
 
-    def script_complete(self, finished: bool = False):
+    def script_complete(self, finished: bool = False) -> bool:
         """
         Run when the script finishes its final step. Shows a dialog with pass/fail results and enables the UI
 
         :param finished: Whether the overall device passed or failed the efficiency test given the pass/fail constraints
+        :returns: true if method reaches the end successfully
         """
         # Fetch pass list and description list from testdata
         pass_list = list([None] * 11)
@@ -991,10 +986,10 @@ class Manager(QThread):
         else:
             device_result = 'DNF'
 
-        for i in range(10):
+        for i in range(10):  # for all 10 UA actuators
             pass_list[i] = self.test_data.results_summary[i][15]
-            if pass_list[i].upper() == 'FAIL':
-                device_result = 'FAIL'
+            if pass_list[i].upper() == 'FAIL':  # if any of the actuators failed
+                device_result = 'FAIL'  # the whole device fails
             description_list[i] = self.test_data.results_summary[i][16]
 
         # Add ua write result to output
@@ -1026,8 +1021,12 @@ class Manager(QThread):
         return True
 
     def pretest_initialization(self) -> bool:
-        """Home the UA, perform hardware checks, and prompt the user until they pass,
-        takes in a variable dict as a parameter"""
+        """
+        Home the UA, perform hardware checks, and prompt the user until they pass,
+        takes in a variable dict as a parameter
+
+        :returns: boolean representing if the method finished successfully
+        """
 
         # add first 4 lines of script log
 
@@ -1039,26 +1038,26 @@ class Manager(QThread):
 
         # Check if WTF-IB is connected and add that to the script log
         if self.test_data.serial_number != "":  # if the serial number of the UA is not empty
-            self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])  # we successfully connected to it
-        else:  # if serial number UA is empty
-            self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])  # we could not connect to the UA
+            self.test_data.log_script(["", "Get UA Serial", "Connected", "OK"])
+        else:
+            self.test_data.log_script(["", "Get UA Serial", "Connected", "FAIL"])
 
             # Give user opportunity to retry or continue (if access level grants it)
             cont = self.sequence_pass_fail(error_detail="Get UA Serial in pretest initialisation failed",
                                            action_type="Interrupt action")
             if not cont:  # if the user does not want to continue over this issue
-                return False  # leave this method
+                return False
             self.retry_clicked_variable = False  # set this back to false in case another interrupt issue arises
 
         # Show dialogs until pump is on and the water sensor reads level
         while True:
-            if self.abort_immediately_variable:  # Stop the current method and any parent methods that called it
+            if self.abort_immediately_variable:
                 return False
             if not self.IO_Board.get_ua_pump_reading():  # if the pump is not running
                 self.user_prompt_pump_not_running_signal.emit(pump_status)  # launch dialog box signifying this issue
-                cont = self.cont_if_cont_clicked()  # wait for user to click a button
-                if not cont:  # if the user does not want to continue
-                    return False  # exit this method
+                cont = self.cont_if_cont_clicked()
+                if not cont:
+                    return False
             else:  # if we can get a reading from the UA
                 self.test_data.log_script(["", "Check/prompt UA Pump", "OK", ""])  # mark it in the log file
                 break
@@ -1076,26 +1075,26 @@ class Manager(QThread):
                                                        f"Theta={self.Motors.coords_mm[1]}", ''])
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail='Home all has failed in pretest initialisation')
-            if not cont:  # if the user does not wish to continue
-                return False  # leave this method
-            if self.abort_immediately_variable:  # we want to abort immediately if the user clicks out of this prompt
+            if not cont:
+                return False
+            if self.abort_immediately_variable:
                 return False
 
         # show where the UA was inserted to in the log file
         self.test_data.log_script(['', 'Insert UA', f"UA Inserted to X={self.Motors.coords_mm[0]}"])
 
-        if self.thermocouple.connected:  # if thermocouple is connected
+        if self.thermocouple.connected:
             self.test_data.log_script(["", "CheckThermocouple", "OK", ""])  # log it in the log file
-        else:  # if the thermocouple is not connected
+        else:
             self.test_data.log_script(["", "CheckThermocouple", "FAIL", ""])  # log it in the log file
 
             # give user a chance to retry, abort, or continue
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Thermocouple failed check')
-            if not cont:  # if the user does not wish to continue
-                return False  # leave this method
+            if not cont:
+                return False
 
         # Configure function generator
-        func_var_dict = dict()  # function generator variable is a dictionary
+        func_var_dict = dict()
         try:
             # take AWG amplitude from config file
             func_var_dict["Amplitude (mVpp)"] = self.config[self.AWG.device_key]["amplitude_V"] * 1000
@@ -1120,11 +1119,11 @@ class Manager(QThread):
             return False
 
         self.user_prompt_signal.emit("Please ensure that the power amplifier is on", False)  # task can't be automated
-        cont = self.cont_if_cont_clicked()  # wait for continue to be clicked
-        if not cont:  # if the user did not click continue
-            return False  # exit this method, abort/retry flags are handled by the cont_if_cont_clicked method
+        cont = self.cont_if_cont_clicked()
+        if not cont:
+            return False
 
-        self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])  # at this point, the prompt ran successfully
+        self.test_data.log_script(["", "Prompt PowerAmp", "OK", ""])
 
         if self.file_saver.directories_created:  # check if the saving directories were successfully created
             self.test_data.log_script(["", "CreateDataDirectories", "OK", ""])  # write result to the log script
@@ -1134,28 +1133,25 @@ class Manager(QThread):
         try:  # checking the self.log() functionality
             self.log("Checking ability to log")
             self.test_data.log_script(["", "Create h/w log", "OK", ""])
-        except Exception as e:  # self.log() doesn't work if this block is ran, report issue to user
+        except Exception as e:
             self.test_data.log_script(["", "Create h/w log", f"FAIL {e}", ""])
 
         self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
         self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
-        while True:
+        while True:  # escapes while loop w/ either return or break commands
             if self.abort_immediately_variable:
-                # Stop the current method and any parent methods that called it
                 return False
 
-            water_level = self.IO_Board.get_water_level()  # attain the water level from the hardware variable
+            water_level = self.IO_Board.get_water_level()
 
-            if water_level == WaterLevel.below_level:  # if the water level is below level
-                # launch the dialog box signifying this issue
+            if water_level == WaterLevel.below_level:
                 self.user_prompt_signal_water_too_low_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
                 self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
-            elif water_level == WaterLevel.above_level:  # if the water level is above level
-                # launch the dialog box signifying this issue
+            elif water_level == WaterLevel.above_level:
                 self.user_prompt_signal_water_too_high_signal.emit()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
@@ -1163,13 +1159,17 @@ class Manager(QThread):
 
                 self.IO_Board.bring_tank_to_level()
             else:
-                # log successful water level test if we've reached this point in the code
                 self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
                 break
 
     @pyqtSlot(TestData, bool)
-    def test_metadata_slot(self, test_data: TestData, run_script):
-        """Receive test metadata from the MainWindow, and begin a script."""
+    def test_metadata_slot(self, test_data: TestData, run_script: bool = False) -> None:
+        """
+        Receive test metadata from the MainWindow, and begin the script.
+
+        :param test_data: connects PretestDialog's user-inputted test_data and manager's test_data variables
+        :param run_script: if true, calls the run_script helper method at the end of this method
+        """
 
         # reset test data to default values
         self.test_data.set_blank_values()
@@ -1178,6 +1178,7 @@ class Manager(QThread):
         self.test_data.show_results_summary.emit(self.test_data.results_summary)
         self.test_data.show_script_log.emit(self.test_data.script_log)
 
+        # synchronize manager's test_data variable w/ PretestDialog's
         self.test_data.test_comment = test_data.test_comment
         self.test_data.serial_number = test_data.serial_number
         self.test_data.operator_name = test_data.operator_name
@@ -1190,14 +1191,20 @@ class Manager(QThread):
             self.file_saver.create_folders(test_data=self.test_data)
         except PermissionError:
             self.user_prompt_signal.emit("Access to the results folder is denied, change it in local.yaml."
-                                         "Copy default.yaml if local.yaml does not exist.", False)
+                                         "Copy default.yaml if local.yaml does not exist. Or re-run this application "
+                                         "with administrator privileges.", False)
             return self.abort_after_step()
 
         if run_script:
             self.run_script()
 
-    def element_str_to_int(self, element_str):
-        """Looks for an integer in the string, otherwise returns the current element"""
+    def element_str_to_int(self, element_str: str) -> int:
+        """
+        Looks for an integer in the string, otherwise returns the current element
+
+        :param element_str: the element string to extract the number from
+        :returns: the element number extracted from the string; previous element number of attribute error raised
+        """
         try:
             self.element = find_int(element_str)
         except AttributeError:

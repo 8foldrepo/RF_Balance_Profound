@@ -1,5 +1,5 @@
 import time as t
-from typing import List, Union
+from typing import List, Union, Tuple
 import gclib
 from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
@@ -28,15 +28,19 @@ class GalilMotorController(AbstractMotorController):
         self.fields_setup()
         self.generate_galil_axes()
 
-    def generate_galil_axes(self):
+    def generate_galil_axes(self) -> None:
         """
-        assigns axis letters corresponding to the galil's letters starting with capital A to the user facing axis letters.
-        for example if self.ax_letters is ['X', 'R'] the corresponding self.galil_ax_letters will be ['A', 'B']
+        assigns axis letters corresponding to the galil's letters starting with capital
+        A to the user facing axis letters. for example if self.ax_letters is ['X', 'R']
+        the corresponding self.galil_ax_letters will be ['A', 'B']
         """
         for i in range(len(self.ax_letters)):
             self.galil_ax_letters.append(chr(65 + i))
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
+        """
+        Sends disconnect commands to galil motors and sets flags to reflect disconnection
+        """
         self.command("ST")
         self.command("MO")
         self.get_position()
@@ -47,7 +51,10 @@ class GalilMotorController(AbstractMotorController):
         self.connected_signal.emit(False)
 
     def check_connected(self) -> bool:
-        """Returns whether a galil motor controller is connected. Also updates self.connected"""
+        """
+        Returns whether a galil motor controller is connected. Also updates self.connected
+        :return: true if connected, false otherwise
+        """
         try:
             info = self.handle.GInfo()
             self.connected = True
@@ -56,7 +63,12 @@ class GalilMotorController(AbstractMotorController):
             self.connected = False
             return False
 
-    def connect_hardware(self):
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """
+        attempts to connect the galil motor controller via IP and ports
+
+        :return: feedback of connection attempt and whether controller was successfully connected
+        """
         feedback = ""
 
         port_list = self.handle.GAddresses()
@@ -87,9 +99,12 @@ class GalilMotorController(AbstractMotorController):
         return self.connected, feedback
 
     @pyqtSlot(dict)
-    def setup(self, settings: Union[dict, None]):
-        """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
+    def setup(self, settings: Union[dict, None]) -> None:
+        """
+        Setup all axes according to a dictionary of settings. R is configured according to rotational settings.
 
+        :param settings: dictionary of settings to apply to the class and motors
+        """
         # Update settings according to the dict
         if settings is not None:
             self.increment_ray[0] = settings["lin_incr"]
@@ -142,7 +157,13 @@ class GalilMotorController(AbstractMotorController):
     def go_to_position(self, axes: List[str], coordinates_mm: List[float],
                        mutex_locked: bool = False, enable_ui: bool = True) -> bool:
         """
-        # Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
+        Tells a list of axis letters ('X' , 'Y' , 'Z' , or 'R') to go to corresponding list of coordinates in deg or mm
+
+        :param axes: list of axes to be moved
+        :param coordinates_mm: where the motor for the specific axis should be moved to
+        :param mutex_locked: unused variable; default to false, presumably to prevent race condition with moving
+        :param enable_ui: Enable ui to control motors unless the manager is running a script
+        :return: whether movement finished successfully
         """
 
         # check edge cases
@@ -210,11 +231,15 @@ class GalilMotorController(AbstractMotorController):
             self.ready_signal.emit()
         return success
 
-    def wait_for_motion_to_complete(self):
+    def wait_for_motion_to_complete(self) -> bool:
         # todo: this method seems to return true even if only one axis makes it to the origin
+        """
+        Hangs program in while loop until either move command finishes or move timeout from config file is reached
+
+        :return: whether the method/movement completed successfully
+        """
         start_time = t.time()
         success = False
-
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
             try:
                 stop_code = self.command("SC AB")
@@ -233,12 +258,20 @@ class GalilMotorController(AbstractMotorController):
         return success
 
     @pyqtSlot()
-    def set_origin_here(self):
+    def set_origin_here(self) -> None:
+        """
+        Sets origin for all axes to 0
+        """
         for axis in self.ax_letters:
             self.set_origin_here_1d(axis=axis)
 
     @pyqtSlot()
-    def set_origin_here_1d(self, axis):
+    def set_origin_here_1d(self, axis: str) -> None:
+        """
+        relay method from set_origin_here to set_origin_1d, passing the coord_mm as 0 to latter method
+
+        :param axis: the axis to set the origin of
+        """
         self.set_origin_1d(axis=axis, coord_mm=0)
 
     @pyqtSlot()
@@ -262,6 +295,13 @@ class GalilMotorController(AbstractMotorController):
         Helper method for the 'set_origin' method, actually creates the command string given
         the passed values and issues the command to the hardware, will return position if flag
         set to true and handles various error cases
+
+        :param axis: the axis to set the origin of
+        :param coord_mm: where the origin should be set to
+        :param get_position:
+            true if you want the class to update it's internal coord_mm variable and emit it as a
+            signal, false if otherwise (true by default)
+        :return: whether setting origin operation was successful
         """
         if coord_mm > 1000:
             self.log(level='error', message='Coordinate entered is too large, double check that it is given in mm')
@@ -294,10 +334,10 @@ class GalilMotorController(AbstractMotorController):
         return successful
 
     @pyqtSlot()
-    def stop_motion(self):
+    def stop_motion(self) -> None:
         """
-        Sends the stop command to the Galil control hardware to stop all motor movement.
-        Also emits a signal of the motor positions if class flag is true
+        Sends the stop command to the Galil control hardware to stop **all** motor movement.
+        Also **emits a signal** of whether the motor is moving
         """
         try:
             self.command("ST")
@@ -315,6 +355,9 @@ class GalilMotorController(AbstractMotorController):
         """
         Helper method to convert a given axis name in string format to the index
         position in the program's internal list of axes
+
+        :param axis: the axis in ax_letters that needs to be converted to an axis from the galil_ax_letters list
+        :returns: the correct axis string from the galil_ax_letters list
         """
         galil_ax_letter = ''
 
@@ -328,9 +371,11 @@ class GalilMotorController(AbstractMotorController):
         return galil_ax_letter
 
     @pyqtSlot(str)
-    def stop_motion_1d(self, axis: str):
+    def stop_motion_1d(self, axis: str) -> None:
         """
-        Tells the motion controller to stop a specific axis motor, handles errors
+        Tells the motion controller to **stop** a **specific** axis motor, `handles errors`
+
+        :param axis: axis to stop the motion of
         """
         galil_ax_letter = self.__get_galil_ax_letter(axis)
 
@@ -351,7 +396,11 @@ class GalilMotorController(AbstractMotorController):
         """
         Moves the motors to the internally stored home position for all axis.
         Has an optional flag to have the user see a warning prompt before motor homing.
-        Returns boolean representing successful homing.
+
+        :param enable_ui:
+            whether to turn on various buttons in main window and its tabs after operation if script
+            isn't running
+        :returns: boolean representing successful homing.
         """
         # enforce pre-move conditions
         self.command("ST")  # INFO: stops motor movement
@@ -379,9 +428,14 @@ class GalilMotorController(AbstractMotorController):
     @pyqtSlot(str)
     def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
         """
-        Does the same as the go_home method except is only pertained to the theta axis.
+        Does the same as the go_home method except is only pertained to the passed axis.
+
+        :param axis: the axis the user wishes to home
+        :param enable_ui: re-enables various inputs of the main window if a script isn't running
+        :return: whether homing operation completed successfully
         """
         # QUESTION: should this also support the x axis?
+        # ANSWER: No, only theta requires a prehome move
         # enforce pre-move conditions
         self.command("ST")  # stop command
         self.command("SH AB")
@@ -409,8 +463,13 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     @pyqtSlot(str, int)
-    def begin_motion(self, axis: str, direction: int):
-        """Axis is a letter (X,Y,Z, or R). The sign of the int specifies the positive or negative direction"""
+    def begin_motion(self, axis: str, direction: int) -> None:
+        """
+        begin moving a specific axis in a specfied direction
+
+        :param axis: is a letter (X,Y,Z, or R)
+        :param direction: the sign of the int specifies the positive or negative direction
+        """
         axis_index = self.ax_letters.index(axis)
 
         current_coordinate_mm = self.coords_mm[axis_index]
@@ -484,17 +543,23 @@ class GalilMotorController(AbstractMotorController):
         position_steps = position_steps * self.calibrate_ray_steps_per[i] / self.gearing_ray[i]
 
         if self.reverse_ray[i]:
-            position_steps = position_steps * -1
+            position_steps *= -1
 
         return position_steps
 
-    def steps_to_position(self, axis_index, position_steps):
-        """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
+    def steps_to_position(self, axis_index: int, position_steps: float) -> float:
+        """
+        Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees
+
+        :param axis_index: the axis for which the user wants to convert steps to mm/deg; 0=X, 1=R
+        :param position_steps: the position in steps
+        :returns: position in mm/deg
+        """
         i = axis_index
         position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
 
         if self.reverse_ray[i]:
-            position_deg_or_mm = position_deg_or_mm * -1
+            position_deg_or_mm *= -1
 
         if self.ax_letters[i].upper() == "X":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
@@ -511,6 +576,8 @@ class GalilMotorController(AbstractMotorController):
         """
         Motor controller will usually have an error number and code, if it doesn't,
         simply print out python's exception
+
+        :returns: galil motor controller response to 'TC 1': check error code command
         """
         try:
             error = self.command("TC 1")
@@ -518,8 +585,13 @@ class GalilMotorController(AbstractMotorController):
         except gclib.GclibError as e:
             return str(e)
 
-    def command(self, command):
-        print(command)
+    def command(self, command: str) -> str:
+        """
+        Helper method to send command to the galil motor controller
+
+        :param command: the command in string form you wish to send to the motor controller
+        :return: response of galil motor controller to issues command
+        """
         output = self.handle.GCommand(command)
         t.sleep(.01)
         return output
