@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication as QApp
 # from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QInputDialog, QTreeWidget, QTreeWidgetItem, QFileDialog
 
+from Utilities.useful_methods import in_range
 from Widget_Library.widget_script_editor import Ui_Form
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
@@ -350,10 +351,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
         that was previously below it. User must save and reload script for this chang to
         take effect
         """
-        # todo: perform move extensive testing with this function
-        if self.treeWidget.currentItem().parent():  # if selected element is a child
-            self.treeWidget.setCurrentItem(
-                self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+        try:
+            if self.treeWidget.currentItem().parent():  # if selected element is a child
+                self.treeWidget.setCurrentItem(
+                    self.treeWidget.currentItem().parent())  # set the currently selected item to its parent
+        except AttributeError:
+            return
+
         current_index = self.treeWidget.currentIndex()  # QModelIndex object
         current_index_row = current_index.row()  # index of the selected item in tree
         number_of_items_in_tree = self.treeWidget.invisibleRootItem().childCount() - 2  # total number of items in tree
@@ -374,7 +378,10 @@ class ScriptEditor(MyQWidget, Ui_Form):
             # since moving item "down," it's actually moving up in the list, save the next item
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row + 1]
             # set next item in list to previous item
-            list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[current_index_row]
+            try:
+                list_of_var_dicts_copy[current_index_row + 1] = list_of_var_dicts_copy[current_index_row]
+            except IndexError:
+                return
             # restore previous contents of next item to current index (swapping)
             list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
         else:  # if script does not have a header, no offset is needed
@@ -421,10 +428,13 @@ class ScriptEditor(MyQWidget, Ui_Form):
         was previously ahead of it. User will have to save and reload script for this change to
         take effect
         """
-        # todo: perform move extensive testing with this function
-        if self.treeWidget.currentItem().parent():  # if selected element is a child
-            # set the currently selected item to its parent
-            self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())
+        try:
+            if self.treeWidget.currentItem().parent():  # if selected element is a child
+                # set the currently selected item to its parent
+                self.treeWidget.setCurrentItem(self.treeWidget.currentItem().parent())
+        except AttributeError:
+            return
+
         current_index_row = self.treeWidget.currentIndex().row()  # index of the selected item in tree
         # index of the blank item that can be selected at end of tree list
         last_invisible_item_index = self.treeWidget.invisibleRootItem().childCount()
@@ -439,18 +449,26 @@ class ScriptEditor(MyQWidget, Ui_Form):
         elif current_index_row == last_invisible_item_index - 1:
             self.log("you are trying to move a non-item in the list upwards, this is not possible")
 
+        if current_index_row == 0:
+            self.log("you are trying to move the zeroth item in the list upwards, this is not possible")
+            return
+
         # if an item is selected
-        list_of_var_dicts_copy = list(
-            self.list_of_var_dicts)  # create a copy by value of the list of variable dictionaries
+        # create a copy by value of the list of variable dictionaries
+        list_of_var_dicts_copy = list(self.list_of_var_dicts)
 
         if self.check_if_script_has_header(list_of_var_dicts_copy):  # if script has a header
             current_index_row += 1  # offset to account for header
             # since moving item "up," it's actually moving down in the list, save the previous item
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
             # set next item in list to previous item
-            list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
+            try:
+                list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
+            except IndexError:
+                return
             # restore previous contents of previous item to current index (swapping)
             list_of_var_dicts_copy[current_index_row] = temporary_item_to_save
+
         else:  # if script does not have a header, no offset is needed
             temporary_item_to_save = list_of_var_dicts_copy[current_index_row - 1]
             list_of_var_dicts_copy[current_index_row - 1] = list_of_var_dicts_copy[current_index_row]
