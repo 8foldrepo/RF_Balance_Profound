@@ -241,6 +241,7 @@ class GalilMotorController(AbstractMotorController):
         start_time = t.time()
         success = False
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
+            self.app.processEvents()
             try:
                 stop_code = self.command("SC AB")
                 if '0' not in stop_code:
