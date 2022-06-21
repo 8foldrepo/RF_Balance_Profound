@@ -1,3 +1,8 @@
+"""
+This class allows for the ability for the program to move the motor controllers,
+retrieve their position, update the home/origin positions, and attain miscellaneous
+pieces of information from the controller such as the serial number, error code, etc.
+"""
 import time as t
 from typing import List, Union, Tuple
 import gclib
@@ -12,10 +17,19 @@ class GalilMotorController(AbstractMotorController):
     """Provides an interface with key functionality for a galil motor controller"""
 
     def get_serial_number(self) -> str:
+        """
+        Should return the serial number of the galil motor controller, **not yet implemented**
+
+        :return: the serial number of the galil motor controller (not yet implemented)
+        """
         ...
         # todo stretch: implement
 
     def wrap_up(self):
+        """
+        Relay call for the disconnect_hardware method, used to automate
+        closing all hardware classes in a loop in manager class
+        """
         self.disconnect_hardware()
 
     # Note: see the abstract_motor_controller class for all inherited signals and attributes
@@ -75,6 +89,7 @@ class GalilMotorController(AbstractMotorController):
                 feedback = feedback + self.handle.GInfo() + '\n'
                 self.connected = True
             except gclib.GclibError as e:
+                # noinspection IncorrectFormatting
                 feedback = "Connection to motor controller timed out. Make sure it is connected and do a power " \
                            "cycle: {0}".format(e)
 
@@ -457,7 +472,7 @@ class GalilMotorController(AbstractMotorController):
     @pyqtSlot(str, int)
     def begin_motion(self, axis: str, direction: int) -> None:
         """
-        begin moving a specific axis in a specfied direction
+        begin moving a specific axis in a specified direction
 
         :param axis: is a letter (X,Y,Z, or R)
         :param direction: the sign of the int specifies the positive or negative direction
@@ -485,8 +500,12 @@ class GalilMotorController(AbstractMotorController):
                          "press the emergency stop or turn off power manually")
 
     @pyqtSlot()
-    def get_position(self, mutex_locked: bool = False):
-        """Tell the motor controller to update its coords_mm variable and emit its current position as a signal"""
+    def get_position(self, mutex_locked: bool = False) -> None:
+        """
+        Tell the motor controller to update its coordinates_mm variable and emit its current position as a signal
+
+        :param mutex_locked: unused variable, presumably used to prevent race condition
+        """
         moving_ray = [False, False]
         moving_margin_ray = [0.001, 0.001]
 

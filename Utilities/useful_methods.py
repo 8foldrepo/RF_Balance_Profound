@@ -4,6 +4,7 @@ A class that provides a wide variety of useful methods throughout the entire pro
 import collections.abc
 import datetime
 import os
+from logging import Logger
 from typing import Tuple, List, Union
 from PyQt5.QtWidgets import QTabWidget
 from termcolor import colored
@@ -236,9 +237,11 @@ def trim(lists: List[List]) -> Tuple:
     return tuple(trimmed_lists)
 
 
-def search_for(filename):
+def search_for(filename: str) -> Union[bytes, str]:
     """
     Searches from current directory to grandparent directory for the specified file
+
+    :param filename: The name of the file you are searching for
     """
     # This program configures all rigols to settings from a csv file
     current_directory = os.path.dirname(__file__)
@@ -254,13 +257,13 @@ def search_for(filename):
     return file_path
 
 
-def log_msg(self, root_logger, message: str, level: str = None, line_number=None) -> None:
+def log_msg(self, root_logger: Logger, message: str, level: str = None, line_number=None) -> None:
     """
     Convenience function to log messages in a compact way with useful info.
 
     :param self: auto-passed scope of caller
     :param root_logger: logger instance passed from the calling class
-    :param level: A string indicating the logger level, can be either 'info', 'debug' or 'error'
+    :param level: A string indicating the logger level, can be either 'info', 'debug' or 'error'; case-insensitive
     :param message: A string that contains the message to be logged
     :param line_number: number of the line that called this log method
     """
@@ -268,16 +271,19 @@ def log_msg(self, root_logger, message: str, level: str = None, line_number=None
 
     thread_name = QThread.currentThread().objectName()
     log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
-    if level == "debug":
-        root_logger.debug(log_entry)
-        color = 'magenta'
-    elif level == "error":
+    if level.upper() == "DEBUG":
+        if self.config['Debugging']['print_detailed_verbose']:
+            root_logger.debug(log_entry)
+            color = 'magenta'
+        else:
+            return
+    elif level.upper() == "ERROR":
         color = 'red'
         root_logger.error(log_entry)
-    elif level == "warning":
+    elif level.upper() == "WARNING":
         color = 'yellow'
         root_logger.warning(log_entry)
-    elif level == 'info':
+    elif level.upper() == 'INFO':
         color = 'green'
         root_logger.info(log_entry)
     else:

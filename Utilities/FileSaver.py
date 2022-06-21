@@ -442,7 +442,13 @@ class FileSaver:
                     formatted_voltage = "{:.6e}".format(vsi_values[x])
                     file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
 
-    def log(self, message, level="info"):
+    def log(self, message: str, level: str = "info") -> None:
+        """
+        Relay method to user the base root logger
+
+        :param message: The message to be written out to console and log file
+        :param level: The severity of the message (info, warn, debug, error)
+        """
         log_msg(self, root_logger, message=message, level=level)
 
     def extract_file_data(self, rfb_logger: RFBDataLogger, rfb_data: RFBData, system_info, element: int,

@@ -1,6 +1,8 @@
+"""
+This class is to control the flow in information and
+commands to and from the position tab of main window.
+"""
 import logging
-import os
-
 import yaml
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
@@ -10,13 +12,14 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.useful_methods import is_number, check_directory
 from Utilities.useful_methods import log_msg
 from Widget_Library.widget_position import Ui_Form
+from manager import Manager
 from definitions import ROOT_DIR
 from ui_elements.my_qwidget import MyQWidget
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
 with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
-    pass
+    print("attempting to open log file in ui_position, will write if doesn't exist")
 file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
@@ -50,13 +53,30 @@ class Position(MyQWidget, Ui_Form):
         self.settings_ray = list()
         self.stop_button.setEnabled(False)
 
-    def set_config(self, config):
+    def set_config(self, config: dict) -> None:
+        """
+        setter method for class' local config variable; passed in main window class
+
+        :param config: the config variable to be passed to the ui_position class
+        """
         self.config = config
 
-    def set_manager(self, manager):
+    def set_manager(self, manager: Manager):
+        """
+        setter method for class' local manager variable; passed in main window class
+
+        :param manager: the manager class variable to be passed to the ui_position class
+        """
         self.manager = manager
 
     def set_motors(self, motors):
+        """
+        Setter method for class' local motors variable; relayed in main window class.
+        Also sets up the com port, and connects motor-related class methods to methods in
+        motor class.
+
+        :param motors: the motor variable to be passed to the ui_position class
+        """
         self.motors = motors
         self.populate_default_ui()
         self.com_port = self.config[self.motors.device_key]['port']
@@ -71,7 +91,11 @@ class Position(MyQWidget, Ui_Form):
         self.populate_settings_ray()
         self.configure_signals()
 
-    def populate_settings_ray(self):
+    def populate_settings_ray(self) -> None:
+        """
+        The automatic and default values for the position tab regarding motors,
+        is automatically called via the class' set_motor method. Alters Qt objects
+        """
         self.trans_1_indicator.setChecked(True)
         self.trans_1_indicator.dPtr.animate(True)
         self.theta_rotation_indicator.setChecked(True)
@@ -97,7 +121,11 @@ class Position(MyQWidget, Ui_Form):
         if not self.manager.currently_scripting:
             self.set_buttons_enabled_signal.emit(True)
 
-    def setup_pressed(self):
+    def setup_pressed(self) -> None:
+        """
+        Changes various buttons to disabled to prevent user disruption, processes events
+        to prevent lag and calls motors' setup method passing class variables as parameters
+        """
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.setup_signal.emit({
@@ -111,7 +139,11 @@ class Position(MyQWidget, Ui_Form):
             'r_gearing': self.gearing_ray[1]
         })
 
-    def populate_default_ui(self):
+    def populate_default_ui(self) -> None:
+        """
+        Default values to fill in the various Qt objects, all come from the
+        config files. Called automatically with the set_motors method
+        """
         self.steps_per_mm_sb.setValue(self.config[self.motors.device_key]["calibrate_ray"][0])
         self.steps_per_degree_sb.setValue(self.config[self.motors.device_key]["calibrate_ray"][1])
         self.lin_incr_double_sb.setValue(self.config[self.motors.device_key]["increment_ray"][0])
@@ -119,7 +151,11 @@ class Position(MyQWidget, Ui_Form):
         self.linear_speed_mm_s_sb.setValue(self.config[self.motors.device_key]["speeds_ray"][0])
         self.rotational_speed_deg_s_sb.setValue(self.config[self.motors.device_key]["speeds_ray"][1])
 
-    def save_config_ui(self):
+    def save_config_ui(self) -> None:
+        """
+        If the user fills in the values in the position tab, clicking the update or
+        save button will adjust the config's values to reflect the user inputted ones
+        """
         self.config[self.motors.device_key]["calibrate_ray"][0] = self.steps_per_mm_sb.value()
         self.config[self.motors.device_key]["calibrate_ray"][1] = self.steps_per_degree_sb.value()
         self.config[self.motors.device_key]["increment_ray"][0] = self.lin_incr_double_sb.value()
@@ -127,11 +163,17 @@ class Position(MyQWidget, Ui_Form):
         self.config[self.motors.device_key]["speeds_ray"][0] = self.linear_speed_mm_s_sb.value()
         self.config[self.motors.device_key]["speeds_ray"][1] = self.rotational_speed_deg_s_sb.value()
 
-        with open("local.yaml", "w") as f:
-            yaml.dump(self.config, f)
+        with open("local.yaml", "w") as config_file:
+            yaml.dump(self.config, config_file)
 
     @pyqtSlot(bool)
-    def set_buttons_enabled(self, enabled):
+    def set_buttons_enabled(self, enabled: bool) -> None:
+        """
+        Controls whether all user-interactive Qt objects
+        are disabled to prevent user disruption.
+
+        :param enabled: If true, turns on all the user-interactive object, and vice versa
+        """
         self.theta_neg_button.setEnabled(enabled)
         self.setup_button.setEnabled(enabled)
         self.x_pos_button.setEnabled(enabled)
@@ -178,7 +220,12 @@ class Position(MyQWidget, Ui_Form):
         if enabled:
             self.stop_button.setEnabled(enabled)
 
-    def configure_signals(self):
+    def configure_signals(self) -> None:
+        """
+        Sets up relay actions between various user-interactive objects and methods that pertain
+        to those objects. Such as if a spinbox value is changed, the signal will cause a method
+        be launched to reflect the changed value.
+        """
         # self.set_button.clicked.connect(self.set_clicked)
         self.axis_spinbox.valueChanged.connect(self.axis_changed)
         self.stop_button.clicked.connect(lambda: self.set_buttons_enabled_signal.emit(True))
@@ -203,7 +250,7 @@ class Position(MyQWidget, Ui_Form):
         self.manager.Motors.x_pos_mm_signal.connect(self.update_x_position)
         self.manager.Motors.r_pos_mm_signal.connect(self.update_r_position)
 
-    def axis_changed(self):
+    def axis_changed(self) -> None:
         """Change the settings displayed in the UI to reflect the current axis"""
         axis = self.axis_spinbox.value() - 1
         self.steps_per_mm_sb.setValue(self.motors.calibrate_ray_steps_per[axis])
@@ -221,8 +268,13 @@ class Position(MyQWidget, Ui_Form):
     #     self.motors.
 
     @pyqtSlot(str, int)
-    def begin_motion(self, axis, direction):
-        """Begin motion in with the specified axis letter is the specified direction. Example text: X+ """
+    def begin_motion(self, axis: str, direction: int) -> None:
+        """
+        Begin motion in with the specified axis letter and the specified direction. Example text: X+
+
+        :param axis: String that can be X or R, the axis to start movement
+        :param direction: Can be 1 or -1 to represent forward and reverse respectively
+        """
         # Setting this to true causes the UI to assume that motors have begun moving, even if they may have not.
         # self.motors.moving = True
         self.set_buttons_enabled_signal.emit(False)
@@ -230,49 +282,76 @@ class Position(MyQWidget, Ui_Form):
         self.begin_motion_signal.emit(axis, direction)
 
     @pyqtSlot()
-    def go_to_x_clicked(self):
+    def go_to_x_clicked(self) -> None:
+        """
+        The method that's called when to 'go to' button is clicked for the x-axis.
+        Turns off the tab buttons triggers motors' go_to_position method.
+        """
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.go_to_signal.emit(["X"], [self.go_x_sb.value()])
 
     @pyqtSlot()
-    def go_to_theta_clicked(self):
+    def go_to_theta_clicked(self) -> None:
+        """
+        The method that's called when to 'go to' button is clicked for the r-axis.
+        Turns off the tab buttons triggers motors' go_to_position method.
+        """
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.go_to_signal.emit(["R"], [self.go_theta_sb.value()])
 
     @pyqtSlot()
-    def reset_zero_clicked(self):
+    def reset_zero_clicked(self) -> None:
+        """activates the reset_zero_signal, which activates the motors' set_origin_here method"""
         self.reset_zero_signal.emit()
 
     @pyqtSlot()
-    def attempt_to_stop_motion(self):
+    def attempt_to_stop_motion(self) -> None:
+        """Triggers the set_buttons_enabled_signal(True) and the stop_motion_signal"""
         self.set_buttons_enabled_signal.emit(True)
         self.stop_motion_signal.emit()
 
     @pyqtSlot()
-    def insert_button_clicked(self):
+    def insert_button_clicked(self) -> None:
         """Command the motors to go to the insertion point"""
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
         self.go_to_signal.emit(['X'], [int(self.config['WTF_PositionParameters']['X-TankInsertionPoint'])])
 
     @pyqtSlot(float)
-    def update_x_position(self, mm):
+    def update_x_position(self, mm: float) -> None:
+        """
+        Changes the value shown in the x position Qt object to the passed mm value.
+        Includes try/exception for KeyboardInterrupt.
+
+        :param mm: The position the x-axis is currently in mm
+        """
         try:
             self.x_pos_lineedit.setText("%.2f" % mm)
         except KeyboardInterrupt:
             pass
 
     @pyqtSlot(float)
-    def update_r_position(self, mm):
+    def update_r_position(self, mm: float):
+        """
+        Changes the value shown in the r position Qt object to the passed mm value.
+        Includes try/exception for KeyboardInterrupt.
+
+        :param mm: The position the r-axis is currently in mm
+        """
         try:
             self.theta_pos_lineedit.setText("%.2f" % mm)
         except KeyboardInterrupt:
             pass
 
     @pyqtSlot()
-    def go_element_button_clicked(self):
+    def go_element_button_clicked(self) -> None:
+        """
+        Takes the position and pitch of the element from the config file
+        and moves the x-axis motor to meet the element. Handles case where
+        manager variable isn't filled, and if the go_element_combo isn't a number
+        """
         element_1_pos = self.config["WTF_PositionParameters"]["X-Element1"]
         element_pitch = self.config["WTF_PositionParameters"]["X-Element pitch (mm)"]
 
@@ -290,7 +369,7 @@ class Position(MyQWidget, Ui_Form):
                 self.go_to_signal.emit(["X"], [target_position])
 
     @pyqtSlot()
-    def retract_button_clicked(self):
+    def retract_button_clicked(self) -> None:
         """Command the motors to retract until a sensor is reached"""
         self.set_buttons_enabled_signal.emit(False)
         self.app.processEvents()
@@ -298,10 +377,10 @@ class Position(MyQWidget, Ui_Form):
         self.home_1d_signal.emit("X")
 
     @pyqtSlot()
-    def manual_home_clicked(self):
+    def manual_home_clicked(self) -> None:
         """
-        Command the motors to blindly go to an element as defined by the element number times the offset from
-        element 1
+        Command the motors to blindly go to an element as defined
+        by the element number times the offset from element 1
         """
         self.set_buttons_enabled_signal.emit(False)
 
@@ -312,5 +391,11 @@ class Position(MyQWidget, Ui_Form):
         elif self.all_axes_radio.isChecked():
             self.home_all_signal.emit()
 
-    def log(self, message, level="info"):
+    def log(self, message: str, level: str = "info") -> None:
+        """
+        Relay method for the root logger if log messages are needed in this class
+
+        :param message: the message to be written to console and the log file
+        :param level: the level if importance this message has to the user
+        """
         log_msg(self, root_logger, message=message, level=level)
