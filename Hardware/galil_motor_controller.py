@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_comma_string
+from Utilities.useful_methods import create_comma_string, is_number
 
 
 class GalilMotorController(AbstractMotorController):
@@ -66,11 +66,16 @@ class GalilMotorController(AbstractMotorController):
 
     def check_connected(self) -> bool:
         """
-        returns self.connected boolean variable of galil motor controller
-
+        Returns whether a galil motor controller is connected. Also updates self.connected
         :return: true if connected, false otherwise
         """
-        return self.connected
+        try:
+            info = self.handle.GInfo()
+            self.connected = True
+            return True
+        except:
+            self.connected = False
+            return False
 
     def connect_hardware(self) -> Tuple[bool, str]:
         """
@@ -123,9 +128,16 @@ class GalilMotorController(AbstractMotorController):
             self.speeds_ray[1] = settings["rot_speed"]
             self.calibrate_ray_steps_per[0] = settings["steps_per_mm"]
             self.calibrate_ray_steps_per[1] = settings["steps_per_deg"]
-            self.movement_mode = settings["movement_mode"]
             self.gearing_ray[0] = settings["x_gearing"]
             self.gearing_ray[1] = settings["r_gearing"]
+
+        # Ensure motors are connected, if not return
+        self.check_connected()
+        if not self.connected:
+            self.connect_hardware()
+            if not self.connected:
+                self.ready_signal.emit()
+                return
 
         # Turn Motors on
         self.handle.GCommand("SH")
@@ -142,7 +154,6 @@ class GalilMotorController(AbstractMotorController):
 
             # Convert speeds to number of counts per second and update them
             steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
-
             sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
             self.command(sp_command_str)
 
@@ -153,6 +164,7 @@ class GalilMotorController(AbstractMotorController):
         except gclib.GclibError:
             self.log(level='error', message=f"Connection error: {self.check_user_fault()}")
             self.connected = False
+        self.ready_signal.emit()
 
     # todo: test
     @pyqtSlot(list, list)
@@ -181,7 +193,7 @@ class GalilMotorController(AbstractMotorController):
                 self.ready_signal.emit()
             return False
 
-        if sum(coordinates_mm) > 1000:
+        if sum(coordinates_mm) > 100000:
             self.log(level='error', message="Coordinates entered for the motors are too large."
                                             " Double check in the code that they are given in mm")
             if enable_ui:
@@ -243,22 +255,24 @@ class GalilMotorController(AbstractMotorController):
         start_time = t.time()
         success = False
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
+            self.app.processEvents()
+            self.get_position()
             try:
-                self.get_position()
-                # current_pos_str = self.command('RP')
-                # this command is intended to have no effect, by telling the motors to go to the current position.
-                # It will raise an exception if the motors are moving. If there is no exception the motion is complete
-                self.command(f"BG {''.join(self.galil_ax_letters)}")
-                success = True
-                break
+                stop_code = self.command("SC AB")
 
-            except gclib.GclibError:
+                stop_code_ray = stop_code.split(', ')
+                zero_in_ray = False
+                for code in stop_code_ray:
+                    if code == '0':
+                        zero_in_ray = True
+
+                if not zero_in_ray:
+                    success = True
+                    break
+            except gclib.GclibError as e:
                 code = self.check_user_fault()
-                # This exception is expected to occur repeatedly until the motion is complete. This is not a bug.
-                if 'not valid while running' not in code:
-                    # If the error code is different, log it as an error and return False
-                    self.log(level='error', message=f"error in go to position: {code}")
-                    return False
+                self.log(level='error', message=f"error in wait_for_motion_to_complete: {code}")
+                return False
 
         if not success:
             self.log(level='error', message='movement timed out')
@@ -298,7 +312,6 @@ class GalilMotorController(AbstractMotorController):
 
         self.get_position()
 
-    # todo: test
     def set_origin_1d(self, axis, coord_mm, get_position=True):
         """
         Helper method for the 'set_origin' method, actually creates the command string given
@@ -413,13 +426,13 @@ class GalilMotorController(AbstractMotorController):
         """
         # enforce pre-move conditions
         self.command("ST")  # INFO: stops motor movement
-        self.command("SH ABCD")
+        self.command("SH AB")
 
         # Theta pre-home move
         self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
         self.command("ST")
-        self.command("SH ABCD")
+        self.command("SH AB")
         try:
             self.command("HM")  # set up for homing command
             self.command("BG")  # begin command
@@ -427,8 +440,13 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message=self.check_user_fault())
 
         motion_complete_success = self.wait_for_motion_to_complete()
-        go_to_position_success = self.go_to_position(['R'], [-90], enable_ui=False)
+        self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord']+
+                                                self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
+        self.get_position()
 
+        go_to_position_success = self.go_to_position(['R'], [self.config["WTF_PositionParameters"]['ThetaHomeCoord']], enable_ui=False)
+
+        self.get_position()
         if enable_ui:
             self.ready_signal.emit()
 
@@ -443,16 +461,18 @@ class GalilMotorController(AbstractMotorController):
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
         :return: whether homing operation completed successfully
         """
+        # QUESTION: should this also support the x axis?
+        # ANSWER: No, only theta requires a prehome move
         # enforce pre-move conditions
         self.command("ST")  # stop command
-        self.command("SH ABCD")
+        self.command("SH AB")
 
         if axis == 'R' or axis == 'Theta':
             # Theta pre-home move
             self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
             self.command("ST")
-            self.command("SH ABCD")
+            self.command("SH AB")
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
             self.command(f"BG {self.__get_galil_ax_letter(axis)}")
@@ -462,7 +482,13 @@ class GalilMotorController(AbstractMotorController):
         success = self.wait_for_motion_to_complete()
 
         if axis == 'R' or axis == 'Theta':
-            success = success and self.go_to_position(['R'], [-90], enable_ui=False)
+            self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord'] +
+                                                         self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
+            self.get_position()
+            success = success and self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]], enable_ui=False)
+
+        t.sleep(.1)
+        self.get_position()
 
         if enable_ui:
             self.ready_signal.emit()
@@ -509,7 +535,13 @@ class GalilMotorController(AbstractMotorController):
         moving_ray = [False, False]
         moving_margin_ray = [0.001, 0.001]
 
-        x_pos = self.steps_to_position(0, float(self.command('RP A')))
+        x_pos_str = self.command('RP A')
+        if is_number(x_pos_str):
+            x_pos = self.steps_to_position(0, float())
+        else:
+            self.ready_signal.emit()
+            return
+
         if abs(x_pos - self.coords_mm[0]) > moving_margin_ray[0]:
             moving_ray[0] = True
         self.coords_mm[0] = x_pos
@@ -547,7 +579,9 @@ class GalilMotorController(AbstractMotorController):
             position_steps = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']-\
+                             self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+
         else:
             return
 
@@ -578,7 +612,8 @@ class GalilMotorController(AbstractMotorController):
             self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']+\
+                                 self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
             self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
         return position_deg_or_mm
@@ -603,6 +638,16 @@ class GalilMotorController(AbstractMotorController):
         :param command: the command in string form you wish to send to the motor controller
         :return: response of galil motor controller to issues command
         """
-        output = self.handle.GCommand(command)
+        print(command)
+        try:
+            output = self.handle.GCommand(command)
+        except gclib.GclibError as e:
+            if "device read error" in str(e) or 'device write error' in str(e):
+                self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
+            else:
+                code = self.check_user_fault()
+                self.log(level='error', message=f'Error in command device {code}.')
+            return ""
+
         t.sleep(.01)
-        return output
+        return output.replace('\r\n','')

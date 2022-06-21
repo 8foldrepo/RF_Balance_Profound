@@ -1,3 +1,4 @@
+import random
 import time as t
 
 from PyQt5.QtCore import pyqtSignal
@@ -40,6 +41,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:
+            self.water_level = random.choice([WaterLevel.level, WaterLevel.below_level, WaterLevel.above_level])
             if self.get_water_level() == WaterLevel.below_level:
                 return True
         return False
@@ -57,6 +59,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:
+            self.water_level = random.choice([WaterLevel.level, WaterLevel.below_level, WaterLevel.above_level])
             if self.get_water_level() == WaterLevel.level:
                 return True
         return False

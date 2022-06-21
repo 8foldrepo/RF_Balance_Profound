@@ -22,11 +22,17 @@ CE ,2
 # Set motor resolution
 YB ,400
 
-# Lower amplifier gain for B
-AGB=0
 
-# Enable Low current stepper mode
+AGB=2
+
+# Increase amplifier gain for B
+AGA=2
+
+# Enable Low current stepper mode for B
 LCB=1
+
+#Change polarity of limit inputs and home switches
+CN1,1
 
 # Save settings
 BN

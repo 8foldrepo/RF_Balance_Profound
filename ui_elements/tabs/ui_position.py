@@ -103,7 +103,7 @@ class Position(MyQWidget, Ui_Form):
         self.visa_resource_field.setText(self.com_port)
         self.axis_spinbox.setValue(2)
         self.calibrate_ray = self.config[self.motors.device_key]['calibrate_ray']
-        self.steps_per_mm_sb.setValue(self.calibrate_ray[1])
+        self.steps_mm_doublespinbox.setValue(self.calibrate_ray[0])
         self.gearing_ray = self.config[self.motors.device_key]['gearing_ray']
         self.gearing_double_spinbox.setValue(self.gearing_ray[1])
         self.encoder_ray = self.config[self.motors.device_key]['encoder_installed_ray']
