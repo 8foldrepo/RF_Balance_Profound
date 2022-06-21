@@ -165,7 +165,15 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         self.voltage_time_plot.refresh(x, y)
         self.app.processEvents()
 
-    def plot(self, x, y, refresh_rate):
+    def plot(self, x: list, y: list, refresh_rate: float) -> None:
+        """
+        Gives the scan tab plot data needed to be filled and refresh rate to show the user
+
+        :param x: The list of a-axis points to be plotted in scan graph
+        :param y: The list of y-axis points that must correspond w/ given x-axis points
+        :param refresh_rate: In hertz, the number of times the graph is updated per second
+        :return:
+        """
         self.x_data = x
         self.y_data = y
         # Cancel if this widget is not plot ready
@@ -173,7 +181,7 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
             return
 
         # Cancel if the current tab is not visible
-        if not self.tabWidget.tabText(self.tabWidget.currentIndex()) == "Scan":
+        if self.tabWidget.tabText(self.tabWidget.currentIndex()) != "Scan":
             return
 
         self.last_acquired_waveform_plot_label.setText(
