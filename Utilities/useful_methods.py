@@ -151,6 +151,7 @@ def in_range(my_index: int, my_list: list) -> bool:
     """returns whether the given index is valid for the given list"""
     return 0 <= my_index < len(my_list)
 
+
 def bound(x: float) -> float:
     """
     If passed int x is between -.001 and .001, it turns x to 0 and returns it,
@@ -294,18 +295,22 @@ def log_msg(self, root_logger: Logger, message: str, level: str = None, line_num
           f" [{line_number}] [{thread_name}] : " + colored(message, color))
 
 
-def print_list(list2):
+def print_list(list2: list) -> None:
     """
-    Prints a list using a for range loop
+    Vertically prints a list using a for range loop
+
+    :param list2: The list you want to print
     """
     for x in range(len(list2)):
         print(list2[x])
 
 
-def print_list_2(list2):
+def print_list_2(list2: list) -> None:
     """
-    prints a list using the built-in print method and casts
+    prints a list horizontally using the built-in print method and casts
     what ever is inside the list to a string
+
+    :param list2: The list you want to be printed
     """
     print(str(list2)[1:-1])
 

@@ -1,8 +1,12 @@
+"""
+This class controls the logic of the pretest dialog box, a task that is usually ran in the beginning
+of a test. The dialog merely contains some input fields the user would need to fill in.
+"""
 from datetime import datetime
 from os.path import exists
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
-
 from Utilities.useful_methods import is_number
 from Widget_Library import dialog_pretest
 from data_structures.test_data import TestData
@@ -12,7 +16,7 @@ from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     # signal from MainWindow to manager; operator, serial no., comment. Bool is whether to begin script
-    pretest_metadata_signal = pyqtSignal(TestData, bool)
+    pretest_metadata_signal = QtCore.pyqtSignal(TestData, bool)
     abort_signal = pyqtSignal()
 
     def __init__(self, serial_no, schema, access_level, begin_script = True, parent=None, config=None):
@@ -21,16 +25,16 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.configure_signals()
         self.test_data = TestData()
         self.test_data.schema = schema
-        self.begin_script = begin_script # Wether to tell manager to begin script when this dialog is dismissed
+        self.begin_script = begin_script  # Whether to tell manager to begin script when this dialog is dismissed
         # add formatted date
         now = datetime.now()
-        formatted_date = now.strftime("%Y.%m.%d-%H.%M")
+        date_formatted = now.strftime("%Y.%m.%d-%H.%M")
 
         # Get the current date, save it to the metadata dictionary, and show it in the UI
         self.ua_serial_no_inputline.setText(serial_no)
         self.schema = schema
         self.lookup_clicked()
-        self.date_output.setText(formatted_date)
+        self.date_output.setText(date_formatted)
 
         if access_level.upper() == 'OPERATOR':
             self.override_checkbox.setEnabled(False)
@@ -115,7 +119,7 @@ def print_info(info_dict):
 
 if __name__ == "__main__":
     import sys
-    from PyQt5 import QtWidgets
+    from PyQt5 import QtWidgets, QtCore
     from datetime import date
 
     app = QtWidgets.QApplication(sys.argv)
