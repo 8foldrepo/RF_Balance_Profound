@@ -712,17 +712,19 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     #         progress = "Document Saved"
     #         self.feedback_Update.append(str(progress))
 
-    # INFO: notes widget does not exist, from old project
-    # def file_print(self) -> None:
-    #     from PyQt5.QtPrintSupport import QPrintDialog
-    #
-    #     dlg = QPrintDialog()
-    #     if dlg.exec_():
-    #         self.NotesWidget.textEdit.print_(dlg.printer())
-    #
-    #     # Updating the Feedback window
-    #     Progress = "Notes Printed"
-    #     self.log(str(Progress))
+    def file_print(self) -> None:
+        """
+        notes widget does not exist, from old project
+        """
+        from PyQt5.QtPrintSupport import QPrintDialog
+
+        dlg = QPrintDialog()
+        if dlg.exec_():
+            self.NotesWidget.textEdit.print_(dlg.printer())
+
+        # Updating the Feedback window
+        progress = "Notes Printed"
+        self.log(str(progress))
 
     def quit_clicked(self) -> None:
         """
