@@ -648,8 +648,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self,
         )
         open_result_file_action.setStatusTip("Open file")
-        a = QtCore.pyqtSignal()
-        a.connect()
         open_result_file_action.triggered.connect(self.load_results)
         file_menu.addAction(open_result_file_action)
 
