@@ -1,8 +1,13 @@
+"""
+This class handles saving files to specified local storage locations. It makes the code more
+modularized and compact since this logic doesn't have to be re-written on a class to class basis
+"""
 import logging
 import os
 import shutil
 from datetime import datetime
 from statistics import mean
+from typing import List
 
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -26,6 +31,10 @@ log_formatter = logging.Formatter(LOGGER_FORMAT)
 
 
 class FileSaver:
+    """
+    This class has the ability to save various data points such
+    as waveforms, extract data, create nested directories, etc.
+    """
     test_data: TestData
     folder_name = None
     results_dir = None
@@ -40,14 +49,22 @@ class FileSaver:
         else:
             self.config = load_configuration()
 
-    def create_folders(self, test_data):
-        """Creates the folder structure for a UA test (defaults to the results directory in the config)"""
+    def create_folders(self, test_data: TestData) -> None:
+        """
+        Creates the folder structure for a UA test (defaults to the "results" directory in the config)
+
+        :param test_data: the test data to be stored as a local class variable for other operations
+        """
         self.test_data = test_data
-        self.create_results_folder()
-        self.create_subfolders()
+        self.__create_results_folder()
+        self.__create_subfolders()
         self.copy_system_info()
 
-    def create_results_folder(self):
+    def __create_results_folder(self) -> None:
+        """
+        Takes the path and filename from the config file and test_data respectively, and
+        creates the last part of the directory path specified for the results folder
+        """
         if self.test_data.serial_number is None or self.test_data.serial_number == "":
             self.folder_name = "No_Serial_Provided-" + self.test_data.test_date_time
         else:
@@ -56,7 +73,10 @@ class FileSaver:
         # Retrieve the path of the "results" directory from the yaml file and create it if it does not exist
         self.results_dir = check_directory(results_path)
 
-    def create_subfolders(self):
+    def __create_subfolders(self) -> None:
+        """
+        Recursively create subfolders for the results directory
+        """
         if self.results_dir is None:
             self.log(level='error', message='Could not create subfolders before results folder, check function call')
             return
@@ -71,7 +91,7 @@ class FileSaver:
         self.waveform_data_path = check_directory(waveform_data_path)
         self.directories_created = True
 
-    def copy_system_info(self):
+    def copy_system_info(self) -> None:
         """Copies the system info file into the results directory"""
         if self.log_files_dir is None:
             self.log(level='error', message='Could save config, log_files_dir does not exist')
@@ -86,7 +106,11 @@ class FileSaver:
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
     def save_test_results_summary_and_log(self, test_data: TestData) -> None:
-        """Save the test data (shared with the manager) to the "results" folder in the form of a results summary"""
+        """
+        Save the test data (shared with the manager) to the "results" folder in the form of a results summary
+
+        :param test_data: test data to be written to the results file, passed from manager
+        """
         if not test_data:  # if dictionary is empty return
             self.log(level="error", message="No results to save")
             return
@@ -95,15 +119,19 @@ class FileSaver:
 
         path = os.path.join(self.results_dir, "Results Summary.txt")
 
-        self.log(f"Saving results summary to: {path}")
+        self.log(message=f"Saving results summary to: {path}", level='info')
 
-        create_test_results_summary_file(self.test_data, path)
-        self.save_log_file(self.test_data.script_log)
+        create_test_results_summary_file(test_data=self.test_data, path=path)
+        self.save_log_file(log_table=self.test_data.script_log)
 
     # turn a 2d list into a .log file (a text file with a different extension
 
-    def save_log_file(self, log_table: list = None):
-        """saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided"""
+    def save_log_file(self, log_table: list = None) -> None:
+        """
+        saves the 2d list called log_table to a .log file. defaults to self.test_data if none is provided
+
+        :param log_table: the script log from test_data, will be written out to the log file; tab delimited
+        """
         if log_table is None:
             log_table = self.test_data.script_log
 
@@ -119,14 +147,15 @@ class FileSaver:
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
 
-        f = open(path, "w")
+        log_file = open(path, "w")
         for x in range(len(log_table)):
-            f.write("\t".join(log_table[x]))
-            f.write("\n")
-        f.close()
+            log_file.write("\t".join(log_table[x]))
+            log_file.write("\n")
+        log_file.close()
 
-    def store_waveform(self, metadata: FileMetadata, times, voltages,
-                       storage_location, filename_stub):  # assume single array every time
+    # assume single array every time
+    def store_waveform(self, metadata: FileMetadata, times: list, voltages: list, storage_location: str,
+                       filename_stub: str) -> None:
 
         if storage_location != '':
             try:
@@ -185,32 +214,13 @@ class FileSaver:
 
     # the three lists are 2D, first col in sub list is time second is voltage
     # todo: add a more specific filename and match the format of the example files
-    def store_measure_rfb_waveform_csv(
-            self,
-            element_number,
-            ua_serial_number,
-            freq_mhz: float,
-            diameter_mm: float,
-            propagation_distance_mm: float,
-            T_decC: float,
-            UC_percent: float,
-            power_ratio: float,
-            g_mpersecsqrd: float,
-            cal_fact,
-            power_on_w: list,
-            power_off_w: list,
-            cumulative_results: list,
-            threshold: float,
-            offset_s: float,
-            absorption: list,
-            transducer_size: list,
-            focusing: list,
-            absorb_trans_times: list,
-            transition_amps: list,
-            raw_data: list,
-            frequency_range: FrequencyRange,
-            storage_location: str
-    ):
+    def store_measure_rfb_waveform_csv(self, element_number: int, ua_serial_number: str, freq_mhz: float,
+                                       diameter_mm: float, propagation_distance_mm: float, T_decC: float,
+                                       uc_percent: float, power_ratio: float, g_mpersecsqrd: float, cal_fact: float,
+                                       power_on_w: list, power_off_w: list, cumulative_results: list, threshold: float,
+                                       offset_s: float, absorption: list, transducer_size: list, focusing: list,
+                                       absorb_trans_times: list, transition_amps: list, raw_data: list,
+                                       frequency_range: FrequencyRange, storage_location: str) -> None:
         points = len(power_on_w)
 
         if storage_location != '':
@@ -254,7 +264,7 @@ class FileSaver:
         file.write("Calibration Info\n")
         file.write("T (degC),UC (%),Power Ratio,g (m/s^2),Cal Fact\n")
         file.write(
-            f'{"%.6f" % T_decC},{"%.6f" % UC_percent},{"%.6f" % power_ratio},{"%.6f" % g_mpersecsqrd} s^-2,'
+            f'{"%.6f" % T_decC},{"%.6f" % uc_percent},{"%.6f" % power_ratio},{"%.6f" % g_mpersecsqrd} s^-2,'
             f'{"%.6f" % cal_fact} s^-3 m^2\n\n')
 
         file.write("Measurements\n")
@@ -340,8 +350,12 @@ class FileSaver:
             file.write(f"{time_s},{mass_mg},{ac_pow_w},{fw_pow_w},{rf_pow_w}\n")
         file.close()
 
-    def save_find_element_profile(self, metadata, positions, vsi_values,
-                                  storage_location, filename_stub="FindElement") -> bool:
+    def save_find_element_profile(self, metadata: FileMetadata, positions: list, vsi_values: list,
+                                  storage_location: str, filename_stub: str = "FindElement") -> bool:
+        """
+
+        :return: True if method ran successfully, False otherwise.
+        """
         if storage_location != '' and storage_location is not None:
             try:
                 path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
@@ -392,8 +406,10 @@ class FileSaver:
                     formatted_time = "{:.6e}".format(positions[x])
                     formatted_voltage = "{:.6e}".format(vsi_values[x])
                     file.write(f"{formatted_time}\t{formatted_voltage}\t0.000000E+0\n")
+            return True
 
-    def save_frequency_sweep(self, metadata, frequencies, vsi_values, storage_location, filename_stub="FindElement"):
+    def save_frequency_sweep(self, metadata: FileMetadata, frequencies: list, vsi_values: list,
+                             storage_location: str, filename_stub: str = "FindElement") -> None:
         if storage_location != '' and storage_location is not None:
             try:
                 path = check_directory(os.path.join(storage_location, self.folder_name, "ElementScans",
@@ -452,7 +468,8 @@ class FileSaver:
         log_msg(self, root_logger, message=message, level=level)
 
     def extract_file_data(self, rfb_logger: RFBDataLogger, rfb_data: RFBData, system_info, element: int,
-                          frequency_mhz: float, threshold, offset, frequency_range, storage_location: str):
+                          frequency_mhz: float, threshold: float, offset: float, frequency_range: FrequencyRange,
+                          storage_location: str):
         balance_readings_mg = [value * 1000 for value in rfb_logger.balance_readings_g]
         # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
         raw_data = [
@@ -540,7 +557,7 @@ class FileSaver:
             ),
             propagation_distance_mm=15.000000,
             T_decC=rfb_data.water_temperature_c,
-            UC_percent=float(rfb_data.p_on_rand_unc),
+            uc_percent=float(rfb_data.p_on_rand_unc),
             power_ratio=1.000000,
             g_mpersecsqrd=9.810000,
             cal_fact=14600.571062,

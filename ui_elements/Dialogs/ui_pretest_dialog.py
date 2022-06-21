@@ -4,6 +4,7 @@ of a test. The dialog merely contains some input fields the user would need to f
 """
 from datetime import datetime
 from os.path import exists
+from pprint import pprint
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -15,11 +16,14 @@ from ui_elements.Dialogs.my_qdialog import MyQDialog
 
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
+    """
+    This class extends MyQDialog and takes UI attributes from dialog_pretest.ui/py from the Widget_Library
+    """
     # signal from MainWindow to manager; operator, serial no., comment. Bool is whether to begin script
     pretest_metadata_signal = QtCore.pyqtSignal(TestData, bool)
     abort_signal = pyqtSignal()
 
-    def __init__(self, serial_no, schema, access_level, begin_script = True, parent=None, config=None):
+    def __init__(self, serial_no, schema, access_level, begin_script=True, parent=None, config=None):
         super().__init__(parent=parent, config=config)
         self.setupUi(self)
         self.configure_signals()
@@ -41,13 +45,21 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
 
         self.test_operator_inputline.setFocus()
 
-    def configure_signals(self):
+    def configure_signals(self) -> None:
+        """
+        connects the OK, cancel, lookup, and override buttons/checkbox
+        to class methods for additional coding operations
+        """
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.cancel_clicked)
         self.lookup_button.clicked.connect(self.lookup_clicked)
         self.override_checkbox.clicked.connect(self.override_checkbox_clicked)
 
-    def override_checkbox_clicked(self):
+    def override_checkbox_clicked(self) -> None:
+        """
+        If override_checkbox is clicked, the user can manually input the
+        low/high frequency, and hardware code fields; and vice versa
+        """
         if self.override_checkbox.isChecked():
             self.lf_MHz_field.setEnabled(True)
             self.hf_MHz_field.setEnabled(True)
@@ -57,7 +69,11 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
             self.hf_MHz_field.setEnabled(False)
             self.hardware_code_field.setEnabled(False)
 
-    def lookup_clicked(self):
+    def lookup_clicked(self) -> None:
+        """
+        If the user inputted a serial number, the program will look through a "database" of serial numbers to
+        automatically retrieve and fill the hardware code, as well as the low and high frequency values for the device
+        """
         serial_no = self.ua_serial_no_inputline.text().upper()
         self.lf_MHz_field.setText("")
         self.hf_MHz_field.setText("")
@@ -88,7 +104,11 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if self.hardware_code_field.text() == "":
             self.hardware_code_field.setText("Not found")
 
-    def ok_clicked(self):
+    def ok_clicked(self) -> None:
+        """
+        This method validates the required information put into the prompt fields when the user clicks ok, if there's
+        a problem with the given info, the program will notify the user and will give them a chance to fix it
+        """
         if self.ua_serial_no_inputline.text() == '' or self.test_operator_inputline.text() == '':
             self.feedback_label.setText("Fill all required fields")
             return
@@ -109,12 +129,19 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
 
         self.close()
 
-    def cancel_clicked(self):
+    def cancel_clicked(self) -> None:
+        """Executes 'self.close()'; closes the prompt window"""
         self.close()
 
 
-def print_info(info_dict):
-    print(f"metadate {info_dict}")
+def print_info(info_dict: dict):
+    """
+    Prints contents of pretest metadata for debugging
+
+    :param info_dict: the metadata is stored in a dictionary, pass it to view the contents in pprint format
+    """
+    print("metadata:\n")
+    pprint(info_dict)
 
 
 if __name__ == "__main__":
