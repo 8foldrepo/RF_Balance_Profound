@@ -48,16 +48,24 @@ class SimulatedOscilloscope(AbstractOscilloscope):
         pass
 
     def get_horizontal_scale_sec(self) -> float:
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'retrieved oscilloscope horizontal scale sec is: {self.range_s}', level='debug')
         return self.range_s
 
     def set_horizontal_scale_sec(self, seconds: float) -> None:
         self.range_s = 8 * seconds
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'oscilloscope horizontal scale sec set to: {8 * seconds}', level='debug')
 
     def get_horizontal_offset_sec(self) -> float:
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'retrieved oscilloscope horizontal offset sec is: {self.offset_s}', level='debug')
         return self.offset_s
 
     def set_horizontal_offset_sec(self, seconds: float) -> None:
         self.offset_s = seconds
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'oscilloscope horizontal offset sec set to: {seconds}', level='debug')
 
     def get_horizontal_range_sec(self) -> float:
         return self.range_s

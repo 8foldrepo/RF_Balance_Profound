@@ -2,6 +2,8 @@ import os
 import random
 import unittest
 
+from termcolor import colored
+
 from Utilities.load_config import load_configuration
 from data_structures.test_data import TestData
 from manager import Manager
@@ -93,6 +95,9 @@ class MyTestCase(unittest.TestCase):
     def test_configure_oscilloscope_timebase(self):
         timebase_us = round(random.uniform(1, 10), 3)
         delay_us = round(random.uniform(1, 10), 3)
+        if self.config['Debugging']['print_detailed_verbose']:
+            print(colored(f'timebase_us: {timebase_us}', 'yellow'))
+            print(colored(f'delay_us: {delay_us}', 'yellow'))
         var_dict = {'Timebase': timebase_us, 'Delay': delay_us}
         try:
             self.manager.configure_oscilloscope_timebase(var_dict=var_dict)
@@ -101,7 +106,7 @@ class MyTestCase(unittest.TestCase):
             self.fail(f"manager's configure_oscilloscope_timebase() method "
                       f"raised exception when it shouldn't have: {e}")
 
-        self.assertEqual(timebase_us / 1000000, self.manager.Oscilloscope.get_horizontal_scale_sec())
+        self.assertEqual((timebase_us / 1000000) * 8, self.manager.Oscilloscope.get_horizontal_scale_sec())
         self.assertEqual(delay_us / 1000000, self.manager.Oscilloscope.get_horizontal_offset_sec())
 
     def test_autoset_timebase(self):

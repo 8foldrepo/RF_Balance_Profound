@@ -1,13 +1,17 @@
+"""
+This class controls the Main Window GUI thread. In contrast to the manager class, this class focuses on the GUI
+interaction logic between the user and the application. Several methods in the class control the presentation of
+information, layout of dialogs/prompts, triggers and synchronization between this class' and the manager's signals,
+etc.
+"""
 import logging
 import os
 import sys
 import time as t
 import webbrowser
 from typing import List
-
-import PyQt5
 from PyQt5 import QtCore, Qt
-from PyQt5.QtCore import QThread, QEvent, pyqtBoundSignal, pyqtSignal
+from PyQt5.QtCore import QThread, QEvent
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
@@ -36,7 +40,7 @@ from ui_elements.Dialogs.ui_write_cal_to_ua import WriteCalDataToUA
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
 with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
-    print("attempting to open log file in main window, will create one if it doesn't exist")
+    pass
 file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
@@ -96,10 +100,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.style_ui()
         self.configure_non_manager_signals()
 
-    def connect_ui_thread_devices(self):
-        # Note: the UA interface box is instantiated in both the manager and the UI thread.
-        # This is done to improve responsiveness, as triggering UI dialogs with a signal causes a delay.
-        # There should be no conflicts between the two objects, as they both just send commands to the exe file
+    def connect_ui_thread_devices(self) -> None:
+        """
+        Note: the UA interface box is instantiated in both the manager and the UI thread.
+        This is done to improve responsiveness, as triggering UI dialogs with a signal causes a delay.
+        There should be no conflicts between the two objects, as they both just send commands to the exe file
+        """
         if self.config["Debugging"]["simulate_ua_interface"]:
             from Hardware.Simulated.simulated_ua_interface import SimulatedUAInterface
             self.UAInterface = SimulatedUAInterface(config=self.config)
@@ -108,7 +114,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
             self.UAInterface = UAInterface(config=self.config)
 
-    def style_ui(self):
+    def style_ui(self) -> None:
+        """
+        Initializes several output/information fields of the main window, along with
+        disabling the appropriate main with disabling the appropriate main window buttons
+        """
         self.setWindowTitle("Wet Test Fixture Python Interface")
 
         self.setWindowIcon(QIcon("resources/8foldlogo.ico"))
@@ -138,8 +148,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # Default to buttons disabled until done setting up manager
         self.set_buttons_enabled(False)
 
-    def pass_config_and_ui_elements_to_tabs(self):
-        # Pass config file to tab widgets
+    def pass_config_and_ui_elements_to_tabs(self) -> None:
+        """
+        Pass config file to tab widgets
+        """
         self.system_config.set_config(self.config)
         self.position_tab.set_config(self.config)
         self.rfb.set_config(self.config)
@@ -149,7 +161,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.scan_tab_widget.set_tabWidget(self.tabWidget)
         self.script_editor.set_tree_widget(self.script_step_view)
 
-    def begin_manager_thread(self):
+    def begin_manager_thread(self) -> None:
+        """
+        Initializes the manager class instantiation and its thread logic.
+        Also synchronizes and hardware to the various tabs in the main window
+        """
         self.manager = Manager(parent=self, config=self.config, system_info=self.system_info_tab.parser)
         self.thread_list.append(self.manager)
         self.configure_manager_signals()
@@ -160,7 +176,11 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.manager.start(priority=QThread.HighPriority)
         self.command_signal.emit("CONNECT")
 
-    def pass_manager_and_hardware_to_tabs(self):
+    def pass_manager_and_hardware_to_tabs(self) -> None:
+        """
+        Sends manager or manager components to RFB, position, calibration,
+        scan, results, and script tabs via tab class setter methods
+        """
         self.rfb.set_manager(self.manager)
         self.rfb.set_balance(self.manager.Balance)
         self.position_tab.set_manager(self.manager)
@@ -171,9 +191,15 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.results_tab.set_manager(self.manager)
         self.script_editor.set_manager(self.manager)
 
-    # Display the task names and arguments from the script parser with a QTreeView
     # noinspection PyArgumentList
-    def visualize_script(self, var_dicts: list):
+    def visualize_script(self, var_dicts: list) -> None:
+        """
+        Display the task names and arguments from the script parser with a QTreeView
+
+        :param var_dicts:
+            A list of dictionaries containing every task in the outer level and task variables in the
+            dictionary level
+        """
         self.upon_script_reloaded()
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
         self.script_step_view.clear()
@@ -211,14 +237,18 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 if i != 1:
                     QTest.qWait(250)
 
-    def update_script_visual_element_number(self, element_number):
-        """If the variable name contains the word current, update it with the current element number"""
+    def update_script_visual_element_number(self, element_number: str) -> None:
+        """
+        If the variable name contains the word current, update it with the current element number
+
+        :param element_number: The current element the manager is keeping track of to be shown in the script visualizer
+        """
         if "Element" in element_number:
             return
         # Create a dictionary with a key for each task, and a list of tuples containing the name and value of each arg
-        rootItem = self.script_step_view.invisibleRootItem()
-        for i in range(rootItem.childCount()):
-            task = rootItem.child(i)
+        root_item = self.script_step_view.invisibleRootItem()
+        for i in range(root_item.childCount()):
+            task = root_item.child(i)
             for j in range(task.childCount()):
                 var = task.child(j)
                 var_name = var.text(0)
@@ -228,7 +258,16 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                     var.setText(1, f"Current: {self.live_element_field.text()}")
 
     @pyqtSlot(list)
-    def set_tab_slot(self, tab_ray):
+    def set_tab_slot(self, tab_ray: list) -> None:
+        """
+        A relay method to change the current tab in main window from a manager signal. TabWidget variable is updated
+        to reflect tab change for nested tab switching operation
+
+        :param tab_ray:
+            The list of string(s) that represents which tab/sub-tab the program should display.
+            Options include - 'Welcome', 'System Info', 'Edit Script', 'RFB', 'UA Calibration',
+            'Results', 'Scan' ('1D Scan','Acquire Waveform', 'Scan Setup'), 'Position', 'System Config'
+        """
         if len(tab_ray) < 1:
             return
         index = tab_text_to_index(tab_ray[0], self.tabWidget)
@@ -243,7 +282,14 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.set_scan_tab_signal.emit([tab_ray[1]])
 
     @pyqtSlot(int)
-    def expand_step(self, step_index):  # current_step should match "Task type" from above
+    def expand_step(self, step_index: int) -> None:  # current_step should match "Task type" from above
+        """
+        Climbs down all nodes of root visualizer node until step index
+        is reached, then sends the setExpanded(True) command to child node
+
+        :param step_index:
+            The supposed index number of the task that is to be expanded down the linear list of tasks in the visualizer
+        """
         root_item = self.script_step_view.invisibleRootItem()
         child_count = root_item.childCount()
 
@@ -261,7 +307,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
                 brush_for_background = QBrush(white_background)
                 item.setBackground(0, brush_for_background)
 
-    def prompt_for_password(self):
+    def prompt_for_password(self) -> None:
+        """
+        Launches a Qt PasswordDialog object whilst connecting the dialog's access level a feature limiter method
+        """
         dlg = PasswordDialog(parent=self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
         dlg.exec()
@@ -269,6 +318,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(str)
     def password_result(self, access_level: str) -> None:
         """
+        Disabled certain functionality depending on the access level. Engineers cannot access the "System Config"
+        tab, Operators additionally can't access the "Position," "Edit Script" tabs, nor the run step button. Has
+        check for invalid access level
 
         :param access_level: String that should either be 'Engineer', 'Operator', or 'Administrator'
         """
@@ -289,10 +341,13 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.log(message="Invalid access level provided, exiting", level='error')
             sys.exit()
 
-    def tab_text_to_index(self, text):
+    def tab_text_to_index(self, text: str) -> int:
         """
-        Returns the index of the tab with specified text in the main tab widget.
-        If no match exists, returns -1. Not case sensitive.
+        Returns the index of the tab with specified text in the main
+        tab widget. If no match exists, returns -1. Not case sensitive.
+
+        :param text: The tab text to be searched for in the tabWidget's list of tabs
+        :returns: integer representing the index of the tab
         """
         for i in range(self.tabWidget.count()):
             if self.tabWidget.tabText(i).upper() == text.upper():
@@ -300,7 +355,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         return -1
 
     # signal connections
-    def configure_non_manager_signals(self):
+    def configure_non_manager_signals(self) -> None:
+        """
+        As the name describes, connects internal events (such as quit_button.clicked)
+        to internal methods that handles additional logic regarding the action/operation
+        (former method example connected to class' internal quit_clicked())
+        """
         self.quit_button.clicked.connect(self.quit_clicked)
 
         self.script_editor.script_changed_signal.connect(self.upon_script_changed)
@@ -589,7 +649,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         try:
             self.results_tab.populate_results_table()
         except Exception:
-            self.log("Invalid file")
+            self.log(f"Invalid file; passed triggered value = {triggered}")
 
     @pyqtSlot(int)
     def set_num_tasks(self, num_tasks: int) -> None:
@@ -627,6 +687,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.cont_signal.emit()
 
     # QUESTION: what does the parameter win do?
+    # noinspection PyUnresolvedReferences
     def setupUi(self, win) -> None:
         """
         Sets up various signals and tool tips for basic window elements such as open file actions and help button, etc.
@@ -637,11 +698,12 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
 
         file_menu = self.menuBar().addMenu("&File")
 
-        open_file_action = QAction(
-            QIcon(os.path.join("images", "blue-folder-open-document.png")),
-            "Open scan data",
-            self,
-        )
+        # INFO: commented out because this variable is never used
+        # open_file_action = QAction(
+        #     QIcon(os.path.join("images", "blue-folder-open-document.png")),
+        #     "Open scan data",
+        #     self,
+        # )
         open_result_file_action = QAction(
             QIcon(os.path.join("images", "blue-folder-open-document.png")),
             "Open result data",

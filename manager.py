@@ -481,7 +481,7 @@ class Manager(QThread):
             if self.Oscilloscope.connected and self.config["Debugging"]["oscilloscope_realtime_capture"]:
                 self.capture_oscilloscope_and_plot()
 
-    def capture_scope(self, channel: int = 1, plot: bool = True):
+    def capture_scope(self, channel: int = 1, plot: bool = True) -> Tuple[list, list]:
         """
         captures time and voltage data from the oscilloscope hardware, stores them into two separate lists and returns
         them to the calling function. Defaults to channel 1 on the oscilloscope and sets the plot flag to true
@@ -1211,18 +1211,26 @@ class Manager(QThread):
             self.log(f"Element number not given, using previous element: {self.element}")
         return self.element
 
-    def channel_str_to_int(self, channel_str):
-        """Looks for an integer in the string, otherwise returns the current channel"""
+    def channel_str_to_int(self, channel_str: str) -> int:
+        """
+        Looks for an integer in the string, otherwise returns the current channel
+
+        :param channel_str: string representation of the oscilloscope channel
+        :returns: integer representation of the oscilloscope channel
+        """
         try:
             self.element = int(re.search(r"\d+", str(channel_str)).group())
         except AttributeError:
             self.log(f"Element number not given, using previous element: {self.oscilloscope_channel}")
         return self.element
 
-    def find_element(self, var_dict: dict):
+    def find_element(self, var_dict: dict) -> bool:
         """
         Find UA element with given number by scanning for a maximum VSI or RMS
         returns a boolean indicating whether to continue the script
+
+        :param var_dict: dictionary of arguments pertaining to the find element task
+        :returns: boolean value of whether method ran successfully or not
         """
         self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.element = self.element_str_to_int(var_dict["Element"])
@@ -1339,28 +1347,13 @@ class Manager(QThread):
 
     # Reference position is the center of the scan range
 
-    def scan_axis(self, element: int, axis, num_points, increment, ref_position, data_storage, go_to_peak,
-                  storage_location,
-                  update_element_position: bool, scope_channel: int = 1, acquisition_type='N Averaged Waveform',
-                  averages=1, filename_stub="FindElement") -> bool:
+    def scan_axis(self, element: int, axis: str, num_points: int, increment: float, ref_position: float,
+                  data_storage: str, go_to_peak: bool, storage_location: str, update_element_position: bool,
+                  scope_channel:int = 1, acquisition_type: str = 'N Averaged Waveform',
+                  averages: int = 1, filename_stub: str ="FindElement") -> bool:
         """
 
-        Args:
-            element:
-            axis:
-            num_points:
-            increment:
-            ref_position:
-            data_storage: "do not store", "Store entire waveform", "store profiles only"
-            go_to_peak:
-            storage_location:
-            update_element_position:
-            scope_channel:
-            acquisition_type:
-            averages:
-            filename_stub:
-
-        Returns: A boolean indicating whether to continue the script
+        :returns: A boolean indicating whether to continue the script
         """
 
         self.element = element
@@ -1480,9 +1473,11 @@ class Manager(QThread):
             self.app.processEvents()
         return True
 
-    def __refresh_profile_plot(self, x_data, y_data, y_label) -> bool:
+    def __refresh_profile_plot(self, x_data: List[float], y_data: list, y_label: str) -> bool:
         """
         Helper function which refreshes the profile plot tab but not too often to bog down the thread
+
+        :returns: True if method ran successfully, False otherwise
         """
         if self.abort_immediately_variable:
             # Stop the current method and any parent methods that called it
@@ -1497,8 +1492,8 @@ class Manager(QThread):
             self.app.processEvents()
         return True
 
-    def __save_hydrophone_waveform(self, axis, waveform_number, times_s, voltages_v, storage_location, filename_stub,
-                                   x_units_str, y_units_str):
+    def __save_hydrophone_waveform(self, axis: str, waveform_number: int, times_s: list, voltages_v: list,
+                                   storage_location: str, filename_stub: str, x_units_str: str, y_units_str: str):
         """Saves an oscilloscope trace using the file handler"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1520,8 +1515,8 @@ class Manager(QThread):
         self.file_saver.store_waveform(metadata=metadata, times=times_s, voltages=voltages_v,
                                        storage_location=storage_location, filename_stub=filename_stub)
 
-    def __save_scan_profile(self, axis, positions, vsi_values, storage_location, filename_stub, x_units_str,
-                            y_units_str):
+    def __save_scan_profile(self, axis: str, positions: List[float], vsi_values: list, storage_location: str,
+                            filename_stub: str, x_units_str: str, y_units_str: str):
         """Saves a voltage squared integral vs distance"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1542,7 +1537,8 @@ class Manager(QThread):
         self.file_saver.save_find_element_profile(metadata=metadata, positions=positions, vsi_values=vsi_values,
                                                   storage_location=storage_location, filename_stub=filename_stub)
 
-    def __save_frequency_sweep(self, frequencies, vsi_values, storage_location, filename_stub, y_units_str):
+    def __save_frequency_sweep(self, frequencies: List[float], vsi_values: List[float], storage_location: str,
+                               filename_stub: str, y_units_str: str):
         """Saves voltage squared integral vs frequency data"""
         metadata = FileMetadata()
         metadata.element_number = self.element
@@ -1619,6 +1615,9 @@ class Manager(QThread):
         Waits for the user select continue, abort or retry via sending a signal
         to the main window. It extracts the Prompt type and message from the passed
         dict
+
+        :param var_dict: dict must include 'Prompt type', should also have 'Prompt message' but has KeyError protection
+        :returns: True if method ran successfully, False otherwise
         """
         prompt_type = var_dict["Prompt type"]
         if "Other".upper() in prompt_type.upper():
@@ -1627,7 +1626,7 @@ class Manager(QThread):
             except KeyError:
                 prompt_type = "Blank Prompt"
 
-            self.user_prompt_signal.emit(prompt_type, False)
+            self.user_prompt_signal.emit(prompt_type, False)  # connected to show_user_prompt() in main window
         else:
             self.user_prompt_signal.emit(prompt_type, False)
 
@@ -1638,8 +1637,13 @@ class Manager(QThread):
 
     def configure_function_generator(self, var_dict: dict) -> bool:
         """
-        Set function generator to various desired settings, such as the mVpp, frequency, etc.
-        from the passed variable dictionary.
+        Set function generator to various desired settings, such as
+        the mVpp, frequency, etc. from the passed variable dictionary.
+
+        :param var_dict:
+            must include 'Amplitude (mVpp)', 'Mode', 'Enable output', 'Set frequency options'. If
+            frequency_options is 'From config cluster', dict must also include 'Frequency (MHz)'
+        :returns: True if method runs successfully, False otherwise.
         """
         mVpp: int = int(var_dict["Amplitude (mVpp)"])
         mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
@@ -1676,6 +1680,15 @@ class Manager(QThread):
         return True
 
     def configure_oscilloscope_channels(self, var_dict: dict) -> bool:
+        """
+        Extracts channel enabling flags, gains and offsets for both channels
+        of oscilloscope, writes vertical scale and offset to oscilloscope
+
+        :param var_dict:
+            Must include 'Channel 1 Enabled', 'Channel 2 Enabled', 'Gain 1', 'Gain 2', 'Offset 1' and
+            'Offset 2'
+        :return: True if method completes without errors; false otherwise
+        """
         c1_enabled = bool(var_dict["Channel 1 Enabled"])
         c2_enabled = bool(var_dict["Channel 2 Enabled"])
         g1_mV_div = float(var_dict["Gain 1"])
@@ -1691,11 +1704,19 @@ class Manager(QThread):
         return True
 
     def configure_oscilloscope_timebase(self, var_dict: dict) -> bool:
-        """Sets the oscilloscope time delay and scale"""
+        """
+        Sets the oscilloscope time delay and scale
+
+        :param var_dict: extracts timebase and delay from passed variable dictionary for oscilloscope
+        :returns: True if method completed without any errors
+        """
         timebase_us = float(var_dict["Timebase"])
         delay_us = float(var_dict["Delay"])
         self.Oscilloscope.set_horizontal_scale_sec(timebase_us / 1000000)
         self.Oscilloscope.set_horizontal_offset_sec(delay_us / 1000000)
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'oscilloscope horizontal scale sec set to: {timebase_us / 1000000}', level='debug')
+            self.log(message=f'oscilloscope horizontal offset sec set to: {delay_us / 1000000}', level='debug')
         return True
 
     def autoset_timebase(self, capture_cycles: Union[float, None] = None,
@@ -1704,20 +1725,28 @@ class Manager(QThread):
         Sets the oscilloscope timebase according to the config file, or if capture cycles and delay cycles are
         provided, sets takes the default time offset, adds a delay according to delay cycles and the AWG frequency,
         and sets the time axis range according to capture_cycles
+
+        :param capture_cycles: the number of cycles for the oscilloscope to capture; adjusts range
+        :param delay_cycles: adds on to the standard offset on config for oscilloscope
+        :returns: True if method runs without exceptions; false otherwise
         """
 
-        if capture_cycles is None or delay_cycles is None:
-            self.Oscilloscope.set_oscilloscope_timebase_to_default()
+        try:
+            if capture_cycles is None or delay_cycles is None:
+                self.Oscilloscope.set_oscilloscope_timebase_to_default()
+                return True
+
+            capture_range_s = capture_cycles * 1 / self.AWG.get_frequency_hz()
+            self.Oscilloscope.set_horizontal_range_sec(capture_range_s)
+
+            standard_offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6
+            additional_delay_s = delay_cycles * 1 / self.AWG.get_frequency_hz()
+            self.Oscilloscope.set_horizontal_offset_sec(standard_offset_s + additional_delay_s)
+
             return True
-
-        capture_range_s = capture_cycles * 1 / self.AWG.get_frequency_hz()
-        self.Oscilloscope.set_horizontal_range_sec(capture_range_s)
-
-        standard_offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6
-        additional_delay_s = delay_cycles * 1 / self.AWG.get_frequency_hz()
-        self.Oscilloscope.set_horizontal_offset_sec(standard_offset_s + additional_delay_s)
-
-        return True
+        except Exception as e:
+            self.log(message=f'autoset_timebase() in manager ran into exception: {e}', level='error')
+            return False
 
     def home_system(self, var_dict: dict, show_prompt=False) -> bool:
         """
@@ -2073,7 +2102,7 @@ class Manager(QThread):
         set_frequency_options = var_dict["Set frequency options"]
         frequency_mhz = float(var_dict["Frequency (MHz)"])
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
-        storage_location = var_dict["Storage location"]
+        storage_location = str(var_dict["Storage location"])
         data_directory = var_dict["Data directory"]
         target_position = var_dict["RFB target position"]  # QUESTION: do we need this and the variable below?
         target_angle = var_dict["RFB target angle"]
@@ -2339,21 +2368,28 @@ class Manager(QThread):
         return True
 
     @pyqtSlot(str)
-    def exec_command(self, command):
+    def exec_command(self, command: str) -> None:
+        """
+        Takes a command from main window or its tab and executes it in the run() method
+
+        :param command: The string command; can be CLOSE, CONNECT, CAPTURE, STEP, ABORT, or SCAN
+        """
         self.command = command
         self.condition.wakeAll()
 
     def sequence_pass_fail(self, action_type: str, error_detail: str) -> bool:
         """
-        action_type should be either "Interrupt action" or "Pass fail action",
-        error_detail should describe what went wrong.
-        returns: a boolean indicating whether to continue the script
         when calling, the following is recommended:
 
         cont = sequence_pass_fail(...)
+
         if not cont:
             return
-         """
+
+        :param action_type: should be either "Interrupt action" or "Pass fail action"
+        :param error_detail: should describe what went wrong.
+        :returns: a boolean indicating whether to continue the script
+        """
 
         self.log(level='action_type', message=f'{error_detail}')
         self.test_data.log_script(["", action_type, error_detail, ""])
