@@ -261,7 +261,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def set_tab_slot(self, tab_ray: list) -> None:
         """
         A relay method to change the current tab in main window from a manager signal. TabWidget variable is updated
-        to reflect tab change for nested tab switching operation
+        to reflect tab change for nested tab switching operation. **Is connected to manager's set_tab_signal**
 
         :param tab_ray:
             The list of string(s) that represents which tab/sub-tab the program should display.
@@ -284,8 +284,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     @pyqtSlot(int)
     def expand_step(self, step_index: int) -> None:  # current_step should match "Task type" from above
         """
-        Climbs down all nodes of root visualizer node until step index
-        is reached, then sends the setExpanded(True) command to child node
+        Climbs down all nodes of root visualizer node until step index is reached, then sends
+        the setExpanded(True) command to child node **connected to manager's task_number_signal**
 
         :param step_index:
             The supposed index number of the task that is to be expanded down the linear list of tasks in the visualizer

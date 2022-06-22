@@ -465,20 +465,15 @@ class FileSaver:
         :param message: The message to be written out to console and log file
         :param level: The severity of the message (info, warn, debug, error)
         """
-        log_msg(self, root_logger, message=message, level=level)
+        log_msg(self, root_logger=root_logger, message=message, level=level)
 
     def extract_file_data(self, rfb_logger: RFBDataLogger, rfb_data: RFBData, system_info, element: int,
                           frequency_mhz: float, threshold: float, offset: float, frequency_range: FrequencyRange,
-                          storage_location: str):
+                          storage_location: str) -> None:
         balance_readings_mg = [value * 1000 for value in rfb_logger.balance_readings_g]
         # Time (s),Mass (mg),Acoustic Power (W), Pf(W), Pr(W)
-        raw_data = [
-            rfb_logger.times_s,
-            balance_readings_mg,
-            rfb_logger.acoustic_powers_w,
-            rfb_logger.f_meter_readings_w,
-            rfb_logger.r_meter_readings_w,
-        ]
+        raw_data = [rfb_logger.times_s, balance_readings_mg, rfb_logger.acoustic_powers_w,
+                    rfb_logger.f_meter_readings_w, rfb_logger.r_meter_readings_w]
 
         absorption = ["Off", 1.000690]
         transducer_size = ["Off", 1.013496]

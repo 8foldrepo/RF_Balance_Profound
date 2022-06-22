@@ -1,3 +1,7 @@
+"""
+This class serves to modularize data from the radio force balance, so that the manager class does not have as much
+clutter and changes can be more systematic and streamlined.
+"""
 from pprint import pformat
 from statistics import mean
 from typing import List, Tuple
@@ -64,14 +68,14 @@ class RFBData:
 
     std_too_high: bool
 
-    def __init__(self, element: int, frequency_range: FrequencyRange, water_temperature_c: float, Pf_max: float,
-                 Pa_max: float, ref_limit: float, config):
+    def __init__(self, element: int, frequency_range: FrequencyRange, water_temperature_c: float, pf_max: float,
+                 pa_max: float, ref_limit: float, config: dict):
         self.config = config
         self.element = element
         self.frequency_range = frequency_range
         self.water_temperature_c = water_temperature_c
-        self.Pf_max = float(Pf_max)
-        self.Pa_max = float(Pa_max)
+        self.Pf_max = float(pf_max)
+        self.Pa_max = float(pa_max)
         self.ref_limit = float(ref_limit)
         self.std_too_high = False
 
@@ -155,7 +159,7 @@ class RFBData:
              self.f_meter_readings_w, self.r_meter_readings_w, self.balance_readings_g]
         )
 
-    def end_of_test_data_analysis(self):
+    def end_of_test_data_analysis(self) -> None:
         self.trim_data()
         self.update_realtime_data()
 
@@ -181,8 +185,10 @@ class RFBData:
         """
         Examines the awg_on_ray for the intervals while the AWG was on,
         and excludes a fixed settling time from the beginning of the interval.
-        Returns a list of pairs of integers corresponding to the indices of this class' list attributes where
-        the AWG was on and the sensors have had time to settle.
+
+        :returns:
+            a list of pairs of integers corresponding to the indices of this class'
+            list attributes where the AWG was on and the sensors have had time to settle.
         """
         buffer = self.config["Analysis"]["samples_to_remove_at_end"]
         if len(self.awg_on_ray) == 0:
@@ -236,8 +242,10 @@ class RFBData:
         """
         Examines the awg_on_ray for the intervals while the AWG was on,
         and excludes a fixed settling time from the beginning of the interval.
-        Returns a list of pairs of integers corresponding to the indices of this class' list attributes where
-        the AWG was on and the sensors have had time to settle.
+
+        :returns:
+            a list of pairs of integers corresponding to the indices of this class'
+            list attributes where the AWG was on and the sensors have had time to settle.
         """
         buffer = self.config["Analysis"]["samples_to_remove_at_end"]
         if len(self.awg_on_ray) == 0:
@@ -279,8 +287,13 @@ class RFBData:
         return output
 
     def add_delay_to_index(self, index: int, delay: float) -> int:
-        """Returns the index where the corresponding time is closest to the time of the original index plus a
-        given delay"""
+        """
+        Shifts the time_s index if needed when adding a delay to an index's time value
+
+        :returns:
+            the time index where the corresponding time is closest
+            to the time of the original index plus a given delay
+        """
         assert index < len(self.awg_on_ray)
         assert len(self.times_s) >= len(self.awg_on_ray)
 
@@ -297,8 +310,13 @@ class RFBData:
 
         return closest_index
 
-    # TODO: UPDATE THE TEST RESULTS SUMMARY IN MANAGER WITH THIS
+    # TODO: UPDATE THE test RESULTS SUMMARY IN MANAGER WITH THIS
     def get_pass_result(self) -> Tuple[str, str]:
+        """
+        Retrieves a verdict for whether an actuator passes or fails the test
+
+        :returns: a tuple where the first string is PASS or FAIL and the second is a feedback string for failure
+        """
         if self.forward_power_max_extrapolated > self.Pf_max:
             return "FAIL", f"Extrapolated forward power exceeds {self.Pf_max}W"
 
@@ -307,7 +325,12 @@ class RFBData:
 
         return "Pass", ""
 
-    def get_result_log_entry(self):
+    def get_result_log_entry(self) -> List[str]:
+        """
+        Formats the RFB data to comply with the standard logging delimiter format
+
+        :return: list of comma delimited strings for RFB operation
+        """
         test_result, _ = self.get_pass_result()
         return ['', "Pass/Fail test",
                 f"Element_{self.element};Pf (W)={self.forward_power_on_mean};Pr (W)="
@@ -350,15 +373,16 @@ class RFBData:
         return True, ""
 
     def analyze_intervals(self, data: List[float], intervals: List[Tuple[int, int]]) \
-            -> Tuple[List[float], float, float, float, bool]:
+            -> Tuple[list, float, float, float, bool]:
         """
         Takes a  list of integer pairs, each represents an interval of data to return, including the first index and
         not including the last. For example if the interval is (0,3)  this method will analyze indices 0,1,
         and 2 for the first interval and so on for the remaining intervals.
 
-        Returns: A list containing the average of the data in each interval, the average random uncertainty within
-        all intervals, the average total uncertainty in all intervals, and a boolean indicating if any interval's
-        uncertainty exceeds the threshold in the yaml file
+        :returns:
+            A list containing the average of the data in each interval, the average random
+            uncertainty within all intervals, the average total uncertainty in all intervals, and
+            a boolean indicating if any interval's uncertainty exceeds the threshold in the yaml file
         """
 
         if len(data) == 0 or len(intervals) == 0 or len(intervals[0]) == 0:

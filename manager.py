@@ -2136,8 +2136,8 @@ class Manager(QThread):
         self.rfb_data = RFBData(element=self.element,
                                 water_temperature_c=self.thermocouple.get_reading(),  # get reading from thermocouple
                                 frequency_range=frequency_range,
-                                Pf_max=Pf_max,
-                                Pa_max=Pa_max,
+                                pf_max=Pf_max,
+                                pa_max=Pa_max,
                                 ref_limit=reflection_limit, config=self.config)
 
         self.element_number_signal.emit(str(self.element))  # update the main window's current element variable
