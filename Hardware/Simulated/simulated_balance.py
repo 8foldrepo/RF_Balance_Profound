@@ -25,6 +25,8 @@ class SimulatedBalance(AbstractBalance):
     def __init__(self, config: dict, device_key: str = "MT_Balance", parent=None):
         super().__init__(config=config, device_key=device_key, parent=parent)
 
+        self.balance_zeroed = None
+        self.continuously_reading = None
         self.ser = None
         self.latest_weight = -1
         self.connected = False
@@ -49,10 +51,14 @@ class SimulatedBalance(AbstractBalance):
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
-            item = random.choice([b"ZA", b"I"])
+            if self.config['Debugging']['simulate_balance_error']:
+                item = b"I"
+            else:
+                item = b"Z A"
 
             if item == b"Z A":
                 self.log(level="info", message="Balance Zeroed")
+                self.balance_zeroed = True
                 return
             else:
                 if item == b"I":
@@ -78,10 +84,14 @@ class SimulatedBalance(AbstractBalance):
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
-            item = random.choice([b"Z S", b"Z D", b"Z I"])
+            if self.config['Debugging']['simulate_balance_error']:
+                item = b"Z I"
+            else:
+                item = random.choice([b"Z S", b"Z D"])
 
             if item == b"Z S" or item == b"Z D":
                 self.log(level="info", message="Balance Zeroed")
+                self.balance_zeroed = True
                 return
             else:
                 if item == b"I":
@@ -101,6 +111,9 @@ class SimulatedBalance(AbstractBalance):
 
         :return: new state of self.connected (True) and empty string (feedback in real hardware class)
         """
+        if self.port != self.config[self.device_key]["port"]:
+            return False, f"{self.device_key} not connected. Check that it is plugged in and look at Device " \
+                          f"manager to determine which COM port to use and enter it into local.yaml:"
         self.connected = True
         self.ser = object
         self.connected_signal.emit(self.connected)
@@ -122,6 +135,14 @@ class SimulatedBalance(AbstractBalance):
         if self.config["Debugging"]["simulate_balance_error"]:
             return None
 
+        if not self.connected:
+            self.log(level="error", message=f"{self.device_key} not connected")
+            return None
+
+        if self.balance_zeroed:
+            self.balance_zeroed = False
+            return 0
+
         t.sleep(0.02)
         return random.random()
 
@@ -137,6 +158,14 @@ class SimulatedBalance(AbstractBalance):
         """
         self.log("Getting stable weight, please wait")
         return random.random()
+
+    def start_continuous_reading(self) -> None:
+        """Sets continuously reading flag to true"""
+        self.continuously_reading = True
+
+    def stop_continuous_reading(self) -> None:
+        """Sets continuously reading flag to false"""
+        self.continuously_reading = False
 
     def get_serial_number(self) -> str:
         """
