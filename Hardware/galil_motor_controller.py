@@ -486,6 +486,7 @@ class GalilMotorController(AbstractMotorController):
             self.set_origin_1d('R', self.coords_mm[0] + self.config["WTF_PositionParameters"]["ThetaHomeEdgeCoord"])
             self.get_position()
             success = success and self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]], enable_ui=False)
+        else:
 
 
         t.sleep(.1)
