@@ -1,7 +1,7 @@
 import time as t
 from abc import abstractmethod
 from PyQt5.QtWidgets import QApplication as QApp
-from PyQt5.QtCore import *
+from PyQt5.QtCore import pyqtSlot
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 
@@ -75,11 +75,25 @@ class SimulatedMotorController(AbstractMotorController):
         pass
 
     def connect_hardware(self):
+        if self.config['Debugging']['print_detailed_verbose']:
+            from inspect import getframeinfo, stack
+            caller = getframeinfo(stack()[1][0])
+            filename = caller.filename.split('\\')[-1]
+            self.log(message=f'connect_hardware() called by {filename} {caller.function}'
+                             f' {caller.lineno}',
+                     level='debug')
         self.connected = True
         self.connected_signal.emit(self.connected)
         return self.connected, ""
 
     def disconnect_hardware(self):
+        if self.config['Debugging']['print_detailed_verbose']:
+            from inspect import getframeinfo, stack
+            caller = getframeinfo(stack()[1][0])
+            filename = caller.filename.split('\\')[-1]
+            self.log(message=f'disconnect_hardware() called by {filename} {caller.function}'
+                             f' {caller.lineno}',
+                     level='debug')
         self.connected = False
         self.connected_signal.emit(self.connected)
 
@@ -138,14 +152,27 @@ class SimulatedMotorController(AbstractMotorController):
         return True
 
     @pyqtSlot(list, list)
-    def go_to_position(self, axes: list, coords_mm: list, enable_ui: bool = True) -> bool:
+    def go_to_position(self, axes: list, coordinates_mm: list, enable_ui: bool = True) -> bool:
         if self.config["Debugging"]["simulate_motor_error"]:
             if enable_ui:
                 self.ready_signal.emit()
             return False
 
+        if not self.connected:
+            self.log(level='error', message='Go to position failed, Simulated motor not connected')
+            return False
+
+        if len(axes) != len(coordinates_mm):
+            self.log(level='error', message="Go to position failed axes length does not match coordinates length")
+            return False
+
+        if sum(coordinates_mm) > 100000:
+            self.log(level='error', message="Coordinates entered for the motors are too large."
+                                            " Double check in the code that they are given in mm")
+            return False
+
         for i in range(len(axes)):
-            self.coords_mm[self.ax_letters.index(axes[i])] = coords_mm[i]
+            self.coords_mm[self.ax_letters.index(axes[i])] = coordinates_mm[i]
 
         # Used for simulating delay
         # t.sleep(.2)

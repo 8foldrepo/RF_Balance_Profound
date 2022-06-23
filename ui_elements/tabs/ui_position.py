@@ -19,7 +19,7 @@ from ui_elements.my_qwidget import MyQWidget
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
 with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
-    print("attempting to open log file in ui_position, will write if doesn't exist")
+    pass
 file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)

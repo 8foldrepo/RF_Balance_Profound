@@ -67,7 +67,7 @@ class TestMotors(unittest.TestCase):
         self.assertTrue(successful)
         margin_of_error = .4
         for j in range(len(self.Motors.coords_mm)):
-            self.assertLessEqual(abs(self.Motors.coords_mm[j] - 263), margin_of_error)
+            self.assertLessEqual(abs(self.Motors.coords_mm[j] - 0), margin_of_error)
 
     def test_stop_motion(self):
         # test stop_motion
@@ -83,30 +83,16 @@ class TestMotors(unittest.TestCase):
             self.Motors.stop_motion()
 
     def test_go_home_1d(self):
-        self.Motors.set_origin_here()
-        self.Motors.get_position()
-        coords = self.Motors.coords_mm
-        self.assertAlmostEqual(coords[1],0,1)
-        self.Motors.go_to_position(['R'],
-                              [self.Motors.coords_mm[1] + self.Motors.config["WTF_PositionParameters"]["ThetaPreHomeMove"]],
-                              enable_ui=False)
-        coords = self.Motors.coords_mm
-        self.assertAlmostEqual(coords[1], self.Motors.config["WTF_PositionParameters"]["ThetaPreHomeMove"],2)
-        self.Motors.command("HM B")
-        self.Motors.command("BG B")
-        self.Motors.wait_for_motion_to_complete()
-        self.Motors.get_position()
-        self.Motors.set_origin_1d('R', self.Motors.coords_mm[1] - (self.Motors.config['WTF_PositionParameters']['ThetaHomeCoord'] +
-                                                         self.Motors.config['WTF_PositionParameters'][
-                                                             'ThetaHomeEdgeOffset']))
-        self.Motors.get_position()
-        coords = self.Motors.coords_mm
-        self.assertAlmostEqual(coords[1], (self.Motors.config['WTF_PositionParameters']['ThetaHomeCoord'] +
-                                           self.Motors.config['WTF_PositionParameters'][
-                                               'ThetaHomeEdgeOffset']),2)
-        self.Motors.go_to_position(['R'], [self.Motors.coords_mm[1] + self.Motors.config["WTF_PositionParameters"]["ThetaHomeCoord"]],
-                              enable_ui=False)
-        self.assertAlmostEqual(coords[1], (self.Motors.config['WTF_PositionParameters']['ThetaHomeCoord']),2)
+        # test go home 1d
+        axis = random.choice(self.Motors.ax_letters)
+
+        if not self.Motors.config[self.Motors.device_key]['enable_homing_ray'][self.Motors.ax_letters.index(axis)]:
+            return
+
+        start_time = t.time()
+        successful = self.Motors.go_home_1d(axis)
+        self.assertLessEqual(t.time() - start_time,
+                             self.Motors.config[self.Motors.device_key]['move_timeout_s'] * 3 + 3)
 
     def test_go_home(self):
         if True not in self.Motors.config[self.Motors.device_key]['enable_homing_ray']:
@@ -123,4 +109,5 @@ class TestMotors(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    for i in range(10):
+        unittest.main()

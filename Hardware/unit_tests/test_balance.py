@@ -3,16 +3,22 @@ import unittest
 
 import serial.serialutil
 from termcolor import colored
-
+from Utilities.load_config import load_configuration
+from Hardware.Simulated.simulated_balance import SimulatedBalance
 from Hardware.mt_balance import MT_balance
 
 
 class TestBalance(unittest.TestCase):
+    config = None
     balance = None
 
     @classmethod
     def setUpClass(cls):
-        cls.balance = MT_balance(config=None)
+        cls.config = load_configuration()
+        if cls.config['Debugging']['simulate_balance']:
+            cls.balance = SimulatedBalance(config=cls.config)
+        else:
+            cls.balance = MT_balance(config=cls.config)
         cls.balance.connect_hardware()
 
     def test_fields_setup(self):

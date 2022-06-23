@@ -39,10 +39,13 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         self.configure_signals()
         self.style_ui()
 
-    def configure_signals(self):
+    def configure_signals(self) -> None:
+        """
+        Ties button clicks, value, and text changes to local methods in class for additional coding logic
+        """
         self.file_browser_button.clicked.connect(self.browse_clicked)
-        # Tell the manager to capture a scope trace and emit back the plot data. This uses a command not a direct call
-        # or a signal so it runs in the manager thread.
+        # Tell the manager to capture a scope trace and emit back the plot data. This
+        # uses a command not a direct call or a signal, so it runs in the manager thread.
         self.acquire_scope_trace_button.clicked.connect(self.acquire_scope_trace_button_clicked)
         self.source_channel_combo_box.currentTextChanged.connect(self.source_channel_combo_changed)
         self.averages_spin_box.valueChanged.connect(self.averages_spin_box_changed)
@@ -50,9 +53,10 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         self.index_spinbox.valueChanged.connect(self.show_data_point)
         self.start_scan_button.clicked.connect(self.scan_clicked)
 
-    def scan_clicked(self):
-        """Retrieve scan settings from the UI and tell the manager to begin a 1d scan with those settings"""
-
+    def scan_clicked(self) -> None:
+        """
+        Retrieve scan settings from the UI and tell the manager to begin a 1d scan with those settings
+        """
         command_ray = [""] * 15
         command_ray[0] = "SCAN"
         command_ray[1] = self.axis_combo.currentText()
@@ -74,8 +78,12 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         self.command_signal.emit(command_string)
 
     @pyqtSlot(bool)
-    def set_buttons_enabled(self, enabled):
-        """Enables or disables UI elements that could interfere with a script being run"""
+    def set_buttons_enabled(self, enabled: bool):
+        """
+        Enables or disables UI elements that could interfere with a script being run
+
+        :param enabled: if true, enables almost all interactive elements in tab, and vice versa
+        """
 
         self.acquire_scope_trace_button.setEnabled(enabled)
         # Acquire waveform tab
@@ -104,65 +112,106 @@ class Scan(MyQWidget, Ui_scan_tab_widget):
         self.start_scan_button.setEnabled(enabled)
         self.source_channel_combo.setEnabled(enabled)
 
-    def show_data_point(self):
+    def show_data_point(self) -> None:
         """Display the waveform data at a specified index to the UI"""
 
         index = self.index_spinbox.value()
-        if not index > len(self.x_data):
+        if index <= len(self.x_data):
             self.x_data_view.setText("{:.4e}".format(self.x_data[index]))
-        if not index > len(self.y_data):
+        if index <= len(self.y_data):
             self.y_data_view.setText("{:.4e}".format(self.y_data[index]))
             # self.y_uncertainty_view.setText("{:.4e}".format(calculate_random_uncertainty_percent(self.y_data)))
 
-    def source_channel_combo_changed(self):
+    def source_channel_combo_changed(self) -> None:
+        """
+        Change's the oscilloscope_channel's value in manager to whatever is in the source channel combo box
+        """
         self.manager.oscilloscope_channel = int(self.source_channel_combo_box.currentText())
 
-    def averages_spin_box_changed(self):
+    def averages_spin_box_changed(self) -> None:
+        """
+        Change's the oscilloscope's average value in manager to whatever is in the averages spin box
+        """
         self.manager.oscilloscope_averages = self.averages_spin_box.value()
-        print(self.manager.oscilloscope_averages)
+        if self.config['Debugging']['print_detailed_verbose']:
+            self.log(message=f'self.manager.oscilloscope_averages is now {self.averages_spin_box.value()}',
+                     level='debug')
 
-    def acquisition_type_combo_changed(self):
+    def acquisition_type_combo_changed(self) -> None:
+        """
+        If acquisition_type is set to 'Single Waveform' in GUI, update's oscilloscope's average variable to 1 and
+        disables the averages spin box. Otherwise, enable the spin box.
+        """
         if self.acquisition_type_combo_box.currentText() == "Single Waveform":
             self.manager.oscilloscope_averages = 1
             self.averages_spin_box.setEnabled(False)
         else:
             self.averages_spin_box.setEnabled(True)
 
-    def acquire_scope_trace_button_clicked(self):
+    def acquire_scope_trace_button_clicked(self) -> None:
+        """
+        Simply sends a command signal to the manager class "CAPTURE"
+        """
         self.command_signal.emit("CAPTURE")
 
-    def browse_clicked(self):
+    def browse_clicked(self) -> str:
+        """
+        Launches the file browse dialog box and returns the selected
+        filename + path; as well as update an info field in the scan tab
+
+        :return: The string filename and path of the selected item from the QFileDialog
+        """
         self.filename = QFileDialog.getExistingDirectory(self)
-        self.data_directory_input.setText(self.filename)
+        self.data_directory_input.setText(a0=self.filename)
         return self.filename
 
-    def set_config(self, config):
+    def set_config(self, config: dict) -> None:
+        """
+        Simple setter method for the config variable from main window
+
+        :param config: The yaml config dictionary from main window, needed in various parts of this class
+        """
         self.config = config
 
-    def set_manager(self, manager):
+    def set_manager(self, manager: Manager) -> None:
+        """
+        Setter method to pass manager instance to this class' own local manager variable. Also launches profile plot
+        now that it has information it needs from manager thread.
+
+        :param manager: The main manager class for the local ui_scan class to copy onto itself
+        """
         self.manager = manager
         self.manager.plot_signal.connect(self.plot)
         self.manager.profile_plot_signal.connect(self.update_profile_plot)
         self.command_signal.connect(self.manager.exec_command)
 
-    def set_tabWidget(self, tabWidget):
-        self.tabWidget = tabWidget
+    def set_tabWidget(self, tab_widget: QTabWidget) -> None:
+        """
+        setter method for ui_scan's tab widget
 
-    def style_ui(self):
+        :param tab_widget: the tabWidget the class should copy onto itself
+        """
+        self.tabWidget = tab_widget
+
+    def style_ui(self) -> None:
+        """
+        Initializes the waveform, profile, and VSI squared plots. As well
+        as set the tab to index 0, and process events to prevent lag
+        """
         self.scan_tabs.setCurrentIndex(0)
-        self.waveform_plot.setLabel("left", "Voltage Waveform (V)", **self.waveform_plot.styles)
-        self.waveform_plot.setLabel("bottom", "Time (s)", **self.waveform_plot.styles)
-        self.profile_plot.setLabel("left", "Voltage Squared Integral", **self.profile_plot.styles)
-        self.profile_plot.setLabel("bottom", "Frequency (MHz)", **self.profile_plot.styles)
-        self.voltage_time_plot.setLabel("left", "Voltage Waveform (V)", **self.voltage_time_plot.styles)
-        self.voltage_time_plot.setLabel("bottom", "Time (s)", **self.voltage_time_plot.styles)
+        self.waveform_plot.setLabel(axis="left", text="Voltage Waveform (V)", **self.waveform_plot.styles)
+        self.waveform_plot.setLabel(axis="bottom", text="Time (s)", **self.waveform_plot.styles)
+        self.profile_plot.setLabel(axis="left", text="Voltage Squared Integral", **self.profile_plot.styles)
+        self.profile_plot.setLabel(axis="bottom", text="Frequency (MHz)", **self.profile_plot.styles)
+        self.voltage_time_plot.setLabel(axis="left", text="Voltage Waveform (V)", **self.voltage_time_plot.styles)
+        self.voltage_time_plot.setLabel(axis="bottom", text="Time (s)", **self.voltage_time_plot.styles)
 
         #  add default data to plots
         y = range(0, 100)
         x = range(0, 100)
-        self.waveform_plot.refresh(x, y)
-        self.profile_plot.refresh(x, y)
-        self.voltage_time_plot.refresh(x, y)
+        self.waveform_plot.refresh(time=x, volts=y)
+        self.profile_plot.refresh(time=x, volts=y)
+        self.voltage_time_plot.refresh(time=x, volts=y)
         self.app.processEvents()
 
     def plot(self, x: list, y: list, refresh_rate: float) -> None:

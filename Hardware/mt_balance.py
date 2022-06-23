@@ -1,3 +1,9 @@
+"""
+Hardware programming interface class for the Mettler Toledo Balance.
+Programming/Reference Manual ~page 87
+https://www.wolflabs.co.uk/document/Mettler-Toledo_Balances-Analytical_MS-S-MS-L%20Models_manual.pdf
+"""
+
 import time as t
 from typing import Union, Tuple
 
@@ -10,6 +16,10 @@ from Utilities.useful_methods import is_number
 
 
 class MT_balance(AbstractBalance):
+    """
+    Inherits AbstractBalance from /Hardware/Abstract; reading signal connected to logger and connected signal is
+    hooked up to main window balance indicator
+    """
     reading_signal = QtCore.pyqtSignal(float)
     connected_signal = QtCore.pyqtSignal(bool)
 
@@ -22,7 +32,7 @@ class MT_balance(AbstractBalance):
 
         self.fields_setup()
 
-    def fields_setup(self):
+    def fields_setup(self) -> None:
         """
         Load the config file if one is not provided and populates class variables therefrom
         Initializes config, timeout_s, and port variables
@@ -39,9 +49,9 @@ class MT_balance(AbstractBalance):
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected is False:
-            self.log("Device is not connected")
+            self.log(message="Device is not connected, cannot run zero_balance_stable()", level='warning')
             return
-        self.log("Zeroing Balance, Please wait")
+        self.log(message="Zeroing Balance, Please wait", level='info')
         self.ser.write(b"\nZ\n")
 
         start_time = t.time()
@@ -63,19 +73,19 @@ class MT_balance(AbstractBalance):
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def wrap_up(self):
+    def wrap_up(self) -> None:
         """Runs the disconnect_hardware() method; class shutdown sequence"""
         self.disconnect_hardware()
 
-    def zero_balance_instantly(self):
+    def zero_balance_instantly(self) -> None:
         """Zeroes the scale immediately"""
 
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
         if self.ser is None or self.connected is False:
-            self.log("Device is not connected")
+            self.log(message="Device is not connected, cannot run zero instantly method", level='warning')
             return
-        self.log("Zeroing Balance")
+        self.log(message="Zeroing Balance", level='info')
         self.ser.write(b"\nZI\n")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
@@ -102,6 +112,9 @@ class MT_balance(AbstractBalance):
         """
         Attempts to establish a serial communication line using
         Python's serial library, also has error exception handling.
+
+        :returns:
+            boolean representing whether balance is connected, and string representing feedback is issues encountered
         """
         feedback = ""
         try:
@@ -188,12 +201,17 @@ class MT_balance(AbstractBalance):
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 if item != b"":
-                    self.log("Reset")
+                    self.log(message="Reset", level='info')
                     return
         self.log(level="error", message=f"{self.device_key} timed out")
 
     def get_stable_reading(self) -> Union[float, None]:
-        """Sends the MT pre-defined stable reading command and returns the weight once ready via signal and return statements"""
+        """
+        Sends the MT pre-defined stable reading command and returns
+        the weight once ready via signal and return statements
+
+        :returns: latest stable weight as a float, or none if capture was unsuccessful
+        """
         if self.ser is None:
             self.log(level="error", message=f"{self.device_key} not connected")
             return
@@ -230,6 +248,8 @@ class MT_balance(AbstractBalance):
         """
         Sends the MT pre-defined get serial number command, decodes
         the response to utf-8 and returns value, has error handling
+
+        :returns: serial number as a string, or none if retrieval was unsuccessful
         """
         if not self.connected:
             return None
@@ -261,12 +281,12 @@ class MT_balance(AbstractBalance):
                         return None
         self.log(level="error", message=f"{self.device_key} timed out")
 
-    def start_continuous_reading(self):
+    def start_continuous_reading(self) -> None:
         """Sends the continuous reading command to the balance, and sets the continuous reading flag to false"""
         self.ser.write(b"\nSIR\n")
         self.continuously_reading = True
 
-    def stop_continuous_reading(self):
+    def stop_continuous_reading(self) -> None:
         """Sends the stop continuous reading command to the balance, and sets the continuous reading flag to false"""
         self.ser.write(b"\n@\n")
         self.continuously_reading = False
