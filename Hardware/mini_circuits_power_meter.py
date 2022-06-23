@@ -1,9 +1,7 @@
 import sys
 import time as t
 from typing import Union, Any, Tuple
-
 from PyQt5 import QtCore
-
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
 

@@ -1,21 +1,15 @@
 import logging
-import os
 import sys
-
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QApplication
-
 from MainWindow import MainWindow
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from definitions import ROOT_DIR
-
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
-
 with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:
     pass
 file_handler = logging.FileHandler(ROOT_DIR + "\logs\wtf.log", mode="w")
-
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
@@ -27,7 +21,6 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     QThread.currentThread().setObjectName("ui_thread")
-
     window = MainWindow()
     window.show()
     app.processEvents()  # Ensure UI appears before running the rest of this script
