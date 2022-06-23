@@ -6,7 +6,7 @@ import time as t
 import traceback
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
