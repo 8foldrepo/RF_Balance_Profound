@@ -1,3 +1,4 @@
+import distutils
 import time as t
 from typing import Tuple, Union
 
@@ -42,18 +43,23 @@ class KeysightAWG(AbstractAWG):
             trigger_out=self.config[self.device_key]["trig_out"],
         )
 
-    def connect_hardware(self):
-        resources = self.rm.list_resources()
+    def connect_hardware(self) -> Tuple[bool, str]:
+        """
+        :returns:
+            A tuple where the fist value represents if device connected,
+            and feedback if connection failed a second value that provides
+        """
+        resources = self.rm.list_resources()  # grabs list of relevant hardware devices connected to computer by ID
         feedback = ""
         self.inst = None
         for resource in resources:
             if self.config[self.device_key]["identifier"] in resource:
                 self.address = resource
                 try:
-                    self.inst = self.rm.open_resource(resource)
+                    self.inst = self.rm.open_resource(resource)  # inst will be used to serially communicate with device
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
-                    self.log('error', str(feedback))
+                    self.log(level='error', message=str(feedback))
                     break
 
                 if self.config[self.device_key]["set_on_startup"]:
@@ -62,7 +68,7 @@ class KeysightAWG(AbstractAWG):
                     self.get_state()
 
                 self.connected = True
-                self.connected_signal.emit(self.connected)
+                self.connected_signal.emit(self.connected)  # updates indicator in main window
                 return self.connected, feedback
 
         self.log("Keysight 33509B Series function generator not found", level="error")
@@ -70,7 +76,10 @@ class KeysightAWG(AbstractAWG):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    def disconnect_hardware(self):
+    def disconnect_hardware(self) -> None:
+        """
+        Closes the pyvisa device instance, sets connected flag to false and emits it to main window to update indicator
+        """
         self.inst.close()
         self.connected = False
         self.connected_signal.emit(False)
@@ -89,7 +98,7 @@ class KeysightAWG(AbstractAWG):
         self.set_output_impedance(output_impedance)
         self.wait_til_complete()
 
-    def get_state(self):
+    def get_state(self) -> dict:
         """Inquires all key AWG settings, and returns a dictionary containing their names and values"""
         self.get_output()
         self.get_frequency_hz()
@@ -100,25 +109,35 @@ class KeysightAWG(AbstractAWG):
         self.get_output_impedance()
         return self.state
 
-    def reset(self):
+    def reset(self) -> None:
+        """
+        Sends reset command to AWG and waits until reset operation completes
+        """
         self.command(f"*RST")
         self.wait_til_complete()
 
-    def wait_til_complete(self):
+    def wait_til_complete(self) -> None:
+        """
+        Sends an identification command, AWG will not respond until ready, making read() method act like an auto timer
+        """
         self.command("*IDN?")
         self.read()
 
-    def set_output(self, on: bool):
-        """Turns the output on or off"""
+    def set_output(self, on: bool) -> None:
+        """
+        Turns the output on or off
+
+        :param on: Whether you want the output to be on or off for the AWG (boolean)
+        """
         if on:
             self.command("OUTP ON")
-            self.output_signal.emit(True)
+            self.output_signal.emit(True)  # this signal connects to main window indicator and RFB logger class
         else:
             self.command("OUTP OFF")
             self.output_signal.emit(False)
 
-    def get_output(self):
-        """Returns true or false depending on the whether the waveform generator is on or off"""
+    def get_output(self) -> str:
+        """:returns: true or false depending on the whether the waveform generator is on or off"""
         self.command("OUTP?")
         reply = self.read()
         self.state["output"] = "1" in reply
@@ -126,8 +145,13 @@ class KeysightAWG(AbstractAWG):
 
         return self.state["output"]
 
-    def set_frequency_hz(self, frequency):
-        """Sets the frequency of the signal"""
+    def set_frequency_hz(self, frequency: Union[int, str, float]) -> bool:
+        """
+        Sets the frequency of the signal
+
+        :param frequency: Should be in hertz
+        :returns: whether the method set the frequency successfully
+        """
         self.state["frequency_Hz"] = frequency
         self.command(f"FREQ {frequency}")
 
@@ -138,14 +162,24 @@ class KeysightAWG(AbstractAWG):
             return False
         return True
 
-    def get_frequency_hz(self):
+    def get_frequency_hz(self) -> float:
+        """
+        Sends FREQ enquiry to AWG, reads response as float, update class state dictionary, emits frequency signal
+
+        :returns: frequency in hertz as a float
+        """
         self.command(f"FREQ?")
         self.state["frequency_Hz"] = float(self.read())
-        self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)
+        self.frequency_signal.emit(self.state["frequency_Hz"] / 1000000)  # updates field in main window
         return self.state["frequency_Hz"]
 
-    def set_amplitude_v(self, amplitude):
-        """Sets the peak to peak amplitude of the waveform in volts"""
+    def set_amplitude_v(self, amplitude: Union[float, int, str]) -> bool:
+        """
+        Sets the peak to peak amplitude of the waveform in volts
+
+        :param amplitude: in volts, amplitude/range of function generated
+        :returns: whether method finished successfully
+        """
         self.command(f"VOLT {amplitude}")
         actual_amplitude_v = self.get_amplitude_v()
         if not error_acceptable(actual_amplitude_v, amplitude, 2, print_msg=False):
@@ -171,8 +205,13 @@ class KeysightAWG(AbstractAWG):
         self.state["offset_V"] = float(self.read())
         return self.state["offset_V"]
 
-    def set_function(self, func="SIN"):
-        """Sets the shape of the source waveform"""
+    def set_function(self, func: str = "SIN") -> None:
+        """
+        Sets the shape of the source waveform; can be SIN (sine), SQU (square), RAMP, PULS
+        (pulse), ARB (arbitrary), TRI (triangle), DC, NOIS, PRBS (pseudo-random noise)
+
+        :param func: the general shape of the function you want the AWG to output
+        """
         command_str = f"SOUR:FUNC {func}"
         print(command_str)
         self.command(command_str)
