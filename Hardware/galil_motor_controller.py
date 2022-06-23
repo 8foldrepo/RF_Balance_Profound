@@ -166,7 +166,6 @@ class GalilMotorController(AbstractMotorController):
             self.connected = False
         self.ready_signal.emit()
 
-    # todo: test
     @pyqtSlot(list, list)
     def go_to_position(self, axes: List[str], coordinates_mm: List[float],
                        mutex_locked: bool = False, enable_ui: bool = True) -> bool:
@@ -255,7 +254,8 @@ class GalilMotorController(AbstractMotorController):
         start_time = t.time()
         success = False
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
-            self.app.processEvents()
+            if self.app is not None:
+                self.app.processEvents()
             self.get_position()
             try:
                 stop_code = self.command("SC AB")
@@ -465,11 +465,11 @@ class GalilMotorController(AbstractMotorController):
         # ANSWER: No, only theta requires a prehome move
         # enforce pre-move conditions
         self.command("ST")  # stop command
-        self.command("SH AB")
-
+        self.command(f"SH {axis}")
+        self.get_position()
         if axis == 'R' or axis == 'Theta':
             # Theta pre-home move
-            self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
+            self.go_to_position(['R'], [self.coords_mm[1]+self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
 
             self.command("ST")
             self.command("SH AB")
@@ -482,10 +482,12 @@ class GalilMotorController(AbstractMotorController):
         success = self.wait_for_motion_to_complete()
 
         if axis == 'R' or axis == 'Theta':
-            self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord'] +
-                                                         self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
+            self.get_position()
+            self.set_origin_1d('R', self.coords_mm[0] + self.config["WTF_PositionParameters"]["ThetaHomeEdgeCoord"])
             self.get_position()
             success = success and self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]], enable_ui=False)
+        else:
+
 
         t.sleep(.1)
         self.get_position()
@@ -537,7 +539,7 @@ class GalilMotorController(AbstractMotorController):
 
         x_pos_str = self.command('RP A')
         if is_number(x_pos_str):
-            x_pos = self.steps_to_position(0, float())
+            x_pos = self.steps_to_position(0, float(x_pos_str))
         else:
             self.ready_signal.emit()
             return
@@ -545,6 +547,7 @@ class GalilMotorController(AbstractMotorController):
         if abs(x_pos - self.coords_mm[0]) > moving_margin_ray[0]:
             moving_ray[0] = True
         self.coords_mm[0] = x_pos
+        print(self.coords_mm[0])
         self.x_pos_mm_signal.emit(round(x_pos, 2))
 
         r_pos = self.steps_to_position(1, float(self.command('RP B')))
@@ -579,13 +582,12 @@ class GalilMotorController(AbstractMotorController):
             position_steps = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']-\
-                             self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeEdgeCoord']
 
         else:
             return
 
-        position_steps = position_steps * self.calibrate_ray_steps_per[i] / self.gearing_ray[i]
+        position_steps = position_steps * self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
 
         if self.reverse_ray[i]:
             position_steps *= -1
@@ -601,7 +603,7 @@ class GalilMotorController(AbstractMotorController):
         :returns: position in mm/deg
         """
         i = axis_index
-        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
+        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] / self.gearing_ray[i]
 
         if self.reverse_ray[i]:
             position_deg_or_mm *= -1
@@ -612,8 +614,7 @@ class GalilMotorController(AbstractMotorController):
             self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']+\
-                                 self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeEdgeCoord']
             self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
         return position_deg_or_mm
@@ -644,6 +645,8 @@ class GalilMotorController(AbstractMotorController):
         except gclib.GclibError as e:
             if "device read error" in str(e) or 'device write error' in str(e):
                 self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
+            elif "not established" in str(e):
+                self.log(level='error', message=f'Device not connected')
             else:
                 code = self.check_user_fault()
                 self.log(level='error', message=f'Error in command device {code}.')
@@ -651,3 +654,19 @@ class GalilMotorController(AbstractMotorController):
 
         t.sleep(.01)
         return output.replace('\r\n','')
+
+
+if __name__ == '__main__':
+    Motors = GalilMotorController(config=None, lock=None)
+    Motors.connect_hardware()
+    Motors.set_origin_here()
+    # steps1 = Motors.position_to_steps(0,0)
+    # steps2 = Motors.position_to_steps(-263,0)
+    # steps3 = Motors.position_to_steps(1,0)
+    # steps4 = Motors.position_to_steps(1,-90)
+    # steps5 = Motors.position_to_steps(1,-180)
+    # steps6 = Motors.position_to_steps(1,-70)
+    Motors.get_position()
+    coords = Motors.coords_mm
+    Motors.go_to_position(['X'],[coords[1]]+5)
+    pass

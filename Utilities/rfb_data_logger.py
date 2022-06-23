@@ -159,11 +159,11 @@ class RFBDataLogger(QThread):
 
         :param reading_w: forward power reading in watts
         """
-        # todo: remove this block
-        if self.awg_on:
-            reading_w = reading_w / 50 + 1
-        else:
-            reading_w = reading_w / 50
+        #dummy code
+        # if self.awg_on:
+        #     reading_w = reading_w / 50 + 1
+        # else:
+        #     reading_w = reading_w / 50
 
         self.f_meter_readings_w.append(reading_w)
         self.f_meter_ready = True
@@ -177,11 +177,11 @@ class RFBDataLogger(QThread):
 
         :param reading_w: Reverse power meter reading in watts
         """
-        # todo: remove this block
-        if self.awg_on:
-            reading_w = reading_w / 50 + .1
-        else:
-            reading_w = reading_w / 50
+        # # todo: remove this block
+        # if self.awg_on:
+        #     reading_w = reading_w / 50 + .1
+        # else:
+        #     reading_w = reading_w / 50
 
         self.r_meter_readings_w.append(reading_w)
         self.r_meter_ready = True

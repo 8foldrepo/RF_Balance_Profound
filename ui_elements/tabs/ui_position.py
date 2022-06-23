@@ -136,7 +136,7 @@ class Position(MyQWidget, Ui_Form):
             'steps_per_mm': self.steps_per_mm_sb.value(),
             'ang_incr': self.ang_inc_double_sb.value(),
             'x_gearing': self.gearing_ray[0],
-            'r_gearing': self.gearing_ray[1]
+            'r_gearing': self.doubleSpinBox.value()
         })
 
     def populate_default_ui(self) -> None:

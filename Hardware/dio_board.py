@@ -1,11 +1,9 @@
 import random
 import time as t
 from typing import Union
-
 import nidaqmx
 from PyQt5 import QtCore
 from nidaqmx.constants import LineGrouping
-
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
 from data_structures.variable_containers import WaterLevel

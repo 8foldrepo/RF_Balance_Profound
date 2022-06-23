@@ -738,7 +738,7 @@ class ParkerMotorController(AbstractMotorController):
                                             f'[{self.ax_letters}] in position_to_steps method in parker motor controller')
             return
 
-        position_steps = position_steps * self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
+        position_steps = position_steps * self.calibrate_ray_steps_per[axis_index] * self.gearing_ray[axis_index]
 
         if self.reverse_ray[axis_index]:
             position_steps = position_steps * -1
@@ -747,7 +747,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def steps_to_position(self, axis_index: int, position_steps: float) -> float:
         """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
-        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] * self.gearing_ray[axis_index]
+        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
 
         if self.reverse_ray[axis_index]:
             position_deg_or_mm = position_deg_or_mm * -1
