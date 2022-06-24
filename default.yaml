@@ -188,11 +188,11 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -70
+  ThetaHomeEdgeCoord: -90
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
-  ThetaPreHomeMove: 2
+  ThetaPreHomeMove: -90
   X-Element pitch (mm): 5
   X-Element1: 0
-  X-TankInsertionPoint: 108
-  XHomeCoord: 263
+  X-TankInsertionPoint: -108
+  XHomeCoord: -273

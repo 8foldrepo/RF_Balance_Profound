@@ -18,6 +18,7 @@ class DIOBoard(AbstractIOBoard):
     # used for showing UI dialogs in MainWindow
     filling_signal = QtCore.pyqtSignal()
     draining_signal = QtCore.pyqtSignal(WaterLevel)
+    tank_full_signal = QtCore.pyqtSignal()
 
     def __init__(self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -128,10 +129,7 @@ class DIOBoard(AbstractIOBoard):
         """Drains or fills the tank until it is within the active range of the water level sensor"""
         water_level = self.get_water_level()
 
-        if water_level == WaterLevel.level:
-            self.log("Tank is already level")
-            return True
-        elif water_level == WaterLevel.above_level:
+        if water_level == WaterLevel.above_level:
             self.log("Draining tank, please wait...")
             self.draining_signal.emit(WaterLevel.level)
             self.set_tank_pump_on(on=True, clockwise=True)
@@ -150,8 +148,9 @@ class DIOBoard(AbstractIOBoard):
 
                 if self.get_water_level() == WaterLevel.level or WaterLevel.below_level:
                     self.log("Tank drained")
+                    self.tank_full_signal.emit()
                     return True
-        elif water_level == WaterLevel.below_level:
+        elif water_level == WaterLevel.below_level or water_level==WaterLevel.level:
             self.log("Filling tank, please wait...")
             self.set_tank_pump_on(on=True, clockwise=True)
             self.filling_signal.emit()
@@ -165,9 +164,9 @@ class DIOBoard(AbstractIOBoard):
                         self.water_level = WaterLevel.level
                         self.water_level_reading_signal.emit(self.water_level)
 
-                if self.get_water_level() == WaterLevel.level or self.get_water_level() == WaterLevel.above_level:
-                    self.log("Tank full")
-                    return True
+                if self.get_water_level() == WaterLevel.above_level:
+                    success = self.bring_tank_to_level()
+                    return success
         return False
 
     def set_tank_pump_on(self, on, clockwise):
