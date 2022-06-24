@@ -148,7 +148,9 @@ class DIOBoard(AbstractIOBoard):
 
                 if self.get_water_level() == WaterLevel.level or WaterLevel.below_level:
                     self.log("Tank drained")
+                    self.set_tank_pump_on(on=False, clockwise=True)
                     self.tank_full_signal.emit()
+                    self.water_level_reading_signal.emit(WaterLevel.level)
                     return True
         elif water_level == WaterLevel.below_level or water_level==WaterLevel.level:
             self.log("Filling tank, please wait...")
@@ -166,6 +168,9 @@ class DIOBoard(AbstractIOBoard):
 
                 if self.get_water_level() == WaterLevel.above_level:
                     success = self.bring_tank_to_level()
+                    self.set_tank_pump_on(on=False, clockwise=True)
+                    if success:
+                        self.water_level_reading_signal.emit(WaterLevel.level)
                     return success
         return False
 

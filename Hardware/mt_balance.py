@@ -127,6 +127,7 @@ class MT_balance(AbstractBalance):
                 bytesize=serial.SEVENBITS,
             )
             # self.ser.write(b"ON\r")
+            self.ser.write(b'@')
             self.connected = True
         except serial.serialutil.SerialException as e:
             self.connected = False

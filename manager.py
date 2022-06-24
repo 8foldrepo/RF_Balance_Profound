@@ -1139,28 +1139,31 @@ class Manager(QThread):
         self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
         self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
-        while True:  # escapes while loop w/ either return or break commands
-            if self.abort_immediately_variable:
+        if self.abort_immediately_variable:
+            return False
+
+        successful = self.Motors.go_to_position(['X'],[self.config['WTF_PositionParameters']['XHomeCoord']])
+        if not successful:
+            self.log(level='Error', message='Failed to insert UA in pretest initialization')
+
+        water_level = self.IO_Board.get_water_level()
+
+        if water_level == WaterLevel.below_level or water_level == WaterLevel.level:
+            self.user_prompt_signal_water_too_low_signal.emit()
+            cont = self.cont_if_cont_clicked()
+            if not cont:
                 return False
+            self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
+        elif water_level == WaterLevel.above_level:
+            self.user_prompt_signal_water_too_high_signal.emit()
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                return False
+            self.IO_Board.bring_tank_to_level()
+        else:
+            self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
 
-            water_level = self.IO_Board.get_water_level()
-
-            if water_level == WaterLevel.below_level:
-                self.user_prompt_signal_water_too_low_signal.emit()
-                cont = self.cont_if_cont_clicked()
-                if not cont:
-                    return False
-                self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
-            elif water_level == WaterLevel.above_level:
-                self.user_prompt_signal_water_too_high_signal.emit()
-                cont = self.cont_if_cont_clicked()
-                if not cont:
-                    return False
-
-                self.IO_Board.bring_tank_to_level()
-            else:
-                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
-                break
+        return True
 
     @pyqtSlot(TestData, bool)
     def test_metadata_slot(self, test_data: TestData, run_script: bool = False) -> None:
@@ -1807,6 +1810,7 @@ class Manager(QThread):
 
             cont = self.cont_if_cont_clicked()
             if not cont:
+                self.abort_immediately()
                 return False
         return True
 
