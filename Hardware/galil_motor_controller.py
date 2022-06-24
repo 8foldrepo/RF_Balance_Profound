@@ -87,7 +87,7 @@ class GalilMotorController(AbstractMotorController):
 
         port_list = self.handle.GAddresses()
         self.connected = False
-
+        self.command("SH")
         for _ in port_list.keys():
             try:
                 self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
@@ -187,7 +187,7 @@ class GalilMotorController(AbstractMotorController):
         :param enable_ui: Enable ui to control motors unless the manager is running a script
         :return: whether movement finished successfully
         """
-
+        self.command("SH")
         # check edge cases
         if not self.connected:
             self.log(level='error', message='Go to position failed, Galil not connected')
@@ -430,19 +430,21 @@ class GalilMotorController(AbstractMotorController):
         return x_successful and theta_successful
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True,
+                   x_pre_home_move: bool = True) -> bool:
         """
         Does the same as the go_home method except is only pertained to the passed axis.
 
         :param axis: the axis the user wishes to home
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
         :param theta_pre_home_move: enables a theta movement to move the UA off of the active region of the switch
+        :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
         # enforce pre-move conditions
         self.command("CN,1")
         self.command("ST")  # stop command
-        self.command(f"SH {axis}")
+        self.command(f"SH")
         self.get_position()
         if axis == 'R' or axis == 'Theta':
             if theta_pre_home_move:
@@ -451,6 +453,10 @@ class GalilMotorController(AbstractMotorController):
 
             # Temporarily reverse homing direction for all axes (switch it back to 1 later)
             self.command("CN,-1")
+        else:
+            # X pre-home move
+            self.position_relative_1d('X', self.config['WTF_PositionParameters']['XPreHomeMove'], check_fault=False)
+
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
             self.command(f"BG {self.__get_galil_ax_letter(axis)}")
@@ -473,9 +479,9 @@ class GalilMotorController(AbstractMotorController):
             start_time=t.time()
             successful=False
             while t.time()-start_time<1:
-                self.command("DP 0")
+                self.command("DP0")
                 self.get_position()
-                if error_acceptable(self.coords_mm[0], self.config["WTF_PositionParameters"]["XHomeCoord"],1):
+                if error_acceptable(float(self.coords_mm[0]), float(self.config["WTF_PositionParameters"]["XHomeCoord"]),10):
                     break
             if not successful:
                 self.log(level='Error', message='XHomeCoord not set correctly, check go_home_1d method')
@@ -488,7 +494,7 @@ class GalilMotorController(AbstractMotorController):
             self.ready_signal.emit()
         return success
 
-    def position_relative_1d(self, axis: str, position_deg_or_mm: float) -> bool:
+    def position_relative_1d(self, axis: str, position_deg_or_mm: float, check_fault:bool=True) -> bool:
         """Move one axis of the galil relative to its current position"""
         try:
             self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")
@@ -502,8 +508,9 @@ class GalilMotorController(AbstractMotorController):
             elif "not established" in str(e):
                 self.log(level='error', message=f'Device not connected')
             else:
-                code = self.check_user_fault()
-                self.log(level='error', message=f'Error in command device {code}.')
+                if check_fault:
+                    code = self.check_user_fault()
+                    self.log(level='error', message=f'Error in command device {code}.')
             return False
         return True
 
@@ -655,7 +662,6 @@ class GalilMotorController(AbstractMotorController):
         :param command: the command in string form you wish to send to the motor controller
         :return: response of galil motor controller to issues command
         """
-        print(command)
         try:
             output = self.handle.GCommand(command)
         except gclib.GclibError as e:

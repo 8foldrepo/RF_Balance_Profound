@@ -1142,7 +1142,7 @@ class Manager(QThread):
         if self.abort_immediately_variable:
             return False
 
-        successful = self.Motors.go_to_position(['X'],[self.config['WTF_PositionParameters']['XHomeCoord']])
+        successful = self.Motors.go_to_position(['X'],[self.config['WTF_PositionParameters']['X-TankInsertionPoint']])
         if not successful:
             self.log(level='Error', message='Failed to insert UA in pretest initialization')
 

@@ -19,7 +19,6 @@ class DrainingDialog(MyQDialog, Ui_Dialog):
         self.config = config
         self.setupUi(self)
         self.granted = False
-        self.style_ui()
 
     @pyqtSlot()
     def tank_full_slot(self):

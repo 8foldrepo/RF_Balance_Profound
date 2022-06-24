@@ -7,7 +7,7 @@ Oscilloscope_timebase:
   # Default should be .2 us for low frequency and .1 us for high frequency
   Horizontal scale (us): .2
   # 43 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
-  Time offset (us): 43
+  Time offset (us): 25
 Daq_Power_Relay:
   on_by_default: true
   port: COM3
@@ -112,7 +112,7 @@ Keysight_Oscilloscope:
   delay_cycles: 0
   ext_trigger: true
   identifier: '0x179B'
-  range_mV: 6000
+  range_mV: 100
   retries: 5
   set_on_startup: true
   timeout_s: 1
@@ -181,6 +181,7 @@ WTF_DIO:
   DAQ Device name: WTF4
   Fill/Drain mode: Automatic
   Water level timeout (s): 230
+  Deactivate_channels_on_startup: False
 WTF_Interface_Board:
   on_by_default: false
   port: COM2
@@ -188,11 +189,12 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -90
+  ThetaHomeEdgeCoord: -85
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: -90
+  XPreHomeMove: 20
   X-Element pitch (mm): 5
   X-Element1: 0
   X-TankInsertionPoint: -108
-  XHomeCoord: -273
+  XHomeCoord: -284

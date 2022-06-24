@@ -37,8 +37,12 @@ class DIOBoard(AbstractIOBoard):
 
     def connect_hardware(self):
         self.log("Connecting to DIO board... ")
-        self.connected = self.activate_relay_channel(-1)
+
+        self.connected = self.get_serial_number() is not None
+
         if self.connected:
+            if self.config[self.device_key]["Deactivate_channels_on_startup"]:
+                self.activate_relay_channel(-1)
             self.log(f"{self.device_key} connected successfully")
         else:
             self.log(f"{self.device_key} failed to connect")
@@ -73,6 +77,10 @@ class DIOBoard(AbstractIOBoard):
         providing power to said element if the AWG is on.
         Breaks continuity for all other channels.
         """
+
+        #todo: check this
+        channel_number = 11-channel_number
+
         with nidaqmx.Task() as task:
             try:
                 task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
@@ -243,5 +251,5 @@ class DIOBoard(AbstractIOBoard):
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.activate_relay_channel(1)
+    dio.activate_relay_channel(10)
     dio.get_serial_number()
