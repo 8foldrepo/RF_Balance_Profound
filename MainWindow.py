@@ -507,6 +507,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.run_button.setEnabled(False)
         self.run_button.setStyleSheet("background-color:red")
         self.run_button.setText("SAVE BEFORE RUNNING")
+        self.run_step_button.setEnabled(False)
+        self.run_step_button.setStyleSheet("background-color:red")
+        self.run_step_button.setText("SAVE BEFORE RUNNING")
 
     def upon_script_reloaded(self) -> None:
         """
@@ -517,6 +520,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         self.run_button.setEnabled(True)
         self.run_button.setStyleSheet("background-color:white")
         self.run_button.setText("RUN SCRIPT")
+        self.run_step_button.setEnabled(True)
+        self.run_step_button.setStyleSheet("background-color:white")
+        self.run_step_button.setText("RUN STEP")
 
     @pyqtSlot(bool)
     def update_ua_indicator(self, on: bool) -> None:

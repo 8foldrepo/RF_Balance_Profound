@@ -341,7 +341,7 @@ class KeysightAWG(AbstractAWG):
         """
         if not self.connected:
             self.log(message="get_serial_number method in keysight_awg class called while function generator"
-                             "is disconnected.")
+                             " is disconnected.")
             return None
 
         self.command("*IDN?")

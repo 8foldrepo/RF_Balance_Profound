@@ -1290,6 +1290,8 @@ class Manager(QThread):
         self.log(
             f"Finding element {self.element}, near coordinate x = {assumed_x_coordinate}, r = {assumed_r_coordinate}")
 
+
+
         # Configure function generator
         awg_var_dict = dict()
         awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
@@ -1314,7 +1316,31 @@ class Manager(QThread):
         if autoset_timebase:
             self.autoset_timebase(capture_cycles, delay_cycles)
 
-        self.Motors.go_to_position(['R'], [-180], enable_ui=False)
+        success = self.Motors.go_to_position(['X'], [assumed_x_coordinate])
+        if not success:
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Go to position failed in find_element')
+            if not cont:
+                self.abort_immediately()
+                return False
+
+        success = self.home_system({'Axis to home': 'Theta'},theta_pre_home_move=self.Motors.coords_mm[1] < -160)
+        if not success:
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Home theta failed in find_element')
+            if not cont:
+                self.abort_immediately()
+                return False
+
+        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
+                              increment=theta_increment_degrees,
+                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                              go_to_peak=True, update_element_position=beam_angle_test, data_storage=data_storage,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            self.abort_immediately()
+            return False
 
         cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                               ref_position=assumed_x_coordinate,
@@ -1322,24 +1348,16 @@ class Manager(QThread):
                               acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
+            self.abort_immediately()
             return False
 
-        self.home_system({'Axis to home': 'Theta'},theta_pre_home_move=False)
 
-        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
-                              increment=theta_increment_degrees,
-                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                              go_to_peak=False, update_element_position=beam_angle_test, data_storage=data_storage,
-                              acquisition_type=acquisition_type,
-                              averages=averages, storage_location=storage_location)
-        if not cont:
-            return False
 
         self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
 
-        if self.element <= 1 or abs(self.measured_element_r_coords[self.element] -
+        if self.element > 1 and abs(self.measured_element_r_coords[self.element] -
                                     mean(self.measured_element_r_coords[1:self.element])) > max_angle_variation_degrees:
             self.log(level='warning', message=f'Maximum theta coordinate of '
                                               f'{"%.2f" % self.measured_element_r_coords[self.element]} '
@@ -1454,7 +1472,12 @@ class Manager(QThread):
                      f'{"%.2f" % max_position} {pos_units_str};'
 
         if go_to_peak:
-            status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
+            if axis_letter == 'R' or axis_letter == 'Theta':
+                hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
+                                                          - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
+                status = self.Motors.go_to_position([axis_letter], [hydrophone_max_position], enable_ui=False)
+            else:
+                status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             if status:
                 status_str += f" moved to {axis} = {max_position} {pos_units_str}"
             else:

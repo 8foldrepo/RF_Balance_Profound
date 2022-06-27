@@ -443,6 +443,7 @@ class GalilMotorController(AbstractMotorController):
         """
         # enforce pre-move conditions
         self.command("CN,1")
+        t.sleep(.1)
         self.command("ST")  # stop command
         self.command(f"SH")
         self.get_position()
@@ -476,16 +477,17 @@ class GalilMotorController(AbstractMotorController):
                                                           enable_ui=False)
         else:
             # Set x motor steps to zero
-            start_time=t.time()
-            successful=False
-            while t.time()-start_time<1:
-                self.command("DP0")
+            start_time = t.time()
+            successful = False
+            while t.time() - start_time < 1:
+                self.command("DP 0")
+                t.sleep(.1)
                 self.get_position()
-                if error_acceptable(float(self.coords_mm[0]), float(self.config["WTF_PositionParameters"]["XHomeCoord"]),10):
+                if error_acceptable(float(self.coords_mm[0]),
+                                    float(self.config["WTF_PositionParameters"]["XHomeCoord"]), 10):
                     break
             if not successful:
                 self.log(level='Error', message='XHomeCoord not set correctly, check go_home_1d method')
-
 
         t.sleep(.1)
         self.get_position()
@@ -494,7 +496,7 @@ class GalilMotorController(AbstractMotorController):
             self.ready_signal.emit()
         return success
 
-    def position_relative_1d(self, axis: str, position_deg_or_mm: float, check_fault:bool=True) -> bool:
+    def position_relative_1d(self, axis: str, position_deg_or_mm: float, check_fault: bool = True) -> bool:
         """Move one axis of the galil relative to its current position"""
         try:
             self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")

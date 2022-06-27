@@ -6,8 +6,8 @@ Analysis:
 Oscilloscope_timebase:
   # Default should be .2 us for low frequency and .1 us for high frequency
   Horizontal scale (us): .2
-  # 43 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
-  Time offset (us): 25
+  # 29 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
+  Time offset (us): 29
 Daq_Power_Relay:
   on_by_default: true
   port: COM3
@@ -34,10 +34,10 @@ Debugging:
   drain_before_retract: true
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
-  sensor_refresh_interval_s: .5
+  sensor_refresh_interval_s: 0.5
   print_detailed_verbose: false
 Forward_Power_Meter:
-  serial_number: '11408040323'
+  serial_number: '11506210019'
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50.0
@@ -58,7 +58,7 @@ Galil_Motors:
   - R
   calibrate_ray:
   - 12765.95
-  - 136.5
+  - 71.09
   enable_homing_ray:
   - true
   - true
@@ -112,7 +112,7 @@ Keysight_Oscilloscope:
   delay_cycles: 0
   ext_trigger: true
   identifier: '0x179B'
-  range_mV: 100
+  range_mV: 300
   retries: 5
   set_on_startup: true
   timeout_s: 1
@@ -124,7 +124,7 @@ Paths:
   UA Serial numbers file: \Program_Data\UA serial number and frequency data.txt
   UA results root directory: C:\Users\Isaiah\Documents\UA results
 Reflected_Power_Meter:
-  serial_number: '11506210019'
+  serial_number: '11408040323'
 Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
@@ -189,7 +189,7 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -85
+  ThetaHomeEdgeCoord: -92
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: -90

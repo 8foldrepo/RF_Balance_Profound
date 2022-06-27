@@ -109,8 +109,10 @@ class RelayBoard(AbstractRelay):
         # stretch: implement
         return ""
 
-# if __name__ == "__main__":
-#     switch = RelayBoard()
-#     switch.connect_hardware()
-#     switch.relay_write(True)
-#     t.sleep(1000)
+if __name__ == "__main__":
+     switch = RelayBoard()
+     switch.connect_hardware()
+     switch.relay_write(False)
+     t.sleep(1)
+     switch.relay_write(True)
+     print(switch.relay_read())

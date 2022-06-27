@@ -251,5 +251,6 @@ class DIOBoard(AbstractIOBoard):
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.activate_relay_channel(10)
+    dio.activate_relay_channel(1)
+    t.sleep(10000)
     dio.get_serial_number()

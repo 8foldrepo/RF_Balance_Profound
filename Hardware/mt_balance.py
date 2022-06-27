@@ -78,7 +78,7 @@ class MT_balance(AbstractBalance):
         self.disconnect_hardware()
 
     def zero_balance_instantly(self) -> None:
-        """Zeroes the scale immediately"""
+        """Zeroes (tares) the scale immediately"""
 
         # Command: I2 Inquiry of balance data.
         # Response: I2 A Balance data as "text_item".
@@ -86,24 +86,24 @@ class MT_balance(AbstractBalance):
             self.log(message="Device is not connected, cannot run zero instantly method", level='warning')
             return
         self.log(message="Zeroing Balance", level='info')
-        self.ser.write(b"\nZI\n")
+        self.ser.write(b"\nTI\n")
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 # For some reason when Debugging these can also appear as b'ES'. that is normal.
-                if item == b"ZI D" or item == b"ZI S":
+                if item == b"TI D" or item == b"TI S":
                     self.log(level="info", message="Balance Zeroed")
                     t.sleep(.05)
                     return
                 else:
-                    if item == b'I':
+                    if item == b'TI I':
                         self.log(level='error', message='Weight unstable or balance busy')
                         return
-                    elif item == b"+":
+                    elif item == b"TI +":
                         self.log(level="error", message="Balance overloaded")
                         return
-                    elif item == b"-":
+                    elif item == b"TI -":
                         self.log(level="error", message="Balance underloaded")
                         return
         self.log(level="error", message=f"{self.device_key} timed out")
