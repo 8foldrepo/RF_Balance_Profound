@@ -146,8 +146,8 @@ class ParkerMotorController(AbstractMotorController):
         if get_position:
             self.get_position()
 
-    @pyqtSlot(dict)
-    def setup_slot(self, settings=None) -> None:
+    @pyqtSlot(dict, bool)
+    def setup_slot(self, settings=None, enable_ui:bool=False) -> None:
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
         self.setup(settings=settings)
 
@@ -461,7 +461,7 @@ class ParkerMotorController(AbstractMotorController):
         else:
             self.command(f"{axis_number}OFF")
 
-    def setup(self, settings=None) -> None:
+    def setup(self, settings=None, enable_ui:bool=False) -> None:
         """
         Ensures controller is connected and responding, initializes
         all settings and emits connected signal if appropriate
@@ -738,7 +738,7 @@ class ParkerMotorController(AbstractMotorController):
                                             f'[{self.ax_letters}] in position_to_steps method in parker motor controller')
             return
 
-        position_steps = position_steps * self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
+        position_steps = position_steps * self.calibrate_ray_steps_per[axis_index] * self.gearing_ray[axis_index]
 
         if self.reverse_ray[axis_index]:
             position_steps = position_steps * -1
@@ -747,7 +747,7 @@ class ParkerMotorController(AbstractMotorController):
 
     def steps_to_position(self, axis_index: int, position_steps: float) -> float:
         """Converts the coordinate in motor steps to the user-facing coordinate in mm or degrees"""
-        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] * self.gearing_ray[axis_index]
+        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
 
         if self.reverse_ray[axis_index]:
             position_deg_or_mm = position_deg_or_mm * -1

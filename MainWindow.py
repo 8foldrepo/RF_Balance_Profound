@@ -839,7 +839,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         Launches dialog signifying that the tank is filling for the user's knowledge
         """
         dlg = FillingDialog(config=self.config)
-        self.manager.IO_Board.water_level_reading_signal.connect(dlg.water_level_slot)
+        self.manager.IO_Board.tank_full_signal.connect(dlg.tank_full_slot)
         dlg.exec()
 
     @pyqtSlot(WaterLevel)

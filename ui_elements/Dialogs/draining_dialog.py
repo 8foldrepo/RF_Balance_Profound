@@ -19,7 +19,13 @@ class DrainingDialog(MyQDialog, Ui_Dialog):
         self.config = config
         self.setupUi(self)
         self.granted = False
-        self.style_ui()
+
+    @pyqtSlot()
+    def tank_full_slot(self):
+        """Dismisses the dialog if the tank was brought to level successfully"""
+        if self.target_level == WaterLevel.level:
+            self.dialog_resolved = True
+            self.close()
 
     @pyqtSlot(WaterLevel)
     def water_level_slot(self, water_level: WaterLevel) -> None:
@@ -30,7 +36,7 @@ class DrainingDialog(MyQDialog, Ui_Dialog):
             The water_level to check against the class' internal
             target_level, must match to mark dialog as resolved
         """
-        if water_level == self.target_level:
+        if self.target_level == WaterLevel.below_level and water_level == WaterLevel.below_level:
             self.dialog_resolved = True
             self.close()
 

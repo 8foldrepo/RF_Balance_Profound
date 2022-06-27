@@ -1,9 +1,7 @@
 import sys
 import time as t
 from typing import Union, Any, Tuple
-
 from PyQt5 import QtCore
-
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from definitions import POWER_METER_DLL_PATH
 
@@ -11,7 +9,7 @@ sys.path.append(POWER_METER_DLL_PATH)
 
 # Setup power meter library (do not rearrange)
 import clr  # pythonnet
-
+sys.path.append("\Hardware\power_meter_dlls")
 clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 # noinspection PyUnresolvedReferences
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
@@ -103,8 +101,8 @@ if __name__ == "__main__":
     forward_meter.connect_hardware()
 
     start_time = t.time()
-    # while True:
-    #     cycle_start_time = t.time()
-    #     print(f"Forward power: {forward_meter.get_reading()} Watts")
+    while True:
+        cycle_start_time = t.time()
+        print(f"Forward power: {forward_meter.get_reading()} Watts")
 
     forward_meter.disconnect_hardware()

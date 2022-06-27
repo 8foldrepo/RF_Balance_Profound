@@ -30,6 +30,8 @@ https://www.realvnc.com/en/connect/download/vnc/
 
 NI-DAQmx base (NI digital io board programming dependancy)
 https://www.ni.com/en-us/support/downloads/drivers/download.ni-daqmx-base.html#326059
+(Note: the autoextractor will extract it to C:\National Instruments Downloads\NI-DAQmx Base\15.0. From here,
+run setup.exe)
 
 3. Install the power meter dll file
 

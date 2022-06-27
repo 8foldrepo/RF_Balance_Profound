@@ -3,7 +3,6 @@ import time as t
 import unittest
 
 from Hardware.galil_motor_controller import GalilMotorController
-from Hardware.Simulated.simulated_motor_controller import SimulatedMotorController
 from Utilities.load_config import load_configuration
 
 
@@ -13,17 +12,11 @@ class TestMotors(unittest.TestCase):
     Tests all core functionality of the motion controller
     """
 
-    config = None
-    Motors = None
-
     @classmethod
-    def setUpClass(cls):
-        cls.config = load_configuration()
-        if cls.config['Debugging']['simulate_motors']:
-            cls.Motors = SimulatedMotorController(config=cls.config)
-        else:
-            cls.Motors = GalilMotorController(config=None, lock=None)
-        cls.Motors.connect_hardware()
+    def setUpClass(self):
+        self.Motors = GalilMotorController(config=None, lock=None)
+        self.Motors.connect_hardware()
+        self.config = load_configuration()
 
     def test_connected(self):
         self.assertTrue(self.Motors.connected)
@@ -77,9 +70,7 @@ class TestMotors(unittest.TestCase):
             self.assertLessEqual(abs(self.Motors.coords_mm[j] - 0), margin_of_error)
 
     def test_stop_motion(self):
-        # TEST stop_motion
-        # WARNING this test does not work on simulated motors yet
-        self.Motors.connect_hardware()
+        # test stop_motion
         for j in range(2):
             self.Motors.command('DP 0')
             self.Motors.get_position()

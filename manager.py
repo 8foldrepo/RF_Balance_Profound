@@ -6,7 +6,7 @@ import time as t
 import traceback
 from collections import OrderedDict
 from statistics import mean
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
@@ -1139,28 +1139,31 @@ class Manager(QThread):
         self.test_data.log_script(["", "Initialize results FGV", "OK", ""])
         self.test_data.log_script(["", "duplicate main script", "OK", ""])
 
-        while True:  # escapes while loop w/ either return or break commands
-            if self.abort_immediately_variable:
+        if self.abort_immediately_variable:
+            return False
+
+        successful = self.Motors.go_to_position(['X'],[self.config['WTF_PositionParameters']['X-TankInsertionPoint']])
+        if not successful:
+            self.log(level='Error', message='Failed to insert UA in pretest initialization')
+
+        water_level = self.IO_Board.get_water_level()
+
+        if water_level == WaterLevel.below_level or water_level == WaterLevel.level:
+            self.user_prompt_signal_water_too_low_signal.emit()
+            cont = self.cont_if_cont_clicked()
+            if not cont:
                 return False
+            self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
+        elif water_level == WaterLevel.above_level:
+            self.user_prompt_signal_water_too_high_signal.emit()
+            cont = self.cont_if_cont_clicked()
+            if not cont:
+                return False
+            self.IO_Board.bring_tank_to_level()
+        else:
+            self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
 
-            water_level = self.IO_Board.get_water_level()
-
-            if water_level == WaterLevel.below_level:
-                self.user_prompt_signal_water_too_low_signal.emit()
-                cont = self.cont_if_cont_clicked()
-                if not cont:
-                    return False
-                self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
-            elif water_level == WaterLevel.above_level:
-                self.user_prompt_signal_water_too_high_signal.emit()
-                cont = self.cont_if_cont_clicked()
-                if not cont:
-                    return False
-
-                self.IO_Board.bring_tank_to_level()
-            else:
-                self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
-                break
+        return True
 
     @pyqtSlot(TestData, bool)
     def test_metadata_slot(self, test_data: TestData, run_script: bool = False) -> None:
@@ -1302,7 +1305,8 @@ class Manager(QThread):
             awg_var_dict["Set frequency options"] = frequency_settings
         else:
             self.user_prompt_signal.emit("Invalid frequency parameter", False)
-            return self.abort_after_step()
+            self.abort_after_step()
+            return False
         self.configure_function_generator(awg_var_dict)
 
         self.test_data.log_script(["", "Config UA and FGen", "FGen output enabled", ""])
@@ -1320,7 +1324,7 @@ class Manager(QThread):
         if not cont:
             return False
 
-        self.home_system({'Axis to home': 'Theta'})
+        self.home_system({'Axis to home': 'Theta'},theta_pre_home_move=False)
 
         cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
                               increment=theta_increment_degrees,
@@ -1330,8 +1334,6 @@ class Manager(QThread):
                               averages=averages, storage_location=storage_location)
         if not cont:
             return False
-
-        self.home_system({"Axis to home": "Theta"})
 
         self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
@@ -1748,9 +1750,10 @@ class Manager(QThread):
             self.log(message=f'autoset_timebase() in manager ran into exception: {e}', level='error')
             return False
 
-    def home_system(self, var_dict: dict, show_prompt=False) -> bool:
+    def home_system(self, var_dict: dict, show_prompt=False, theta_pre_home_move:bool =True) -> bool:
         """
-        Return axis to zero coordinate, returns whether to continue the script
+        :param theta_pre_home_move: enables a theta movement to move the UA out of the active region of the home switch
+        :return: whether to continue the script
         """
         axis_to_home = var_dict["Axis to home"]
 
@@ -1759,7 +1762,7 @@ class Manager(QThread):
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
             if not cont:
                 return False
-            successful_go_home = self.Motors.go_home(enable_ui=False)
+            successful_go_home = self.Motors.go_home(enable_ui=False, theta_pre_home_move=theta_pre_home_move)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
@@ -1773,7 +1776,7 @@ class Manager(QThread):
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
             if not cont:
                 return False
-            successful_go_home = self.Motors.go_home_1d("X", enable_ui=False)
+            successful_go_home = self.Motors.go_home_1d("X", enable_ui=False, theta_pre_home_move=False)
             if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}')
                 cont = self.cont_if_cont_clicked()
@@ -1781,7 +1784,7 @@ class Manager(QThread):
                     return False
             self.test_data.log_script(["", f"Home  X", f"Home X", f'Successful:{successful_go_home}'])
         elif axis_to_home == "Theta":
-            successful_go_home = self.Motors.go_home_1d("R", enable_ui=False)
+            successful_go_home = self.Motors.go_home_1d("R", enable_ui=False, theta_pre_home_move=theta_pre_home_move)
             if successful_go_home and show_prompt:
                 self.user_info_signal.emit(f'Homing successful, Theta moved to {self.Motors.coords_mm[1]}')
                 cont = self.cont_if_cont_clicked()
@@ -1807,6 +1810,7 @@ class Manager(QThread):
 
             cont = self.cont_if_cont_clicked()
             if not cont:
+                self.abort_immediately()
                 return False
         return True
 

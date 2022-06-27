@@ -1,1064 +1,1099 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>FIND_ELEMENT_WIDGET</class>
-    <widget class="QWidget" name="FIND_ELEMENT_WIDGET">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>470</width>
-                <height>560</height>
-            </rect>
-        </property>
-        <property name="minimumSize">
-            <size>
-                <width>470</width>
-                <height>560</height>
-            </size>
-        </property>
-        <property name="windowTitle">
-            <string>Find Element</string>
-        </property>
-        <widget class="QFrame" name="frame">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>10</y>
-                    <width>450</width>
-                    <height>131</height>
-                </rect>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-                <number>2</number>
-            </property>
-            <widget class="QLabel" name="label">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>10</y>
-                        <width>130</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+ <class>FIND_ELEMENT_WIDGET</class>
+ <widget class="QWidget" name="FIND_ELEMENT_WIDGET">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>470</width>
+    <height>560</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>470</width>
+    <height>560</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Find Element</string>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>450</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>130</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         font-weight:600; text-decoration: underline;&quot;&gt;Element Positioning&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_2">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>40</y>
-                        <width>91</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Element Selected:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="ELEMENT_SELECTION_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>40</y>
-                        <width>75</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>Element 1</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Element 2</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Element 3</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QDoubleSpinBox" name="X_INCREMENT_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>70</y>
-                        <width>90</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>mm</string>
-                </property>
-                <property name="decimals">
-                    <number>2</number>
-                </property>
-                <property name="minimum">
-                    <double>-500.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>500.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>0.050000000000000</double>
-                </property>
-                <property name="value">
-                    <double>0.250000000000000</double>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_3">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>70</y>
-                        <width>92</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>X-Axis Increment:</string>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="THETA_INCREMENT_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>300</x>
-                        <y>70</y>
-                        <width>115</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>Degrees</string>
-                </property>
-                <property name="decimals">
-                    <number>2</number>
-                </property>
-                <property name="minimum">
-                    <double>-360.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>360.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                    <double>-0.400000000000000</double>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_22">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>70</y>
-                        <width>111</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta Increment:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-            </widget>
-            <widget class="QSpinBox" name="X_PNT_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>100</y>
-                        <width>90</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="maximum">
-                    <number>1000</number>
-                </property>
-                <property name="value">
-                    <number>21</number>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_5">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>100</y>
-                        <width>92</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>X-Axis # of Points:</string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_6">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>100</y>
-                        <width>111</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta # of Points:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-            </widget>
-            <widget class="QSpinBox" name="THETA_PNT_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>300</x>
-                        <y>100</y>
-                        <width>115</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="value">
-                    <number>41</number>
-                </property>
-            </widget>
-        </widget>
-        <widget class="QFrame" name="frame_2">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>150</y>
-                    <width>450</width>
-                    <height>191</height>
-                </rect>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-                <number>2</number>
-            </property>
-            <widget class="QLabel" name="label_4">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>10</y>
-                        <width>161</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Element Selected:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="ELEMENT_SELECTION_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>40</y>
+      <width>75</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Element 1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 4</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 5</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 6</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 7</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 8</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 9</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element 10</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QDoubleSpinBox" name="X_INCREMENT_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>70</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string> mm</string>
+    </property>
+    <property name="decimals">
+     <number>2</number>
+    </property>
+    <property name="minimum">
+     <double>-500.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>500.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.050000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.250000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>92</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X-Axis Increment:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="THETA_INCREMENT_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>70</y>
+      <width>115</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string> Degrees</string>
+    </property>
+    <property name="decimals">
+     <number>2</number>
+    </property>
+    <property name="minimum">
+     <double>-360.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>360.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.100000000000000</double>
+    </property>
+    <property name="value">
+     <double>-0.400000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>70</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta Increment:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="X_PNT_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>100</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="maximum">
+     <number>1000</number>
+    </property>
+    <property name="value">
+     <number>21</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>92</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X-Axis # of Points:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>100</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theta # of Points:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="THETA_PNT_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>100</y>
+      <width>115</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="value">
+     <number>41</number>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frame_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>150</y>
+     <width>450</width>
+     <height>191</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         font-weight:600; text-decoration: underline;&quot;&gt;Oscilloscope Parameters&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="OSCOPE_CHANNEL_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>40</y>
-                        <width>75</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>Channel 1</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Channel 2</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Channel 3</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Channel 4</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QLabel" name="label_7">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>40</y>
-                        <width>75</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Scope Channel:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="OSCOPE_AQTYPE_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>70</y>
-                        <width>81</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+    </property>
+   </widget>
+   <widget class="QComboBox" name="OSCOPE_CHANNEL_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>40</y>
+      <width>75</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Channel 1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Channel 2</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Channel 3</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Channel 4</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>75</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scope Channel:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="OSCOPE_AQTYPE_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>70</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;-
                         Single Waveform &lt;/p&gt;&lt;p&gt;- N Averaged Waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>N Averaged Waveform</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Single Waveform</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QLabel" name="label_8">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>70</y>
-                        <width>85</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Acquisition Type:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="OSCOPE_SAMPLES_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>70</y>
-                        <width>90</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="currentText">
-                    <string>2 Averages</string>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>2 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>4 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>8 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>16 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>32 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>64 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>128 Averages</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>256 Averages</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QLabel" name="label_9">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>70</y>
-                        <width>101</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Number of Samples:</string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_10">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>100</y>
-                        <width>80</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Capture Cycles:</string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_11">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>100</y>
-                        <width>70</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Delay Cycles:</string>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>100</y>
-                        <width>86</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string/>
-                </property>
-                <property name="decimals">
-                    <number>0</number>
-                </property>
-                <property name="minimum">
-                    <double>0.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>1000000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>1.000000000000000</double>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="OSCOPE_DELAYCYCLE_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>100</y>
-                        <width>71</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string/>
-                </property>
-                <property name="decimals">
-                    <number>0</number>
-                </property>
-                <property name="minimum">
-                    <double>0.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>1000000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>1.000000000000000</double>
-                </property>
-            </widget>
-            <widget class="QCheckBox" name="OSCOPE_AUTO_CHECKBOX">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>40</y>
-                        <width>91</width>
-                        <height>17</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Auto Timebase</string>
-                </property>
-                <property name="checked">
-                    <bool>true</bool>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_12">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>130</y>
-                        <width>71</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Data Storage:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="OSCOPE_DATASTORE_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>130</y>
-                        <width>81</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+    </property>
+    <item>
+     <property name="text">
+      <string>N Averaged Waveform</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Single Waveform</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>85</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Acquisition Type:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="OSCOPE_SAMPLES_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>70</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="currentText">
+     <string>2 Averages</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>2 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>8 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>16 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>32 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>64 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>128 Averages</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>256 Averages</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>70</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of Samples:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Capture Cycles:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>100</y>
+      <width>70</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Delay Cycles:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="OSCOPE_CYCLES_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>100</y>
+      <width>86</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string/>
+    </property>
+    <property name="decimals">
+     <number>0</number>
+    </property>
+    <property name="minimum">
+     <double>0.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>1000000.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>1.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="OSCOPE_DELAYCYCLE_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>100</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string/>
+    </property>
+    <property name="decimals">
+     <number>0</number>
+    </property>
+    <property name="minimum">
+     <double>0.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>1000000.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>1.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="OSCOPE_AUTO_CHECKBOX">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>40</y>
+      <width>91</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Auto Timebase</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Data Storage:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="OSCOPE_DATASTORE_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>130</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- Do
                         not store&lt;/p&gt;&lt;p&gt;- Store profiles only&lt;/p&gt;&lt;p&gt;- Store entire waveform&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>Do not store</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Store profiles only</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Store entire waveform</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QLabel" name="label_13">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>130</y>
-                        <width>85</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Storage Location:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="OSCOPE_DATALOC_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>130</y>
-                        <width>131</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>UA Results Directory</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Other Directory</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QLabel" name="label_14">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>160</y>
-                        <width>81</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Data Directory:</string>
-                </property>
-            </widget>
-            <widget class="QLineEdit" name="OSCOPE_DATA_DIRECTORY_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>160</y>
-                        <width>200</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-            </widget>
-            <widget class="QPushButton" name="OSCOPE_DATA_DIRECTORY_BUTTON">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>160</y>
-                        <width>75</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Browse</string>
-                </property>
-            </widget>
-        </widget>
-        <widget class="QFrame" name="frame_3">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>350</y>
-                    <width>450</width>
-                    <height>201</height>
-                </rect>
-            </property>
-            <property name="frameShape">
-                <enum>QFrame::Box</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-            </property>
-            <property name="lineWidth">
-                <number>2</number>
-            </property>
-            <widget class="QLabel" name="label_15">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>10</y>
-                        <width>161</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+    </property>
+    <item>
+     <property name="text">
+      <string>Do not store</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Store profiles only</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Store entire waveform</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>130</y>
+      <width>85</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Storage Location:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="OSCOPE_DATALOC_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>130</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>UA Results Directory</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Other Directory</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Data Directory:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="OSCOPE_DATA_DIRECTORY_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>160</y>
+      <width>200</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="OSCOPE_DATA_DIRECTORY_BUTTON">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>160</y>
+      <width>75</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frame_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>350</y>
+     <width>450</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         font-weight:600; text-decoration: underline;&quot;&gt;Frequency &amp;amp; Angle&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_16">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>30</y>
-                        <width>91</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Frequency Preset:</string>
-                </property>
-            </widget>
-            <widget class="QComboBox" name="FREQANG_PRESET_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>30</y>
-                        <width>131</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Frequency Preset:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="FREQANG_PRESET_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>30</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;
                         text-decoration: underline;&quot;&gt;Selections Available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;- From
                         config cluster &lt;/p&gt;&lt;p&gt;- Element pk low frequency&lt;/p&gt;&lt;p&gt;- Element pk high
                         frequency&lt;/p&gt;&lt;p&gt;- Common low frequency&lt;/p&gt;&lt;p&gt;- Common high frequency&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                     </string>
-                </property>
-                <property name="currentText">
-                    <string>From config cluster</string>
-                </property>
-                <item>
-                    <property name="text">
-                        <string>From config cluster</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Element pk low frequency</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Element pk high frequency</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Common low frequency</string>
-                    </property>
-                </item>
-                <item>
-                    <property name="text">
-                        <string>Common high frequency</string>
-                    </property>
-                </item>
-            </widget>
-            <widget class="QDoubleSpinBox" name="FREQANG_BURST_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>60</y>
-                        <width>131</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>Bursts</string>
-                </property>
-                <property name="decimals">
-                    <number>0</number>
-                </property>
-                <property name="minimum">
-                    <double>0.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>1000000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>1.000000000000000</double>
-                </property>
-                <property name="value">
-                    <double>50.000000000000000</double>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_17">
-                <property name="geometry">
-                    <rect>
-                        <x>210</x>
-                        <y>60</y>
-                        <width>70</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Burst Count:</string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_18">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>60</y>
-                        <width>85</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Frequency (MHz):</string>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="FREQANG_FREQ_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>60</y>
-                        <width>105</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>MHz</string>
-                </property>
-                <property name="decimals">
-                    <number>4</number>
-                </property>
-                <property name="minimum">
-                    <double>0.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>20.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>0.000100000000000</double>
-                </property>
-                <property name="value">
-                    <double>4.400000000000000</double>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="FREQANG_VOLT_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>100</x>
-                        <y>90</y>
-                        <width>105</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>mV</string>
-                </property>
-                <property name="decimals">
-                    <number>4</number>
-                </property>
-                <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>10000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>1.000000000000000</double>
-                </property>
-                <property name="value">
-                    <double>50.000000000000000</double>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_19">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>90</y>
-                        <width>80</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Amplitude (mV):</string>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_20">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>140</y>
-                        <width>131</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Max Angle Variation (Deg):</string>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="FREQANG_ANG_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>150</x>
-                        <y>140</y>
-                        <width>131</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>Degrees</string>
-                </property>
-                <property name="decimals">
-                    <number>0</number>
-                </property>
-                <property name="minimum">
-                    <double>-360.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>360.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>1.000000000000000</double>
-                </property>
-            </widget>
-            <widget class="QCheckBox" name="FREQANG_ANG_TEST_CHECKBOX">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>140</y>
-                        <width>91</width>
-                        <height>17</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Include Test</string>
-                </property>
-            </widget>
-            <widget class="QCheckBox" name="FREQANG_POS_TEST_CHECKBOX">
-                <property name="geometry">
-                    <rect>
-                        <x>310</x>
-                        <y>170</y>
-                        <width>91</width>
-                        <height>17</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Include Test</string>
-                </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="FREQANG_POS_FIELD">
-                <property name="geometry">
-                    <rect>
-                        <x>150</x>
-                        <y>170</y>
-                        <width>131</width>
-                        <height>20</height>
-                    </rect>
-                </property>
-                <property name="toolTip">
-                    <string/>
-                </property>
-                <property name="statusTip">
-                    <string/>
-                </property>
-                <property name="whatsThis">
-                    <string/>
-                </property>
-                <property name="prefix">
-                    <string/>
-                </property>
-                <property name="suffix">
-                    <string>mm</string>
-                </property>
-                <property name="decimals">
-                    <number>3</number>
-                </property>
-                <property name="minimum">
-                    <double>-100.000000000000000</double>
-                </property>
-                <property name="maximum">
-                    <double>100.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                    <double>0.001000000000000</double>
-                </property>
-            </widget>
-            <widget class="QLabel" name="label_21">
-                <property name="geometry">
-                    <rect>
-                        <x>10</x>
-                        <y>170</y>
-                        <width>131</width>
-                        <height>16</height>
-                    </rect>
-                </property>
-                <property name="text">
-                    <string>Max Position Error (mm):</string>
-                </property>
-            </widget>
-        </widget>
-    </widget>
-    <resources/>
-    <connections/>
+    </property>
+    <property name="currentText">
+     <string>From config cluster</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>From config cluster</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element pk low frequency</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Element pk high frequency</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Common low frequency</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Common high frequency</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QDoubleSpinBox" name="FREQANG_BURST_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>60</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string>Bursts</string>
+    </property>
+    <property name="decimals">
+     <number>0</number>
+    </property>
+    <property name="minimum">
+     <double>0.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>1000000.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>1.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>50.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>60</y>
+      <width>70</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Burst Count:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>85</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Frequency (MHz):</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="FREQANG_FREQ_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>60</y>
+      <width>105</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string>MHz</string>
+    </property>
+    <property name="decimals">
+     <number>4</number>
+    </property>
+    <property name="minimum">
+     <double>0.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>20.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.000100000000000</double>
+    </property>
+    <property name="value">
+     <double>4.400000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="FREQANG_VOLT_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>90</y>
+      <width>105</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string>mV</string>
+    </property>
+    <property name="decimals">
+     <number>4</number>
+    </property>
+    <property name="minimum">
+     <double>-10000.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>10000.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>1.000000000000000</double>
+    </property>
+    <property name="value">
+     <double>50.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_19">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Amplitude (mV):</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_20">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max Angle Variation (Deg):</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="FREQANG_ANG_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>140</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string>Degrees</string>
+    </property>
+    <property name="decimals">
+     <number>0</number>
+    </property>
+    <property name="minimum">
+     <double>-360.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>360.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>1.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="FREQANG_ANG_TEST_CHECKBOX">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>140</y>
+      <width>91</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Include Test</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="FREQANG_POS_TEST_CHECKBOX">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>170</y>
+      <width>91</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Include Test</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="FREQANG_POS_FIELD">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>170</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string/>
+    </property>
+    <property name="statusTip">
+     <string/>
+    </property>
+    <property name="whatsThis">
+     <string/>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="suffix">
+     <string>mm</string>
+    </property>
+    <property name="decimals">
+     <number>3</number>
+    </property>
+    <property name="minimum">
+     <double>-100.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>100.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.001000000000000</double>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_21">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max Position Error (mm):</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>
