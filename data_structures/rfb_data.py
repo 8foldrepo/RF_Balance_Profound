@@ -149,17 +149,28 @@ class RFBData:
         self.std_too_high = a_std_too_high or f_std_too_high or r_std_too_high
 
     # Do not call this method while a rfb_data_logger is capturing readings
-    def trim_data(self):
+    def trim_data(self) -> None:
         """Trim list attributes to the length of the smallest one"""
-
         from Utilities.useful_methods import trim
-        self.times_s, self.acoustic_powers_w, self.awg_on_ray, self.f_meter_readings_w, self.r_meter_readings_w, \
-        self.balance_readings_g = trim(
-            [self.times_s, self.acoustic_powers_w, self.awg_on_ray,
-             self.f_meter_readings_w, self.r_meter_readings_w, self.balance_readings_g]
-        )
+        self.times_s,\
+        self.acoustic_powers_w,\
+        self.awg_on_ray,\
+        self.f_meter_readings_w,\
+        self.r_meter_readings_w,\
+        self.balance_readings_g =\
+            trim(lists=[self.times_s,
+                        self.acoustic_powers_w,
+                        self.awg_on_ray,
+                        self.f_meter_readings_w,
+                        self.r_meter_readings_w,
+                        self.balance_readings_g])
 
     def end_of_test_data_analysis(self) -> None:
+        """
+        Calls trim_data(), then update_realtime_data(). Gets the on/off time intervals (list of tuples). Calculates
+        efficiency and reflected power percentage via the means of various power types, and finally calculates the
+        max extrapolated forward power.
+        """
         self.trim_data()
         self.update_realtime_data()
 
@@ -178,8 +189,9 @@ class RFBData:
         else:
             self.reflected_power_percent = 1
 
-        self.forward_power_max_extrapolated = calculate_pf_max(self.Pa_max, self.efficiency_percent,
-                                                               self.reflected_power_percent)
+        self.forward_power_max_extrapolated = calculate_pf_max(acoustic_power_max_w=self.Pa_max,
+                                                               acoustic_efficiency_percent=self.efficiency_percent,
+                                                               reflected_power_percent=self.reflected_power_percent)
 
     def get_on_interval_indices(self) -> List[Tuple[int, int]]:
         """
@@ -313,7 +325,9 @@ class RFBData:
     # TODO: UPDATE THE test RESULTS SUMMARY IN MANAGER WITH THIS
     def get_pass_result(self) -> Tuple[str, str]:
         """
-        Retrieves a verdict for whether an actuator passes or fails the test
+        Retrieves a verdict for whether an actuator passes or fails the test. Specifically tests to ensure the
+        forward_power_max_extrapolated isn't greater than the Pf_max value, **and** the reflected power percentage
+        isn't greater than the reflection limit
 
         :returns: a tuple where the first string is PASS or FAIL and the second is a feedback string for failure
         """
@@ -341,9 +355,12 @@ class RFBData:
                 '']
 
     def data_is_valid(self) -> Tuple[bool, str]:
-        """Returns whether the data contains missing values or the uncertainty is too high, along with a feedback
-        message"""
+        """
+        Ensures reading, efficiency, percentage, and power list(s) aren't
+        empty. Also checks for standard deviation inaccuracy threshold
 
+        :returns: whether the data contains missing values or the uncertainty is too high, along with a feedback message
+        """
         if None in self.balance_readings_g:
             return False, "Invalid test due to missing RFB data"
 
@@ -361,9 +378,8 @@ class RFBData:
                 self.reflected_power_percent < 0 or self.reflected_power_percent > 100:
             return False, "Invalid test due to invalid reflected_power_percent"
 
-        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated == float('nan') \
-                or self.forward_power_max_extrapolated < 0 or \
-                self.forward_power_max_extrapolated > 100:
+        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated == float('nan')\
+                or self.forward_power_max_extrapolated < 0 or self.forward_power_max_extrapolated > 100:
             return False, "Invalid test due to invalid Pf max"
 
         if self.std_too_high:

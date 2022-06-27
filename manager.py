@@ -1826,19 +1826,19 @@ class Manager(QThread):
         move_type = var_dict["Move Type"]
 
         if "Go To".upper() in move_type.upper():
-            x_pos = float(var_dict["X POS"])
+            target_x_position = float(var_dict["X POS"])
             move_x = bool(var_dict["Move X"])
-            theta_pos = float(var_dict["Theta POS"])
+            target_theta_position = float(var_dict["Theta POS"])
             move_theta = bool(var_dict["Move Theta"])
-            axes = []
-            coordinates = []
+            axes_to_be_moved = []
+            target_coordinates = []
             if move_x:
-                axes.append("X")
-                coordinates.append(x_pos)
+                axes_to_be_moved.append("X")
+                target_coordinates.append(target_x_position)
             if move_theta:
-                axes.append("R")
-                coordinates.append(theta_pos)
-            self.Motors.go_to_position(axes, coordinates, enable_ui=False)
+                axes_to_be_moved.append("R")
+                target_coordinates.append(target_theta_position)
+            self.Motors.go_to_position(axes=axes_to_be_moved, coordinates_mm=target_coordinates, enable_ui=False)
         else:
             self.element = self.element_str_to_int(var_dict["Element"])
             target = var_dict["Target"]
@@ -1885,16 +1885,18 @@ class Manager(QThread):
 
     def select_ua_channel(self, var_dict: dict) -> bool:
         """
-        Activate the relay for and move to a specified element
+        Activate the relay channel in the UA's IO board and move to a specified element
+
+        :param var_dict: Should contain at least 'Element' or 'Channel' key
+        :returns: whether method finished successfully
         """
         if "Element" in var_dict.keys():
             self.element = self.element_str_to_int(var_dict["Element"])
         elif "Channel" in var_dict.keys():
             self.element = self.element_str_to_int(var_dict["Channel"])
         else:
-            self.log(
-                "No element defined in variable list for task 'select ua channel', "
-                "previous self.element value preserved info")
+            self.log(message="No element nor channel defined in variable dict for task 'select ua channel.",
+                     level='warn')
             cont = self.sequence_pass_fail(action_type='Interrupt action', error_detail='Select UA channel failed')
             return cont
 
@@ -2111,9 +2113,9 @@ class Manager(QThread):
         target_position = var_dict["RFB target position"]  # QUESTION: do we need this and the variable below?
         target_angle = var_dict["RFB target angle"]
         efficiency_test = bool(var_dict["EfficiencyTest"])
-        Pa_max = var_dict["Pa max (target, W)"]
-        Pf_max = var_dict["Pf max (limit, W)"]
-        reflection_limit = var_dict["Reflection limit (%)"]
+        Pa_max = var_dict["Pa max (target, W)"]  # acoustic power
+        Pf_max = var_dict["Pf max (limit, W)"]  # forward power
+        reflection_limit = var_dict["Reflection limit (%)"]  # used to determine pass/fail of device
 
         if storage_location == 'UA Results Directory' or data_directory == '':
             storage_location = ''
@@ -2121,7 +2123,7 @@ class Manager(QThread):
             storage_location = data_directory
 
         test_result = "DNF"  # Show in the results summary that the test has begun by initializing to 'DNF'
-        self.test_data.set_pass_result(self.element, test_result)
+        self.test_data.set_pass_result(self.element, test_result)  # helper method does that
 
         settling_time = self.config["Analysis"]['settling_time_s']
 
@@ -2136,12 +2138,9 @@ class Manager(QThread):
             if not cont:  # if the user does not want to continue
                 return False  # exit this method
 
-        # Create an empty RFB data structure
-        self.rfb_data = RFBData(element=self.element,
-                                water_temperature_c=self.thermocouple.get_reading(),  # get reading from thermocouple
-                                frequency_range=frequency_range,
-                                pf_max=Pf_max,
-                                pa_max=Pa_max,
+        # Initialize RFB data structure via passing the class/method variables to RFBData constructor
+        self.rfb_data = RFBData(element=self.element, water_temperature_c=self.thermocouple.get_reading(),
+                                frequency_range=frequency_range, pf_max=Pf_max, pa_max=Pa_max,
                                 ref_limit=reflection_limit, config=self.config)
 
         self.element_number_signal.emit(str(self.element))  # update the main window's current element variable
@@ -2153,8 +2152,8 @@ class Manager(QThread):
 
         # Hardware checks
         try:
-            # at this point in the script, the checks have been performed already in pretest_initialization so no
-            # need to wrap in if statements
+            # at this point in the script, the checks have been performed already
+            # in pretest_initialization so no need to wrap in if statements
             self.test_data.log_script(['', 'PreChecks',
                                        f'Tank fill status {self.IO_Board.get_water_level()}, UA pump status '
                                        f'{self.IO_Board.get_ua_pump_reading()}', ''])
@@ -2180,19 +2179,19 @@ class Manager(QThread):
         elif "config cluster".upper() in set_frequency_options.upper():
             awg_var_dict["Set frequency options"] = set_frequency_options
         else:
-            self.user_prompt_signal.emit("Invalid frequency parameter, aborting", False)
+            self.user_prompt_signal.emit("Invalid set_frequency_options parameter, aborting", False)
             self.abort_after_step()
             return False
+        self.configure_function_generator(awg_var_dict)
 
         # Configure other hardware
-        self.configure_function_generator(awg_var_dict)
         self.Balance.zero_balance_instantly()
 
         self.test_data.log_script(["", "Start RFB Acquisition", "Started RFB Action", ""])
 
         # Run test
-        # Begin multithreaded capture from the power meters and the balance and cycle the awg on and off
-        self.__begin_rfb_logger_thread(self.rfb_data)
+        # Begin multi-threaded capture from the power meters and the balance and cycle the awg on and off
+        self.__begin_rfb_logger_thread(rfb_data=self.rfb_data)
 
         start_time = t.time()
         current_cycle = 1
@@ -2203,16 +2202,15 @@ class Manager(QThread):
         # for the duration of rfb off time
         while t.time() - start_time < rfb_off_time:
             cont = self.__refresh_rfb_tab()
-            if not cont:
+            if not cont:  # exits if abort flag is true or __refresh_rfb_tab fails
                 return False
 
-        while current_cycle <= on_off_cycles:
+        while current_cycle <= on_off_cycles:  # beginning of our cycle loop
             cycle_start_time = t.time()
 
             self.log(f"Turning on AWG T = {'%.2f' % (t.time() - start_time)}")
             self.AWG.set_output(True)  # turn on awg
-            # for the duration of rfb on time
-            while t.time() - cycle_start_time < rfb_on_time:
+            while t.time() - cycle_start_time < rfb_on_time:  # for the duration of rfb on time
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
@@ -2228,13 +2226,15 @@ class Manager(QThread):
 
             current_cycle += 1
 
+        # rfb_logger has been monitoring and recording test data behind the scenes
         self.__wrap_up_rfb_logger()
 
         self.test_data.log_script(["", "Run on/off sequence", "RFB Acquisition complete", ""])
         self.test_data.log_script(["", "Stop RFB Acquisition", "RFB Stopped, data saved", ""])
 
+        # make all the data lists in rfb_data the same size as the shortest one to prevent length inequality
         self.rfb_data.trim_data()
-        self.rfb_data.end_of_test_data_analysis()
+        self.rfb_data.end_of_test_data_analysis()  # process internal rfb_data information
 
         data_is_valid, feedback = self.rfb_data.data_is_valid()
 
@@ -2274,7 +2274,7 @@ class Manager(QThread):
             self.test_data.update_results_summary_with_efficiency_results(
                 frequency_range=frequency_range,
                 element=self.element,
-                frequency_Hz=self.AWG.state["frequency_Hz"],
+                frequency_hz=self.AWG.state["frequency_Hz"],
                 efficiency_percent=self.rfb_data.efficiency_percent,
                 reflected_power_percent=self.rfb_data.reflected_power_percent,
                 forward_power_max=self.rfb_data.forward_power_max_extrapolated,
@@ -2297,6 +2297,7 @@ class Manager(QThread):
 
         return True  # at this point in the code, the test finished without errors
 
+    # noinspection PyUnresolvedReferences
     def __begin_rfb_logger_thread(self, rfb_data: RFBData) -> None:
         """
         Separate the RFB logger thread, that way manager thread is more freed up, and only has to worry about turn
@@ -2355,16 +2356,17 @@ class Manager(QThread):
     def __refresh_rfb_tab(self) -> bool:
         """
         Helper function which retrieves data from the rfb_logger and tells the rfb tab to update
-        returns a boolean indicating whether to continue the script
+
+        :returns: a boolean indicating whether to continue the script
         """
         if self.abort_immediately_variable:
             # Stop the current method and any parent methods that called it
             return False
 
         rfb_cooldown_s = .05
-        if t.time() - self.last_rfb_update_time > rfb_cooldown_s:
-            self.rfb_data = self.rfb_logger.rfb_data
-            self.update_rfb_tab_signal.emit()
+        if t.time() - self.last_rfb_update_time > rfb_cooldown_s:  # if cooldown period has elapsed
+            self.rfb_data = self.rfb_logger.rfb_data  # update local clas rfb_data with rfb_logger's rfb_data
+            self.update_rfb_tab_signal.emit()  # connected to update_rfb_tab() in ui_rfb.py
             self.last_rfb_update_time = t.time()
 
         if self.app is not None:
