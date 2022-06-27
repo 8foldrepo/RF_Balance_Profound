@@ -11,5 +11,6 @@ local.yaml
 logs/EfficiencyTest/*
 logs/wtf.log
 Utilities/testdelete.py
-build\*
-dist\*
+build/
+dist/
+main.spec

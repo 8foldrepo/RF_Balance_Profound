@@ -24,12 +24,13 @@ class UAInterface(AbstractUAInterface):
         self.ua_calibration_data = None
         self.fields_setup()
 
-    def fields_setup(self):
-        """Initializes the timeout_s value from the config dictionary"""
+    def fields_setup(self) -> None:
+        """Initializes the timeout_s value from the config dictionary and handles key not existing in config"""
         try:
             self.timeout_s = self.config[self.device_key]["timeout_s"]
         except KeyError:
-            self.log(level='warning', message='value for [UAInterface][timeout_s] in either config does not exist, defaulting to 10 seconds')
+            self.log(level='warning', message='value for [UAInterface][timeout_s] in either'
+                                              ' config does not exist, defaulting to 10 seconds')
             self.timeout_s = 10
 
     def connect_hardware(self) -> Tuple[bool, str]:
@@ -41,7 +42,7 @@ class UAInterface(AbstractUAInterface):
 
         self.log("Attempting to connect to WTFIB... ")
 
-        # Ping the UA interface
+        # Ping the UA interface; Popen works like a command line
         p = Popen(["ping", self.ip_address, "-n", "1"], stdout=PIPE)
         output = p.communicate()[0].decode()
 
@@ -53,7 +54,7 @@ class UAInterface(AbstractUAInterface):
             self.connected = True
 
         if not self.connected:
-            self.log(feedback, level="error")
+            self.log(message=feedback, level="error")
         else:
             self.log(feedback)
         self.connected_signal.emit(self.connected)

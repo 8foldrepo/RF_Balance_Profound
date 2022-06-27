@@ -1,13 +1,19 @@
 from pprint import pformat
 from typing import List, Union
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5 import QtCore
+from PyQt5.QtCore import QObject
 from Utilities.useful_methods import mean_of_non_none_values
 from data_structures.variable_containers import FrequencyRange
 
 
 class TestData(QObject):
-    show_results_summary = pyqtSignal(list)
-    show_script_log = pyqtSignal(list)
+    """
+    A class dedicated to organizing the results of an element efficiency test for
+    presentation, analysis, modularization, and to increase the project's compactness
+    """
+    # connected to results_tab.populate_results_table() in main window class
+    show_results_summary = QtCore.pyqtSignal(list)
+    show_script_log = QtCore.pyqtSignal(list)  # connected to results_tab.populate_log_table() in main window class
 
     script_log: List[List[str]]
     results_summary: List[List[str]]
@@ -31,10 +37,14 @@ class TestData(QObject):
         super().__init__()
         self.set_blank_values()
 
-    def set_blank_values(self):
+    def set_blank_values(self) -> None:
+        """
+        Initializes the "results" table list as well as variables
+        to be used in the final formulation of the results data
+        """
         from datetime import datetime
 
-        # add formatted date
+        # add formatted date and initialize variables
         now = datetime.now()
         formatted_date = now.strftime("%Y.%m.%d-%H.%M")
         self.test_date_time = formatted_date
@@ -80,10 +90,10 @@ class TestData(QObject):
 
         self.results_summary = table
 
-    def set_max_position(self, axis: str, element: int, max_position: float):
+    def set_max_position(self, axis: str, element: int, max_position: float) -> None:
         """
-            The list of strings should have length 4, and the number of empty strings at the beginning
-            corresponds to the indentation level
+        The list of strings should have length 4, and the number of empty
+        strings at the beginning corresponds to the indentation level
         """
         # update element position
         if axis == "X":
@@ -92,23 +102,17 @@ class TestData(QObject):
             self.results_summary[element - 1][2] = "%.2f" % max_position
         self.show_results_summary.emit(self.results_summary)
 
-    def update_results_summary_with_efficiency_results(
-            self,
-            frequency_range: FrequencyRange,
-            element: int,
-            frequency_Hz: float,
-            efficiency_percent: float,
-            reflected_power_percent: float,
-            forward_power_max: float,
-            water_temperature_c: float,
-            test_result: str,
-            comment: str
-    ):
-        """Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the
-            results tab"""
+    def update_results_summary_with_efficiency_results(self, frequency_range: FrequencyRange, element: int,
+                                                       frequency_hz: float, efficiency_percent: float,
+                                                       reflected_power_percent: float, forward_power_max: float,
+                                                       water_temperature_c: float, test_result: str, comment: str):
+        """
+        Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the
+        results tab
+        """
         if frequency_range == FrequencyRange.high_frequency:
             # High frequency
-            self.results_summary[element - 1][5] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][5] = "%.2f" % (frequency_hz / 1000000)
             # HF efficiency (%)
             self.results_summary[element - 1][11] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][12] = "%.1f" % reflected_power_percent
@@ -118,7 +122,7 @@ class TestData(QObject):
                 comment = f"High frequency test failed: {comment}"
         else:  # Default to low frequency
             # Low Frequency
-            self.results_summary[element - 1][3] = "%.2f" % (frequency_Hz / 1000000)
+            self.results_summary[element - 1][3] = "%.2f" % (frequency_hz / 1000000)
             # LF efficiency (%)
             self.results_summary[element - 1][7] = "%.0f" % efficiency_percent
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
@@ -166,8 +170,16 @@ class TestData(QObject):
         self.script_log.append(entry)
         self.show_script_log.emit(self.script_log)
 
-    def set_pass_result(self, element, test_result):
+    def set_pass_result(self, element: int, test_result: str) -> None:
+        """
+        Used in measure_element_efficiency_rfb(); simply sets the pass/fail
+        value to the passed result regarding the passed element.
+
+        :param element: the element that needs its test result updated in the class' results_summary list
+        :param test_result: should be either PASS, FAIL, or DNF
+        """
         # If the element already failed do not overwrite the entry
+        # results_summary and element are offset by 1; 15 is the pass/fail position
         if self.results_summary[element - 1][15].upper() != 'FAIL':
             self.results_summary[element - 1][15] = test_result.upper()
 
