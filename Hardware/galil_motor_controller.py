@@ -424,7 +424,14 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def go_home(self, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
-        """Home both axes and return true if the operation is successful"""
+        """
+        Moves the motors to the internally stored home position for all axis.
+        Has an optional flag to have the user see a warning prompt before motor homing.
+        :param enable_ui:
+            whether to turn on various buttons in main window and its tabs after operation if script
+            isn't running
+        :returns: boolean representing successful homing.
+        """
         x_successful = self.go_home_1d('X', enable_ui=False, theta_pre_home_move=False)
         theta_successful = self.go_home_1d('R', enable_ui=enable_ui, theta_pre_home_move=theta_pre_home_move)
         return x_successful and theta_successful
