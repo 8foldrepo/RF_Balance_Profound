@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_comma_string, is_number
+from Utilities.useful_methods import create_comma_string, is_number, error_acceptable
 
 
 class GalilMotorController(AbstractMotorController):
@@ -70,10 +70,10 @@ class GalilMotorController(AbstractMotorController):
         :return: true if connected, false otherwise
         """
         try:
-            info = self.handle.GInfo()
+            _ = self.handle.GInfo()
             self.connected = True
             return True
-        except:
+        except gclib.GclibError:
             self.connected = False
             return False
 
@@ -87,7 +87,7 @@ class GalilMotorController(AbstractMotorController):
 
         port_list = self.handle.GAddresses()
         self.connected = False
-
+        self.command("SH")
         for _ in port_list.keys():
             try:
                 self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
@@ -113,12 +113,13 @@ class GalilMotorController(AbstractMotorController):
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
 
-    @pyqtSlot(dict)
-    def setup(self, settings: Union[dict, None]) -> None:
+    @pyqtSlot(dict, bool)
+    def setup(self, settings: Union[dict, None], enable_ui: bool = False) -> None:
         """
         Setup all axes according to a dictionary of settings. R is configured according to rotational settings.
 
         :param settings: dictionary of settings to apply to the class and motors
+        :param enable_ui: whether to enable the ui when setup is complete
         """
         # Update settings according to the dict
         if settings is not None:
@@ -140,7 +141,14 @@ class GalilMotorController(AbstractMotorController):
                 return
 
         # Turn Motors on
-        self.handle.GCommand("SH")
+        try:
+            self.handle.GCommand("SH")
+        except gclib.GclibError as e:
+            if "write error" in str(e):
+                self.connected = False
+                self.connected_signal.emit(self.connected)
+                self.log(level='error', message='Galil not connected')
+                return
 
         try:
             # Turn off gear ratio and gear mode
@@ -164,9 +172,9 @@ class GalilMotorController(AbstractMotorController):
         except gclib.GclibError:
             self.log(level='error', message=f"Connection error: {self.check_user_fault()}")
             self.connected = False
-        self.ready_signal.emit()
+        if enable_ui:
+            self.ready_signal.emit()
 
-    # todo: test
     @pyqtSlot(list, list)
     def go_to_position(self, axes: List[str], coordinates_mm: List[float],
                        mutex_locked: bool = False, enable_ui: bool = True) -> bool:
@@ -179,7 +187,7 @@ class GalilMotorController(AbstractMotorController):
         :param enable_ui: Enable ui to control motors unless the manager is running a script
         :return: whether movement finished successfully
         """
-
+        self.command("SH")
         # check edge cases
         if not self.connected:
             self.log(level='error', message='Go to position failed, Galil not connected')
@@ -255,7 +263,8 @@ class GalilMotorController(AbstractMotorController):
         start_time = t.time()
         success = False
         while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
-            self.app.processEvents()
+            if self.app is not None:
+                self.app.processEvents()
             self.get_position()
             try:
                 stop_code = self.command("SC AB")
@@ -271,7 +280,7 @@ class GalilMotorController(AbstractMotorController):
                     break
             except gclib.GclibError as e:
                 code = self.check_user_fault()
-                self.log(level='error', message=f"error in wait_for_motion_to_complete: {code}")
+                self.log(level='error', message=f"error in wait_for_motion_to_complete: {e}, {code}")
                 return False
 
         if not success:
@@ -414,65 +423,47 @@ class GalilMotorController(AbstractMotorController):
         self.moving_signal.emit(self.moving)
 
     @pyqtSlot()
-    def go_home(self, enable_ui: bool = True) -> bool:
+    def go_home(self, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
         """
         Moves the motors to the internally stored home position for all axis.
         Has an optional flag to have the user see a warning prompt before motor homing.
-
         :param enable_ui:
             whether to turn on various buttons in main window and its tabs after operation if script
             isn't running
         :returns: boolean representing successful homing.
         """
-        # enforce pre-move conditions
-        self.command("ST")  # INFO: stops motor movement
-        self.command("SH AB")
-
-        # Theta pre-home move
-        self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
-
-        self.command("ST")
-        self.command("SH AB")
-        try:
-            self.command("HM")  # set up for homing command
-            self.command("BG")  # begin command
-        except gclib.GclibError:
-            self.log(level='error', message=self.check_user_fault())
-
-        motion_complete_success = self.wait_for_motion_to_complete()
-        self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord']+
-                                                self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
-        self.get_position()
-
-        go_to_position_success = self.go_to_position(['R'], [self.config["WTF_PositionParameters"]['ThetaHomeCoord']], enable_ui=False)
-
-        self.get_position()
-        if enable_ui:
-            self.ready_signal.emit()
-
-        return motion_complete_success and go_to_position_success
+        x_successful = self.go_home_1d('X', enable_ui=False, theta_pre_home_move=False)
+        theta_successful = self.go_home_1d('R', enable_ui=enable_ui, theta_pre_home_move=theta_pre_home_move)
+        return x_successful and theta_successful
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True,
+                   x_pre_home_move: bool = True) -> bool:
         """
         Does the same as the go_home method except is only pertained to the passed axis.
 
         :param axis: the axis the user wishes to home
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
+        :param theta_pre_home_move: enables a theta movement to move the UA off of the active region of the switch
+        :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
-        # QUESTION: should this also support the x axis?
-        # ANSWER: No, only theta requires a prehome move
         # enforce pre-move conditions
+        self.command("CN,1")
         self.command("ST")  # stop command
-        self.command("SH AB")
-
+        self.command(f"SH")
+        self.get_position()
         if axis == 'R' or axis == 'Theta':
-            # Theta pre-home move
-            self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaPreHomeMove"]], enable_ui=False)
+            if theta_pre_home_move:
+                # Theta pre-home move
+                self.position_relative_1d('R', self.config['WTF_PositionParameters']['ThetaPreHomeMove'])
 
-            self.command("ST")
-            self.command("SH AB")
+            # Temporarily reverse homing direction for all axes (switch it back to 1 later)
+            self.command("CN,-1")
+        else:
+            # X pre-home move
+            self.position_relative_1d('X', self.config['WTF_PositionParameters']['XPreHomeMove'], check_fault=False)
+
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
             self.command(f"BG {self.__get_galil_ax_letter(axis)}")
@@ -480,12 +471,28 @@ class GalilMotorController(AbstractMotorController):
             self.log(level='error', message=self.check_user_fault())
 
         success = self.wait_for_motion_to_complete()
+        self.command("CN,1")
 
         if axis == 'R' or axis == 'Theta':
-            self.set_origin_1d('R', self.coords_mm[1] - (self.config['WTF_PositionParameters']['ThetaHomeCoord'] +
-                                                         self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']))
             self.get_position()
-            success = success and self.go_to_position(['R'], [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]], enable_ui=False)
+            self.set_origin_1d('R', self.config["WTF_PositionParameters"]["ThetaHomeEdgeCoord"])
+            self.get_position()
+            if self.config["WTF_PositionParameters"]["CentreHomeTheta?"]:
+                success = success and self.go_to_position(['R'],
+                                                          [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]],
+                                                          enable_ui=False)
+        else:
+            # Set x motor steps to zero
+            start_time=t.time()
+            successful=False
+            while t.time()-start_time<1:
+                self.command("DP0")
+                self.get_position()
+                if error_acceptable(float(self.coords_mm[0]), float(self.config["WTF_PositionParameters"]["XHomeCoord"]),10):
+                    break
+            if not successful:
+                self.log(level='Error', message='XHomeCoord not set correctly, check go_home_1d method')
+
 
         t.sleep(.1)
         self.get_position()
@@ -493,6 +500,26 @@ class GalilMotorController(AbstractMotorController):
         if enable_ui:
             self.ready_signal.emit()
         return success
+
+    def position_relative_1d(self, axis: str, position_deg_or_mm: float, check_fault:bool=True) -> bool:
+        """Move one axis of the galil relative to its current position"""
+        try:
+            self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")
+            self.command(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
+            self.command(f"BG {self.galil_ax_letters[self.ax_letters.index(axis)]}")
+            self.wait_for_motion_to_complete()
+            self.command("ST")
+        except gclib.GclibError as e:
+            if "device read error" in str(e) or 'device write error' in str(e):
+                self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
+            elif "not established" in str(e):
+                self.log(level='error', message=f'Device not connected')
+            else:
+                if check_fault:
+                    code = self.check_user_fault()
+                    self.log(level='error', message=f'Error in command device {code}.')
+            return False
+        return True
 
     @pyqtSlot()
     @pyqtSlot(str, int)
@@ -537,7 +564,8 @@ class GalilMotorController(AbstractMotorController):
 
         x_pos_str = self.command('RP A')
         if is_number(x_pos_str):  # controller returns position in steps
-            current_x_position = self.steps_to_position(axis_index=0, position_steps=float())  # convert it to mm
+            current_x_position = self.steps_to_position(axis_index=0, position_steps=float(x_pos_str))  # convert it
+            # to mm
         else:
             self.ready_signal.emit()  # connected to motors_ready() in ui_position.py
             return
@@ -549,7 +577,13 @@ class GalilMotorController(AbstractMotorController):
         self.x_pos_mm_signal.emit(round(current_x_position, 2))  # updates indicators in main window and position tab
 
         # repeat the same process we just did for the X axis to the theta axis
-        r_pos = self.steps_to_position(1, float(self.command('RP B')))
+        r_pos_str = self.command('RP B')
+        if is_number(r_pos_str):
+            r_pos = self.steps_to_position(1, float(r_pos_str))
+        else:
+            self.ready_signal.emit()
+            return
+
         if abs(r_pos - self.coords_mm[1]) > moving_margin_ray[1]:
             moving_ray[1] = True
         self.coords_mm[1] = r_pos
@@ -578,16 +612,15 @@ class GalilMotorController(AbstractMotorController):
 
         if self.ax_letters[i].upper() == "X":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_steps = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
+            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['XHomeCoord']
         elif self.ax_letters[i].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeCoord']-\
-                             self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+            position_steps = position_deg_or_mm - self.config['WTF_PositionParameters']['ThetaHomeEdgeCoord']
 
         else:
             return
 
-        position_steps = position_steps * self.calibrate_ray_steps_per[i] / self.gearing_ray[i]
+        position_steps = position_steps * self.calibrate_ray_steps_per[i] * self.gearing_ray[i]
 
         if self.reverse_ray[i]:
             position_steps *= -1
@@ -602,19 +635,18 @@ class GalilMotorController(AbstractMotorController):
         :param position_steps: the position in steps
         :returns: position in mm/deg
         """
-        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] * self.gearing_ray[axis_index]
+        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
 
         if self.reverse_ray[axis_index]:
             position_deg_or_mm *= -1
 
         if self.ax_letters[axis_index].upper() == "X":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_deg_or_mm = position_deg_or_mm - self.config['WTF_PositionParameters']['XHomeCoord']
+            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
             self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
         elif self.ax_letters[axis_index].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
-            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeCoord']+\
-                                 self.config['WTF_PositionParameters']['ThetaHomeEdgeOffset']
+            position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeEdgeCoord']
             self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))
 
         return position_deg_or_mm
@@ -639,16 +671,33 @@ class GalilMotorController(AbstractMotorController):
         :param command: the command in string form you wish to send to the motor controller
         :return: response of galil motor controller to issues command
         """
-        print(command)
         try:
             output = self.handle.GCommand(command)
         except gclib.GclibError as e:
             if "device read error" in str(e) or 'device write error' in str(e):
                 self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
+            elif "not established" in str(e):
+                self.log(level='error', message=f'Device not connected')
             else:
                 code = self.check_user_fault()
                 self.log(level='error', message=f'Error in command device {code}.')
             return ""
 
         t.sleep(.01)
-        return output.replace('\r\n','')
+        return output.replace('\r\n', '')
+
+
+if __name__ == '__main__':
+    Motors = GalilMotorController(config=None, lock=None)
+    Motors.connect_hardware()
+    Motors.set_origin_here()
+    # steps1 = Motors.position_to_steps(0,0)
+    # steps2 = Motors.position_to_steps(-263,0)
+    # steps3 = Motors.position_to_steps(1,0)
+    # steps4 = Motors.position_to_steps(1,-90)
+    # steps5 = Motors.position_to_steps(1,-180)
+    # steps6 = Motors.position_to_steps(1,-70)
+    Motors.get_position()
+    coords = Motors.coords_mm
+    Motors.go_to_position(['X'], [coords[1] + 5])
+    pass

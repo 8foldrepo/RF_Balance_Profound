@@ -32,7 +32,8 @@ class Position(MyQWidget, Ui_Form):
 
     home_1d_signal = QtCore.pyqtSignal(str)
     home_all_signal = QtCore.pyqtSignal()
-    setup_signal = QtCore.pyqtSignal(dict)
+    #dict is the settings, bool is whether to enable UI
+    setup_signal = QtCore.pyqtSignal(dict, bool)
     reset_zero_signal = QtCore.pyqtSignal()
     go_to_signal = QtCore.pyqtSignal(list, list)
     begin_motion_signal = QtCore.pyqtSignal(str, int)
@@ -136,8 +137,8 @@ class Position(MyQWidget, Ui_Form):
             'steps_per_mm': self.steps_per_mm_sb.value(),
             'ang_incr': self.ang_inc_double_sb.value(),
             'x_gearing': self.gearing_ray[0],
-            'r_gearing': self.gearing_ray[1]
-        })
+            'r_gearing': self.doubleSpinBox.value()
+        }, True)
 
     def populate_default_ui(self) -> None:
         """
