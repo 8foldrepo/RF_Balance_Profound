@@ -16,6 +16,7 @@ class RFBDataLogger(QThread):
     # INFO: Trigger a capture from all sensors at once
     # needed for communication with the three power meters in parallel and being synchronized
     trigger_capture_signal = QtCore.pyqtSignal()
+    error_signal = QtCore.pyqtSignal(str)
 
     Balance: AbstractBalance
     Forward_Power_Meter: AbstractSensor
@@ -69,6 +70,9 @@ class RFBDataLogger(QThread):
         self.Balance_Thread.reading_signal.connect(self.log_balance)
         self.F_Meter_Thread.reading_signal.connect(self.log_f_meter)
         self.R_Meter_Thread.reading_signal.connect(self.log_r_meter)
+        self.Balance_Thread.error_signal.connect(self.report_error)
+        self.F_Meter_Thread.error_signal.connect(self.report_error)
+        self.R_Meter_Thread.error_signal.connect(self.report_error)
 
         self.Balance_Thread.start(priority=QThread.HighPriority)
         self.F_Meter_Thread.start(priority=QThread.HighPriority)
@@ -100,6 +104,11 @@ class RFBDataLogger(QThread):
 
         self.mutex.unlock()
         return super().run()
+
+    @pyqtSlot(str)
+    def report_error(self, error_str) -> None:
+        """Emits an error signal to be shown to the user. This also triggers an interrupt action in Manager"""
+        self.error_signal.emit(error_str)
 
     def sensors_ready(self) -> bool:
         """

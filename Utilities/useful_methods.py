@@ -316,4 +316,4 @@ def print_list_2(list2: list) -> None:
 
 
 if __name__ == "__main__":
-    print(find_int("Channel 1.2"))
+    error_acceptable(-284.0,-284.0)

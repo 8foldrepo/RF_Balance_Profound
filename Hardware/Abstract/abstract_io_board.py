@@ -8,7 +8,7 @@ from data_structures.variable_containers import WaterLevel
 
 class AbstractIOBoard(AbstractDevice):
     __metaclass__ = ABCMeta
-
+    tank_full_signal = pyqtSignal()
     pump_reading_signal = pyqtSignal(bool)
     water_level_reading_signal = pyqtSignal(WaterLevel)
     filling_signal = pyqtSignal()

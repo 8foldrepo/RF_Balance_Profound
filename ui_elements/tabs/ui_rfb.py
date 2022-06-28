@@ -79,12 +79,12 @@ class RFB(MyQWidget, Ui_Form):
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
-        self.power_on_rand_uc_field.setText(str(round(p_on_standard_deviation, 2)))
+        self.power_on_rand_uc_field.setText(str(round(p_on_standard_deviation, 4)))
         # Commented lines were UI fields removed because they were confusing or not useful
         # self.power_on_total_uc_field.setText(str(round(p_on_total_unc, 2)))
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean, 2)))
-        self.power_off_rand_uc_field.setText(str(round(p_off_standard_deviation, 2)))
+        self.power_off_rand_uc_field.setText(str(round(p_off_standard_deviation, 4)))
         # self.power_off_total_uc_field.setText(str(round(p_off_total_unc, 2)))
 
         # self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))

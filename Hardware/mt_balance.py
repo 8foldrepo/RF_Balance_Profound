@@ -92,7 +92,7 @@ class MT_balance(AbstractBalance):
             y = self.ser.readline().split(b"\r\n")
             for item in y:
                 # For some reason when Debugging these can also appear as b'ES'. that is normal.
-                if item == b"TI D" or item == b"TI S":
+                if b"TI D" in item or b"TI S" in item:
                     self.log(level="info", message="Balance Zeroed")
                     t.sleep(.05)
                     return

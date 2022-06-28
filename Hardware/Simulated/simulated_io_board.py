@@ -89,6 +89,7 @@ class SimulatedIOBoard(AbstractIOBoard):
         while t.time() - start_time < 20:
             self.water_level = random.choice([WaterLevel.level, WaterLevel.below_level, WaterLevel.above_level])
             if self.get_water_level() == WaterLevel.level:
+                self.tank_full_signal.emit()
                 return True
         return False
 

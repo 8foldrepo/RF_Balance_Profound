@@ -82,6 +82,8 @@ class Manager(QThread):
     user_prompt_pump_not_running_signal = QtCore.pyqtSignal(str)  # str is pump status
     user_prompt_signal_water_too_low_signal = QtCore.pyqtSignal()  # str is water level
     user_prompt_signal_water_too_high_signal = QtCore.pyqtSignal()
+    show_filling_dialog_signal = QtCore.pyqtSignal()
+    show_draining_dialog_signal = QtCore.pyqtSignal(WaterLevel)
     show_write_cal_data_dialog_signal = QtCore.pyqtSignal(list)  # list is 2d array of calibration data
     retracting_ua_warning_signal = QtCore.pyqtSignal()
     # Contains a pass/fail list of booleans and a list of descriptions
@@ -1105,7 +1107,7 @@ class Manager(QThread):
             func_var_dict["Amplitude (mVpp)"] = 200
         func_var_dict["Frequency (MHz)"] = self.test_data.low_frequency_MHz
         func_var_dict["Mode"] = "Toneburst"
-        func_var_dict["Enable output"] = True
+        func_var_dict["Enable output"] = False
         try:
             func_var_dict["#Cycles"] = self.config[self.AWG.device_key]['burst_cycles']
         except IndexError:
@@ -1142,7 +1144,7 @@ class Manager(QThread):
         if self.abort_immediately_variable:
             return False
 
-        successful = self.Motors.go_to_position(['X'],[self.config['WTF_PositionParameters']['X-TankInsertionPoint']])
+        successful = self.Motors.go_to_position(['X'], [self.config['WTF_PositionParameters']['X-TankInsertionPoint']])
         if not successful:
             self.log(level='Error', message='Failed to insert UA in pretest initialization')
 
@@ -1153,12 +1155,14 @@ class Manager(QThread):
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
+            self.show_filling_dialog_signal.emit()
             self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
         elif water_level == WaterLevel.above_level:
             self.user_prompt_signal_water_too_high_signal.emit()
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
+            self.show_draining_dialog_signal.emit(WaterLevel.level)
             self.IO_Board.bring_tank_to_level()
         else:
             self.test_data.log_script(["", "Check/prompt water level", "OK", ""])
@@ -1290,8 +1294,6 @@ class Manager(QThread):
         self.log(
             f"Finding element {self.element}, near coordinate x = {assumed_x_coordinate}, r = {assumed_r_coordinate}")
 
-
-
         # Configure function generator
         awg_var_dict = dict()
         awg_var_dict["Amplitude (mVpp)"] = amplitude_mVpp
@@ -1324,7 +1326,7 @@ class Manager(QThread):
                 self.abort_immediately()
                 return False
 
-        success = self.home_system({'Axis to home': 'Theta'},theta_pre_home_move=self.Motors.coords_mm[1] < -160)
+        success = self.home_system({'Axis to home': 'Theta'}, theta_pre_home_move=self.Motors.coords_mm[1] < -160)
         if not success:
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail='Home theta failed in find_element')
@@ -1351,8 +1353,6 @@ class Manager(QThread):
             self.abort_immediately()
             return False
 
-
-
         self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
@@ -1369,8 +1369,8 @@ class Manager(QThread):
 
     def scan_axis(self, element: int, axis: str, num_points: int, increment: float, ref_position: float,
                   data_storage: str, go_to_peak: bool, storage_location: str, update_element_position: bool,
-                  scope_channel:int = 1, acquisition_type: str = 'N Averaged Waveform',
-                  averages: int = 1, filename_stub: str ="FindElement") -> bool:
+                  scope_channel: int = 1, acquisition_type: str = 'N Averaged Waveform',
+                  averages: int = 1, filename_stub: str = "FindElement") -> bool:
         """
 
         :returns: A boolean indicating whether to continue the script
@@ -1419,7 +1419,7 @@ class Manager(QThread):
                 return False
 
             self.Motors.go_to_position([axis_letter], [position], enable_ui=False)
-            position = position + increment
+            position += increment
 
             if self.config["Analysis"]["capture_rms_only"]:
                 vsi = self.Oscilloscope.get_rms()
@@ -1454,7 +1454,7 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
                                                           f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
-        self.log(f"Maximum of {max_vsi} @ {axis} = {max_position} {pos_units_str}")
+        self.log(f"Maximum of {'%.2f' % max_vsi} @ {axis} = {'%.2f' % max_position} {pos_units_str}")
 
         if update_element_position:
             if axis == "X":
@@ -1773,8 +1773,10 @@ class Manager(QThread):
             self.log(message=f'autoset_timebase() in manager ran into exception: {e}', level='error')
             return False
 
-    def home_system(self, var_dict: dict, show_prompt=False, theta_pre_home_move:bool =True) -> bool:
+    def home_system(self, var_dict: dict, show_prompt=False, theta_pre_home_move: bool = True) -> bool:
         """
+        :param show_prompt: whether or not to show a prompt warning the user before retracting the UA
+        :param var_dict: dictionary containing the names and values of all script action parameters
         :param theta_pre_home_move: enables a theta movement to move the UA out of the active region of the home switch
         :return: whether to continue the script
         """
@@ -1790,8 +1792,8 @@ class Manager(QThread):
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
             if show_prompt and successful_go_home:
-                self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}, Theta moved to'
-                                           f' {self.Motors.coords_mm[1]}')
+                self.user_info_signal.emit(f'Homing successful, X moved to {"%.2f" % self.Motors.coords_mm[0]}, Theta moved to'
+                                           f' {"%.2f" % self.Motors.coords_mm[1]}')
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
@@ -1801,7 +1803,7 @@ class Manager(QThread):
                 return False
             successful_go_home = self.Motors.go_home_1d("X", enable_ui=False, theta_pre_home_move=False)
             if successful_go_home and show_prompt:
-                self.user_info_signal.emit(f'Homing successful, X moved to {self.Motors.coords_mm[0]}')
+                self.user_info_signal.emit(f'Homing successful, X moved to {"%.2f" % self.Motors.coords_mm[0]}')
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
@@ -1809,7 +1811,7 @@ class Manager(QThread):
         elif axis_to_home == "Theta":
             successful_go_home = self.Motors.go_home_1d("R", enable_ui=False, theta_pre_home_move=theta_pre_home_move)
             if successful_go_home and show_prompt:
-                self.user_info_signal.emit(f'Homing successful, Theta moved to {self.Motors.coords_mm[1]}')
+                self.user_info_signal.emit(f'Homing successful, Theta moved to {"%.2f" % self.Motors.coords_mm[1]}')
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
@@ -2225,6 +2227,14 @@ class Manager(QThread):
         self.AWG.set_output(False)
         # for the duration of rfb off time
         while t.time() - start_time < rfb_off_time:
+            # Handle logger error if there is one
+            if self.rfb_logger_error is not None:
+                cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                               error_detail=f'Error in measure_element_efficiency_rfb for element '
+                                                            f'{self.element}: {self.rfb_logger_error}')
+                if not cont:
+                    return False
+
             cont = self.__refresh_rfb_tab()
             if not cont:
                 return False
@@ -2236,6 +2246,15 @@ class Manager(QThread):
             self.AWG.set_output(True)  # turn on awg
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
+                # Handle logger error if there is one
+                if self.rfb_logger_error is not None:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail=f'Error in measure_element_efficiency_rfb for element '
+                                                                f'{self.element}: {self.rfb_logger_error}')
+                    if not cont:
+                        return False
+
+                # Refresh rfb tab
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
@@ -2245,6 +2264,15 @@ class Manager(QThread):
             self.AWG.set_output(False)
             # for the duration of rfb off time
             while t.time() - cycle_start_time < rfb_on_time + rfb_off_time:
+                # Handle logger error if there is one
+                if self.rfb_logger_error is not None:
+                    cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                                   error_detail=f'Error in measure_element_efficiency_rfb for element '
+                                                                f'{self.element}: {self.rfb_logger_error}')
+                    if not cont:
+                        return False
+
+                # refresh rfb tab
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
@@ -2336,7 +2364,15 @@ class Manager(QThread):
                                         config=self.config)
         self.AWG.output_signal.connect(self.rfb_logger.update_awg_on)  # lets rfb_logger know when AWG has new data
         self.rfb_logger.finished.connect(self.rfb_logger.deleteLater)
+        self.rfb_logger_error = None
+        self.rfb_logger.error_signal.connect(self.__rfb_logger_error_slot)
         self.rfb_logger.start(priority=QThread.HighPriority)
+
+    @pyqtSlot(str)
+    def __rfb_logger_error_slot(self, error_str):
+        """Receives an error from the RFBDataLogger object if there is one, which will trigger an
+        interrupt action in the measure_element_efficiency_rfb method if a test is running"""
+        self.rfb_logger_error = error_str
 
     def __wrap_up_rfb_logger(self) -> None:
         """

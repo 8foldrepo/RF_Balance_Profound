@@ -1,8 +1,7 @@
 from typing import Tuple
-
 import nidaqmx
 from PyQt5 import QtCore
-
+from nidaqmx.constants import CJCSource
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 
@@ -56,7 +55,8 @@ class NIThermocouple(AbstractSensor):
             return
 
         with nidaqmx.Task() as task:
-            task.ai_channels.add_ai_thrmcpl_chan(f"{self.name}/ai0")
+            task.ai_channels.add_ai_thrmcpl_chan(f"{self.name}/ai0", cjc_source=CJCSource.BUILT_IN)
+
             reading = task.read()
 
         self.reading_signal.emit(reading)

@@ -16,8 +16,6 @@ class DIOBoard(AbstractIOBoard):
     water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)
 
     # used for showing UI dialogs in MainWindow
-    filling_signal = QtCore.pyqtSignal()
-    draining_signal = QtCore.pyqtSignal(WaterLevel)
     tank_full_signal = QtCore.pyqtSignal()
 
     def __init__(self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None):

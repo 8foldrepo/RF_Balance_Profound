@@ -454,9 +454,12 @@ class GalilMotorController(AbstractMotorController):
 
             # Temporarily reverse homing direction for all axes (switch it back to 1 later)
             self.command("CN,-1")
-        else:
+        elif axis == 'X' and x_pre_home_move:
             # X pre-home move
+            print("executing x x_pre_home_move") #todo: remove
             self.position_relative_1d('X', self.config['WTF_PositionParameters']['XPreHomeMove'], check_fault=False)
+        else:
+            self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
 
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
@@ -477,14 +480,16 @@ class GalilMotorController(AbstractMotorController):
                                                           enable_ui=False)
         else:
             # Set x motor steps to zero
+            self.wait_for_motion_to_complete()
             start_time = t.time()
             successful = False
-            while t.time() - start_time < 1:
+            while t.time() - start_time < 2:
                 self.command("DP 0")
                 t.sleep(.1)
                 self.get_position()
                 if error_acceptable(float(self.coords_mm[0]),
-                                    float(self.config["WTF_PositionParameters"]["XHomeCoord"]), 10):
+                                    float(self.config["WTF_PositionParameters"]["XHomeCoord"]), 2):
+                    successful = True
                     break
             if not successful:
                 self.log(level='Error', message='XHomeCoord not set correctly, check go_home_1d method')
@@ -500,6 +505,7 @@ class GalilMotorController(AbstractMotorController):
         """Move one axis of the galil relative to its current position"""
         try:
             self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")
+            print(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}") #todo: remove
             self.command(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
             self.command(f"BG {self.galil_ax_letters[self.ax_letters.index(axis)]}")
             self.wait_for_motion_to_complete()

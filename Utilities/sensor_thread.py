@@ -7,6 +7,7 @@ from Hardware.Abstract.abstract_sensor import AbstractSensor
 
 class SensorThread(QThread):
     reading_signal = pyqtSignal(float)
+    error_signal = pyqtSignal(str)
 
     def __init__(self, config, sensor: AbstractSensor, parent=None):
         super().__init__(parent=parent)
@@ -52,6 +53,12 @@ class SensorThread(QThread):
             reading = self.sensor.get_reading()
             if reading is not None:
                 break
+
+        if reading is None:
+            self.error_signal.emit(f"Error capturing reading from {self.name}.")
+            self.ready = True
+            self.reading_signal.emit(None)
+            return
 
         self.reading_signal.emit(reading)
         self.ready = True

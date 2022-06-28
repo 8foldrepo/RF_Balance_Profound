@@ -1,705 +1,737 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>Form</class>
-    <widget class="QWidget" name="Form">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>1021</width>
-                <height>657</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
-        </property>
-        <widget class="QWidget" name="layoutWidget">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>30</y>
-                    <width>1011</width>
-                    <height>621</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_23">
-                <item row="0" column="1">
-                    <layout class="QGridLayout" name="gridLayout">
-                        <item row="1" column="1">
-                            <widget class="QLabel" name="label_117">
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>0</width>
-                                        <height>20</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>8</height>
-                                    </size>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <pointsize>12</pointsize>
-                                        <weight>75</weight>
-                                        <bold>true</bold>
-                                    </font>
-                                </property>
-                                <property name="text">
-                                    <string>Results</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="3" column="1">
-                            <widget class="QLabel" name="label_118">
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>9</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>Power On</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="4" column="2">
-                            <widget class="QFrame" name="rfb_results_off">
-                                <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>0</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>16777215</height>
-                                    </size>
-                                </property>
-                                <property name="autoFillBackground">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="frameShape">
-                                    <enum>QFrame::Box</enum>
-                                </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_9">
-                                    <item>
-                                        <widget class="QLabel" name="label_109">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>Power (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="power_off_w_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLabel" name="label_110">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>St. Deviation (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="power_off_rand_uc_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                </layout>
-                            </widget>
-                        </item>
-                        <item row="4" column="3">
-                            <widget class="QFrame" name="rfb_results_combined_2">
-                                <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>0</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>16777215</height>
-                                    </size>
-                                </property>
-                                <property name="autoFillBackground">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="frameShape">
-                                    <enum>QFrame::Box</enum>
-                                </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_12">
-                                    <item>
-                                        <widget class="QLabel" name="label_115">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>Pf (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="forward_power_w_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLabel" name="label_116">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>Pr (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="reflected_power_w_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                </layout>
-                            </widget>
-                        </item>
-                        <item row="4" column="1">
-                            <widget class="QFrame" name="rfb_results_on">
-                                <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>0</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>100</width>
-                                        <height>16777215</height>
-                                    </size>
-                                </property>
-                                <property name="autoFillBackground">
-                                    <bool>false</bool>
-                                </property>
-                                <property name="frameShape">
-                                    <enum>QFrame::Box</enum>
-                                </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_8">
-                                    <property name="leftMargin">
-                                        <number>9</number>
-                                    </property>
-                                    <item>
-                                        <widget class="QLabel" name="label_106">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>80</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="frameShape">
-                                                <enum>QFrame::NoFrame</enum>
-                                            </property>
-                                            <property name="text">
-                                                <string>Power (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="power_on_w_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLabel" name="label_107">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                            <property name="text">
-                                                <string>St. Deviation (W)</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QLineEdit" name="power_on_rand_uc_field">
-                                            <property name="enabled">
-                                                <bool>false</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>85</width>
-                                                    <height>22</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>16777215</width>
-                                                    <height>21</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                </layout>
-                            </widget>
-                        </item>
-                        <item row="3" column="3">
-                            <widget class="QLabel" name="label_122">
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>9</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>RF Electrical Power</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="3" column="2">
-                            <widget class="QLabel" name="label_119">
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>9</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>Power Off</string>
-                                </property>
-                            </widget>
-                        </item>
-                        <item row="2" column="1">
-                            <spacer name="verticalSpacer">
-                                <property name="orientation">
-                                    <enum>Qt::Vertical</enum>
-                                </property>
-                                <property name="sizeType">
-                                    <enum>QSizePolicy::Fixed</enum>
-                                </property>
-                                <property name="sizeHint" stdset="0">
-                                    <size>
-                                        <width>20</width>
-                                        <height>10</height>
-                                    </size>
-                                </property>
-                            </spacer>
-                        </item>
-                    </layout>
-                </item>
-                <item row="0" column="2">
-                    <spacer name="horizontalSpacer_5">
-                        <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                            <size>
-                                <width>40</width>
-                                <height>20</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </item>
-                <item row="0" column="0">
-                    <widget class="QWidget" name="verticalWidget_4" native="true">
-                        <property name="maximumSize">
-                            <size>
-                                <width>80</width>
-                                <height>16777215</height>
-                            </size>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_7">
-                            <item>
-                                <widget class="QLabel" name="label_103">
-                                    <property name="text">
-                                        <string>Time (s)</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLineEdit" name="time_s_field">
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLabel" name="label_104">
-                                    <property name="text">
-                                        <string>Mass (mg)</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLineEdit" name="mass_mg_field">
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLabel" name="label_105">
-                                    <property name="text">
-                                        <string>Power (W)</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QLineEdit" name="power_w_field">
-                                    <property name="enabled">
-                                        <bool>false</bool>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <spacer name="verticalSpacer_7">
-                                    <property name="orientation">
-                                        <enum>Qt::Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>QSizePolicy::Minimum</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>20</width>
-                                            <height>40</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                        </layout>
-                    </widget>
-                </item>
-                <item row="1" column="0" colspan="4">
-                    <widget class="QWidget" name="widget_4" native="true">
-                        <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                            </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                            <size>
-                                <width>400</width>
-                                <height>200</height>
-                            </size>
-                        </property>
-                        <widget class="Plot" name="rfb_graph" native="true">
-                            <property name="geometry">
-                                <rect>
-                                    <x>10</x>
-                                    <y>60</y>
-                                    <width>991</width>
-                                    <height>351</height>
-                                </rect>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" name="label_121">
-                            <property name="geometry">
-                                <rect>
-                                    <x>10</x>
-                                    <y>10</y>
-                                    <width>61</width>
-                                    <height>16</height>
-                                </rect>
-                            </property>
-                            <property name="text">
-                                <string>Data Display</string>
-                            </property>
-                        </widget>
-                        <widget class="QLabel" name="label_123">
-                            <property name="geometry">
-                                <rect>
-                                    <x>30</x>
-                                    <y>30</y>
-                                    <width>61</width>
-                                    <height>16</height>
-                                </rect>
-                            </property>
-                            <property name="text">
-                                <string>Raw Power</string>
-                            </property>
-                        </widget>
-                        <widget class="QGroupBox" name="legendsGroup">
-                            <property name="geometry">
-                                <rect>
-                                    <x>110</x>
-                                    <y>10</y>
-                                    <width>851</width>
-                                    <height>41</height>
-                                </rect>
-                            </property>
-                            <property name="title">
-                                <string/>
-                            </property>
-                            <widget class="QLabel" name="reverse_pwr_img">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>10</x>
-                                        <y>10</y>
-                                        <width>30</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="text">
-                                    <string/>
-                                </property>
-                                <property name="pixmap">
-                                    <pixmap>../ui_elements/images/reverse power.png</pixmap>
-                                </property>
-                            </widget>
-                            <widget class="QLabel" name="label_125">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>440</x>
-                                        <y>10</y>
-                                        <width>73</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="text">
-                                    <string>Reverse Power</string>
-                                </property>
-                            </widget>
-                            <widget class="QLabel" name="xsition_pwr_img">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>400</x>
-                                        <y>10</y>
-                                        <width>30</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="text">
-                                    <string/>
-                                </property>
-                                <property name="pixmap">
-                                    <pixmap>../ui_elements/images/xsition pts.png</pixmap>
-                                </property>
-                            </widget>
-                            <widget class="QLabel" name="label_124">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>43</x>
-                                        <y>10</y>
-                                        <width>73</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="text">
-                                    <string>Forward Power</string>
-                                </property>
-                            </widget>
-                            <widget class="QLabel" name="forward_pwr_img">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>710</x>
-                                        <y>10</y>
-                                        <width>31</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>20</width>
-                                        <height>20</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string/>
-                                </property>
-                                <property name="pixmap">
-                                    <pixmap>../ui_elements/images/forward power.png</pixmap>
-                                </property>
-                            </widget>
-                            <widget class="QLabel" name="label_126">
-                                <property name="geometry">
-                                    <rect>
-                                        <x>750</x>
-                                        <y>10</y>
-                                        <width>91</width>
-                                        <height>21</height>
-                                    </rect>
-                                </property>
-                                <property name="text">
-                                    <string>Acoustic Power</string>
-                                </property>
-                            </widget>
-                        </widget>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QWidget" name="tooltip" native="true">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>1010</width>
-                    <height>27</height>
-                </rect>
-            </property>
-            <property name="toolTip">
-                <string>This tab shows the data captured by the radiation force balance (RFB) and organizes the
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1021</width>
+    <height>657</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QWidget" name="tooltip" native="true">
+     <property name="toolTip">
+      <string>This tab shows the data captured by the radiation force balance (RFB) and organizes the
                     information into a grid and graph fashion, with a graph legend to explain what various lines
                     represent
                 </string>
-            </property>
-        </widget>
+     </property>
     </widget>
-    <customwidgets>
-        <customwidget>
-            <class>Plot</class>
-            <extends>QWidget</extends>
-            <header location="global">ui_elements.ui_oscilloscope_plot</header>
-            <container>1</container>
-        </customwidget>
-    </customwidgets>
-    <resources/>
-    <connections/>
+   </item>
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout_23">
+     <item row="0" column="0">
+      <widget class="QWidget" name="verticalWidget_4" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="label_103">
+          <property name="text">
+           <string>Time (s)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="time_s_field">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_104">
+          <property name="text">
+           <string>Mass (mg)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="mass_mg_field">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_105">
+          <property name="toolTip">
+           <string>This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals</string>
+          </property>
+          <property name="text">
+           <string>Power (W)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="power_w_field">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_108">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The acoustic power above divided by the difference between forward and reflected electrical power&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Eff. %</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="power_w_field_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The acoustic power above divided by the difference between forward and reflected electrical power&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="4">
+      <widget class="QWidget" name="widget_4" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>400</width>
+         <height>200</height>
+        </size>
+       </property>
+       <widget class="Plot" name="rfb_graph" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>991</width>
+          <height>351</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_121">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Data Display</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_123">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>30</y>
+          <width>61</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Raw Power</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="legendsGroup">
+        <property name="geometry">
+         <rect>
+          <x>110</x>
+          <y>10</y>
+          <width>851</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QLabel" name="reverse_pwr_img">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>30</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../ui_elements/images/reverse power.png</pixmap>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_125">
+         <property name="geometry">
+          <rect>
+           <x>440</x>
+           <y>10</y>
+           <width>73</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Reverse Power</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="xsition_pwr_img">
+         <property name="geometry">
+          <rect>
+           <x>400</x>
+           <y>10</y>
+           <width>30</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../ui_elements/images/xsition pts.png</pixmap>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_124">
+         <property name="geometry">
+          <rect>
+           <x>43</x>
+           <y>10</y>
+           <width>73</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Forward Power</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="forward_pwr_img">
+         <property name="geometry">
+          <rect>
+           <x>710</x>
+           <y>10</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>../ui_elements/images/forward power.png</pixmap>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_126">
+         <property name="geometry">
+          <rect>
+           <x>750</x>
+           <y>10</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Acoustic Power</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="4" column="3">
+        <widget class="QFrame" name="rfb_results_combined_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Forward and reflected electrical power measured by the power measurement and switching module</string>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <widget class="QLabel" name="label_115">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Pf (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="forward_power_w_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_116">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Pr (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="reflected_power_w_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_117">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>8</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Results</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_118">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>9</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle.</string>
+         </property>
+         <property name="text">
+          <string>UA on intervals</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QFrame" name="rfb_results_off">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle.</string>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QLabel" name="label_109">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Power (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="power_off_w_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_110">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>St. Deviation (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="power_off_rand_uc_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_119">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>9</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle.</string>
+         </property>
+         <property name="text">
+          <string>UA off intervals</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="1">
+        <widget class="QFrame" name="rfb_results_on">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle.</string>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_106">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string>Power (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="power_on_w_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_107">
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>St. Deviation (W)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="power_on_rand_uc_field">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>85</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>21</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_122">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>9</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Forward and reflected electrical power measured by the power measurement and switching module</string>
+         </property>
+         <property name="text">
+          <string>RF Electrical Power</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="2">
+      <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Plot</class>
+   <extends>QWidget</extends>
+   <header location="global">ui_elements.ui_oscilloscope_plot</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
 </ui>
