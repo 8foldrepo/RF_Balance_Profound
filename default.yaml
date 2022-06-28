@@ -2,7 +2,7 @@ Analysis:
   capture_rms_only: false
   max_standard_deviation_w: 0.1
   samples_to_remove_at_end: 3
-  settling_time_s: 0.001
+  settling_time_s: 2
 Oscilloscope_timebase:
   # Default should be .2 us for low frequency and .1 us for high frequency
   Horizontal scale (us): .2
@@ -14,28 +14,28 @@ Daq_Power_Relay:
   timeout_s: 1
 Debugging:
   disable_password_prompt: true
+  drain_before_retract: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
-  simulate_awg: true
-  simulate_balance: true
+  print_detailed_verbose: false
+  sensor_refresh_interval_s: 0.5
+  simulate_awg: false
+  simulate_balance: false
   simulate_balance_error: false
-  simulate_io_board: true
+  simulate_io_board: false
   simulate_motor_error: false
-  simulate_motors: true
-  simulate_oscilloscope: true
+  simulate_motors: false
+  simulate_oscilloscope: false
   simulate_oscilloscope_error: false
-  simulate_ua_pump_on: true
-  simulate_power_meters: true
-  simulate_sensors: true
-  simulate_thermocouple: true
+  simulate_power_meters: false
+  simulate_sensors: false
+  simulate_thermocouple: false
   simulate_thermocouple_error: false
   simulate_ua_error: false
-  simulate_ua_interface: true
-  drain_before_retract: true
+  simulate_ua_interface: false
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
-  sensor_refresh_interval_s: 0.5
-  print_detailed_verbose: false
+  simulate_ua_pump_on: true
 Forward_Power_Meter:
   serial_number: '11506210019'
 FrequencyParameters:
@@ -88,7 +88,7 @@ Galil_Motors:
   - true
   scan_speed: 1
   speeds_ray:
-  - 5.0
+  - 9.0
   - 99.0
   time_limit_s: 2
   timeout_s: 0.1
@@ -189,12 +189,12 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -92
+  ThetaHomeEdgeCoord: -96
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: -90
-  XPreHomeMove: 20
+  XNegativeLimitMove: 30
   X-Element pitch (mm): 5
   X-Element1: 0
-  X-TankInsertionPoint: -108
-  XHomeCoord: -284
+  X-TankInsertionPoint: 0
+  XHomeCoord: -260

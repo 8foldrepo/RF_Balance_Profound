@@ -172,6 +172,11 @@ class RFBData:
         max extrapolated forward power.
         """
         self.trim_data()
+
+        # subtract the average power while the UA was off (this is a post-processing way of zeroing the balance)
+        for i in range(len(self.acoustic_powers_w)):
+            self.acoustic_powers_w[i] -= self.acoustic_power_off_mean
+
         self.update_realtime_data()
 
         self.on_time_intervals_s = self.convert_interval_indices_to_times(self.on_indices)

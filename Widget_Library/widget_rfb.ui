@@ -94,7 +94,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="power_w_field_2">
+         <widget class="QLineEdit" name="eff_percent_field">
           <property name="enabled">
            <bool>false</bool>
           </property>

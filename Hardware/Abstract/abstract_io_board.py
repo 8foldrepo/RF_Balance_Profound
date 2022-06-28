@@ -13,6 +13,7 @@ class AbstractIOBoard(AbstractDevice):
     water_level_reading_signal = pyqtSignal(WaterLevel)
     filling_signal = pyqtSignal()
     draining_signal = pyqtSignal(WaterLevel)
+    stop_filling_draining_var: bool
 
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
@@ -42,6 +43,14 @@ class AbstractIOBoard(AbstractDevice):
         """Return the state of the water level sensor as a WaterLevel Enum"""
 
         ...
+
+    @abstractmethod
+    def tank_full_override_slot(self) -> None:
+        self.water_level = WaterLevel.level
+        self.water_level_reading_signal.emit(self.water_level)
+        self.tank_full_signal.emit()
+        self.stop_filling_draining_var = True
+        self.set_tank_pump_on(False, False)
 
     @abstractmethod
     def activate_relay_channel(self, channel_number: int) -> bool:

@@ -15,14 +15,14 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(314, 240)
-        self.label = QtWidgets.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(10, 10, 119, 18))
+        self.status_label = QtWidgets.QLabel(Dialog)
+        self.status_label.setGeometry(QtCore.QRect(10, 10, 119, 18))
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
         font.setWeight(75)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
+        self.status_label.setFont(font)
+        self.status_label.setObjectName("status_label")
         self.running_indicator = QtWidgets.QPushButton(Dialog)
         self.running_indicator.setGeometry(QtCore.QRect(180, 10, 111, 31))
         self.running_indicator.setStyleSheet("background:lightgreen")
@@ -30,6 +30,9 @@ class Ui_Dialog(object):
         self.label_2 = QtWidgets.QLabel(Dialog)
         self.label_2.setGeometry(QtCore.QRect(120, 110, 66, 13))
         self.label_2.setObjectName("label_2")
+        self.override_button = QtWidgets.QPushButton(Dialog)
+        self.override_button.setGeometry(QtCore.QRect(134, 200, 161, 23))
+        self.override_button.setObjectName("override_button")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -37,14 +40,14 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.label.setText(_translate("Dialog", "Filling Tank..."))
+        self.status_label.setText(_translate("Dialog", "Filling Tank..."))
         self.running_indicator.setText(_translate("Dialog", "Running"))
         self.label_2.setText(_translate("Dialog", "Please wait..."))
+        self.override_button.setText(_translate("Dialog", "Tank is full (override sensor)"))
 
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()

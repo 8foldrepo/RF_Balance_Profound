@@ -17,9 +17,11 @@ class SimulatedIOBoard(AbstractIOBoard):
     water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)  # connected to main window's water level indicator
     filling_signal = QtCore.pyqtSignal()  # connected to show filling tank dialog in main window
     draining_signal = QtCore.pyqtSignal(WaterLevel)  # connected to show draining tank dialog in main window
+    stop_filling_draining_var: bool
 
     def __init__(self, config: dict, device_key: str = "NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
+        self.stop_filling_draining_var = False
         self.clockwise = False  # presumably direction of water flow
         self.power_relay = SimulatedRelay(config=config, device_key="Daq_Power_Relay")
         self.power_relay.connect_hardware()
@@ -64,6 +66,9 @@ class SimulatedIOBoard(AbstractIOBoard):
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:
+            if self.stop_filling_draining_var:
+                self.set_tank_pump_on(False, False)
+                return True
             self.water_level = random.choice([WaterLevel.level, WaterLevel.below_level, WaterLevel.above_level])
             if self.get_water_level() == WaterLevel.below_level:
                 return True
@@ -87,6 +92,9 @@ class SimulatedIOBoard(AbstractIOBoard):
         t.sleep(2)
         start_time = t.time()
         while t.time() - start_time < 20:
+            if self.stop_filling_draining_var:
+                self.set_tank_pump_on(False, False)
+                return True
             self.water_level = random.choice([WaterLevel.level, WaterLevel.below_level, WaterLevel.above_level])
             if self.get_water_level() == WaterLevel.level:
                 self.tank_full_signal.emit()
@@ -151,6 +159,13 @@ class SimulatedIOBoard(AbstractIOBoard):
         :return: Will return 'Simulated' every time
         """
         return '"Simulated"'
+
+    def tank_full_override_slot(self) -> None:
+        self.water_level = WaterLevel.level
+        self.water_level_reading_signal.emit(self.water_level)
+        self.tank_full_signal.emit()
+        self.stop_filling_draining_var = True
+        self.set_tank_pump_on(False, False)
 
     def wrap_up(self):
         """

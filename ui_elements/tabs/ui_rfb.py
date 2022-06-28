@@ -3,6 +3,7 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
 
 from Hardware.Abstract.abstract_balance import AbstractBalance
+from Utilities.useful_methods import is_number
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -85,14 +86,28 @@ class RFB(MyQWidget, Ui_Form):
 
         self.power_off_w_field.setText(str(round(acoustic_power_off_mean, 2)))
         self.power_off_rand_uc_field.setText(str(round(p_off_standard_deviation, 4)))
+
         # self.power_off_total_uc_field.setText(str(round(p_off_total_unc, 2)))
 
         # self.power_combined_field.setText(str(round(acoustic_power_mean, 2)))
         # self.power_combined_rand_uc_field.setText(str(round(p_com_rand_unc, 2)))
         # self.power_combined_total_uc_field.setText(str(round(p_com_total_unc, 2)))
 
-        if not (len(times_s) == 0 or len(acoustic_w) == 0):
-            self.power_w_field.setText(str(round((acoustic_w[len(acoustic_w) - 1]), 2)))
+        try:
+            self.power_w_field.setText(str(round(acoustic_power_on_mean - acoustic_power_off_mean, 2)))
+        except Exception as e:
+            if not "type" in str(e):
+                self.log(level='error', message=f'error setting power_w_field {e}')
+            self.power_w_field.setText(float('nan'))
+
+        try:
+            self.eff_percent_field.setText(self.power_w_field.text()/(rfb_data.forward_power_on_mean-rfb_data.reflected_power_on_mean))
+        except Exception as e:
+            if not "type" in str(e):
+                self.log(level='error', message=f'error setting eff_percent_field {e}')
+            self.eff_percent_field.setText('nan')
+
+        if not len(times_s) == 0:
             self.time_s_field.setText(str(round((times_s[len(times_s) - 1]), 2)))
 
         self.forward_power_w_field.setText(str(round(forward_power_w, 2)))

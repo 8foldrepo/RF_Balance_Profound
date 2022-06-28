@@ -109,6 +109,11 @@ def error_acceptable(value1: float, value2: float, acceptable_error_percent: flo
     return abs((value1 - value2) / value1) * 100 < acceptable_error_percent
 
 
+def get_bit(num: int, bit_num: int) -> bool:
+    """Get a specified bit from an integer. 1 is the LSB, and so on."""
+    return bool((num & (1 << bit_num)) >> bit_num)
+
+
 def update(dictionary: dict, u) -> dict:
     """Updates a nested dictionary with another nested dictionary"""
     for key, value in u.items():
@@ -325,4 +330,4 @@ def print_list_2(list2: list) -> None:
 
 
 if __name__ == "__main__":
-    error_acceptable(-284.0,-284.0)
+    print(not get_bit(43,2))

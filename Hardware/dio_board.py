@@ -3,6 +3,7 @@ import time as t
 from typing import Union
 import nidaqmx
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSlot
 from nidaqmx.constants import LineGrouping
 from Hardware.Abstract.abstract_io_board import AbstractIOBoard
 from Hardware.relay_board import RelayBoard
@@ -12,6 +13,9 @@ from data_structures.variable_containers import WaterLevel
 class DIOBoard(AbstractIOBoard):
     """Class for interfacing with a National instruments usb-6009 digital IO board"""
 
+    # Abort flag for the filling/draining tank operations
+    stop_filling_draining_var:bool
+
     pump_reading_signal = QtCore.pyqtSignal(bool)
     water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)
 
@@ -20,6 +24,7 @@ class DIOBoard(AbstractIOBoard):
 
     def __init__(self, config=None, device_key="WTF_DIO", simulate_sensors=False, parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
+        self.stop_filling_draining_var = False
         self.simulate_sensors = simulate_sensors
         if simulate_sensors:
             self.water_level = WaterLevel.below_level
@@ -104,6 +109,7 @@ class DIOBoard(AbstractIOBoard):
 
     def drain_tank(self):
         """Drains the tank until it is below the active range of the water level sensor"""
+        self.stop_filling_draining_var = False
         water_level = self.get_water_level()
 
         if water_level == WaterLevel.below_level:
@@ -115,10 +121,10 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=True)
             start_time = t.time()
 
-            while (
-                    t.time() - start_time
-                    < self.config[self.device_key]["Water level timeout (s)"]
-            ):
+            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+                if self.stop_filling_draining_var:
+                    self.set_tank_pump_on(False,False)
+                    return True
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -131,9 +137,10 @@ class DIOBoard(AbstractIOBoard):
                     return True
         return False
 
-    def bring_tank_to_level(self):
+    def bring_tank_to_level(self) -> bool:
         """Drains or fills the tank until it is within the active range of the water level sensor"""
         water_level = self.get_water_level()
+        self.stop_filling_draining_var = False
 
         if water_level == WaterLevel.above_level:
             self.log("Draining tank, please wait...")
@@ -141,10 +148,11 @@ class DIOBoard(AbstractIOBoard):
             self.set_tank_pump_on(on=True, clockwise=True)
             start_time = t.time()
 
-            while (
-                    t.time() - start_time
-                    < self.config[self.device_key]["Water level timeout (s)"]
-            ):
+            while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+                if self.stop_filling_draining_var:
+                    self.set_tank_pump_on(False,False)
+                    return True
+
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -165,6 +173,10 @@ class DIOBoard(AbstractIOBoard):
             start_time = t.time()
 
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
+                if self.stop_filling_draining_var:
+                    self.set_tank_pump_on(False,False)
+                    return True
+
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
                 if self.simulate_sensors:
@@ -179,6 +191,17 @@ class DIOBoard(AbstractIOBoard):
                         self.water_level_reading_signal.emit(WaterLevel.level)
                     return success
         return False
+
+    @pyqtSlot()
+    def tank_full_override_slot(self) -> None:
+        """
+        This slot is triggered by the filling tank dialog when the user clicks the override button.
+        this class will pretend the tank is full, even if the water level sensor says otherwise.
+        """
+        self.water_level = WaterLevel.level
+        self.water_level_reading_signal.emit(self.water_level)
+        self.tank_full_signal.emit()
+        self.stop_filling_draining_var = True
 
     def set_tank_pump_on(self, on, clockwise):
         with nidaqmx.Task() as task:  # enabling the appropriate ports to enable pump
@@ -249,6 +272,5 @@ class DIOBoard(AbstractIOBoard):
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.activate_relay_channel(1)
-    t.sleep(10000)
-    dio.get_serial_number()
+    dio.set_tank_pump_on(False,False)
+    dio.set_tank_pump_on(False,False)

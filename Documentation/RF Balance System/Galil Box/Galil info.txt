@@ -34,5 +34,8 @@ LCB=1
 #Change polarity of limit inputs and home switches
 CN1,1
 
+# set homing velocity
+HV 30000, 3000
+
 # Save settings
 BN

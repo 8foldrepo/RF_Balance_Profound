@@ -7,8 +7,6 @@ import os
 import shutil
 from datetime import datetime
 from statistics import mean
-from typing import List
-
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.test_data_helper_methods import create_test_results_summary_file

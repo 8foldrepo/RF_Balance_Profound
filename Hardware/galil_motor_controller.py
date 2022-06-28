@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSlot, QMutex
 from PyQt5.QtWidgets import QApplication as QApp
 
 from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
-from Utilities.useful_methods import create_comma_string, is_number, error_acceptable
+from Utilities.useful_methods import create_comma_string, is_number, get_bit
 
 
 class GalilMotorController(AbstractMotorController):
@@ -165,7 +165,6 @@ class GalilMotorController(AbstractMotorController):
             sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
             self.command(sp_command_str)
 
-            self.command("DC 1000000,1000000,1000000,1000000")
             # self.set_origin()
             self.get_position()
             self.connected = True
@@ -267,7 +266,7 @@ class GalilMotorController(AbstractMotorController):
                 self.app.processEvents()
             self.get_position()
             try:
-                stop_code = self.command("SC AB")
+                stop_code, _ = self.command("SC AB")
 
                 stop_code_ray = stop_code.split(', ')
                 zero_in_ray = False
@@ -437,8 +436,7 @@ class GalilMotorController(AbstractMotorController):
         return x_successful and theta_successful
 
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True,
-                   x_pre_home_move: bool = True) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
         """
         Does the same as the go_home method except is only pertained to the passed axis.
 
@@ -448,58 +446,75 @@ class GalilMotorController(AbstractMotorController):
         :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
+        if not axis == 'X' and not axis == 'R' and not axis == 'Theta':
+            self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
+
         # enforce pre-move conditions
         self.command("CN,1")
         t.sleep(.1)
         self.command("ST")  # stop command
         self.command(f"SH")
         self.get_position()
+
+        # Reverse homing direction and perform a prehome move if the axis is R
         if axis == 'R' or axis == 'Theta':
             if theta_pre_home_move:
                 # Theta pre-home move
                 self.position_relative_1d('R', self.config['WTF_PositionParameters']['ThetaPreHomeMove'])
-
             # Temporarily reverse homing direction for all axes (switch it back to 1 later)
             self.command("CN,-1")
-        elif axis == 'X' and x_pre_home_move:
-            # X pre-home move
-            print("executing x x_pre_home_move") #todo: remove
-            self.position_relative_1d('X', self.config['WTF_PositionParameters']['XPreHomeMove'], check_fault=False)
-        else:
-            self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
 
+        # If axis is X, and it is on the negative limit move it off
+        if axis == 'X':
+            reply, _ = self.command('TS A')  # Check status of X axis switches
+            x_negative_limit_active = not get_bit(int(reply), 2)  # See galil command reference for TS for more details
+            if x_negative_limit_active:
+                self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
+
+        # Execute homing move
         try:
             self.command(f"HM {self.__get_galil_ax_letter(axis)}")
-            self.command(f"BG {self.__get_galil_ax_letter(axis)}")
+            reply, error_msg = self.command(f"BG {self.__get_galil_ax_letter(axis)}")
         except gclib.GclibError:
             self.log(level='error', message=self.check_user_fault())
 
-        success = self.wait_for_motion_to_complete()
+        start_time = t.time()
+
+        success = False
+        while t.time() - start_time < self.config[self.device_key]['move_timeout_s']:
+            if self.app is not None:
+                self.app.processEvents()
+            reply, _ = self.command(f'RP {self.__get_galil_ax_letter(axis)}')
+            if reply == '0':
+                success = True
+                break
+
+            # if axis is x, handle the case where it hits the negative limit
+            if axis == 'X':
+                # If the X axis hits a limit switch during motion try moving away from the limit and
+                # reissuing the home command
+                reply, _ = self.command('TS A') # Check status of X axis switches
+                # See galil command reference for TS for more details
+                x_negative_limit_active = not get_bit(int(reply), 2)
+                if x_negative_limit_active:
+                    self.command("ST")
+                    self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
+                    t.sleep(.5)
+                    self.command(f"HM {self.__get_galil_ax_letter(axis)}")
+                    reply, error_msg = self.command(f"BG {self.__get_galil_ax_letter(axis)}")
+                    if error_msg is not '':
+                        if enable_ui:
+                            self.ready_signal.emit()
+                        return False
+
         self.command("CN,1")
 
         if axis == 'R' or axis == 'Theta':
-            self.get_position()
-            self.set_origin_1d('R', self.config["WTF_PositionParameters"]["ThetaHomeEdgeCoord"])
             self.get_position()
             if self.config["WTF_PositionParameters"]["CentreHomeTheta?"]:
                 success = success and self.go_to_position(['R'],
                                                           [self.config["WTF_PositionParameters"]["ThetaHomeCoord"]],
                                                           enable_ui=False)
-        else:
-            # Set x motor steps to zero
-            self.wait_for_motion_to_complete()
-            start_time = t.time()
-            successful = False
-            while t.time() - start_time < 2:
-                self.command("DP 0")
-                t.sleep(.1)
-                self.get_position()
-                if error_acceptable(float(self.coords_mm[0]),
-                                    float(self.config["WTF_PositionParameters"]["XHomeCoord"]), 2):
-                    successful = True
-                    break
-            if not successful:
-                self.log(level='Error', message='XHomeCoord not set correctly, check go_home_1d method')
 
         t.sleep(.1)
         self.get_position()
@@ -512,11 +527,17 @@ class GalilMotorController(AbstractMotorController):
         """Move one axis of the galil relative to its current position"""
         try:
             self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")
-            print(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}") #todo: remove
-            self.command(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
+            print(
+                f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")  # todo: remove
+            if axis == 'R' or axis == 'Theta':
+                self.command(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
+            else:
+                self.command(f"PR {self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
+
             self.command(f"BG {self.galil_ax_letters[self.ax_letters.index(axis)]}")
             self.wait_for_motion_to_complete()
             self.command("ST")
+
         except gclib.GclibError as e:
             if "device read error" in str(e) or 'device write error' in str(e):
                 self.log(level='error', message=f'Error in command device is likely disconnected, {e}.')
@@ -570,7 +591,7 @@ class GalilMotorController(AbstractMotorController):
         moving_ray = [False, False]  # [X, R]
         moving_margin_ray = [0.001, 0.001]  # the position difference threshold for 'moving'
 
-        x_pos_str = self.command('RP A')
+        x_pos_str, _ = self.command('RP A')
         if is_number(x_pos_str):  # controller returns position in steps
             current_x_position = self.steps_to_position(axis_index=0, position_steps=float(x_pos_str))  # convert it
             # to mm
@@ -585,7 +606,7 @@ class GalilMotorController(AbstractMotorController):
         self.x_pos_mm_signal.emit(round(current_x_position, 2))  # updates indicators in main window and position tab
 
         # repeat the same process we just did for the X axis to the theta axis
-        r_pos_str = self.command('RP B')
+        r_pos_str, _ = self.command('RP B')
         if is_number(r_pos_str):
             r_pos = self.steps_to_position(1, float(r_pos_str))
         else:
@@ -667,17 +688,18 @@ class GalilMotorController(AbstractMotorController):
         :returns: galil motor controller response to 'TC 1': check error code command
         """
         try:
-            error = self.command("TC 1")
+            error, _ = self.command("TC 1")
             return error
         except gclib.GclibError as e:
             return str(e)
 
-    def command(self, command: str) -> str:
+    def command(self, command: str) -> Tuple[str, str]:
         """
         Helper method to send command to the galil motor controller
 
         :param command: the command in string form you wish to send to the motor controller
-        :return: response of galil motor controller to issues command
+        :return str: response of galil motor controller to issues command
+        :return str: string containing an error message or "" if command was successful
         """
         try:
             output = self.handle.GCommand(command)
@@ -689,10 +711,11 @@ class GalilMotorController(AbstractMotorController):
             else:
                 code = self.check_user_fault()
                 self.log(level='error', message=f'Error in command device {code}.')
-            return ""
+                return "", code
+            return "", str(e)
 
         t.sleep(.01)
-        return output.replace('\r\n', '')
+        return output.replace('\r\n', ''), ''
 
 
 if __name__ == '__main__':
