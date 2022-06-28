@@ -26,7 +26,7 @@ from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.test_data_helper_methods import generate_calibration_data
-from Utilities.useful_methods import log_msg, get_element_distances, find_int
+from Utilities.useful_methods import log_msg, get_element_distances, find_int, cast_as_bool, mean_of_non_none_values
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 
@@ -1252,9 +1252,9 @@ class Manager(QThread):
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
         # max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])
-        element_position_test = bool(var_dict["ElementPositionTest"])
+        element_position_test = cast_as_bool(var_dict["ElementPositionTest"])
         max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
-        beam_angle_test = bool(var_dict["BeamAngleTest"])
+        beam_angle_test = cast_as_bool(var_dict["BeamAngleTest"])
         frequency_settings = var_dict["Frequency settings"]
         if "Autoset Timebase" in var_dict.keys():
             autoset_timebase = var_dict["Autoset Timebase"]
@@ -1326,7 +1326,7 @@ class Manager(QThread):
                 self.abort_immediately()
                 return False
 
-        success = self.home_system({'Axis to home': 'Theta'}, theta_pre_home_move=self.Motors.coords_mm[1] < -160)
+        success = self.home_system({'Axis to home': 'Theta'}, theta_pre_home_move=self.Motors.coords_mm[1] > -160)
         if not success:
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail='Home theta failed in find_element')
@@ -1357,12 +1357,20 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
 
-        if self.element > 1 and abs(self.measured_element_r_coords[self.element] -
-                                    mean(self.measured_element_r_coords[1:self.element])) > max_angle_variation_degrees:
+        if None not in self.measured_element_r_coords[1:self.element] and abs(self.measured_element_r_coords[self.element] -
+                                    mean_of_non_none_values(self.measured_element_r_coords[1:self.element])) \
+                                    > max_angle_variation_degrees:
             self.log(level='warning', message=f'Maximum theta coordinate of '
                                               f'{"%.2f" % self.measured_element_r_coords[self.element]} '
                                               f'deviates from -90 more than the allowed maximum of '
                                               f'{max_angle_variation_degrees}')
+            cont = self.sequence_pass_fail(action_type='Pass fail action',
+                                           error_detail=f'UA failed during find element because '
+                                                        f'Element_{self.element:02} Deviates from the average angle '
+                                                        f'of other elements by more than {max_angle_variation_degrees}'
+                                                        f' degrees')
+            if not cont:
+                return False
         return True
 
     # Reference position is the center of the scan range
@@ -1375,6 +1383,7 @@ class Manager(QThread):
 
         :returns: A boolean indicating whether to continue the script
         """
+        self.AWG.set_output(True)
 
         self.element = element
         self.select_ua_channel(var_dict={"Element": self.element})
@@ -1436,7 +1445,7 @@ class Manager(QThread):
                     self.__save_hydrophone_waveform(axis=axis, waveform_number=i + 1, times_s=times_s,
                                                     voltages_v=voltages_v, storage_location=storage_location,
                                                     filename_stub=filename_stub, x_units_str='Time (s)',
-                                                    y_units_str=y_units_str)
+                                                    y_units_str="Voltage (V)")
 
                 vsi = self.find_vsi(times_s=times_s, voltages_v=voltages_v)
 
@@ -1473,9 +1482,10 @@ class Manager(QThread):
 
         if go_to_peak:
             if axis_letter == 'R' or axis_letter == 'Theta':
-                hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
-                                                          - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
-                status = self.Motors.go_to_position([axis_letter], [hydrophone_max_position], enable_ui=False)
+                # hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
+                #                                           - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
+                #todo: check the results summary to make sure it is around -90
+                status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             else:
                 status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             if status:
@@ -1494,6 +1504,7 @@ class Manager(QThread):
         t.sleep(.05)
         self.__refresh_profile_plot(positions, vsi_values, axis_label)
 
+        self.AWG.set_output(False)
         if self.app is not None:
             self.app.processEvents()
         return True
@@ -1589,17 +1600,17 @@ class Manager(QThread):
     def save_results(self, var_dict: dict) -> None:
         """Saves test summary data stored in self.test_data to a file on disk using the file handler self.file_saver"""
         try:
-            save_summary_file: bool = bool(distutils.util.strtobool(var_dict["Save summary file"]))
+            save_summary_file: bool = cast_as_bool(var_dict["Save summary file"])
         except KeyError:
             self.log(level='warning', message="no 'Save summary file' specified in script, defaulting to false")
             save_summary_file = False
         try:
-            write_ua_calibration: bool = bool(distutils.util.strtobool(var_dict["Write UA Calibration"]))
+            write_ua_calibration: bool = cast_as_bool(var_dict["Write UA Calibration"])
         except KeyError:
             self.log(level='warning', message="no 'Write UA Calibration' specified in script, defaulting to false")
             write_ua_calibration = False
         try:
-            prompt_for_calibration_write: bool = bool(distutils.util.strtobool(var_dict["PromptForCalWrite"]))
+            prompt_for_calibration_write: bool = cast_as_bool(var_dict["PromptForCalWrite"])
         except KeyError:
             self.log(level='warning', message="no 'PromptForCalWrite' specified in script, defaulting to false")
             prompt_for_calibration_write = False
@@ -1672,7 +1683,8 @@ class Manager(QThread):
         """
         mVpp: int = int(var_dict["Amplitude (mVpp)"])
         mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
-        output: bool = bool(var_dict["Enable output"])
+        output: bool = cast_as_bool(var_dict["Enable output"])
+        print(output)
         frequency_options: str = var_dict["Set frequency options"]
 
         self.AWG.reset()
@@ -1714,8 +1726,8 @@ class Manager(QThread):
             'Offset 2'
         :return: True if method completes without errors; false otherwise
         """
-        c1_enabled = bool(var_dict["Channel 1 Enabled"])
-        c2_enabled = bool(var_dict["Channel 2 Enabled"])
+        c1_enabled = cast_as_bool(var_dict["Channel 1 Enabled"])
+        c2_enabled = cast_as_bool(var_dict["Channel 2 Enabled"])
         g1_mV_div = float(var_dict["Gain 1"])
         g2_mV_div = float(var_dict["Gain 2"])
         o1_mV = float(var_dict["Offset 1"])
@@ -1852,9 +1864,9 @@ class Manager(QThread):
 
         if "Go To".upper() in move_type.upper():
             target_x_position = float(var_dict["X POS"])
-            move_x = bool(var_dict["Move X"])
+            move_x = cast_as_bool(var_dict["Move X"])
             target_theta_position = float(var_dict["Theta POS"])
-            move_theta = bool(var_dict["Move Theta"])
+            move_theta = cast_as_bool(var_dict["Move Theta"])
             axes_to_be_moved = []
             target_coordinates = []
             if move_x:
@@ -2135,9 +2147,9 @@ class Manager(QThread):
         amplitude_mVpp = float(var_dict["Amplitude (mVpp)"])
         storage_location = str(var_dict["Storage location"])
         data_directory = var_dict["Data directory"]
-        target_position = var_dict["RFB target position"]  # QUESTION: do we need this and the variable below?
-        target_angle = var_dict["RFB target angle"]
-        efficiency_test = bool(var_dict["EfficiencyTest"])
+        # target_position = var_dict["RFB target position"]  # QUESTION: do we need this and the variable below?
+        # target_angle = var_dict["RFB target angle"]
+        efficiency_test = cast_as_bool(var_dict["EfficiencyTest"])
         Pa_max = var_dict["Pa max (target, W)"]  # acoustic power
         Pf_max = var_dict["Pf max (limit, W)"]  # forward power
         reflection_limit = var_dict["Reflection limit (%)"]  # used to determine pass/fail of device
@@ -2186,6 +2198,7 @@ class Manager(QThread):
             self.test_data.log_script(["", "PreChecks", f"FAIL {e}", ""])
 
         self.select_ua_channel(var_dict={"Element": self.element})
+
         self.move_system(var_dict={"Element": self.element, "Move Type": "Move to element", "Target": 'RFB'})
 
         self.test_data.log_script(['', 'Set frequency range', f"\"{frequency_range}\" range set", ''])

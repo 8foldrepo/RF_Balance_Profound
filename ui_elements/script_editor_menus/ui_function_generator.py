@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QApplication
 
+from Utilities.useful_methods import cast_as_bool
 from Widget_Library.widget_function_generator import Ui_config_func_generator
 from ui_elements.my_qwidget import MyQWidget
 
@@ -34,7 +35,7 @@ class FunctionGenerator(MyQWidget, Ui_config_func_generator):
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         self.freq_doublespin.setValue(float(var_dict["Frequency (MHz)"]))
-        self.enable_output_switch.setChecked(bool(var_dict["Enable Output"]))
+        self.enable_output_switch.setChecked(cast_as_bool(var_dict["Enable Output"]))
         self.ampl_doublespin.setValue(int(var_dict["Amplitude (mVpp)"]))
         self.mode_combo.setCurrentText(var_dict["Mode"])
         self.no_cycles_spin.setValue(int(var_dict["#Cycles"]))

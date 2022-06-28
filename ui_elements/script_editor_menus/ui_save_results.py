@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from PyQt5.QtWidgets import QApplication
+
+from Utilities.useful_methods import cast_as_bool
 from ui_elements.my_qwidget import MyQWidget
 
 from Widget_Library.widget_save_results import Ui_Form
@@ -14,11 +16,11 @@ class SaveResults(MyQWidget, Ui_Form):
                                             ('Write UA Calibration', 'TRUE'), ('PromptForCalWrite', '')]))
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
-        self.Save_Summary_File_Checkbox.setChecked(bool(var_dict["Save summary file"]))
+        self.Save_Summary_File_Checkbox.setChecked(cast_as_bool(var_dict["Save summary file"]))
         self.Write_UA_Calibration_Checkbox.setChecked(
-            bool(var_dict["Write UA Calibration"])
+            cast_as_bool(var_dict["Write UA Calibration"])
         )
-        self.With_Prompt_Checkbox.setChecked(bool(var_dict["PromptForCalWrite"]))
+        self.With_Prompt_Checkbox.setChecked(cast_as_bool(var_dict["PromptForCalWrite"]))
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict([])

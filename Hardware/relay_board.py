@@ -1,7 +1,5 @@
 import time as t
-from abc import ABC
 from typing import Tuple, Union
-
 import serial
 from PyQt5 import QtCore
 from Hardware.Abstract.abstract_relay import AbstractRelay

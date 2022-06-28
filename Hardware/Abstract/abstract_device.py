@@ -22,7 +22,6 @@ class AbstractDevice(QObject):
         super().__init__(parent=parent)
         from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
         import logging
-        import os
         from definitions import ROOT_DIR
 
         log_formatter = logging.Formatter(LOGGER_FORMAT)

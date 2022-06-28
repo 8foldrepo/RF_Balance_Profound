@@ -3,7 +3,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
 
 from Hardware.Abstract.abstract_balance import AbstractBalance
-from Utilities.useful_methods import is_number
 from Widget_Library.widget_rfb import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 

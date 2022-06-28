@@ -5,6 +5,7 @@ import unittest
 from termcolor import colored
 
 from Hardware.keysight_oscilloscope import KeysightOscilloscope
+from Utilities.useful_methods import cast_as_bool
 
 
 class TestOscilloscope(unittest.TestCase):
@@ -26,7 +27,7 @@ class TestOscilloscope(unittest.TestCase):
                                self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8, 1)
         self.assertAlmostEqual(self.osc.offset_s,
                                self.osc.config['Oscilloscope_timebase']['Time offset (us)']* 10 ** -6)
-        assert self.osc.autorange_v == bool(self.osc.config[self.osc.device_key]["autorange_v_startup"])
+        assert self.osc.autorange_v == cast_as_bool(self.osc.config[self.osc.device_key]["autorange_v_startup"])
         self.assertAlmostEqual(self.osc.range_mV, self.osc.config[self.osc.device_key]["range_mV"])
         self.assertAlmostEqual(self.osc.average_count, self.osc.config[self.osc.device_key]["averages"], 1)
         assert self.osc.external_trigger == self.osc.config[self.osc.device_key]["ext_trigger"]

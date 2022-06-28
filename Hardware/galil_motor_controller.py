@@ -106,9 +106,17 @@ class GalilMotorController(AbstractMotorController):
         if not self.connected:
             self.log(level="error", message=feedback)
         else:
-            # todo: populate with settings
-
-            self.setup(settings=None)
+            settings = {
+                'lin_speed': self.config[self.device_key]['speeds_ray'][0],
+                'rot_speed': self.config[self.device_key]['speeds_ray'][1],
+                'steps_per_mm': self.config[self.device_key]['calibrate_ray'][0],
+                'steps_per_deg': self.config[self.device_key]['calibrate_ray'][1],
+                'lin_incr': self.config[self.device_key]['increment_ray'][0],
+                'ang_incr': self.config[self.device_key]['increment_ray'][1],
+                'x_gearing': self.config[self.device_key]['gearing_ray'][0],
+                'r_gearing': self.config[self.device_key]['gearing_ray'][1],
+            }
+            self.setup(settings=settings)
 
         self.connected_signal.emit(self.connected)
         return self.connected, feedback
@@ -493,7 +501,7 @@ class GalilMotorController(AbstractMotorController):
             if axis == 'X':
                 # If the X axis hits a limit switch during motion try moving away from the limit and
                 # reissuing the home command
-                reply, _ = self.command('TS A') # Check status of X axis switches
+                reply, _ = self.command('TS A')  # Check status of X axis switches
                 # See galil command reference for TS for more details
                 x_negative_limit_active = not get_bit(int(reply), 2)
                 if x_negative_limit_active:
@@ -527,8 +535,6 @@ class GalilMotorController(AbstractMotorController):
         """Move one axis of the galil relative to its current position"""
         try:
             self.command(f"SH {self.galil_ax_letters[self.ax_letters.index(axis)]}")
-            print(
-                f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")  # todo: remove
             if axis == 'R' or axis == 'Theta':
                 self.command(f"PR ,{self.calibrate_ray_steps_per[self.ax_letters.index(axis)] * position_deg_or_mm}")
             else:

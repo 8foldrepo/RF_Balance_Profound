@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QApplication
 
+from Utilities.useful_methods import cast_as_bool
 from Widget_Library.widget_oscilloscope_channels import Ui_config_osc_channels
 from ui_elements.my_qwidget import MyQWidget
 
@@ -25,8 +26,8 @@ class OscilloscopeChannels(MyQWidget, Ui_config_osc_channels):
         )
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
-        self.channel_1_checkbox.setChecked(bool(var_dict["Channel 1 Enabled"]))
-        self.channel_2_checkbox.setChecked(bool(var_dict["Channel 2 Enabled"]))
+        self.channel_1_checkbox.setChecked(cast_as_bool(var_dict["Channel 1 Enabled"]))
+        self.channel_2_checkbox.setChecked(cast_as_bool(var_dict["Channel 2 Enabled"]))
         self.gain_spin.setValue(int(var_dict["Gain 1"]))
         self.gain_right_spin.setValue(int(var_dict["Gain 2"]))
         self.offset_spin.setValue(int(var_dict["Offset 1"]))

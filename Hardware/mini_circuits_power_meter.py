@@ -100,8 +100,7 @@ if __name__ == "__main__":
     forward_meter = PowerMeter(config=None, device_key="Forward_Power_Meter")
     forward_meter.connect_hardware()
 
-    start_time = t.time()
-    while True:
+    for i in range(1000):
         cycle_start_time = t.time()
         print(f"Forward power: {forward_meter.get_reading()} Watts")
 

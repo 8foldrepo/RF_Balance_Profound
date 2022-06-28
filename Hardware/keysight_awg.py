@@ -1,4 +1,3 @@
-import distutils
 import time as t
 from typing import Tuple, Union
 

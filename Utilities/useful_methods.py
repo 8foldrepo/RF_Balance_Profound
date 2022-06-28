@@ -329,5 +329,18 @@ def print_list_2(list2: list) -> None:
     print(str(list2)[1:-1])
 
 
+def cast_as_bool(var) -> bool:
+    """Attemts to cast a given variable as a boolean."""
+
+    if isinstance(var, str):
+        print(f"casting string as bool {'T' in var.upper() or '1' in var}")
+        return 'T' in var.upper() or '1' in var
+
+    if isinstance(var, int) or isinstance(var, int):
+        return var != 0
+
+    return bool(var)
+
+
 if __name__ == "__main__":
-    print(not get_bit(43,2))
+    pass

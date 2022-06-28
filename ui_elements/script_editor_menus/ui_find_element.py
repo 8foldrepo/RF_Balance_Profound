@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
+from Utilities.useful_methods import cast_as_bool
 from Widget_Library.widget_find_element import Ui_FIND_ELEMENT_WIDGET
 from ui_elements.my_qwidget import MyQWidget
 
@@ -58,9 +59,9 @@ class FindElement(MyQWidget, Ui_FIND_ELEMENT_WIDGET):
         self.OSCOPE_DATASTORE_FIELD.setCurrentText(var_dict["Data storage"])
         self.OSCOPE_DATALOC_FIELD.setCurrentText(var_dict["Storage location"])
         self.FREQANG_PRESET_FIELD.setCurrentText(var_dict["Frequency settings"])
-        self.FREQANG_POS_TEST_CHECKBOX.setChecked(bool(var_dict["ElementPositionTest"]))
-        self.FREQANG_POS_TEST_CHECKBOX.setChecked(bool(var_dict["BeamAngleTest"]))
-        self.OSCOPE_AUTO_CHECKBOX.setChecked(bool(var_dict["Auto set timebase"]))
+        self.FREQANG_POS_TEST_CHECKBOX.setChecked(cast_as_bool(var_dict["ElementPositionTest"]))
+        self.FREQANG_POS_TEST_CHECKBOX.setChecked(cast_as_bool(var_dict["BeamAngleTest"]))
+        self.OSCOPE_AUTO_CHECKBOX.setChecked(cast_as_bool(var_dict["Auto set timebase"]))
         self.FREQANG_FREQ_FIELD.setValue(float(var_dict["Frequency (MHz)"]))
         self.FREQANG_BURST_FIELD.setValue(int(var_dict["Burst count"]))
         self.FREQANG_VOLT_FIELD.setValue(float(var_dict["Amplitude (mV)"]))

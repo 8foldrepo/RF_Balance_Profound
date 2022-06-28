@@ -2,7 +2,7 @@ import logging
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
-from Utilities.useful_methods import log_msg, check_directory
+from Utilities.useful_methods import log_msg
 from definitions import ROOT_DIR
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")

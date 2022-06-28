@@ -52,7 +52,7 @@ def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: f
     if denominator == 0:
         return float('nan')
 
-    print(colored(f'calculated pf_max is {round((acoustic_power_max_w / denominator), 3)}W', 'magenta'))
+    # print(colored(f'calculated pf_max is {round((acoustic_power_max_w / denominator), 3)}W', 'magenta'))
     return acoustic_power_max_w / denominator
 
 

@@ -1,6 +1,6 @@
 Analysis:
   capture_rms_only: false
-  max_standard_deviation_w: 0.1
+  max_standard_deviation_w: 0.01
   samples_to_remove_at_end: 3
   settling_time_s: 2
 Oscilloscope_timebase:
@@ -179,9 +179,9 @@ VIX_Motors:
   timeout_s: 0.1
 WTF_DIO:
   DAQ Device name: WTF4
+  Deactivate_channels_on_startup: false
   Fill/Drain mode: Automatic
   Water level timeout (s): 230
-  Deactivate_channels_on_startup: False
 WTF_Interface_Board:
   on_by_default: false
   port: COM2
@@ -189,12 +189,12 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -96
+  ThetaHomeEdgeCoord: -94
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: -90
-  XNegativeLimitMove: 30
   X-Element pitch (mm): 5
   X-Element1: 0
   X-TankInsertionPoint: 0
-  XHomeCoord: -260
+  XHomeCoord: -261
+  XNegativeLimitMove: 30

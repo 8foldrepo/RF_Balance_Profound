@@ -86,7 +86,6 @@ class Results(MyQWidget, Ui_Form):
 
     def save_test_results_summary(self):
         """saves the results as a text file with a path specified in the config file."""
-
         self.save_summary_log_signal.connect(self.manager.save_results)
         dlg = QMessageBox(self)
         dlg.setWindowTitle("Question")

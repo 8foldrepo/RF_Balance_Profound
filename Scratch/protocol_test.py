@@ -14,7 +14,6 @@ class device(QObject):
         import logging
 
         log_formatter = logging.Formatter(LOGGER_FORMAT)
-        import os
         from definitions import ROOT_DIR
         balance_logger = logging.getLogger('wtf_log')
         with open(ROOT_DIR + "\logs\wtf.log", 'w') as f:

@@ -5,10 +5,7 @@ simulated are based off the abstract_balance template from the /Hardware/Abstrac
 import random
 import time as t
 from typing import Tuple, Optional
-
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal
-
 from Hardware.Abstract.abstract_balance import AbstractBalance
 from Utilities.load_config import load_configuration
 

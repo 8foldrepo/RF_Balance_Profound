@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QWidget, QApplication
 
+from Utilities.useful_methods import cast_as_bool
 from Widget_Library.loop_over_elements import Ui_Form
 
 
@@ -60,16 +61,16 @@ class LoopOverElements(QWidget, Ui_Form):
 
     def orderedDict_to_ui(self, var_dict: OrderedDict):
         # todo, fill UI according to dictionary
-        self.element_checkbox_1.setChecked(bool(var_dict["Element 1"]))
-        self.element_checkbox_2.setChecked(bool(var_dict["Element 2"]))
-        self.element_checkbox_3.setChecked(bool(var_dict["Element 3"]))
-        self.element_checkbox_4.setChecked(bool(var_dict["Element 4"]))
-        self.element_checkbox_5.setChecked(bool(var_dict["Element 5"]))
-        self.element_checkbox_6.setChecked(bool(var_dict["Element 6"]))
-        self.element_checkbox_7.setChecked(bool(var_dict["Element 7"]))
-        self.element_checkbox_8.setChecked(bool(var_dict["Element 8"]))
-        self.element_checkbox_9.setChecked(bool(var_dict["Element 9"]))
-        self.element_checkbox_10.setChecked(bool(var_dict["Element 10"]))
+        self.element_checkbox_1.setChecked(cast_as_bool(var_dict["Element 1"]))
+        self.element_checkbox_2.setChecked(cast_as_bool(var_dict["Element 2"]))
+        self.element_checkbox_3.setChecked(cast_as_bool(var_dict["Element 3"]))
+        self.element_checkbox_4.setChecked(cast_as_bool(var_dict["Element 4"]))
+        self.element_checkbox_5.setChecked(cast_as_bool(var_dict["Element 5"]))
+        self.element_checkbox_6.setChecked(cast_as_bool(var_dict["Element 6"]))
+        self.element_checkbox_7.setChecked(cast_as_bool(var_dict["Element 7"]))
+        self.element_checkbox_8.setChecked(cast_as_bool(var_dict["Element 8"]))
+        self.element_checkbox_9.setChecked(cast_as_bool(var_dict["Element 9"]))
+        self.element_checkbox_10.setChecked(cast_as_bool(var_dict["Element 10"]))
 
     # todo: populate var_dict, arrange the arguments in the order of the example script
     def ui_to_orderedDict(self) -> OrderedDict:

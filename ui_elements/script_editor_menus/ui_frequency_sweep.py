@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from PyQt5.QtWidgets import QApplication
 
+from Utilities.useful_methods import cast_as_bool
 from Widget_Library.widget_frequency_sweep import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
 
@@ -36,7 +37,7 @@ class FrequencySweep(MyQWidget, Ui_Form):
         self.storage_loc_combo.setCurrentText(var_dict["Storage location"])
         self.data_direc_input.setText(var_dict["Data directory"])
         self.peak_vsi_spinbox.setValue(int(var_dict["Peak VSI threshold"]))
-        self.incl_test_check.setChecked(bool(var_dict["Include test"]))
+        self.incl_test_check.setChecked(cast_as_bool(var_dict["Include test"]))
 
     def ui_to_orderedDict(self) -> OrderedDict:
         var_dict = OrderedDict()
