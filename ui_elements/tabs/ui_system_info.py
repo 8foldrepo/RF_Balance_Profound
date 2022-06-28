@@ -12,6 +12,7 @@ from ui_elements.my_qwidget import MyQWidget
 class SystemInfo(MyQWidget, Ui_Form):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.parser = None
         self.setupUi(self)
 
     def load_system_info(self):

@@ -424,7 +424,14 @@ class GalilMotorController(AbstractMotorController):
 
     @pyqtSlot()
     def go_home(self, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
-        """Home both axes and return true if the operation is successful"""
+        """
+        Moves the motors to the internally stored home position for all axis.
+        Has an optional flag to have the user see a warning prompt before motor homing.
+        :param enable_ui:
+            whether to turn on various buttons in main window and its tabs after operation if script
+            isn't running
+        :returns: boolean representing successful homing.
+        """
         x_successful = self.go_home_1d('X', enable_ui=False, theta_pre_home_move=False)
         theta_successful = self.go_home_1d('R', enable_ui=enable_ui, theta_pre_home_move=theta_pre_home_move)
         return x_successful and theta_successful
@@ -558,23 +565,26 @@ class GalilMotorController(AbstractMotorController):
         """
         Tell the motor controller to update its coordinates_mm variable and emit its current position as a signal
 
-        :param mutex_locked: unused variable, presumably used to prevent race condition
+        :param mutex_locked: unused variable, presumably used to prevent race condition for the parker controller
         """
-        moving_ray = [False, False]
-        moving_margin_ray = [0.001, 0.001]
+        moving_ray = [False, False]  # [X, R]
+        moving_margin_ray = [0.001, 0.001]  # the position difference threshold for 'moving'
 
         x_pos_str = self.command('RP A')
-        if is_number(x_pos_str):
-            x_pos = self.steps_to_position(0, float(x_pos_str))
+        if is_number(x_pos_str):  # controller returns position in steps
+            current_x_position = self.steps_to_position(axis_index=0, position_steps=float(x_pos_str))  # convert it
+            # to mm
         else:
-            self.ready_signal.emit()
+            self.ready_signal.emit()  # connected to motors_ready() in ui_position.py
             return
 
-        if abs(x_pos - self.coords_mm[0]) > moving_margin_ray[0]:
+        # if difference in new position and old position is larger than .001, it is moving
+        if abs(current_x_position - self.coords_mm[0]) > moving_margin_ray[0]:
             moving_ray[0] = True
-        self.coords_mm[0] = x_pos
-        self.x_pos_mm_signal.emit(round(x_pos, 2))
+        self.coords_mm[0] = current_x_position
+        self.x_pos_mm_signal.emit(round(current_x_position, 2))  # updates indicators in main window and position tab
 
+        # repeat the same process we just did for the X axis to the theta axis
         r_pos_str = self.command('RP B')
         if is_number(r_pos_str):
             r_pos = self.steps_to_position(1, float(r_pos_str))
@@ -585,17 +595,17 @@ class GalilMotorController(AbstractMotorController):
         if abs(r_pos - self.coords_mm[1]) > moving_margin_ray[1]:
             moving_ray[1] = True
         self.coords_mm[1] = r_pos
-        self.r_pos_mm_signal.emit(round(r_pos, 2))
+        self.r_pos_mm_signal.emit(round(r_pos, 2))  # updates indicators in main window and position tab
 
-        if True in moving_ray:
+        if True in moving_ray:  # if either the X or R axis are marked as moving
             self.moving = True
         else:
             self.moving = False
-        self.moving_signal.emit(self.moving)
+        self.moving_signal.emit(self.moving)  # updates main window indicator
         if self.app is not None:
             self.app.processEvents()
 
-    def __get_ax_number(self, axis):
+    def __get_ax_number(self, axis: str) -> int:
         """return the motor controller driver number of the axis with the specified letter"""
         # QUESTION: this method is never used, is it meant to be?
         if axis.upper() in self.ax_letters:
@@ -633,17 +643,16 @@ class GalilMotorController(AbstractMotorController):
         :param position_steps: the position in steps
         :returns: position in mm/deg
         """
-        i = axis_index
-        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[i] / self.gearing_ray[i]
+        position_deg_or_mm = position_steps / self.calibrate_ray_steps_per[axis_index] / self.gearing_ray[axis_index]
 
-        if self.reverse_ray[i]:
+        if self.reverse_ray[axis_index]:
             position_deg_or_mm *= -1
 
-        if self.ax_letters[i].upper() == "X":
+        if self.ax_letters[axis_index].upper() == "X":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
             position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['XHomeCoord']
             self.x_pos_mm_signal.emit(round(position_deg_or_mm, 2))
-        elif self.ax_letters[i].upper() == "R":
+        elif self.ax_letters[axis_index].upper() == "R":
             # Add on the coordinate of the home position (from the motor's perspective it is zero)
             position_deg_or_mm = position_deg_or_mm + self.config['WTF_PositionParameters']['ThetaHomeEdgeCoord']
             self.r_pos_mm_signal.emit(round(position_deg_or_mm, 2))

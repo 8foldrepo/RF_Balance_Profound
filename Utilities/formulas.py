@@ -1,3 +1,6 @@
+from termcolor import colored
+
+
 def calculate_power_from_balance_reading(balance_reading_g: float, Temperature_c: float = 20):
     balance_reading_kg = balance_reading_g / 1000
     g_m_per_s_per_s = 9.810000  # Source: example data
@@ -28,14 +31,28 @@ def calculate_efficiency_percent(acoustic_power_on_mean: float, forward_power_on
     return acoustic_power_on_mean / denominator * 100
 
 
-def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: float,
-                     reflected_power_percent: float) -> float:
-    denominator = (acoustic_efficiency_percent / 100) * (1 - reflected_power_percent / 100)
+def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: float, reflected_power_percent: float)\
+        -> float:
+    """
+    Helper method for `end_of_test_data_analysis()`:
+
+    ------------------------------
+
+    acoustic_efficiency_decimal = acoustic_efficiency_percent / 100
+    unreflected_power_decimal = (1 - reflected_power_percent / 100)
+
+    denominator = acoustic_efficiency_decimal * unreflected_power_decimal
+
+    :returns: acoustic_power_max_w / denominator
+    """
+    acoustic_efficiency_decimal = acoustic_efficiency_percent / 100
+    unreflected_power_decimal = (1 - reflected_power_percent / 100)
+    denominator = acoustic_efficiency_decimal * unreflected_power_decimal
 
     if denominator == 0:
         return float('nan')
 
-    print(acoustic_power_max_w / denominator)
+    print(colored(f'calculated pf_max is {round((acoustic_power_max_w / denominator), 3)}W', 'magenta'))
     return acoustic_power_max_w / denominator
 
 

@@ -223,15 +223,24 @@ def clear_layout(layout) -> None:
 
 
 def trim(lists: List[List]) -> Tuple:
-    """Cut a tuple of lists to their minimum length, removing elements at the end"""
+    """
+    Cut a tuple of lists to their minimum length, removing elements at the end
+
+    :param lists: the list of lists you would like to equalize in size to the smallest one w/ deletion of element
+    :returns: the lists that are now equal in length to the initially-shortest one
+    """
+    # initialize a list of zeros to the length of the number of lists passed to this method; call it 'lengths'
     lengths = [0] * len(lists)  # INFO: cannot change [None] to [] without errors
+    # initialize a list of empty lists to the length of the number of lists passed
     trimmed_lists = [[]] * len(lists)
 
+    # populate the lengths list we made above with the lengths of each list passed in the lists parameter
     for i in range(len(lists)):
         lengths[i] = len(lists[i])
 
     min_length = min(lengths)
 
+    # chop off any additional items in all lists past the length of the smallest list; store them into 'trimmed_lists'
     for i in range(len(lists)):
         trimmed_lists[i] = (lists[i][0:min_length])
 
@@ -278,10 +287,10 @@ def log_msg(self, root_logger: Logger, message: str, level: str = None, line_num
             color = 'magenta'
         else:
             return
-    elif level.upper() == "ERROR":
+    elif level.upper() == "ERROR" or level.upper() == 'ERR':
         color = 'red'
         root_logger.error(log_entry)
-    elif level.upper() == "WARNING":
+    elif level.upper() == "WARNING" or level.upper() == 'WARN':
         color = 'yellow'
         root_logger.warning(log_entry)
     elif level.upper() == 'INFO':
