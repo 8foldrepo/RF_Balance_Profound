@@ -34,7 +34,7 @@ if exist C:\Users\%username%\AppData\Local\Programs\Python\Python38\python.exe(
 if exist "C:\Program Files (x86)\Galil\gclib\source\wrappers\python\setup.py"(
 ) else(
 	curl -LO https://www.galil.com/sw/pub/win/gclib/galil_gclib_1_34_15.exe
-	start "" cmd /c "echo install PCI driver and 32-bit binaries&echo(&pause"
+	start "" cmd /c "echo additionally select install PCI driver and 32-bit binaries during setup&echo(&pause"
 	galil_gclib_1_34_15.exe 
 )
 
