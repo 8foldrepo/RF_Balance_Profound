@@ -1858,7 +1858,7 @@ class Manager(QThread):
                 return False
         return True
 
-    def move_system(self, var_dict: dict, average_angle=True) -> bool:
+    def move_system(self, var_dict: dict, average_angle=False) -> bool:
         """
         If move type is "Go To", the system will move to specific x and theta coordinates. If the move type is
         "Move to element", the system will move that element's measured x position (or assumed x if it has not been
