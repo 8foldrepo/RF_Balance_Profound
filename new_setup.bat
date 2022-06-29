@@ -40,5 +40,6 @@ conda update conda
 conda env create -f environment.yml
 conda activate RF_Balance_Profound
 
+pip install pyqt5 pyqtgraph pyqt5-qt5 pyqt5-sip
 
 
