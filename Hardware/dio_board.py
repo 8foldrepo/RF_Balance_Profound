@@ -81,8 +81,8 @@ class DIOBoard(AbstractIOBoard):
         Breaks continuity for all other channels.
         """
 
-        #todo: check this
-        channel_number = 11-channel_number
+        # #todo: check this
+        # channel_number = 11-channel_number
 
         with nidaqmx.Task() as task:
             try:

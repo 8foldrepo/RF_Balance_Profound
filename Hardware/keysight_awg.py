@@ -56,15 +56,16 @@ class KeysightAWG(AbstractAWG):
                 self.address = resource
                 try:
                     self.inst = self.rm.open_resource(resource)  # inst will be used to serially communicate with device
+
+                    if self.config[self.device_key]["set_on_startup"]:
+                        self.set_to_defaults()
+                    else:
+                        self.get_state()
+
                 except pyvisa.errors.VisaIOError as e:
                     feedback = f"Keysight 33509B Series function generator not found: {e}",
                     self.log(level='error', message=str(feedback))
                     break
-
-                if self.config[self.device_key]["set_on_startup"]:
-                    self.set_to_defaults()
-                else:
-                    self.get_state()
 
                 self.connected = True
                 self.connected_signal.emit(self.connected)  # updates indicator in main window

@@ -326,7 +326,10 @@ class KeysightOscilloscope(AbstractOscilloscope):
         start_time_2 = t.time()
         while t.time() - start_time_2 < self.timeout_s:
             try:
-                voltages_v_strings = self.ask("WAV:DATA?").split(",")
+                data = self.ask("WAV:DATA?")
+                if data is None:
+                    return [0.0],[0.0]
+                voltages_v_strings = data.split(",")
             except pyvisa.errors.VisaIOError as e:
                 if "Timeout" not in str(e):
                     self.log(level="error", message="Unknown error when asking for waveform preamble")

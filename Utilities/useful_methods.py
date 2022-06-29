@@ -92,8 +92,9 @@ def get_element_distances(element_1_index: float, element_pitch: float) -> list:
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coordinates = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
-        offset = i * element_pitch
-        element_coordinates[i + 1] = element_1_index + offset
+        element_number = 10-i
+        offset = -1 * (element_number-1) * element_pitch
+        element_coordinates[element_number] = element_1_index + offset
 
     return element_coordinates
 
@@ -333,7 +334,6 @@ def cast_as_bool(var) -> bool:
     """Attemts to cast a given variable as a boolean."""
 
     if isinstance(var, str):
-        print(f"casting string as bool {'T' in var.upper() or '1' in var}")
         return 'T' in var.upper() or '1' in var
 
     if isinstance(var, int) or isinstance(var, int):

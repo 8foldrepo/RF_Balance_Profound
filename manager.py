@@ -26,7 +26,8 @@ from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.test_data_helper_methods import generate_calibration_data
-from Utilities.useful_methods import log_msg, get_element_distances, find_int, cast_as_bool, mean_of_non_none_values
+from Utilities.useful_methods import log_msg, get_element_distances, find_int, cast_as_bool, mean_of_non_none_values, \
+    is_number
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 
@@ -1357,9 +1358,15 @@ class Manager(QThread):
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
 
-        if None not in self.measured_element_r_coords[1:self.element] and abs(self.measured_element_r_coords[self.element] -
-                                    mean_of_non_none_values(self.measured_element_r_coords[1:self.element])) \
-                                    > max_angle_variation_degrees:
+        if self.measured_element_r_coords[self.element] is None:
+            self.log(level='warning', message = f'{self.element} has no measured_element_r_coord')
+            return True
+
+        angle_average = mean_of_non_none_values(self.measured_element_r_coords[1:self.element])
+        if not is_number(angle_average) or angle_average == 0 or angle_average == float('nan'):
+            return True
+
+        if abs(self.measured_element_r_coords[self.element] - angle_average) > max_angle_variation_degrees:
             self.log(level='warning', message=f'Maximum theta coordinate of '
                                               f'{"%.2f" % self.measured_element_r_coords[self.element]} '
                                               f'deviates from -90 more than the allowed maximum of '
