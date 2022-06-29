@@ -34,5 +34,8 @@ set PATH=%PATH%;C:\ProgramData\Anaconda3\Scripts\
 
 copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 
+conda env create -f environment.yml
+conda activate RF_Balance_Profound
+
 
 
