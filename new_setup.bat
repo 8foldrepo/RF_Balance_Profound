@@ -1,4 +1,5 @@
 mkdir C:\Users\%username%\Documents\GitHub
+cd C:\Users\%username%\Documents\GitHub
 
 if exist C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe(
 	winget install --id GitHub.cli
