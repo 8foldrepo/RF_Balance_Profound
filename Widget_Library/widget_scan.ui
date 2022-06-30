@@ -50,7 +50,7 @@
     <number>0</number>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="one_dimension_scan_tab">
     <property name="toolTip">
@@ -75,11 +75,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>The 1D Scan tab shows the last acquired waveform with voltage over time, and profile
-                            graph
-                            that shows the voltage squared interval over time. Both these are supplied by the
-                            oscilloscope.
-                        </string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The 1D Scan tab shows the last acquired waveform with voltage over time, and the profile of the voltage squared integral with respect to distance.  Both these are supplied by the oscilloscope.&lt;/p&gt;&lt;p/&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Last Aquired Waveform</string>

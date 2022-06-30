@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_scan_tab_widget(object):
     def setupUi(self, scan_tab_widget):
         scan_tab_widget.setObjectName("scan_tab_widget")
@@ -409,17 +408,13 @@ class Ui_scan_tab_widget(object):
         self.scan_tabs.addTab(self.scan_setup_tab, "")
 
         self.retranslateUi(scan_tab_widget)
-        self.scan_tabs.setCurrentIndex(1)
+        self.scan_tabs.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(scan_tab_widget)
 
     def retranslateUi(self, scan_tab_widget):
         _translate = QtCore.QCoreApplication.translate
         scan_tab_widget.setWindowTitle(_translate("scan_tab_widget", "Form"))
-        self.last_acquired_waveform_plot_label.setToolTip(_translate("scan_tab_widget", "The 1D Scan tab shows the last acquired waveform with voltage over time, and profile\n"
-"                            graph\n"
-"                            that shows the voltage squared interval over time. Both these are supplied by the\n"
-"                            oscilloscope.\n"
-"                        "))
+        self.last_acquired_waveform_plot_label.setToolTip(_translate("scan_tab_widget", "<html><head/><body><p>The 1D Scan tab shows the last acquired waveform with voltage over time, and the profile of the voltage squared integral with respect to distance.  Both these are supplied by the oscilloscope.</p><p/></body></html>"))
         self.last_acquired_waveform_plot_label.setText(_translate("scan_tab_widget", "Last Aquired Waveform"))
         self.label_55.setText(_translate("scan_tab_widget", "Profile"))
         self.scan_tabs.setTabText(self.scan_tabs.indexOf(self.one_dimension_scan_tab), _translate("scan_tab_widget", "1D Scan"))
