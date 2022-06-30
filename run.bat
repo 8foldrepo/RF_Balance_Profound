@@ -1,4 +1,4 @@
 cd %USERPROFILE%\documents\github\RF_Balance_Profound
-CALL conda activate RF_Balance_Profound_3_8
+CALL conda.bat activate RF_Balance_Profound_3.8
 python main.py
 pause
