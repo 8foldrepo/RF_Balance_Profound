@@ -26,7 +26,7 @@ class TestOscilloscope(unittest.TestCase):
         self.assertAlmostEqual(self.osc.range_s,
                                self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8, 1)
         self.assertAlmostEqual(self.osc.offset_s,
-                               self.osc.config['Oscilloscope_timebase']['Time offset (us)']* 10 ** -6)
+                               self.osc.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6)
         assert self.osc.autorange_v == cast_as_bool(self.osc.config[self.osc.device_key]["autorange_v_startup"])
         self.assertAlmostEqual(self.osc.range_mV, self.osc.config[self.osc.device_key]["range_mV"])
         self.assertAlmostEqual(self.osc.average_count, self.osc.config[self.osc.device_key]["averages"], 1)
@@ -111,9 +111,9 @@ class TestOscilloscope(unittest.TestCase):
         print(colored("running autoset timebase test", 'cyan'))
         self.osc.set_oscilloscope_timebase_to_default()
         self.assertAlmostEqual(self.osc.range_s,
-                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8 , 1)
+                               self.osc.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8, 1)
         self.assertAlmostEqual(self.osc.offset_s,
-                               self.osc.config['Oscilloscope_timebase']["Time offset (us)"]* 10 ** -6, 1)
+                               self.osc.config['Oscilloscope_timebase']["Time offset (us)"] * 10 ** -6, 1)
         self.osc.set_horizontal_range_sec(self.osc.range_s)
         self.osc.set_horizontal_offset_sec(self.osc.offset_s)
         self.assertAlmostEqual(self.osc.get_horizontal_range_sec(), self.osc.range_s, 1)

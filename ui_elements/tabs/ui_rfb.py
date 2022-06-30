@@ -77,7 +77,7 @@ class RFB(MyQWidget, Ui_Form):
 
         if grams is not None:
             if round(grams * 1000, 2) > 100:
-                pass #todo: remove
+                pass  # todo: remove
 
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
 
@@ -103,7 +103,8 @@ class RFB(MyQWidget, Ui_Form):
             self.power_w_field.setText(float('nan'))
 
         try:
-            self.eff_percent_field.setText(self.power_w_field.text()/(rfb_data.forward_power_on_mean-rfb_data.reflected_power_on_mean))
+            self.eff_percent_field.setText(
+                self.power_w_field.text() / (rfb_data.forward_power_on_mean - rfb_data.reflected_power_on_mean))
         except Exception as e:
             if not "type" in str(e):
                 self.log(level='error', message=f'error setting eff_percent_field {e}')

@@ -252,44 +252,57 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.tooltip.setToolTip(_translate("Form", "This tab shows the data captured by the radiation force balance (RFB) and organizes the\n"
-"                    information into a grid and graph fashion, with a graph legend to explain what various lines\n"
-"                    represent\n"
-"                "))
+        self.tooltip.setToolTip(_translate("Form",
+                                           "This tab shows the data captured by the radiation force balance (RFB) and organizes the\n"
+                                           "                    information into a grid and graph fashion, with a graph legend to explain what various lines\n"
+                                           "                    represent\n"
+                                           "                "))
         self.label_103.setText(_translate("Form", "Time (s)"))
         self.label_104.setText(_translate("Form", "Mass (mg)"))
-        self.label_105.setToolTip(_translate("Form", "This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals"))
+        self.label_105.setToolTip(_translate("Form",
+                                             "This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals"))
         self.label_105.setText(_translate("Form", "Power (W)"))
-        self.power_w_field.setToolTip(_translate("Form", "This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals"))
-        self.label_108.setToolTip(_translate("Form", "<html><head/><body><p>The acoustic power above divided by the difference between forward and reflected electrical power</p><p><br/></p></body></html>"))
+        self.power_w_field.setToolTip(_translate("Form",
+                                                 "This is the average of the calculated acoustic power within the UA on intervals minus the calculated acoustic power within the UA off intervals"))
+        self.label_108.setToolTip(_translate("Form",
+                                             "<html><head/><body><p>The acoustic power above divided by the difference between forward and reflected electrical power</p><p><br/></p></body></html>"))
         self.label_108.setText(_translate("Form", "Eff. %"))
-        self.eff_percent_field.setToolTip(_translate("Form", "<html><head/><body><p>The acoustic power above divided by the difference between forward and reflected electrical power</p><p><br/></p></body></html>"))
+        self.eff_percent_field.setToolTip(_translate("Form",
+                                                     "<html><head/><body><p>The acoustic power above divided by the difference between forward and reflected electrical power</p><p><br/></p></body></html>"))
         self.label_121.setText(_translate("Form", "Data Display"))
         self.label_123.setText(_translate("Form", "Raw Power"))
         self.label_125.setText(_translate("Form", "Reverse Power"))
         self.label_124.setText(_translate("Form", "Forward Power"))
         self.label_126.setText(_translate("Form", "Acoustic Power"))
-        self.rfb_results_combined_2.setToolTip(_translate("Form", "Forward and reflected electrical power measured by the power measurement and switching module"))
+        self.rfb_results_combined_2.setToolTip(_translate("Form",
+                                                          "Forward and reflected electrical power measured by the power measurement and switching module"))
         self.label_115.setText(_translate("Form", "Pf (W)"))
         self.label_116.setText(_translate("Form", "Pr (W)"))
         self.label_117.setText(_translate("Form", "Results"))
-        self.label_118.setToolTip(_translate("Form", "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle."))
+        self.label_118.setToolTip(_translate("Form",
+                                             "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle."))
         self.label_118.setText(_translate("Form", "UA on intervals"))
-        self.rfb_results_off.setToolTip(_translate("Form", "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle."))
+        self.rfb_results_off.setToolTip(_translate("Form",
+                                                   "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle."))
         self.label_109.setText(_translate("Form", "Power (W)"))
         self.label_110.setText(_translate("Form", "St. Deviation (W)"))
-        self.label_119.setToolTip(_translate("Form", "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle."))
+        self.label_119.setToolTip(_translate("Form",
+                                             "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was off and had time to settle."))
         self.label_119.setText(_translate("Form", "UA off intervals"))
-        self.rfb_results_on.setToolTip(_translate("Form", "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle."))
+        self.rfb_results_on.setToolTip(_translate("Form",
+                                                  "The mean and standard deviation of the calculated acoustic power during the intervals where the UA was on and had time to settle."))
         self.label_106.setText(_translate("Form", "Power (W)"))
         self.label_107.setText(_translate("Form", "St. Deviation (W)"))
-        self.label_122.setToolTip(_translate("Form", "Forward and reflected electrical power measured by the power measurement and switching module"))
+        self.label_122.setToolTip(_translate("Form",
+                                             "Forward and reflected electrical power measured by the power measurement and switching module"))
         self.label_122.setText(_translate("Form", "RF Electrical Power"))
-from ui_elements.ui_oscilloscope_plot import Plot
 
+
+from ui_elements.ui_oscilloscope_plot import Plot
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

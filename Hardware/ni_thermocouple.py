@@ -71,6 +71,7 @@ class NIThermocouple(AbstractSensor):
         """Calls the disconnect hardware method"""
         self.disconnect_hardware()
 
+
 if __name__ == "__main__":
     therm = NIThermocouple(config=None)
     therm.connect_hardware()

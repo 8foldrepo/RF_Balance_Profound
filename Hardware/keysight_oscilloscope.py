@@ -127,7 +127,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
                    range_v=self.range_mV / 1000,
                    ext_trigger=self.external_trigger, average_count=self.average_count)
 
-    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float, ext_trigger: bool, average_count: int) -> None:
+    def setup(self, channel: int, range_s: float, offset_s: float, autorange_v: float, range_v: float,
+              ext_trigger: bool, average_count: int) -> None:
         """
         This method relays to the oscilloscope a given set of parameters
         """
@@ -269,7 +270,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
         Sets the range and offset of the oscilloscope's time axis according to the config
         """
         range_s = (self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6) * 8
-        offset_s = self.config['Oscilloscope_timebase']["Time offset (us)"]* 10 ** -6
+        offset_s = self.config['Oscilloscope_timebase']["Time offset (us)"] * 10 ** -6
         self.set_horizontal_range_sec(range_s)
         self.set_horizontal_offset_sec(offset_s)
 
@@ -328,7 +329,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
             try:
                 data = self.ask("WAV:DATA?")
                 if data is None:
-                    return [0.0],[0.0]
+                    return [0.0], [0.0]
                 voltages_v_strings = data.split(",")
             except pyvisa.errors.VisaIOError as e:
                 if "Timeout" not in str(e):

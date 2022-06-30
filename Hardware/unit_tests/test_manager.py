@@ -58,11 +58,11 @@ class MyTestCase(unittest.TestCase):
             self.fail(f"save_results method ran into an exception when it shouldn't have: {e}")
 
         results_summary = (
-                    self.manager.config['Paths']['UA results root directory'] + "\\" +
-                    self.manager.file_saver.folder_name + '\\Results Summary.txt')
+                self.manager.config['Paths']['UA results root directory'] + "\\" +
+                self.manager.file_saver.folder_name + '\\Results Summary.txt')
         script_results = (
-                    self.manager.config['Paths']['UA results root directory'] + "\\" +
-                    self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
+                self.manager.config['Paths']['UA results root directory'] + "\\" +
+                self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')
         self.assertTrue(exists(results_summary))  # TEST: tests if files exist
         self.assertTrue(exists(script_results))
         # TEST: this file should have default information within it
@@ -115,7 +115,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(self.manager.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6 * 8,
                          oscilloscope.get_horizontal_range_sec())
         self.assertAlmostEqual(oscilloscope.get_horizontal_offset_sec(),
-                         self.manager.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6, 2)
+                               self.manager.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6, 2)
 
     def test_disconnect_hardware(self):
         try:

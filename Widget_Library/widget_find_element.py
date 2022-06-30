@@ -298,8 +298,8 @@ class Ui_FIND_ELEMENT_WIDGET(object):
         _translate = QtCore.QCoreApplication.translate
         FIND_ELEMENT_WIDGET.setWindowTitle(_translate("FIND_ELEMENT_WIDGET", "Find Element"))
         self.label.setText(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        font-weight:600; text-decoration: underline;\">Element Positioning</span></p></body></html>\n"
-"                    "))
+                                                             "                        font-weight:600; text-decoration: underline;\">Element Positioning</span></p></body></html>\n"
+                                                             "                    "))
         self.label_2.setText(_translate("FIND_ELEMENT_WIDGET", "Element Selected:"))
         self.ELEMENT_SELECTION_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Element 1"))
         self.ELEMENT_SELECTION_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Element 2"))
@@ -314,21 +314,24 @@ class Ui_FIND_ELEMENT_WIDGET(object):
         self.X_INCREMENT_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " mm"))
         self.label_3.setText(_translate("FIND_ELEMENT_WIDGET", "X-Axis Increment:"))
         self.THETA_INCREMENT_FIELD.setSuffix(_translate("FIND_ELEMENT_WIDGET", " Degrees"))
-        self.label_22.setText(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta Increment:</p></body></html>"))
+        self.label_22.setText(
+            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta Increment:</p></body></html>"))
         self.label_5.setText(_translate("FIND_ELEMENT_WIDGET", "X-Axis # of Points:"))
-        self.label_6.setText(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta # of Points:</p></body></html>"))
+        self.label_6.setText(
+            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p>Theta # of Points:</p></body></html>"))
         self.label_4.setText(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        font-weight:600; text-decoration: underline;\">Oscilloscope Parameters</span></p></body></html>\n"
-"                    "))
+                                                               "                        font-weight:600; text-decoration: underline;\">Oscilloscope Parameters</span></p></body></html>\n"
+                                                               "                    "))
         self.OSCOPE_CHANNEL_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Channel 1"))
         self.OSCOPE_CHANNEL_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Channel 2"))
         self.OSCOPE_CHANNEL_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Channel 3"))
         self.OSCOPE_CHANNEL_FIELD.setItemText(3, _translate("FIND_ELEMENT_WIDGET", "Channel 4"))
         self.label_7.setText(_translate("FIND_ELEMENT_WIDGET", "Scope Channel:"))
-        self.OSCOPE_AQTYPE_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        text-decoration: underline;\">Selections Available:</span></p><p>-\n"
-"                        Single Waveform </p><p>- N Averaged Waveform</p></body></html>\n"
-"                    "))
+        self.OSCOPE_AQTYPE_FIELD.setToolTip(
+            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
+                                              "                        text-decoration: underline;\">Selections Available:</span></p><p>-\n"
+                                              "                        Single Waveform </p><p>- N Averaged Waveform</p></body></html>\n"
+                                              "                    "))
         self.OSCOPE_AQTYPE_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "N Averaged Waveform"))
         self.OSCOPE_AQTYPE_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Single Waveform"))
         self.label_8.setText(_translate("FIND_ELEMENT_WIDGET", "Acquisition Type:"))
@@ -346,10 +349,11 @@ class Ui_FIND_ELEMENT_WIDGET(object):
         self.label_11.setText(_translate("FIND_ELEMENT_WIDGET", "Delay Cycles:"))
         self.OSCOPE_AUTO_CHECKBOX.setText(_translate("FIND_ELEMENT_WIDGET", "Auto Timebase"))
         self.label_12.setText(_translate("FIND_ELEMENT_WIDGET", "Data Storage:"))
-        self.OSCOPE_DATASTORE_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        text-decoration: underline;\">Selections Available:</span></p><p>- Do\n"
-"                        not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html>\n"
-"                    "))
+        self.OSCOPE_DATASTORE_FIELD.setToolTip(
+            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
+                                              "                        text-decoration: underline;\">Selections Available:</span></p><p>- Do\n"
+                                              "                        not store</p><p>- Store profiles only</p><p>- Store entire waveform</p></body></html>\n"
+                                              "                    "))
         self.OSCOPE_DATASTORE_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "Do not store"))
         self.OSCOPE_DATASTORE_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Store profiles only"))
         self.OSCOPE_DATASTORE_FIELD.setItemText(2, _translate("FIND_ELEMENT_WIDGET", "Store entire waveform"))
@@ -359,14 +363,15 @@ class Ui_FIND_ELEMENT_WIDGET(object):
         self.label_14.setText(_translate("FIND_ELEMENT_WIDGET", "Data Directory:"))
         self.OSCOPE_DATA_DIRECTORY_BUTTON.setText(_translate("FIND_ELEMENT_WIDGET", "Browse"))
         self.label_15.setText(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        font-weight:600; text-decoration: underline;\">Frequency &amp; Angle</span></p></body></html>\n"
-"                    "))
+                                                                "                        font-weight:600; text-decoration: underline;\">Frequency &amp; Angle</span></p></body></html>\n"
+                                                                "                    "))
         self.label_16.setText(_translate("FIND_ELEMENT_WIDGET", "Frequency Preset:"))
-        self.FREQANG_PRESET_FIELD.setToolTip(_translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
-"                        text-decoration: underline;\">Selections Available:</span></p><p>- From\n"
-"                        config cluster </p><p>- Element pk low frequency</p><p>- Element pk high\n"
-"                        frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>\n"
-"                    "))
+        self.FREQANG_PRESET_FIELD.setToolTip(
+            _translate("FIND_ELEMENT_WIDGET", "<html><head/><body><p><span style=\" font-size:10pt;\n"
+                                              "                        text-decoration: underline;\">Selections Available:</span></p><p>- From\n"
+                                              "                        config cluster </p><p>- Element pk low frequency</p><p>- Element pk high\n"
+                                              "                        frequency</p><p>- Common low frequency</p><p>- Common high frequency</p></body></html>\n"
+                                              "                    "))
         self.FREQANG_PRESET_FIELD.setCurrentText(_translate("FIND_ELEMENT_WIDGET", "From config cluster"))
         self.FREQANG_PRESET_FIELD.setItemText(0, _translate("FIND_ELEMENT_WIDGET", "From config cluster"))
         self.FREQANG_PRESET_FIELD.setItemText(1, _translate("FIND_ELEMENT_WIDGET", "Element pk low frequency"))
@@ -389,6 +394,7 @@ class Ui_FIND_ELEMENT_WIDGET(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     FIND_ELEMENT_WIDGET = QtWidgets.QWidget()
     ui = Ui_FIND_ELEMENT_WIDGET()

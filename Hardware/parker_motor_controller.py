@@ -1,7 +1,6 @@
 import time as t
 from typing import Union, Tuple, Optional, List
 
-
 import serial
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication
@@ -73,7 +72,8 @@ class ParkerMotorController(AbstractMotorController):
             self.command(f'{axis_numbers[current_axis_number]}D{int(coordinates[current_axis_number])}')
             self.command(f'{axis_numbers[current_axis_number]}G')
             if '*E' in self.get_response(retries=1):
-                self.log(f"Movement of {axis_numbers[current_axis_number]} to coordinate {coordinates} failed, checking fault data")
+                self.log(
+                    f"Movement of {axis_numbers[current_axis_number]} to coordinate {coordinates} failed, checking fault data")
                 self.check_user_fault(axis_number=axis_numbers[current_axis_number])
                 if enable_ui:
                     self.ready_signal.emit()
@@ -147,7 +147,7 @@ class ParkerMotorController(AbstractMotorController):
             self.get_position()
 
     @pyqtSlot(dict, bool)
-    def setup_slot(self, settings=None, enable_ui:bool=False) -> None:
+    def setup_slot(self, settings=None, enable_ui: bool = False) -> None:
         """Setup all axes according to a dictionary of settings. R is configured according to rotational settings."""
         self.setup(settings=settings)
 
@@ -236,7 +236,8 @@ class ParkerMotorController(AbstractMotorController):
         self.setup_home_1d(axis='R', enabled=self.config[self.device_key]['enable_homing_ray'][1],
                            reference_edge='+', normally_closed=True, speed=-3, mode=1)
 
-    def setup_home_1d(self, axis: str, enabled: bool = True, reference_edge: str = '+', normally_closed: bool = False, speed: int = -5, mode: int = 1,
+    def setup_home_1d(self, axis: str, enabled: bool = True, reference_edge: str = '+', normally_closed: bool = False,
+                      speed: int = -5, mode: int = 1,
                       acceleration: int = 10) -> None:
         """Sends the home command to the controller passing various parameters required by the HOME command"""
         axis_number = self.__get_ax_number(axis)
@@ -312,7 +313,8 @@ class ParkerMotorController(AbstractMotorController):
         """Getter for class' internal connected boolean flag"""
         return self.connected
 
-    def command(self, command: str, retry: bool = True, time_limit=None, mutex_locked: bool = False, log: bool = True) -> Union[None, bool]:
+    def command(self, command: str, retry: bool = True, time_limit=None, mutex_locked: bool = False,
+                log: bool = True) -> Union[None, bool]:
         """Attempt to send command until it is faithfully echoed by the controller, or else return false"""
         # Argument mutex_locked tells this method not to lock the mutex if it was already locked at a higher level
         if self.lock is not None and not mutex_locked:
@@ -461,7 +463,7 @@ class ParkerMotorController(AbstractMotorController):
         else:
             self.command(f"{axis_number}OFF")
 
-    def setup(self, settings=None, enable_ui:bool=False) -> None:
+    def setup(self, settings=None, enable_ui: bool = False) -> None:
         """
         Ensures controller is connected and responding, initializes
         all settings and emits connected signal if appropriate

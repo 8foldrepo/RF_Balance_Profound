@@ -31,7 +31,7 @@ def calculate_efficiency_percent(acoustic_power_on_mean: float, forward_power_on
     return acoustic_power_on_mean / denominator * 100
 
 
-def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: float, reflected_power_percent: float)\
+def calculate_pf_max(acoustic_power_max_w: float, acoustic_efficiency_percent: float, reflected_power_percent: float) \
         -> float:
     """
     Helper method for `end_of_test_data_analysis()`:

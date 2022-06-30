@@ -52,7 +52,7 @@ class SensorThread(QThread):
         while t.time() - startTime < self.config["MT_Balance"]["timeout_s"]:
             reading = self.sensor.get_reading()
             if self.name == 'MT_Balance' and reading > 1:
-                pass #todo: remove
+                pass  # todo: remove
 
             if reading is not None:
                 break

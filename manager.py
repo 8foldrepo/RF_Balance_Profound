@@ -2338,7 +2338,8 @@ class Manager(QThread):
         self.retry_clicked_variable = False  # needed in case we encounter a retry possibility again
 
         if efficiency_test:
-            if self.rfb_data.efficiency_percent == float('nan') or self.rfb_data.reflected_power_percent == float('nan') or self.rfb_data.forward_power_max_extrapolated == float('nan'):
+            if self.rfb_data.efficiency_percent == float('nan') or self.rfb_data.reflected_power_percent == float(
+                    'nan') or self.rfb_data.forward_power_max_extrapolated == float('nan'):
                 test_result = 'FAIL'
                 cont = self.sequence_pass_fail(action_type='Interrupt action',
                                                error_detail=f'Invalid rfb_data, it is recommended to restart the test')

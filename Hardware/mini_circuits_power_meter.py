@@ -9,6 +9,7 @@ sys.path.append(POWER_METER_DLL_PATH)
 
 # Setup power meter library (do not rearrange)
 import clr  # pythonnet
+
 sys.path.append("\Hardware\power_meter_dlls")
 clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 # noinspection PyUnresolvedReferences

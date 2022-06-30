@@ -14,7 +14,7 @@ class DIOBoard(AbstractIOBoard):
     """Class for interfacing with a National instruments usb-6009 digital IO board"""
 
     # Abort flag for the filling/draining tank operations
-    stop_filling_draining_var:bool
+    stop_filling_draining_var: bool
 
     pump_reading_signal = QtCore.pyqtSignal(bool)
     water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)
@@ -123,7 +123,7 @@ class DIOBoard(AbstractIOBoard):
 
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 if self.stop_filling_draining_var:
-                    self.set_tank_pump_on(False,False)
+                    self.set_tank_pump_on(False, False)
                     return True
                 elapsed_time_s = t.time() - start_time
                 # If we are simulating hardware wait 10 seconds and then change the simulated water level
@@ -150,7 +150,7 @@ class DIOBoard(AbstractIOBoard):
 
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 if self.stop_filling_draining_var:
-                    self.set_tank_pump_on(False,False)
+                    self.set_tank_pump_on(False, False)
                     return True
 
                 elapsed_time_s = t.time() - start_time
@@ -166,7 +166,7 @@ class DIOBoard(AbstractIOBoard):
                     self.tank_full_signal.emit()
                     self.water_level_reading_signal.emit(WaterLevel.level)
                     return True
-        elif water_level == WaterLevel.below_level or water_level==WaterLevel.level:
+        elif water_level == WaterLevel.below_level or water_level == WaterLevel.level:
             self.log("Filling tank, please wait...")
             self.set_tank_pump_on(on=True, clockwise=True)
             self.filling_signal.emit()
@@ -174,7 +174,7 @@ class DIOBoard(AbstractIOBoard):
 
             while t.time() - start_time < self.config[self.device_key]["Water level timeout (s)"]:
                 if self.stop_filling_draining_var:
-                    self.set_tank_pump_on(False,False)
+                    self.set_tank_pump_on(False, False)
                     return True
 
                 elapsed_time_s = t.time() - start_time
@@ -270,7 +270,8 @@ class DIOBoard(AbstractIOBoard):
     def wrap_up(self):
         self.disconnect_hardware()
 
+
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.set_tank_pump_on(False,False)
-    dio.set_tank_pump_on(False,False)
+    dio.set_tank_pump_on(False, False)
+    dio.set_tank_pump_on(False, False)

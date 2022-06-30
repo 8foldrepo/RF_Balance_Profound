@@ -92,8 +92,8 @@ def get_element_distances(element_1_index: float, element_pitch: float) -> list:
     # length of 11, so index can equal element number. item zero will remain 'nan' and will cause errors if used
     element_coordinates = [None, None, None, None, None, None, None, None, None, None, None]
     for i in range(10):
-        element_number = 10-i
-        offset = -1 * (element_number-1) * element_pitch
+        element_number = 10 - i
+        offset = -1 * (element_number - 1) * element_pitch
         element_coordinates[element_number] = element_1_index + offset
 
     return element_coordinates

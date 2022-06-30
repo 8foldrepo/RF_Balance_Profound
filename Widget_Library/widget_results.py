@@ -187,10 +187,11 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label_131.setText(_translate("Form", "UA Script Log"))
-        self.tooltip_script_log.setToolTip(_translate("Form", "This tab shows detailed information about the script parsing process, including\n"
-"                                    whether certain tests succeeded and other intricate details about various script\n"
-"                                    operations\n"
-"                                "))
+        self.tooltip_script_log.setToolTip(
+            _translate("Form", "This tab shows detailed information about the script parsing process, including\n"
+                               "                                    whether certain tests succeeded and other intricate details about various script\n"
+                               "                                    operations\n"
+                               "                                "))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.scriptlog_tab), _translate("Form", "ScriptLog"))
         item = self.results_table.verticalHeaderItem(1)
         item.setText(_translate("Form", "Element_01"))
@@ -281,14 +282,16 @@ class Ui_Form(object):
         self.results_table.setSortingEnabled(__sortingEnabled)
         self.label_130.setText(_translate("Form", "UA Test Results"))
         self.save_button.setText(_translate("Form", "Save Report"))
-        self.tool_tip_ua_results.setToolTip(_translate("Form", "This tab shows very details information gathered about each element from the\n"
-"                                    ultrasound actuator in a grid.\n"
-"                                "))
+        self.tool_tip_ua_results.setToolTip(
+            _translate("Form", "This tab shows very details information gathered about each element from the\n"
+                               "                                    ultrasound actuator in a grid.\n"
+                               "                                "))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.ua_results_tab), _translate("Form", "UA Results"))
 
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()

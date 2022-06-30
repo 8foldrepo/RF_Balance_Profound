@@ -137,7 +137,7 @@ class RFBData:
             if self.grams > 1:
                 self.grams = self.grams / 1000
                 self.balance_readings_g[len(self.balance_readings_g) - 1] = self.grams
-                pass #todo: remove
+                pass  # todo: remove
 
         else:
             self.grams = float('nan')
@@ -158,12 +158,12 @@ class RFBData:
     def trim_data(self) -> None:
         """Trim list attributes to the length of the smallest one"""
         from Utilities.useful_methods import trim
-        self.times_s,\
-        self.acoustic_powers_w,\
-        self.awg_on_ray,\
-        self.f_meter_readings_w,\
-        self.r_meter_readings_w,\
-        self.balance_readings_g =\
+        self.times_s, \
+        self.acoustic_powers_w, \
+        self.awg_on_ray, \
+        self.f_meter_readings_w, \
+        self.r_meter_readings_w, \
+        self.balance_readings_g = \
             trim(lists=[self.times_s,
                         self.acoustic_powers_w,
                         self.awg_on_ray,
@@ -193,7 +193,7 @@ class RFBData:
                                                                    self.forward_power_on_mean,
                                                                    self.reflected_power_on_mean)
             if self.efficiency_percent == float('nan'):
-                pass #todo: remove
+                pass  # todo: remove
         else:
             self.efficiency_percent = 0
 
@@ -392,7 +392,7 @@ class RFBData:
                 self.reflected_power_percent < 0 or self.reflected_power_percent > 100:
             return False, "Invalid test due to invalid reflected_power_percent"
 
-        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated == float('nan')\
+        if self.forward_power_max_extrapolated is None or self.forward_power_max_extrapolated == float('nan') \
                 or self.forward_power_max_extrapolated < 0 or self.forward_power_max_extrapolated > 100:
             return False, "Invalid test due to invalid Pf max"
 

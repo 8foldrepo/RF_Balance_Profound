@@ -152,7 +152,7 @@ class RFBDataLogger(QThread):
         :param reading_g: Balance reading in grams (float)
         """
         if reading_g > 1:
-            pass #todo: remove
+            pass  # todo: remove
 
         self.balance_readings_g.append(reading_g)
         self.acoustic_powers_w.append(calculate_power_from_balance_reading(reading_g))

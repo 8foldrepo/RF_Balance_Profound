@@ -77,6 +77,7 @@ class Ui_wtf_user_prompt(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     wtf_user_prompt = QtWidgets.QDialog()
     ui = Ui_wtf_user_prompt()

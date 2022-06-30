@@ -31,7 +31,7 @@ class Position(MyQWidget, Ui_Form):
 
     home_1d_signal = QtCore.pyqtSignal(str)
     home_all_signal = QtCore.pyqtSignal()
-    #dict is the settings, bool is whether to enable UI
+    # dict is the settings, bool is whether to enable UI
     setup_signal = QtCore.pyqtSignal(dict, bool)
     reset_zero_signal = QtCore.pyqtSignal()
     go_to_signal = QtCore.pyqtSignal(list, list)

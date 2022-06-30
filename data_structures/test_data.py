@@ -108,8 +108,9 @@ class TestData(QObject):
             self.results_summary[element - 1][1] = "%.2f" % max_position
         else:
             self.results_summary[element - 1][2] = "%.2f" % (max_position + \
-                                                   (self.config['WTF_PositionParameters']['ThetaHomeCoord'] -
-                                                    self.config['WTF_PositionParameters']['ThetaHydrophoneCoord']))
+                                                             (self.config['WTF_PositionParameters']['ThetaHomeCoord'] -
+                                                              self.config['WTF_PositionParameters'][
+                                                                  'ThetaHydrophoneCoord']))
         self.show_results_summary.emit(self.results_summary)
 
     def update_results_summary_with_efficiency_results(self, frequency_range: FrequencyRange, element: int,
