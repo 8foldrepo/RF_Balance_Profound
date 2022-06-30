@@ -133,6 +133,12 @@ class RFBData:
 
         if len(self.balance_readings_g) != 0:
             self.grams = self.balance_readings_g[len(self.balance_readings_g) - 1]
+
+            if self.grams > 1:
+                self.grams = self.grams / 1000
+                self.balance_readings_g[len(self.balance_readings_g) - 1] = self.grams
+                pass #todo: remove
+
         else:
             self.grams = float('nan')
         if len(self.f_meter_readings_w) != 0:
@@ -186,6 +192,8 @@ class RFBData:
             self.efficiency_percent = calculate_efficiency_percent(self.acoustic_power_on_mean,
                                                                    self.forward_power_on_mean,
                                                                    self.reflected_power_on_mean)
+            if self.efficiency_percent == float('nan'):
+                pass #todo: remove
         else:
             self.efficiency_percent = 0
 

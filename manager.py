@@ -163,7 +163,7 @@ class Manager(QThread):
 
         # Get the currently running application (force UI updates using self.app.processEvents)
         self.app = QApplication.instance()
-        self.test_data = TestData()
+        self.test_data = TestData(config=self.config)
         self.file_saver = FileSaver(config=self.config)
 
         # Populate variables for assumed and measured element positions. If they have not been measured yet the
@@ -1359,7 +1359,7 @@ class Manager(QThread):
         self.test_data.log_script(['', 'End', 'OK', ''])
 
         if self.measured_element_r_coords[self.element] is None:
-            self.log(level='warning', message = f'{self.element} has no measured_element_r_coord')
+            self.log(level='warning', message=f'{self.element} has no measured_element_r_coord')
             return True
 
         angle_average = mean_of_non_none_values(self.measured_element_r_coords[1:self.element])
@@ -1491,7 +1491,7 @@ class Manager(QThread):
             if axis_letter == 'R' or axis_letter == 'Theta':
                 # hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
                 #                                           - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
-                #todo: check the results summary to make sure it is around -90
+                # todo: check the results summary to make sure it is around -90
                 status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             else:
                 status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
@@ -1811,8 +1811,9 @@ class Manager(QThread):
                                                        f"Theta={self.Motors.coords_mm[1]}",
                                        f'Successful:{successful_go_home}'])
             if show_prompt and successful_go_home:
-                self.user_info_signal.emit(f'Homing successful, X moved to {"%.2f" % self.Motors.coords_mm[0]}, Theta moved to'
-                                           f' {"%.2f" % self.Motors.coords_mm[1]}')
+                self.user_info_signal.emit(
+                    f'Homing successful, X moved to {"%.2f" % self.Motors.coords_mm[0]}, Theta moved to'
+                    f' {"%.2f" % self.Motors.coords_mm[1]}')
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
@@ -1903,14 +1904,8 @@ class Manager(QThread):
             if "Hydrophone" in target:
                 success = self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -180], enable_ui=False)
             elif "RFB" in target:
-                if average_angle:
-                    self.test_data.calculate_angle_average(self.measured_element_r_coords)
-                    success = self.Motors.go_to_position(['X', 'R'],
-                                                         [element_x_coordinate, self.test_data.angle_average],
-                                                         enable_ui=False)
-                else:
-                    success = self.Motors.go_to_position(['X', 'R'], [element_x_coordinate,
-                                                                      element_r_coordinate], enable_ui=False)
+                success = self.Motors.go_to_position(['X', 'R'], [element_x_coordinate,
+                                                                  element_r_coordinate], enable_ui=False)
             elif "Down" in target:
                 success = self.Motors.go_to_position(["X", "R"], [element_x_coordinate, -90], enable_ui=False)
 
@@ -2343,6 +2338,13 @@ class Manager(QThread):
         self.retry_clicked_variable = False  # needed in case we encounter a retry possibility again
 
         if efficiency_test:
+            if self.rfb_data.efficiency_percent == float('nan') or self.rfb_data.reflected_power_percent == float('nan') or self.rfb_data.forward_power_max_extrapolated == float('nan'):
+                test_result = 'FAIL'
+                cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                               error_detail=f'Invalid rfb_data, it is recommended to restart the test')
+                if not cont:
+                    return False
+
             self.test_data.update_results_summary_with_efficiency_results(
                 frequency_range=frequency_range,
                 element=self.element,

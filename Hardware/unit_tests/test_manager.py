@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
         cls.config = load_configuration()
         cls.manager = Manager(config=cls.config, parent=None, system_info=None, access_level='Administrator')
         cls.manager.add_devices()
-        test_data = TestData()
+        test_data = TestData(config=cls.config)
         cls.manager.test_metadata_slot(test_data=test_data, run_script=False)
         cls.manager.connect_hardware()
 

@@ -127,9 +127,9 @@ Reflected_Power_Meter:
   serial_number: '11408040323'
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
-  Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
-  Retries: 0
+  Interrupt action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
+  Pass fail action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
+  Retries: 5
 Software_Version: '1.0'
 TempMon:
   DeviceName: TankTemp
@@ -189,7 +189,7 @@ WTF_Interface_Board:
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90
-  ThetaHomeEdgeCoord: -100
+  ThetaHomeEdgeCoord: -97
   ThetaHydrophoneCoord: -180
   ThetaLoadEnc?: false
   ThetaPreHomeMove: -90

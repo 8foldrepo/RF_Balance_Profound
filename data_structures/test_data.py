@@ -2,6 +2,8 @@ from pprint import pformat
 from typing import List, Union
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject
+
+from Utilities.load_config import load_configuration
 from Utilities.useful_methods import mean_of_non_none_values
 from data_structures.variable_containers import FrequencyRange
 
@@ -33,8 +35,13 @@ class TestData(QObject):
     schema: str
     angle_average: float
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__()
+
+        self.config = config
+        if config is None:
+            self.config = load_configuration()
+
         self.set_blank_values()
 
     def set_blank_values(self) -> None:
@@ -95,11 +102,14 @@ class TestData(QObject):
         The list of strings should have length 4, and the number of empty
         strings at the beginning corresponds to the indentation level
         """
+
         # update element position
         if axis == "X":
             self.results_summary[element - 1][1] = "%.2f" % max_position
         else:
-            self.results_summary[element - 1][2] = "%.2f" % max_position
+            self.results_summary[element - 1][2] = "%.2f" % (max_position + \
+                                                   (self.config['WTF_PositionParameters']['ThetaHomeCoord'] -
+                                                    self.config['WTF_PositionParameters']['ThetaHydrophoneCoord']))
         self.show_results_summary.emit(self.results_summary)
 
     def update_results_summary_with_efficiency_results(self, frequency_range: FrequencyRange, element: int,
@@ -114,7 +124,7 @@ class TestData(QObject):
             # High frequency
             self.results_summary[element - 1][5] = "%.2f" % (frequency_hz / 1000000)
             # HF efficiency (%)
-            self.results_summary[element - 1][11] = "%.0f" % efficiency_percent
+            self.results_summary[element - 1][11] = "%.1f" % efficiency_percent
             self.results_summary[element - 1][12] = "%.1f" % reflected_power_percent
             self.results_summary[element - 1][13] = "%.1f" % forward_power_max
             self.results_summary[element - 1][14] = "%.1f" % water_temperature_c
@@ -124,7 +134,7 @@ class TestData(QObject):
             # Low Frequency
             self.results_summary[element - 1][3] = "%.2f" % (frequency_hz / 1000000)
             # LF efficiency (%)
-            self.results_summary[element - 1][7] = "%.0f" % efficiency_percent
+            self.results_summary[element - 1][7] = "%.1f" % efficiency_percent
             self.results_summary[element - 1][8] = "%.1f" % reflected_power_percent
             self.results_summary[element - 1][9] = "%.1f" % forward_power_max
             self.results_summary[element - 1][10] = "%.1f" % water_temperature_c

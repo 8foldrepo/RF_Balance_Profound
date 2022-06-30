@@ -176,6 +176,8 @@ class MT_balance(AbstractBalance):
                             val = float(chunk)
                             self.latest_weight = val
                             self.reading_signal.emit(val)
+                            if val > 1:
+                                pass #todo: remove
                             return val
                 else:
                     if item == b'I':

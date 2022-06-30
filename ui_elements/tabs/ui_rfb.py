@@ -76,6 +76,9 @@ class RFB(MyQWidget, Ui_Form):
         acoustic_power_on_mean = rfb_data.acoustic_power_on_mean
 
         if grams is not None:
+            if round(grams * 1000, 2) > 100:
+                pass #todo: remove
+
             self.mass_mg_field.setText(str(round(grams * 1000, 2)))
 
         self.power_on_w_field.setText(str(round(acoustic_power_on_mean, 2)))
