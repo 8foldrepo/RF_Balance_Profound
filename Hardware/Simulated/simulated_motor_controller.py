@@ -16,7 +16,7 @@ class SimulatedMotorController(AbstractMotorController):
         self.app = QApp.instance()
         self.fields_setup()
 
-    def go_home_1d(self, axis, enable_ui: bool = True) -> bool:
+    def go_home_1d(self, axis, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
         if self.config['Debugging']['simulate_motor_error']:
             if enable_ui:
                 self.ready_signal.emit()
@@ -68,7 +68,7 @@ class SimulatedMotorController(AbstractMotorController):
         self.ready_signal.emit()
 
     def setup_1d(self, axis, settings):
-        """Setup an axis according to a dictionary of settings. R is configured according to rotational settings."""
+        """Set up an axis according to a dictionary of settings. R is configured according to rotational settings."""
         pass
 
     def command(self, command):
@@ -136,7 +136,7 @@ class SimulatedMotorController(AbstractMotorController):
         self.coords_mm[self.ax_letters.index(axis)] = 0
 
     @abstractmethod
-    def go_home(self, enable_ui: bool = True):
+    def go_home(self, enable_ui: bool = True, theta_pre_home_move: bool = True):
         self.get_position()
         self.coords_mm[1] = -90
         self.coords_mm[0] = 273

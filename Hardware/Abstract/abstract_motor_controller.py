@@ -163,7 +163,7 @@ class AbstractMotorController(AbstractDevice):
 
     @abstractmethod
     @pyqtSlot(str)
-    def go_home_1d(self, axis: str, enable_ui: bool = True) -> bool:
+    def go_home_1d(self, axis: str, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
         """
         Commands one axis to begin motion in the negative direction until they hit the edge of a limit switch,
         then to reverse direction and continue moving until the positive edge of the switch is reached
@@ -174,6 +174,7 @@ class AbstractMotorController(AbstractDevice):
 
         :param axis: the axis the user wishes to home
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
+        :param theta_pre_home_move: Causes the rotational axis to move a fixed amount before homing
         :return: whether homing operation completed successfully
         """
         ...

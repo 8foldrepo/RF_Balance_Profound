@@ -19,20 +19,20 @@ Debugging:
   oscilloscope_realtime_capture: false
   print_detailed_verbose: false
   sensor_refresh_interval_s: 0.5
-  simulate_awg: false
-  simulate_balance: false
+  simulate_awg: true
+  simulate_balance: true
   simulate_balance_error: false
-  simulate_io_board: false
+  simulate_io_board: true
   simulate_motor_error: false
-  simulate_motors: false
-  simulate_oscilloscope: false
+  simulate_motors: true
+  simulate_oscilloscope: true
   simulate_oscilloscope_error: false
-  simulate_power_meters: false
-  simulate_sensors: false
-  simulate_thermocouple: false
+  simulate_power_meters: true
+  simulate_sensors: true
+  simulate_thermocouple: true
   simulate_thermocouple_error: false
-  simulate_ua_error: false
-  simulate_ua_interface: false
+  simulate_ua_error: true
+  simulate_ua_interface: true
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
   simulate_ua_pump_on: true
@@ -113,7 +113,7 @@ Keysight_Oscilloscope:
   ext_trigger: true
   identifier: '0x179B'
   range_mV: 300
-  retries: 5
+  retries: 0
   set_on_startup: true
   timeout_s: 1
 MT_Balance:

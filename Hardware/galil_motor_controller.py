@@ -437,6 +437,7 @@ class GalilMotorController(AbstractMotorController):
         :param enable_ui:
             whether to turn on various buttons in main window and its tabs after operation if script
             isn't running
+        :param theta_pre_home_move: whether to rotate the UA a fixed amount before homing
         :returns: boolean representing successful homing.
         """
         x_successful = self.go_home_1d('X', enable_ui=False, theta_pre_home_move=False)
