@@ -1,13 +1,14 @@
 @echo off
+@setlocal enabledelayedexpansion
 
 mkdir C:\Users\%username%\Documents\GitHub
 cd C:\Users\%username%\Documents\GitHub
 
+
 IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
-	SET AREYOUSURE=N
 	:PROMPT
 	SET /P AREYOUSURE="You already have gh CLI installed, install again Y/[N]: "
-	IF /I "%AREYOUSURE%" NEQ "Y" (GOTO END) ELSE (winget install --id GitHub.cli)
+	IF /I "!AREYOUSURE!" NEQ "Y" (GOTO END) ELSE (winget install --id GitHub.cli)
 ) ELSE (
 	echo "gh CLI does not exist"
 	IF EXIST C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe (
@@ -19,12 +20,15 @@ IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
 )
 :END
 
+
 set PATH=%PATH%;"C:\Program Files\GitHub CLI\"
 
+
 IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
-	SET AREYOUSURE=N
 	SET /P AREYOUSURE="repo already exists, download again? Y/N: "
-	IF /I "%AREYOUSURE%" == "Y" (
+	IF /I "!AREYOUSURE!"=="Y" (
+		echo about to delete
+		rmdir "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\" /s
 		gh auth login
 		gh repo clone 8foldrepo/RF_Balance_Profound
 	)
@@ -33,6 +37,7 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	gh auth login
 	gh repo clone 8foldrepo/RF_Balance_Profound
 )
+
 
 IF EXIST "C:\ProgramData\Anaconda3\Scripts\conda.exe" (
 	echo [92mconda found, skipping[0m
@@ -61,7 +66,7 @@ IF EXIST "C:\Program Files (x86)\Galil\gclib\source\wrappers\python\setup.py" (
 
 :PROMPT
 SET /P AREYOUSURE="Do you want to download and install NI-VISA drivers Y/N: "
-IF /I "%AREYOUSURE%" == "Y" (
+IF /I "!AREYOUSURE!" == "Y" (
 	curl -LO https://download.ni.com/support/nipkg/products/ni-v/ni-visa/20.0/online/ni-visa_20.0_online_repack3.exe
 	ni-visa_20.0_online_repack3.exe
 )
@@ -88,9 +93,6 @@ set PATH=%PATH%;C:\ProgramData\Anaconda3\Scripts\
 
 copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 
-conda config --add channels conda-forge
-conda config --add channels bioconda
-conda update conda
 conda env create -f environment.yml -v
 conda activate RF_Balance_Profound
 cd %temp%
