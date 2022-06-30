@@ -75,7 +75,7 @@ dependencies:
       - pyvisa-py==0.5.3
       - termcolor==1.1.0
       - pyyaml==6.0
-      - pyvisa==1.11.3
+      - pyvisa==1.12.0
       - pyserial==3.5
       - pythonnet==2.5.2
       - nidaqmx==0.6.2
