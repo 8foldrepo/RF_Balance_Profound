@@ -154,10 +154,11 @@ class RFBDataLogger(QThread):
         if reading_g > 1:
             pass  # todo: remove
 
-        if self.awg_on and self.config["Debugging"]["simulate_awg"]:
-            reading_g = reading_g / 500 + .053
-        else:
-            reading_g = reading_g / 500
+        if self.config["Debugging"]["simulate_awg"]:
+            if self.awg_on:
+                reading_g = reading_g / 500 + .053
+            else:
+                reading_g = reading_g / 500
 
         self.balance_readings_g.append(reading_g)
         self.acoustic_powers_w.append(calculate_power_from_balance_reading(reading_g))
@@ -172,10 +173,11 @@ class RFBDataLogger(QThread):
         :param reading_w: forward power reading in watts
         """
 
-        if self.awg_on and self.config['Debugging']['simulate_awg']:
-            reading_w = reading_w / 50 + 1
-        else:
-            reading_w = reading_w / 50
+        if self.config['Debugging']['simulate_awg']:
+            if self.awg_on:
+                reading_w = reading_w / 50 + 1
+            else:
+                reading_w = reading_w / 50
 
         self.f_meter_readings_w.append(reading_w)
         self.f_meter_ready = True
@@ -190,10 +192,11 @@ class RFBDataLogger(QThread):
         :param reading_w: Reverse power meter reading in watts
         """
 
-        if self.awg_on and self.config['Debugging']['simulate_awg']:
-            reading_w = reading_w / 50 + .1
-        else:
-            reading_w = reading_w / 50
+        if self.config['Debugging']['simulate_awg']:
+            if self.awg_on:
+                reading_w = reading_w / 50 + .1
+            else:
+                reading_w = reading_w / 50
 
         self.r_meter_readings_w.append(reading_w)
         self.r_meter_ready = True

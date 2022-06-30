@@ -418,6 +418,7 @@ class KeysightOscilloscope(AbstractOscilloscope):
 
     def wrap_up(self) -> None:
         """Calls the disconnect hardware method"""
+        self.log(f"Wrapping up {self.device_key}")
         self.disconnect_hardware()
 
     def __del__(self):

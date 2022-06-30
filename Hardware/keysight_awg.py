@@ -80,7 +80,13 @@ class KeysightAWG(AbstractAWG):
         """
         Closes the pyvisa device instance, sets connected flag to false and emits it to main window to update indicator
         """
-        self.inst.close()
+        try:
+            self.inst.close()
+        except AttributeError:
+            pass
+        except pyvisa.VisaIOError:
+            pass
+
         self.connected = False
         self.connected_signal.emit(False)
 

@@ -832,7 +832,6 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         if q_reply == QMessageBox.Yes:
             b_quit = True
             self.manager.wrap_up()
-            t.sleep(0.1)
             self.manager.exit()
         if b_quit:
             event.accept()

@@ -1,11 +1,9 @@
-import distutils.util
 import logging
 import re
 import sys
 import time as t
 import traceback
 from collections import OrderedDict
-from statistics import mean
 from typing import List, Tuple, Union
 import numpy as np
 import pyvisa
@@ -405,9 +403,7 @@ class Manager(QThread):
             command = self.command.upper()
             command_ray = command.split(" ")
 
-            if command_ray[0] == "CLOSE":
-                self.wrap_up()
-            elif command_ray[0] == "CONNECT":
+            if command_ray[0] == "CONNECT":
                 self.connect_hardware()
             elif "CAPTURE".upper() in command.upper():
                 self.capture_oscilloscope_and_plot()
@@ -441,9 +437,8 @@ class Manager(QThread):
             self.was_scripting = self.currently_scripting
 
             self.command = ""
-        self.wrap_up()
-        self.mutex.unlock()
 
+        self.mutex.unlock()
         return super().run()
 
     @pyqtSlot()
@@ -2445,7 +2440,10 @@ class Manager(QThread):
         and sets the stay alive flag to false.
         """
         for device in self.devices:
-            device.wrap_up()
+            try:
+                device.wrap_up()
+            except Exception as e:
+                self.log(level='error', message=f'Failed to wrap up {device.device_key}: {str(e)}')
         self.stay_alive = False
 
     def log(self, message: str, level: str = "info") -> None:

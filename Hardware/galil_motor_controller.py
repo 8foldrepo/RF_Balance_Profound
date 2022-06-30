@@ -30,6 +30,7 @@ class GalilMotorController(AbstractMotorController):
         Relay call for the disconnect_hardware method, used to automate
         closing all hardware classes in a loop in manager class
         """
+        self.log(f"Wrapping up {self.device_key}")
         self.disconnect_hardware()
 
     # Note: see the abstract_motor_controller class for all inherited signals and attributes
@@ -511,7 +512,7 @@ class GalilMotorController(AbstractMotorController):
                     t.sleep(.5)
                     self.command(f"HM {self.__get_galil_ax_letter(axis)}")
                     reply, error_msg = self.command(f"BG {self.__get_galil_ax_letter(axis)}")
-                    if error_msg is not '':
+                    if error_msg != '':
                         if enable_ui:
                             self.ready_signal.emit()
                         return False
