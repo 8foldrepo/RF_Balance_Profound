@@ -863,6 +863,7 @@ class Manager(QThread):
         self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons for no scripting
         self.step_index = -1
         self.abort_immediately_variable = True
+        self.AWG.set_output(False)
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
         self.retry_count = 0
@@ -986,6 +987,8 @@ class Manager(QThread):
         # Fetch pass list and description list from testdata
         pass_list = list([None] * 11)
         description_list = list([None] * 11)
+
+        self.AWG.set_output(False)
 
         if finished:
             device_result = 'PASS'
@@ -2513,6 +2516,8 @@ class Manager(QThread):
 
                 try:
                     max_retries = self.config[k1]['Retries']
+                    if max_retries == 0:
+                        max_retries = 9999999
                 except KeyError:
                     self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
                     max_retries = 5

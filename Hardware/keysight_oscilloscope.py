@@ -41,7 +41,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         for resource in resources:
             if self.config[self.device_key]["identifier"] in str(resource):
                 retries = 1
-                while retries <= self.config[self.device_key]["retries"]:
+
+                max_retries = self.config[self.device_key]["retries"]
+                if max_retries == 0:
+                    max_retries = 99999999
+
+                while retries <= max_retries:
                     try:
                         self.inst = self.rm.open_resource(resource)
                         self.connected = True
