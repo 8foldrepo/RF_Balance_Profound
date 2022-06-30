@@ -2,18 +2,16 @@
 This class controls the logic of the pretest dialog box, a task that is usually ran in the beginning
 of a test. The dialog merely contains some input fields the user would need to fill in.
 """
+import os
 from datetime import datetime
-from os.path import exists
 from pprint import pprint
-
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
-from Utilities.useful_methods import is_number
+from Utilities.useful_methods import is_number, check_directory
 from Widget_Library import dialog_pretest
 from data_structures.test_data import TestData
 from definitions import ROOT_DIR
 from ui_elements.Dialogs.my_qdialog import MyQDialog
-
 
 class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
     """
@@ -78,11 +76,12 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         self.lf_MHz_field.setText("")
         self.hf_MHz_field.setText("")
         self.hardware_code_field.setText("")
-        path = str(ROOT_DIR) + "\\Program_Data\\UA serial number and frequency data.txt"
-        if not exists(path):
-            self.log(level='error', message=f'file at path: "{path}" does not exist')
-            self.close()
-            return
+        ua_sn_path = self.config["Paths"]["UA Serial numbers file"]
+        if ':' not in ua_sn_path:
+            path = str(ROOT_DIR) + ua_sn_path
+        else:
+            path = ua_sn_path
+
         with open(path) as f:
             line = f.readline()
             while line:
@@ -96,6 +95,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
                     self.hf_MHz_field.setText(frequencies[1])
                     self.hardware_code_field.setText(hardware_code)
                     break
+
 
         if self.lf_MHz_field.text() == "":
             self.lf_MHz_field.setText("Not found")

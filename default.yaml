@@ -121,15 +121,15 @@ MT_Balance:
   port: COM4
   timeout_s: 10
 Paths:
-  Script log directory: C:\Users\Isaiah\Documents\UA results\Logs
+  #Note: if a drive letter and colon is not provided the program will append the path to the repository path
   UA Serial numbers file: \Program_Data\UA serial number and frequency data.txt
-  UA results root directory: C:\Users\Isaiah\Documents\UA results
+  UA results root directory: C:\Users\Public\UA results
 Reflected_Power_Meter:
   serial_number: '11408040323'
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
-  Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
+  Interrupt action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
+  Pass fail action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
   Retries: 5
 Software_Version: '1.0'
 TempMon:
