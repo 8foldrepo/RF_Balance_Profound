@@ -172,7 +172,7 @@ class RFBDataLogger(QThread):
         :param reading_w: forward power reading in watts
         """
 
-        if self.awg_on and self.config['debugging']['simulate_awg']:
+        if self.awg_on and self.config['Debugging']['simulate_awg']:
             reading_w = reading_w / 50 + 1
         else:
             reading_w = reading_w / 50
@@ -190,7 +190,7 @@ class RFBDataLogger(QThread):
         :param reading_w: Reverse power meter reading in watts
         """
 
-        if self.awg_on and self.config['debugging']['simulate_awg']:
+        if self.awg_on and self.config['Debugging']['simulate_awg']:
             reading_w = reading_w / 50 + .1
         else:
             reading_w = reading_w / 50

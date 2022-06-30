@@ -102,14 +102,6 @@ class RFB(MyQWidget, Ui_Form):
                 self.log(level='error', message=f'error setting power_w_field {e}')
             self.power_w_field.setText(float('nan'))
 
-        try:
-            self.eff_percent_field.setText(
-                self.power_w_field.text() / (rfb_data.forward_power_on_mean - rfb_data.reflected_power_on_mean))
-        except Exception as e:
-            if not "type" in str(e):
-                self.log(level='error', message=f'error setting eff_percent_field {e}')
-            self.eff_percent_field.setText('nan')
-
         if not len(times_s) == 0:
             self.time_s_field.setText(str(round((times_s[len(times_s) - 1]), 2)))
 

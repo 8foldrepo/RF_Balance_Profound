@@ -97,6 +97,17 @@ class TestData(QObject):
 
         self.results_summary = table
 
+    def update_ua_common_frequencies(self, low_frequency_MHz: float, high_frequency_MHz: float) -> None:
+        """
+        Updates the fields for UA common low frequency and high frequency in the class variables as well as the
+        results summary, and also emit the results summary to the UI
+        """
+        self.low_frequency_MHz = low_frequency_MHz
+        self.high_frequency_MHz = high_frequency_MHz
+        self.results_summary[10][3] = "%.2f" % self.low_frequency_MHz
+        self.results_summary[10][5] = "%.2f" % self.high_frequency_MHz
+        self.show_results_summary.emit(self.results_summary)
+
     def set_max_position(self, axis: str, element: int, max_position: float) -> None:
         """
         The list of strings should have length 4, and the number of empty
@@ -107,10 +118,10 @@ class TestData(QObject):
         if axis == "X":
             self.results_summary[element - 1][1] = "%.2f" % max_position
         else:
-            self.results_summary[element - 1][2] = "%.2f" % (max_position + \
-                                                             (self.config['WTF_PositionParameters']['ThetaHomeCoord'] -
-                                                              self.config['WTF_PositionParameters'][
-                                                                  'ThetaHydrophoneCoord']))
+            self.results_summary[element - 1][2] = "%.2f" % max_position
+            # (self.config['WTF_PositionParameters']['ThetaHomeCoord']
+            # -  self.config['WTF_PositionParameters'][
+            #      'ThetaHydrophoneCoord']))
         self.show_results_summary.emit(self.results_summary)
 
     def update_results_summary_with_efficiency_results(self, frequency_range: FrequencyRange, element: int,
@@ -145,9 +156,18 @@ class TestData(QObject):
         # If the element already failed do not overwrite the entry
         if self.results_summary[element - 1][15].upper() != 'FAIL':
             self.results_summary[element - 1][15] = test_result.upper()
-            self.results_summary[element - 1][16] = comment
+
+        self.update_comment(element, comment)
 
         self.show_results_summary.emit(self.results_summary)
+
+    def update_comment(self, element, comment):
+        """Append the comment to the existing comment if there is one and they are different"""
+        if len(self.results_summary[element - 1][16]) > 0 and len(comment) != 0 and \
+                comment not in self.results_summary[element - 1][16]:
+            self.results_summary[element - 1][16] = self.results_summary[element - 1][16] + ' | ' + comment
+        elif len(comment) > 0:
+            self.results_summary[element - 1][16] = comment
 
     def update_results_summary_with_frequency_sweep(self, frequency_range: FrequencyRange, element: int,
                                                     frequency_mHz: float, vsi: float, units_str: str, ):
@@ -171,8 +191,14 @@ class TestData(QObject):
 
     def calculate_angle_average(self, measured_element_r_coords: List[Union[float, None]]):
         """Calculates the average of all measured element theta positions from find element"""
-        self.angle_average = mean_of_non_none_values(measured_element_r_coords)
-        self.results_summary[10][2] = str(self.angle_average)
+        angle_average = mean_of_non_none_values(measured_element_r_coords)
+
+        if not angle_average == float('nan'):
+            self.angle_average = angle_average
+        else:
+            self.angle_average = -90
+
+        self.results_summary[10][2] = '%.2f' % self.angle_average
 
         # update UI representation
         self.show_results_summary.emit(self.results_summary)
@@ -219,3 +245,7 @@ class TestData(QObject):
         to_return += f'angle_average (type: {type(self.angle_average)}): {self.angle_average}\n'
 
         return to_return
+
+    def element_failed(self, element_number: int, description: str) -> None:
+        self.results_summary[element_number - 1][15] = 'FAIL'
+        self.update_comment(element_number, description)

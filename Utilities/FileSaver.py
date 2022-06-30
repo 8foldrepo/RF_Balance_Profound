@@ -67,6 +67,10 @@ class FileSaver:
             self.folder_name = "No_Serial_Provided-" + self.test_data.test_date_time
         else:
             self.folder_name = self.test_data.serial_number + "-" + self.test_data.test_date_time
+
+        if self.config['Debugging']['simulate_awg']:
+            self.folder_name = "Simulated_Test-" + self.folder_name
+
         results_path = os.path.join(self.config['Paths']['UA results root directory'], self.folder_name)
         # Retrieve the path of the "results" directory from the yaml file and create it if it does not exist
         self.results_dir = check_directory(results_path)

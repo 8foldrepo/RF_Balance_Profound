@@ -218,6 +218,8 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
+        self.last_step_index_retried = 0
+
         self.abort_immediately_variable = False
 
         # Initializes the retry count for retry step functionality in scripts
@@ -432,7 +434,7 @@ class Manager(QThread):
                 self.enable_ui_signal.emit(True)
                 self.set_abort_buttons_enabled_signal.emit(False)  # disable abort buttons
                 if self.task_names is not None:
-                    finished = self.step_index == len(self.task_names) - 1
+                    finished = self.step_index == len(self.task_names) + 1
                 else:
                     finished = False
                 self.script_complete(finished=finished)
@@ -742,7 +744,6 @@ class Manager(QThread):
 
                     # take the iteration number from the task_exec_order list
                     iteration_number = self.task_execution_order[self.step_index][1]
-
                 self.run_script_step()  # call helper method to execute the current task
                 if inside_iteration:  # if we're inside a loop iteration
                     self.test_data.log_script([f"Iteration {iteration_number} complete", '', '', ''])
@@ -843,6 +844,7 @@ class Manager(QThread):
         self.abort_immediately_variable = False
         self.task_number_signal.emit(0)  # tell the main window we're in the 0th task number/index
         self.task_index_signal.emit(0)
+        self.retry_count = 0
 
     @pyqtSlot()
     def abort_immediately(self, log: bool = True) -> None:
@@ -863,6 +865,7 @@ class Manager(QThread):
         self.abort_immediately_variable = True
         self.task_number_signal.emit(0)
         self.task_index_signal.emit(0)
+        self.retry_count = 0
 
     def cont_if_cont_clicked(self) -> bool:
         """
@@ -1021,6 +1024,7 @@ class Manager(QThread):
         if self.config['Debugging']['print_detailed_verbose']:
             self.log(message=repr(self.test_data), level='debug')
         self.set_tab_signal.emit(["Results"])  # change the main window tab to the results tab automatically
+        self.file_saver.save_test_results_summary_and_log(test_data=self.test_data)
         return True
 
     def pretest_initialization(self) -> bool:
@@ -1190,8 +1194,7 @@ class Manager(QThread):
         self.test_data.test_comment = test_data.test_comment
         self.test_data.serial_number = test_data.serial_number
         self.test_data.operator_name = test_data.operator_name
-        self.test_data.low_frequency_MHz = test_data.low_frequency_MHz
-        self.test_data.high_frequency_MHz = test_data.high_frequency_MHz
+        self.test_data.update_ua_common_frequencies(test_data.low_frequency_MHz, test_data.high_frequency_MHz)
         self.test_data.hardware_code = test_data.hardware_code
         self.test_data.test_date_time = test_data.test_date_time
         self.test_data.schema = test_data.schema
@@ -1240,7 +1243,8 @@ class Manager(QThread):
         :param var_dict: dictionary of arguments pertaining to the find element task
         :returns: boolean value of whether method ran successfully or not
         """
-        self.set_tab_signal.emit(["Scan", "1D Scan"])
+        if self.element == 1:
+            self.set_tab_signal.emit(["Scan", "1D Scan"])
         self.element = self.element_str_to_int(var_dict["Element"])
         x_increment_mm = float(var_dict["X Incr. (mm)"])
         x_points = int(var_dict["X #Pts."])
@@ -1252,7 +1256,7 @@ class Manager(QThread):
         data_storage = var_dict["Data storage"]
         storage_location = var_dict["Storage location"]
         data_directory = var_dict["Data directory"]
-        # max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])
+        max_position_error_mm = float(var_dict["Max. position error (+/- mm)"])
         element_position_test = cast_as_bool(var_dict["ElementPositionTest"])
         max_angle_variation_degrees = float(var_dict["Max angle variation (deg)"])
         beam_angle_test = cast_as_bool(var_dict["BeamAngleTest"])
@@ -1338,7 +1342,7 @@ class Manager(QThread):
         cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
                               increment=theta_increment_degrees,
                               ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                              go_to_peak=True, update_element_position=beam_angle_test, data_storage=data_storage,
+                              go_to_peak=True, update_element_position=True, data_storage=data_storage,
                               acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
@@ -1347,7 +1351,7 @@ class Manager(QThread):
 
         cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                               ref_position=assumed_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage, update_element_position=element_position_test,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
                               acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
@@ -1366,14 +1370,28 @@ class Manager(QThread):
         if not is_number(angle_average) or angle_average == 0 or angle_average == float('nan'):
             return True
 
-        if abs(self.measured_element_r_coords[self.element] - angle_average) > max_angle_variation_degrees:
+        if element_position_test and abs(self.measured_element_x_coords[self.element] -
+                                         self.assumed_element_x_coords[self.element]) > max_position_error_mm:
+            self.log(level='warning', message=f'X coordinate of '
+                                              f'{"%.2f" % self.measured_element_x_coords[self.element]} '
+                                              f'deviates from its assumed position by more than the allowed maximum of '
+                                              f'{max_position_error_mm}')
+            cont = self.sequence_pass_fail(action_type='Pass fail action',
+                                           error_detail=f'X coordinate '
+                                                        f'deviates from its assumed position '
+                                                        f'by more than the allowed maximum of '
+                                                        f'{max_position_error_mm} mm')
+            if not cont:
+                return False
+
+        if beam_angle_test and \
+                abs(self.measured_element_r_coords[self.element] - angle_average) > max_angle_variation_degrees:
             self.log(level='warning', message=f'Maximum theta coordinate of '
                                               f'{"%.2f" % self.measured_element_r_coords[self.element]} '
-                                              f'deviates from -90 more than the allowed maximum of '
-                                              f'{max_angle_variation_degrees}')
+                                              f'deviates from the other measured elements more than the '
+                                              f'allowed maximum of {max_angle_variation_degrees}')
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'UA failed during find element because '
-                                                        f'Element_{self.element:02} Deviates from the average angle '
+                                           error_detail=f'Theta deviates from the average angle '
                                                         f'of other elements by more than {max_angle_variation_degrees}'
                                                         f' degrees')
             if not cont:
@@ -1943,7 +1961,8 @@ class Manager(QThread):
         return True
 
     def frequency_sweep(self, var_dict: dict) -> bool:
-        self.set_tab_signal.emit(['Scan'])
+        if self.element == 1:
+            self.set_tab_signal.emit(['Scan'])
 
         if "Frequency Range" in var_dict.keys():
             range_str = "Frequency Range"
@@ -2133,7 +2152,9 @@ class Manager(QThread):
         :return: a boolean indicating whether to continue the script
         """
         self.element = self.element_str_to_int(var_dict["Element"])
-        self.set_tab_signal.emit(['RFB'])
+
+        if self.element == 1:
+            self.set_tab_signal.emit(['RFB'])
 
         # Retrieve test parameters from the script and typecast them from strings
         # High frequency or Low frequency, convert to FrequencyRange enum
@@ -2317,13 +2338,13 @@ class Manager(QThread):
         if test_result.upper() == 'FAIL':
             # give user chance to retry, continue, or abort
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test')
+                                           error_detail=f'Element_{self.element:02} Failed efficiency test: {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'DNF':  # if test did not finish or never started
             # give user chance to retry, continue, or abort
             cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test')
+                                           error_detail=f'Element_{self.element:02} did not finish efficiency test {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'PASS':
@@ -2486,9 +2507,29 @@ class Manager(QThread):
         k1 = 'Sequence pass/fail'
         if k1 in self.config and action_type in self.config[k1]:
             if self.config[k1][action_type].upper() == 'RETRY AUTOMATICALLY':
-                self.retry_if_retry_enabled(action_type, error_detail)
+                if self.step_index != self.last_step_index_retried:
+                    self.retry_count = 0
+                self.last_step_index_retried = self.step_index
+
+                try:
+                    max_retries = self.config[k1]['Retries']
+                except KeyError:
+                    self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
+                    max_retries = 5
+                if self.retry_count < max_retries:
+                    self.retry_if_retry_enabled(action_type)
+                else:
+                    self.test_data.element_failed(element_number=self.element, description=error_detail)
+                    if self.config["Debugging"]["abort_on_fail"]:
+                        self.log(f"retry limit reached, aborting script. \n(Error detail: {error_detail})", self.warn)
+                        self.abort_immediately()
+                        return False
+                    else:
+                        self.log(f"retry limit reached, continuing script. \n(Error detail: {error_detail})", self.warn)
+                        return True
                 return False
             elif self.config[k1][action_type].upper() == 'NO DIALOG (ABORT)':
+                self.test_data.element_failed(element_number=self.element, description=error_detail)
                 self.log(error_detail + ', aborting script.', self.error)
                 self.abort_after_step()
                 return False
@@ -2512,31 +2553,21 @@ class Manager(QThread):
                                      F" this test.\nContinue to move to the next test in the "
                                      F"sequence.", True)
         cont = self.cont_if_cont_clicked()
+
+        if not self.retry_clicked_variable:
+            self.test_data.element_failed(element_number=self.element, description=error_detail)
+
         if not cont:
             return False
         return True
 
-    def retry_if_retry_enabled(self, action_type: str, error_detail: str):
+    def retry_if_retry_enabled(self, action_type: str):
         if action_type != 'Interrupt action' and action_type != 'Pass fail action':
             self.log("invalid type passed for action_type in retry_if_retry_enabled, aborting", str(self.warn))
             self.abort_after_step()
 
-        k1 = 'Sequence pass/fail'
-
         self.retry_clicked_variable = True
-
-        try:
-            max_retries = self.config[k1]['Retries']
-        except KeyError:
-            self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
-            max_retries = 5
-
-        if self.retry_count < max_retries:
-            self.retry_count += 1
-            return
-        else:
-            self.log(f"retry limit reached for {error_detail}, aborting script", self.warn)
-            self.abort_after_step()
+        self.retry_count += 1
 
     def command_scan(self, command: str) -> bool:
         """

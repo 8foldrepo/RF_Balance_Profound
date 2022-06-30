@@ -1,8 +1,8 @@
 Analysis:
   capture_rms_only: false
-  max_standard_deviation_w: 0.01
+  max_standard_deviation_w: 0.02
   samples_to_remove_at_end: 3
-  settling_time_s: 2
+  settling_time_s: .1
 Oscilloscope_timebase:
   # Default should be .2 us for low frequency and .1 us for high frequency
   Horizontal scale (us): .2
@@ -13,13 +13,14 @@ Daq_Power_Relay:
   port: COM3
   timeout_s: 1
 Debugging:
+  abort_on_fail: false
   disable_password_prompt: true
   drain_before_retract: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
   print_detailed_verbose: false
   sensor_refresh_interval_s: 0.5
-  simulate_awg: true
+  simulate_awg: true #Note: this setting also adds simulated values to the balance and power meter readings
   simulate_balance: true
   simulate_balance_error: false
   simulate_io_board: true
@@ -127,8 +128,8 @@ Reflected_Power_Meter:
   serial_number: '11408040323'
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
-  Pass fail action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
+  Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
+  Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
   Retries: 5
 Software_Version: '1.0'
 TempMon:
