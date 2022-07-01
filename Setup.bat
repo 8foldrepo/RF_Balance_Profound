@@ -12,14 +12,14 @@ REM  --> Check for permissions
 
 REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
-    echo Requesting administrative privileges...
+    echo [92Requesting administrative privileges...[0m
     goto UACPrompt
 ) else ( goto gotAdmin )
 
 :UACPrompt
-    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"[0m
     set params= %*
-    echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+    echo [92UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"[0m
 
     "%temp%\getadmin.vbs"
     del "%temp%\getadmin.vbs"
@@ -37,11 +37,11 @@ SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		mkdir "C:\Program Files\PortableGit\bin\"
 		IF EXIST "C:\Program Files\PortableGit\bin\git.exe" (
-			echo Git for windows is already installed
+			echo [92Git for windows is already installed[0m
 		) else (
 			cd C:\Program Files
-			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
-			echo [93mClick ok, do not change the unzip path"[0m
+			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe[0m
+			echo [92mClick ok, do not change the unzip path"[0m
 			PortableGit-2.37.0-64-bit.7z.exe
 		)
 	)
@@ -54,7 +54,7 @@ IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
 	SET /P AREYOUSURE="You already have gh CLI installed, install again (Y/N): "
 	IF /I "!AREYOUSURE!" NEQ "Y" (GOTO END) ELSE (winget install --id GitHub.cli)
 ) ELSE (
-	echo "gh CLI does not exist"
+	echo [92"gh CLI does not exist"[0m
 	IF EXIST C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe (
 	winget install --id GitHub.cli
 	) ELSE (
@@ -72,7 +72,7 @@ SET /P AREYOUSURE="Install github desktop interface? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://central.github.com/deployments/desktop/desktop/latest/win32
-		echo Click through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted
+		echo [92Click through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
 		GitHubDesktopSetup-x64.exe
 	)
 
@@ -103,7 +103,7 @@ IF DEFINED CONDAEXISTS (
 	echo [92mConda not found, downloading and installing"[0m
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
-	echo "untick set as python 3.9 for system and tick add to PATH if possible"
+	echo [92"untick set as python 3.9 for system and tick add to PATH if possible"
 	Anaconda3-2022.05-Windows-x86_64.exe
 	cd ..
 )
@@ -123,7 +123,7 @@ SET /P AREYOUSURE="Do you want to download and install NI-VISA drivers (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://download.ni.com/support/nipkg/products/ni-v/ni-visa/20.0/online/ni-visa_20.0_online_repack3.exe
-	echo check "NI VISA interactive control" and uncheck everything else 
+	echo [92check "NI VISA interactive control" and uncheck everything else [0m
 	ni-visa_20.0_online_repack3.exe
 	cd ..
 )
@@ -133,9 +133,9 @@ IF EXIST "C:\National Instruments Downloads\NI-DAQmx Base\15.0\setup.exe" (
 ) ELSE (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	echo [92mNI DAQ setup doesn't exist, downloading and launching setup[0m
-	curl -LO https://download.ni.com/support/softlib/multifunction_daq/nidaqmxbase/15.0/windows/NIDAQmxBase1500.exe
-	NIDAQmxBase1500.exe
-	cd ..
+	curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
+	echo [92Click through installer, uncheck everything.[0m
+	ni-daqmx_21.8_online.exe
 )
 
 
@@ -160,7 +160,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment?"
 IF /I "!AREYOUSURE!" == "Y" (
 	CALL conda.bat activate RF_Balance_Profound
-	echo setting up gclib python wrapper
+	echo [92setting up gclib python wrapper[0m
 	cd %temp%
 	mkdir py
 	cd py
