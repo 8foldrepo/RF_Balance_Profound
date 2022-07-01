@@ -37,7 +37,7 @@ SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		mkdir "C:\Program Files\PortableGit\bin\"
 		IF EXIST "C:\Program Files\PortableGit\bin\git.exe" (
-			echo [92Git for windows is already installed[0m
+			echo [92mGit for windows is already installed[0m
 		) else (
 			cd C:\Program Files
 			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe[0m
@@ -54,7 +54,7 @@ IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
 	SET /P AREYOUSURE="You already have gh CLI installed, install again (Y/N): "
 	IF /I "!AREYOUSURE!" NEQ "Y" (GOTO END) ELSE (winget install --id GitHub.cli)
 ) ELSE (
-	echo [92"gh CLI does not exist"[0m
+	echo [92mgh CLI does not exist[0m
 	IF EXIST C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe (
 	winget install --id GitHub.cli
 	) ELSE (
@@ -72,7 +72,7 @@ SET /P AREYOUSURE="Install github desktop interface? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://central.github.com/deployments/desktop/desktop/latest/win32
-		echo [92Click through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
+		echo [92mClick through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
 		GitHubDesktopSetup-x64.exe
 	)
 
@@ -81,14 +81,14 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	SET AREYOUSURE=N
 	SET /P AREYOUSURE="repo already exists, download again? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		echo [92 Select manager-core if prompted for a credential helper [0m
+		echo [92mSelect manager-core if prompted for a credential helper [0m
 		gh auth login
 		cd C:\Users\%username%\Documents\GitHub
 		gh repo clone 8foldrepo/RF_Balance_Profound
 	)
 ) ELSE (
-	echo [92repo not found, cloning [0m
-	echo [92Select manager-core if prompted for a credential helper [0m
+	echo [92mrepo not found, cloning [0m
+	echo [92mSelect manager-core if prompted for a credential helper [0m
 	gh auth login
 	cd C:\Users\%username%\Documents\GitHub
 	gh repo clone 8foldrepo/RF_Balance_Profound
@@ -103,7 +103,7 @@ IF DEFINED CONDAEXISTS (
 	echo [92mConda not found, downloading and installing"[0m
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
-	echo [92"untick set as python 3.9 for system and tick add to PATH if possible"
+	echo [92muntick set as python 3.9 for system and tick add to PATH if possible
 	Anaconda3-2022.05-Windows-x86_64.exe
 	cd ..
 )
@@ -123,23 +123,23 @@ SET /P AREYOUSURE="Do you want to download and install NI-VISA drivers (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://download.ni.com/support/nipkg/products/ni-v/ni-visa/20.0/online/ni-visa_20.0_online_repack3.exe
-	echo [92check "NI VISA interactive control" and uncheck everything else [0m
+	echo [92mcheck "NI VISA interactive control" and uncheck everything else [0m
 	ni-visa_20.0_online_repack3.exe
 	cd ..
 )
 
 IF EXIST "C:\National Instruments Downloads\NI-DAQmx Base\15.0\setup.exe" (
-	echo [92mNIDAQ setup exists, skipping download and install[0m
+	echo [92mmNIDAQ setup exists, skipping download and install[0m
 ) ELSE (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
-	echo [92mNI DAQ setup doesn't exist, downloading and launching setup[0m
+	echo [92mmNI DAQ setup doesn't exist, downloading and launching setup[0m
 	curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
-	echo [92Click through installer, uncheck everything.[0m
+	echo [92mClick through installer, uncheck everything.[0m
 	ni-daqmx_21.8_online.exe
 )
 
 
-SET /P AREYOUSURE="Do you want to setup the anaconda environment RF_Balance_Profound?: "
+SET /P AREYOUSURE="Do you want to setup the anaconda environment RF_Balance_Profound? (Y/N): : "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\RF_Balance_Profound
 	set PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
@@ -149,18 +149,18 @@ IF /I "!AREYOUSURE!" == "Y" (
 )
 
 
-SET /P AREYOUSURE="Install gclib?"
+SET /P AREYOUSURE="Install gclib? (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://www.galil.com/sw/pub/win/gclib/galil_gclib_1_34_15.exe
-	echo [92install PCI driver and 32-bit binaries[0m
+	echo [92minstall PCI driver and 32-bit binaries[0m
 	galil_gclib_1_34_15.exe
 )
 
-SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment?"
+SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment? (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	CALL conda.bat activate RF_Balance_Profound
-	echo [92setting up gclib python wrapper[0m
+	echo [92msetting up gclib python wrapper[0m
 	cd %temp%
 	mkdir py
 	cd py
@@ -170,7 +170,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 	copy gclib.py  C:\ProgramData\Anaconda3\envs\RF_Balanace_Profound\Lib\site-packages
 )
 
-SET /P AREYOUSURE="Install power meter DLL (to Windows\SysWOW64)?"
+SET /P AREYOUSURE="Install power meter DLL (to Windows\SysWOW64)? (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 )
@@ -179,7 +179,7 @@ SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe?_gl=1*19flnj1*_ga*MTAxOTYyNDQ5Ny4xNjU2Njk3NTQ3*_ga_9J976DJZ68*MTY1NjY5NzU0Ny4xLjEuMTY1NjY5NzU1MC4w&_ga=2.187974888.1324129483.1656697547-1019624497.1656697547
-		echo [92Click through installer. Once installed, create a new project from existing sources in the repository folder. [0m
+		echo [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
 		pycharm-community-2022.1.3.exe
 	)
 
@@ -188,5 +188,5 @@ SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
 		cd "C:\Users\%username%\Desktop\"
 		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
 
-echo [92Restart your PC and double click the desktop shortcut for the applcation[0m
+echo [92mRestart your PC and double click the desktop shortcut for the applcation[0m
 pause
