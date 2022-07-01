@@ -1,4 +1,4 @@
-name: RF_Balanace_Profound
+name: RF_Balance_Profound
 channels:
   - conda-forge
   - defaults
@@ -47,7 +47,6 @@ dependencies:
   - pywin32=303=py38h294d835_0
   - pywin32-ctypes=0.2.0=py38haa244fe_1005
   - pyyaml=6.0=py38h294d835_4
-  - scipy=1.7.3=py38ha1292f7_0
   - setuptools=62.6.0=py38haa244fe_0
   - six=1.16.0=pyh6c4a22f_0
   - sqlite=3.39.0=h8ffe710_0
@@ -71,7 +70,7 @@ dependencies:
       - pyqt5==5.15.6
       - pyqtgraph==0.12.4
       - typing-extensions==4.1.1
-      - scipy==1.7.3
+      - scipy==1.6.2
       - pyvisa-py==0.5.3
       - termcolor==1.1.0
       - pyyaml==6.0
