@@ -1,4 +1,4 @@
-@echo on
+@echo off
 @setlocal enabledelayedexpansion
 
 :: BatchGotAdmin
@@ -12,14 +12,14 @@ REM  --> Check for permissions
 
 REM --> If error flag set, we do not have admin.
 if '%errorlevel%' NEQ '0' (
-    echo [92Requesting administrative privileges...[0m
+    echo Requesting administrative privileges...
     goto UACPrompt
 ) else ( goto gotAdmin )
 
 :UACPrompt
-    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"[0m
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
     set params= %*
-    echo [92UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"[0m
+    echo UAC.ShellExecute "cmd.exe", "/c ""%~s0"" %params:"=""%", "", "runas", 1 >> "%temp%\getadmin.vbs"
 
     "%temp%\getadmin.vbs"
     del "%temp%\getadmin.vbs"
@@ -175,7 +175,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 	copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 )
 
-SET /P AREYOUSURE="Install pycharm community? (Y/N): "
+SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe?_gl=1*19flnj1*_ga*MTAxOTYyNDQ5Ny4xNjU2Njk3NTQ3*_ga_9J976DJZ68*MTY1NjY5NzU0Ny4xLjEuMTY1NjY5NzU1MC4w&_ga=2.187974888.1324129483.1656697547-1019624497.1656697547
@@ -186,6 +186,7 @@ SET /P AREYOUSURE="Install pycharm community? (Y/N): "
 SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd "C:\Users\%username%\Desktop\"
-		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\run.bat"
-		
+		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+
+echo [92Restart your PC and double click the desktop shortcut for the applcation[0m
 pause
