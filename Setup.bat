@@ -178,7 +178,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
-		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe?_gl=1*19flnj1*_ga*MTAxOTYyNDQ5Ny4xNjU2Njk3NTQ3*_ga_9J976DJZ68*MTY1NjY5NzU0Ny4xLjEuMTY1NjY5NzU1MC4w&_ga=2.187974888.1324129483.1656697547-1019624497.1656697547
+		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe
 		echo [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
 		pycharm-community-2022.1.3.exe
 	)
