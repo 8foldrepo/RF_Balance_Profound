@@ -478,7 +478,10 @@ class GalilMotorController(AbstractMotorController):
             reply, _ = self.command('TS A')  # Check status of X axis switches
             if ': ' in reply:
                 reply = reply.split(': ')[1]
-            x_negative_limit_active = not get_bit(int(reply), 2)  # See galil command reference for TS for more details
+            try:
+                x_negative_limit_active = not get_bit(int(reply), 2)
+            except ValueError:
+                x_negative_limit_active = False
             if x_negative_limit_active:
                 self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
 
@@ -494,6 +497,7 @@ class GalilMotorController(AbstractMotorController):
         success = False
         while t.time() - start_time < self.config[self.device_key]['move_timeout_s']:
             if self.app is not None:
+                self.get_position()
                 self.app.processEvents()
             reply, _ = self.command(f'RP {self.__get_galil_ax_letter(axis)}')
             if reply == '0':
@@ -508,7 +512,10 @@ class GalilMotorController(AbstractMotorController):
                 # See galil command reference for TS for more details
                 if ': ' in reply:
                     reply = reply.split(': ')[1]
-                x_negative_limit_active = not get_bit(int(reply), 2)
+                try:
+                    x_negative_limit_active = not get_bit(int(reply), 2)
+                except ValueError:
+                    x_negative_limit_active = False
                 if x_negative_limit_active:
                     self.command("ST")
                     self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
