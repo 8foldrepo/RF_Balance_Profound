@@ -40,7 +40,7 @@ SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
 			echo [92mGit for windows is already installed[0m
 		) else (
 			cd C:\Program Files
-			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe[0m
+			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
 			echo [92mClick ok, do not change the unzip path"[0m
 			PortableGit-2.37.0-64-bit.7z.exe
 		)
@@ -81,7 +81,7 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	SET AREYOUSURE=N
 	SET /P AREYOUSURE="repo already exists, download again? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		echo [92mSelect manager-core if prompted for a credential helper [0m
+		echo [92m Select manager-core if prompted for a credential helper [0m
 		gh auth login
 		cd C:\Users\%username%\Documents\GitHub
 		gh repo clone 8foldrepo/RF_Balance_Profound
@@ -103,7 +103,7 @@ IF DEFINED CONDAEXISTS (
 	echo [92mConda not found, downloading and installing"[0m
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
-	echo [92muntick set as python 3.9 for system and tick add to PATH if possible
+	echo [92muntick set as python 3.9 for system and tick add to PATH if possible[0m
 	Anaconda3-2022.05-Windows-x86_64.exe
 	cd ..
 )
@@ -129,17 +129,17 @@ IF /I "!AREYOUSURE!" == "Y" (
 )
 
 IF EXIST "C:\National Instruments Downloads\NI-DAQmx Base\15.0\setup.exe" (
-	echo [92mmNIDAQ setup exists, skipping download and install[0m
+	echo [92mNIDAQ setup exists, skipping download and install[0m
 ) ELSE (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
-	echo [92mmNI DAQ setup doesn't exist, downloading and launching setup[0m
+	echo [92mNI DAQ setup doesn't exist, downloading and launching setup[0m
 	curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
 	echo [92mClick through installer, uncheck everything.[0m
 	ni-daqmx_21.8_online.exe
 )
 
 
-SET /P AREYOUSURE="Do you want to setup the anaconda environment RF_Balance_Profound? (Y/N): : "
+SET /P AREYOUSURE="Do you want to setup the anaconda environment RF_Balance_Profound?  (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\RF_Balance_Profound
 	set PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
@@ -149,7 +149,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 )
 
 
-SET /P AREYOUSURE="Install gclib? (Y/N): "
+SET /P AREYOUSURE="Install gclib?  (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 	curl -LO https://www.galil.com/sw/pub/win/gclib/galil_gclib_1_34_15.exe
@@ -157,7 +157,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 	galil_gclib_1_34_15.exe
 )
 
-SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment? (Y/N): "
+SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment?  (Y/N): "
 IF /I "!AREYOUSURE!" == "Y" (
 	CALL conda.bat activate RF_Balance_Profound
 	echo [92msetting up gclib python wrapper[0m
@@ -175,18 +175,25 @@ IF /I "!AREYOUSURE!" == "Y" (
 	copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 )
 
-SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/N): "
+SET /P AREYOUSURE="Install pycharm community? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
-		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe
+		curl -LO --output pycharm-community-2022.1.3.exe https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe?_ga=2.226209562.1445893065.1657039792-1019624497.1656697547&_gl=1*tz575k*_ga*MTAxOTYyNDQ5Ny4xNjU2Njk3NTQ3*_ga_9J976DJZ68*MTY1NzA0MTg2Ni4zLjAuMTY1NzA0MTg2Ni4w
 		echo [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
 		pycharm-community-2022.1.3.exe
+	)
+
+SET /P AREYOUSURE="Install NI system config and NI max? (Y/N): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+		curl -LO https://download.ni.com/support/nipkg/products/ni-s/ni-system-configuration/21.5/online/ni-system-configuration_21.5_online.exe
+		echo [92mClick through installer. Check only NI automation and measurement explorer. [0m
+		ni-system-configuration_21.5_online.exe
 	)
 
 SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd "C:\Users\%username%\Desktop\"
-		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
-
-echo [92mRestart your PC and double click the desktop shortcut for the applcation[0m
+		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\run.bat"
+		
 pause
