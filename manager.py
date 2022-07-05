@@ -1504,9 +1504,6 @@ class Manager(QThread):
             vsi_values.append(vsi)
             self.__refresh_profile_plot(positions, vsi_values, axis_label)
 
-        self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
-                                                          f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
-
         self.log(f"Maximum of {'%.2f' % max_vsi} @ {axis} = {'%.2f' % max_position} {pos_units_str}")
 
         if update_element_position:
@@ -1526,16 +1523,18 @@ class Manager(QThread):
 
         if go_to_peak:
             if axis_letter == 'R' or axis_letter == 'Theta':
-                # hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
-                #                                           - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
-                # todo: check the results summary to make sure it is around -90
-                status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
+                hydrophone_max_position = max_position + (self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"]
+                                                          - self.config["WTF_PositionParameters"]["ThetaHomeCoord"])
+                status = self.Motors.go_to_position([axis_letter], [hydrophone_max_position], enable_ui=False)
             else:
                 status = self.Motors.go_to_position([axis_letter], [max_position], enable_ui=False)
             if status:
                 status_str += f" moved to {axis} = {max_position} {pos_units_str}"
             else:
                 status_str += f"move to {axis} = {max_position} {pos_units_str} failed"
+
+            self.test_data.log_script(['', 'Move to element', f"Moved to X={'%.2f' % self.Motors.coords_mm[0]}, "
+                                                              f"Th={'%.2f' % self.Motors.coords_mm[1]}", ''])
 
         self.test_data.log_script(["", f"Scan{axis} Find Peak {axis}:", status_str, ""])
 
@@ -1728,7 +1727,6 @@ class Manager(QThread):
         mVpp: int = int(var_dict["Amplitude (mVpp)"])
         mode: str = var_dict["Mode"]  # INFO: mode can be 'Toneburst' or 'N Cycle'
         output: bool = cast_as_bool(var_dict["Enable output"])
-        print(output)
         frequency_options: str = var_dict["Set frequency options"]
 
         self.AWG.reset()
@@ -2068,9 +2066,6 @@ class Manager(QThread):
         else:
             max_vsi_index = fine_VSI_list.index(max_vsi)
             max_vsi_frequency = fine_list_of_frequencies_MHz[max_vsi_index]
-
-        print(f"Max vsi frequency: {max_vsi_frequency}")
-        print(f"VSI: {max_vsi}")
 
         if include_test:
             self.test_data.update_results_summary_with_frequency_sweep(
