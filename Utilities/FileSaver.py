@@ -27,7 +27,6 @@ wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
-
 class FileSaver:
     """
     This class has the ability to save various data points such

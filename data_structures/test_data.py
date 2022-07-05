@@ -1,14 +1,13 @@
 from pprint import pformat
 from typing import List, Union
 from PyQt5 import QtCore
-from PyQt5.QtCore import QObject
-
 from Utilities.load_config import load_configuration
+from Utilities.my_qobject import MyQObject
 from Utilities.useful_methods import mean_of_non_none_values
 from data_structures.variable_containers import FrequencyRange
 
 
-class TestData(QObject):
+class TestData(MyQObject):
     """
     A class dedicated to organizing the results of an element efficiency test for
     presentation, analysis, modularization, and to increase the project's compactness
@@ -35,8 +34,8 @@ class TestData(QObject):
     schema: str
     angle_average: float
 
-    def __init__(self, config=None):
-        super().__init__()
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent=parent)
 
         self.config = config
         if config is None:
@@ -113,10 +112,10 @@ class TestData(QObject):
         The list of strings should have length 4, and the number of empty
         strings at the beginning corresponds to the indentation level
         """
-
+        self.log(level='info', message=f'Element {element} {axis} position: {max_position}')
         # update element position
         if axis == "X":
-            self.results_summary[element - 1][1] = "%.2f" % max_position
+            self.results_summary[element - 1][1] = "%.2f" % (-1 * max_position)
         else:
             self.results_summary[element - 1][2] = "%.2f" % max_position
             # (self.config['WTF_PositionParameters']['ThetaHomeCoord']
@@ -132,7 +131,9 @@ class TestData(QObject):
         Add efficiency test data to the results_summary table, and also emit them as a signal (to display them in the
         results tab
         """
+
         if frequency_range == FrequencyRange.high_frequency:
+            self.log(level='info', message=f'Element {element} High frequency efficiency: {efficiency_percent}')
             # High frequency
             self.results_summary[element - 1][5] = "%.2f" % (frequency_hz / 1000000)
             # HF efficiency (%)
@@ -143,6 +144,7 @@ class TestData(QObject):
             if test_result.upper() == 'FAIL':
                 comment = f"High frequency test failed: {comment}"
         else:  # Default to low frequency
+            self.log(level='info', message=f'Element {element} Low frequency efficiency: {efficiency_percent}')
             # Low Frequency
             self.results_summary[element - 1][3] = "%.2f" % (frequency_hz / 1000000)
             # LF efficiency (%)
