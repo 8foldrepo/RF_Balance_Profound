@@ -236,6 +236,14 @@ SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (
 		ECHO [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
 		pycharm-community-2022.1.3.exe
 	)
+	
+SET /P AREYOUSURE="Install NI system config and NI max? (Y/N): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+		curl -LO https://download.ni.com/support/nipkg/products/ni-s/ni-system-configuration/21.5/online/ni-system-configuration_21.5_online.exe
+		echo [92mClick through installer. Check only NI automation and measurement explorer. [0m
+		ni-system-configuration_21.5_online.exe
+	)
 
 SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
