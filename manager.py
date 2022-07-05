@@ -1887,7 +1887,7 @@ class Manager(QThread):
         Warn the user that the UA is being retracted in x
         returns: a boolean indicating whether to continue the script
         """
-        if self.config["Debugging"]["drain_before_retract"]:
+        if self.config["Test_Settings"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
 
             cont = self.cont_if_cont_clicked()
@@ -2544,7 +2544,7 @@ class Manager(QThread):
                     self.retry_if_retry_enabled(action_type)
                 else:
                     self.test_data.element_failed(element_number=self.element, description=error_detail)
-                    if self.config["Debugging"]["abort_on_fail"]:
+                    if self.config["Test_Settings"]["abort_on_fail"]:
                         self.log(f"retry limit reached, aborting script. \n(Error detail: {error_detail})", self.warn)
                         self.abort_immediately()
                         return False

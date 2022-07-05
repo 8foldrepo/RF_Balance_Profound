@@ -13,9 +13,7 @@ Daq_Power_Relay:
   port: COM3
   timeout_s: 1
 Debugging:
-  abort_on_fail: true
   disable_password_prompt: false
-  drain_before_retract: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
   print_detailed_verbose: false
@@ -39,6 +37,8 @@ Debugging:
   simulate_ua_pump_on: true
 Test_Settings:
   Above_Level_Acceptable: true
+  abort_on_fail: true
+  drain_before_retract: true
 Forward_Power_Meter:
   serial_number: '11506210019'
 FrequencyParameters:
@@ -76,7 +76,7 @@ Galil_Motors:
     - 1.92
   increment_ray:
     - 5
-    - 360
+    - 5
   ip_address: 192.168.42.100
   jog_speed: 1
   move_timeout_s: 300
