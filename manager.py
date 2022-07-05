@@ -321,6 +321,27 @@ class Manager(QThread):
     def connect_hardware(self):
         """Attempts to connect all hardware in the devices list, warns user if hardware could not connect and waits
         for their response. Also sets the class' oscilloscope channel and averages and emits signal to MainWindow.py """
+
+        rms_only_access = self.access_level.upper() != "Operator".upper()
+
+        # Warn the user if rms_only is enabled in the config
+        if rms_only_access and self.config['Analysis']['capture_rms_only']:
+            self.user_info_signal.emit("RMS only setting is not approved for routine testing as of 7/5/2022. "
+                                       "Ensure that it is approved before using it for production testing.")
+            try:
+                self.wait_for_cont()
+            except AbortException:
+                self.app.exit(-1)
+        elif self.config['Analysis']['capture_rms_only']:
+            self.user_info_signal.emit("RMS only setting has been set to false since it is not available at this "
+                                       "access level")
+            self.config['Analysis']['capture_rms_only'] = False
+
+            try:
+                self.wait_for_cont()
+            except AbortException:
+                self.app.exit(-1)
+
         i = 0
         while i < len(self.devices):
             device = self.devices[i]
@@ -1160,7 +1181,7 @@ class Manager(QThread):
                 return False
             self.show_filling_dialog_signal.emit()
             self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
-        elif water_level == WaterLevel.above_level:
+        elif water_level == WaterLevel.above_level and not self.config['Test_Settings']['Above_Level_Acceptable']:
             self.user_prompt_signal_water_too_high_signal.emit()
             cont = self.cont_if_cont_clicked()
             if not cont:
@@ -1866,7 +1887,7 @@ class Manager(QThread):
         Warn the user that the UA is being retracted in x
         returns: a boolean indicating whether to continue the script
         """
-        if self.config["Debugging"]["drain_before_retract"]:
+        if self.config["Test_Settings"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
 
             cont = self.cont_if_cont_clicked()
@@ -2523,7 +2544,7 @@ class Manager(QThread):
                     self.retry_if_retry_enabled(action_type)
                 else:
                     self.test_data.element_failed(element_number=self.element, description=error_detail)
-                    if self.config["Debugging"]["abort_on_fail"]:
+                    if self.config["Test_Settings"]["abort_on_fail"]:
                         self.log(f"retry limit reached, aborting script. \n(Error detail: {error_detail})", self.warn)
                         self.abort_immediately()
                         return False

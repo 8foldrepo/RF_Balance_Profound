@@ -13,9 +13,7 @@ Daq_Power_Relay:
   port: COM3
   timeout_s: 1
 Debugging:
-  abort_on_fail: true
   disable_password_prompt: false
-  drain_before_retract: true
   end_script_on_errors: false
   oscilloscope_realtime_capture: false
   print_detailed_verbose: false
@@ -37,6 +35,10 @@ Debugging:
   #Optimal setting if oscilloscope_realtime_capture is False: .5s
   #Optimal setting if oscilloscope_realtime_capture is True: 1.5s
   simulate_ua_pump_on: true
+Test_Settings:
+  Above_Level_Acceptable: true
+  abort_on_fail: true
+  drain_before_retract: true
 Forward_Power_Meter:
   serial_number: '11506210019'
 FrequencyParameters:
@@ -74,7 +76,7 @@ Galil_Motors:
     - 1.92
   increment_ray:
     - 5
-    - 360
+    - 5
   ip_address: 192.168.42.100
   jog_speed: 1
   move_timeout_s: 300
@@ -183,10 +185,6 @@ WTF_DIO:
   Deactivate_channels_on_startup: false
   Fill/Drain mode: Automatic
   Water level timeout (s): 230
-WTF_Interface_Board:
-  on_by_default: false
-  port: COM2
-  timeout_s: 1
 WTF_PositionParameters:
   CentreHomeTheta?: true
   ThetaHomeCoord: -90

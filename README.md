@@ -6,6 +6,11 @@ Application for operation of the wet test fixture using python
 
 ## SETUP INSTRUCTIONS
 
+### Setup script
+1. Double click the provided setup.bat file in the root of the repository and folllow the prompts. Reboot your computer afterwards. 
+If a desktop shortcut is created and launches the application, skip ahead to hardware setup notes. 
+If not, follow the pycharm setup instructions to invesigate what dependancies if any failed to install and install them using the commands in the conda environment setup section.
+
 ### SOFTWARE INSTALLATION
 
 1. Clone the github repository at https://github.com/Isaiah7579/RF_Balance_Profound
@@ -113,7 +118,7 @@ The output should resemble this:
 > wheel 0.37.0 pyhd3eb1b0_1 \
 > wincertstore 0.2 py38haa95532_2
 
-### PYCHARM SETUP
+### PYCHARM SETUP (optional)
 
 1. Launch pycharm
 
@@ -138,51 +143,6 @@ The output should resemble this:
 3. Click send to>desktop (create shortcut)
 4. Rename the shortcut to Scantry Ultra
 5. (optional) Right click it, click properties > shortcut > change icon > and select logo.png
-
-## USAGE INSTRUCTIONS
-
-0. Make sure signal chain is connected properly, hardware is turned on, UA is free of bubbles, and limit switches are in
-   place to prevent hardware damage.
-1. Ensure desired settings are selected in the configuration file called default.yaml
-2. Ensure desired awg settings are entered into Rigol settings.csv (only if multiple waveform generators are being used)
-3. Run main.py
-4. Click list connected devices in the output manager
-5. Select the AWG you wish to use (make sure it is turned on and plugged in via USB)
-6. Click open selected devices
-7. Click the dropdown and click the name of the AWG to open its widget.
-8. Enter desired AWG settings (make sure trigger out is turned on and the output is turned on)
-9. Click on signal inputs, enter oscilloscope settings, and toggle capture on
-10. Click on the toggle switch in the Gantry widget to activate the gantry. Set the jog speed to 5.
-11. Use X forwards/X backwards buttons to position hydrophone 6.7mm away from the UA. Adjust limit switches if needed.
-    Click "set home".
-12. Use Y left/ Y right buttons to visually center the hydrophone to the UA. Click "set home"
-13. Use the Z up/ Z down buttons to find the location of highest amplitude of the element you wish to scan. Click "set
-    home".
-14. Click "Launch scan widget" under "cartesian". Enter the frequency being used.
-15. Click the checkboxes of the Y and Z axes. Default settings of -3mm to 3mm in 0.5mm steps are good for a preliminary
-    scan.
-16. Click start. Title the scan test_yz_1 or similar, ensuring it is a unique filename.
-17. Click "Image view" and Wait for the scan to complete. If all went according to plan you should see a bright spot in
-    the center of the scan.
-18. If the spot is not perfectly centered, click on it using the middle mouse button. When prompted if you would like to
-    set the origin, click "ok".
-19. Click "go home".
-20. The scan should now be aligned. If it is not, Repeat from step 11 until it is. Do more test scans with different
-    settings if needed.
-21. Perform scans with desired dimensions and settings using the cartesian scan widget.
-22. By default, scans will be stored in <your_username>/documents/scantry , in a subfolder called "transverse scans", "
-    longitudinal scans", or "other scans".
-
-### Data analysis using existing matlab scripts
-
-1. Launch matlab
-2. Create a project within the folder __Matlab analysis code
-3. Run startup.m (it should run itself when you start matlab in the future)
-4. Run a file in the folder "runners". For example run "Display_scan.m" to display a scan.
-5. Click on the .hdf5 file containing the desired scan data.
-6. Enter the sensitivity of the hydrophone in mV/MPa.
-7. Enter 1 if a 50 ohm load was used in paralell to the oscilloscope. Enter 2 otherwise.
-8. You should see a visualization of the scan (and other data depending on what file you ran)
 
 ### Hardware setup notes:
 

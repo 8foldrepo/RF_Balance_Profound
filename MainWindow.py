@@ -64,6 +64,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         complete: this method is run when the manager object is terminated.
     """
 
+    # Enable colored terminal for logging
+    os.system('color')
+
     manager: Manager
 
     threading = False
@@ -740,7 +743,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
     def show_help() -> None:
         """Opens the help document (help.txt in project directory)"""
         # todo: fill in help.txt
-        webbrowser.open("help.txt")
+        webbrowser.open("readme.md")
 
     # INFO: editor Qt object doesn't exist, from old project, no save as action in toolbar
     # Menu bar Actions
