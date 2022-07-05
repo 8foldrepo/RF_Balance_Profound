@@ -88,7 +88,6 @@ class GalilMotorController(AbstractMotorController):
 
         port_list = self.handle.GAddresses()
         self.connected = False
-        self.command("SH")
         for _ in port_list.keys():
             try:
                 self.handle.GOpen(f"{self.config[self.device_key]['ip_address']} --direct -s ALL")
@@ -477,6 +476,8 @@ class GalilMotorController(AbstractMotorController):
         # If axis is X, and it is on the negative limit move it off
         if axis == 'X':
             reply, _ = self.command('TS A')  # Check status of X axis switches
+            if ': ' in reply:
+                reply = reply.split(': ')[1]
             x_negative_limit_active = not get_bit(int(reply), 2)  # See galil command reference for TS for more details
             if x_negative_limit_active:
                 self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
@@ -505,6 +506,8 @@ class GalilMotorController(AbstractMotorController):
                 # reissuing the home command
                 reply, _ = self.command('TS A')  # Check status of X axis switches
                 # See galil command reference for TS for more details
+                if ': ' in reply:
+                    reply = reply.split(': ')[1]
                 x_negative_limit_active = not get_bit(int(reply), 2)
                 if x_negative_limit_active:
                     self.command("ST")
