@@ -81,7 +81,7 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	SET AREYOUSURE=N
 	SET /P AREYOUSURE="repo already exists, download again? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		echo [92mSelect manager-core if prompted for a credential helper [0m
+		echo [92mSelect manager-core if prompted for a credential helper[0m
 		gh auth login
 		cd C:\Users\%username%\Documents\GitHub
 		gh repo clone 8foldrepo/RF_Balance_Profound
@@ -236,7 +236,7 @@ SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (
 		ECHO [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
 		pycharm-community-2022.1.3.exe
 	)
-	
+
 SET /P AREYOUSURE="Install NI system config and NI max? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
