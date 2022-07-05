@@ -64,6 +64,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         complete: this method is run when the manager object is terminated.
     """
 
+    # Enable colored terminal for logging
+    os.system('color')
+
     manager: Manager
 
     threading = False
