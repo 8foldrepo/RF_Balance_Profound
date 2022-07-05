@@ -40,7 +40,7 @@ SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
 			echo [92mGit for windows is already installed[0m
 		) ELSE (
 			cd C:\Program Files
-			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe[0m
+			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
 			echo [92mClick ok, do not change the unzip path"[0m
 			PortableGit-2.37.0-64-bit.7z.exe
 		)
