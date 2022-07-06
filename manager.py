@@ -2338,7 +2338,7 @@ class Manager(QThread):
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()  # process internal rfb_data information
 
-        data_is_valid, feedback = self.rfb_data.data_is_valid()
+        data_is_valid, feedback = self.rfb_data.data_is_valid(expected_test_duration=(rfb_on_time + rfb_off_time) * on_off_cycles + rfb_off_time)
 
         if not data_is_valid:
             cont = self.sequence_pass_fail(action_type='Interrupt action',
