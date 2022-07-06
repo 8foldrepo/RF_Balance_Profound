@@ -1,4 +1,7 @@
 @echo off
+if not defined in_subprocess (cmd /k set in_subprocess=y ^& %0 %*) & exit )
+
+@echo off
 @setlocal enabledelayedexpansion
 
 :: BatchGotAdmin
@@ -33,53 +36,89 @@ if '%errorlevel%' NEQ '0' (
 mkdir C:\Users\%username%\Documents\GitHub
 mkdir C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 
-SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
+IF EXIST "C:\Program Files\Git\cmd\git.exe" (
+	ECHO [92mNon-portable Git for windows is already installed[0m
+	SET /P AREYOUSURE="Would you like to install Git as portable edition? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		mkdir "C:\Program Files\PortableGit\bin\"
-		IF EXIST "C:\Program Files\PortableGit\bin\git.exe" (
-			echo [92mGit for windows is already installed[0m
-		) ELSE (
-			cd C:\Program Files
-			curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
-			echo [92mClick ok, do not change the unzip path"[0m
-			PortableGit-2.37.0-64-bit.7z.exe
-		)
+		GOTO :InstallPortGit
 	)
-
-set PATH=!PATH!;"C:\Program Files\PortableGit\bin"
+) ELSE (
+	ECHO [93mNon-portable Git for Windows not detected[0m
+	SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
+		IF /I "!AREYOUSURE!" == "Y" (
+			:InstallPortGit
+			mkdir "C:\Program Files\PortableGit\bin\"
+			IF EXIST "C:\Program Files\PortableGit\bin\git.exe" (
+				ECHO [92mPortable Git for Windows is already installed[0m
+				SET PATH=!PATH!;"C:\Program Files\PortableGit\bin"
+			) ELSE (
+				ECHO [93mPortable Git for Windows not detected[0m
+				IF EXIST "C:\Program Files\PortableGit-2.37.0-64-bit.7z.exe" (
+					ECHO [92mInstaller for portable Git already downloaded, skipping download step[0m
+				) ELSE (
+					ECHO [93mInstaller for portable Git not detected, downloading[0m
+					CD "C:\Program Files"
+					curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
+				)
+				
+				ECHO [92mClick ok, do not change the unzip path[0m
+				"C:\Program Files\PortableGit-2.37.0-64-bit.7z.exe"
+				SET PATH=!PATH!;"C:\Program Files\PortableGit\bin"
+			)
+		)
+)
 
 IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
-	SET AREYOUSURE=N
-	:PROMPT
-	SET /P AREYOUSURE="You already have gh CLI installed, install again? (Y/N): "
-	IF /I "!AREYOUSURE!" NEQ "Y" (GOTO END) ELSE (winget install --id GitHub.cli)
+	SET /P AREYOUSURE="You already have gh CLI installed, install again? (Y/[N]): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		GOTO :InstallGHCLI
+	)
 ) ELSE (
-	echo [92mgh CLI does not exist[0m
+	ECHO [93mgh CLI does not exist, installing[0m
+	:InstallGHCLI
 	IF EXIST C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe (
-	winget install --id GitHub.cli
+		ECHO [92mwinget detected on computer, using winget to install gh CLI[0m
+		winget install --id GitHub.cli
 	) ELSE (
-	cd Dependency_Downloads
-	curl -LO https://github.com/cli/cli/releases/download/v2.13.0/gh_2.13.0_windows_amd64.msi
-	gh_2.13.0_windows_amd64.msi
-	cd ..
+		IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\gh_2.13.0_windows_amd64.msi (
+			ECHO [92mInstaller for gh CLI detected, skipping download step[0m
+		) ELSE (
+			ECHO [93mInstaller for gh CLI not detected, downloading[0m
+			CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+			curl -LO https://github.com/cli/cli/releases/download/v2.13.0/gh_2.13.0_windows_amd64.msi
+		)
+	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\gh_2.13.0_windows_amd64.msi
+	CD ..
 	)
 )
-:END
 
 set PATH=!PATH!;"C:\Program Files\GitHub CLI\"
 
-SET /P AREYOUSURE="Install github desktop interface? (Y/N): "
-	IF /I "!AREYOUSURE!" == "Y" (
-		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
-		curl -LO https://central.github.com/deployments/desktop/desktop/latest/win32
-		echo [92mClick through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
-		GitHubDesktopSetup-x64.exe
+IF EXIST C:\Users\%username%\AppData\Local\GitHubDesktop\GitHubDesktop.exe (
+	SET /P AREYOUSURE="GitHub Desktop already exists, re-install? (Y/[N]): "
+	IF "!AREYOUSURE!" == "Y" (
+		GOTO :InstallGitDesk
 	)
-
+) ELSE (
+	ECHO 
+	SET /P AREYOUSURE="Install github desktop interface? (Y/N): "
+		IF /I "!AREYOUSURE!" == "Y" (
+			:InstallGitDesk
+			IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\GitHubDesktopSetup-x64.exe (
+				ECHO [92mDownloader already exists, skipping download phase[0m
+			) ELSE (
+				ECHO [93mDownloader for Python 3.8 not detected, downloading[0m
+				CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads\
+				curl -LO https://central.github.com/deployments/desktop/desktop/latest/win32
+			)
+			ECHO [93mClick through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
+			C:\Users\%username%\Documents\GitHub\Dependency_Downloads\GitHubDesktopSetup-x64.exe
+		)
+)
 
 IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	SET AREYOUSURE=N
-	SET /P AREYOUSURE="repo already exists, download again? (Y/N): "
+	SET /P AREYOUSURE="RF_Balance_Profound repository already exists, download again? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		echo [92mSelect manager-core if prompted for a credential helper[0m
 		gh auth login
@@ -87,8 +126,8 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 		gh repo clone 8foldrepo/RF_Balance_Profound
 	)
 ) ELSE (
-	echo [92mrepo not found, cloning [0m
-	echo [92mSelect manager-core if prompted for a credential helper [0m
+	echo [93mRF_Balance_Profound repository not found, cloning[0m
+	echo [93mSelect manager-core if prompted for a credential helper[0m
 	gh auth login
 	cd C:\Users\%username%\Documents\GitHub
 	gh repo clone 8foldrepo/RF_Balance_Profound
@@ -98,8 +137,7 @@ IF EXIST "C:\ProgramData\Anaconda3\Scripts\conda.exe" set CONDAEXISTS=1
 IF EXIST "C:\Users\%username%\anaconda3\Scripts\conda.exe" set CONDAEXISTS=1
 IF EXIST "C:\Users\Public\anaconda3\Scripts\conda.exe" set CONDAEXISTS=1
 IF DEFINED CONDAEXISTS (
-	echo [92mConda found[0m
-	SET /P AREYOUSURE="Do you wish to re-install Conda? (Y/[N]): "
+	SET /P AREYOUSURE="Conda found, do you wish to re-install Conda? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe (
 			ECHO [92mConda installer already downloaded, skipping download step[0m
@@ -111,10 +149,12 @@ IF DEFINED CONDAEXISTS (
 		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe
 	)
 ) ELSE (
+	ECHO [93mConda not detected in computer, downloading and installing[0m
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe (
 		ECHO [92mConda installer already downloaded, skipping download step[0m
 	) ELSE (
-		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+		ECHO [93mConda installer not found, downloading[0m
+		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
 	)
 	ECHO [93muntick set as python 3.9 for system and tick add to PATH if possible[0m
@@ -122,8 +162,7 @@ IF DEFINED CONDAEXISTS (
 )
 
 IF EXIST C:\Users\%username%\AppData\Local\Programs\Python\Python38\python.exe (
-	ECHO [92mpython found[0m
-	SET /P AREYOUSURE="Do you wish to re-install Python? (Y/[N])"
+	SET /P AREYOUSURE="Python 3.8 found, do you wish to re-install Python? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe (
 			ECHO [92mpython installer found, skipping download step[0m
@@ -135,8 +174,9 @@ IF EXIST C:\Users\%username%\AppData\Local\Programs\Python\Python38\python.exe (
 		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe
 	)
 ) ELSE (
+	ECHO [93mPython 3.8 not found on computer, downloading and installing[0m
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe (
-		ECHO [92mpython installer found, skipping download step[0m
+		ECHO [92mPython 3.8 installer found, skipping download step[0m
 	) ELSE (
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe
@@ -145,26 +185,26 @@ IF EXIST C:\Users\%username%\AppData\Local\Programs\Python\Python38\python.exe (
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe
 )
 
-SET /P AREYOUSURE="Do you want to download and install NI-VISA drivers (Y/N): "
+SET /P AREYOUSURE="Do you want to download and install NI-VISA drivers (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-visa_20.0_online_repack3.exe (
-		ECHO [92mNI VISA downloader already exists, skipping download step[0m
+		ECHO [92mNI-VISA downloader already exists, skipping download step[0m
 	) ELSE (
-		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://download.ni.com/support/nipkg/products/ni-v/ni-visa/20.0/online/ni-visa_20.0_online_repack3.exe
 	)
-	ECHO [92mcheck "NI VISA interactive control" and uncheck everything else [0m
+	ECHO [92mcheck "NI-VISA interactive control" and uncheck everything else [0m
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-visa_20.0_online_repack3.exe
 	CD ..
 )
 
 IF EXIST "C:\Windows\System32\nicaiu.dll" (
-	SET /P AREYOUSURE="NIDAQ setup exists, re-install? (Y/N): "
+	SET /P AREYOUSURE="NIDAQ setup exists, re-install? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		IF EXIST "C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-daqmx_21.8_online.exe" (
 			ECHO [92mNI-DAQ installer already exists, skipping download step[0m
 		) ELSE (
-			cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+			CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 			curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
 		)
 		IF EXIST "C:\Program Files\National Instruments\NI Package Manager\NIPackageManager.exe" (
@@ -190,28 +230,38 @@ IF EXIST "C:\Windows\System32\nicaiu.dll" (
 )
 
 
-SET /P AREYOUSURE="Do you want to setup the anaconda environment RF_Balance_Profound? (Y/N): "
+SET /P AREYOUSURE="Do you want to setup the Conda environment for RF_Balance_Profound? (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
+	ECHO [92m Go through installer, select all packages EXCEPT for "NI I/O Trace", "NI Linux RT System Image", and "NI Web-Based Configuration and Monitoring"[0m
 	CD C:\Users\%username%\Documents\GitHub\RF_Balance_Profound
 	SET PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
-	conda update conda
-	conda env create -f environment.yml -v -v -v
+	call conda.bat update conda
+	call conda.bat env create -f C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\environment.yml -v -v -v
 )
 
-
-SET /P AREYOUSURE="Install gclib? (Y/N): "
+IF EXIST "C:\Program Files (x86)\Galil\gclib\source\wrappers\python\gclib.py" (
+	SET /P AREYOUSURE="gclib GDK already installed on computer, re-install? (Y/[N]): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		GOTO :InstallGDK
+	) ELSE (
+		GOTO :ENDGDK
+	)
+)
+SET /P AREYOUSURE="gclib GDK not found on computer, install gclib? (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
-	CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads\
+	:InstallGDK
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\galil_gclib_1_34_15.exe (
 		ECHO [92mSetup already downloaded, skipping download phase[0m
 	) ELSE (
+		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads\
 		curl -LO https://www.galil.com/sw/pub/win/gclib/galil_gclib_1_34_15.exe
 	)
 	ECHO [93m make sure to install PCI driver and 32-bit binaries during setup[0m
-	galil_gclib_1_34_15.exe
+	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\galil_gclib_1_34_15.exe
 )
+:ENDGDK
 
-SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment? (Y/N): "
+SET /P AREYOUSURE="Add gclib to RF_Balance_Profound environment? (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
 	CALL conda.bat activate RF_Balance_Profound
 	ECHO [92msetting up gclib python wrapper[0m
@@ -224,31 +274,31 @@ IF /I "!AREYOUSURE!" == "Y" (
 	copy gclib.py  C:\ProgramData\Anaconda3\envs\RF_Balanace_Profound\Lib\site-packages
 )
 
-SET /P AREYOUSURE="Install power meter DLL (to Windows\SysWOW64)? (Y/N): "
+SET /P AREYOUSURE="Install power meter DLL (to Windows\SysWOW64)? (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
 	copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
 )
 
-SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/N): "
+SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://download.jetbrains.com/python/pycharm-community-2022.1.3.exe
-		ECHO [92mClick through installer. Once installed, create a new project from existing sources in the repository folder. [0m
-		pycharm-community-2022.1.3.exe
+		ECHO [92mClick through installer. Once installed, create a new project from existing sources in the repository folder.[0m
+		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\pycharm-community-2022.1.3.exe
 	)
 
-SET /P AREYOUSURE="Install NI system config and NI max? (Y/N): "
+SET /P AREYOUSURE="Install NI system config and NI max? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
+		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://download.ni.com/support/nipkg/products/ni-s/ni-system-configuration/21.5/online/ni-system-configuration_21.5_online.exe
-		echo [92mClick through installer. Check only NI automation and measurement explorer. [0m
-		ni-system-configuration_21.5_online.exe
+		ECHO [92mClick through installer. Check only NI automation and measurement explorer. [0m
+		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-system-configuration_21.5_online.exe
 	)
 
-SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
+SET /P AREYOUSURE="Create desktop shortcut? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		CD "C:\Users\%username%\Desktop\"
-		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+		copy "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
 
 ECHO [92mRestart your PC and double click the desktop shortcut for the applcation[0m
 pause
