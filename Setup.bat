@@ -248,7 +248,7 @@ SET /P AREYOUSURE="Install NI system config and NI max? (Y/N): "
 SET /P AREYOUSURE="Create desktop shortcut? (Y/N): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		CD "C:\Users\%username%\Desktop\"
-		copy "C:\Users\Profound_Medical\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+		copy "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
 
 ECHO [92mRestart your PC and double click the desktop shortcut for the applcation[0m
 pause
