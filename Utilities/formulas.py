@@ -102,5 +102,4 @@ def calculate_standard_deviation(data_set: list) -> float:
 
 # Test script
 if __name__ == "__main__":
-    print(calculate_power_from_balance_reading(0.053))
-    print(calculate_speed_of_sound_in_water(20))
+   print(calculate_pf_max(4, 50, 10))
