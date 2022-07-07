@@ -9,6 +9,7 @@ dependencies:
   - bzip2=1.0.8=h8ffe710_4
   - ca-certificates=2022.6.15=h5b45459_0
   - certifi=2022.6.15=py38haa244fe_0
+  - colorama=0.4.5=pyhd8ed1ab_0
   - colored=1.4.3=pyhd8ed1ab_0
   - console_shortcut=0.1.1=4
   - future=0.18.2=py38haa244fe_5
