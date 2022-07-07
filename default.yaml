@@ -37,10 +37,11 @@ Debugging:
   simulate_ua_pump_on: true
 Test_Settings:
   Above_Level_Acceptable: true
-  abort_on_fail: true
+  abort_on_fail: false
   drain_before_retract: true
 Forward_Power_Meter:
   serial_number: '11506210019'
+  cal_fact: 1.1271137
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50.0
@@ -128,11 +129,12 @@ Paths:
   UA results root directory: C:\Users\Public\UA results
 Reflected_Power_Meter:
   serial_number: '11408040323'
+  cal_fact: 1.1271137
 Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
   Pass fail action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
-  Retries: 5 #Zero for unlimited retries
+  Retries: 2 #Zero for unlimited retries
 Software_Version: '1.0'
 TempMon:
   DeviceName: TankTemp

@@ -27,6 +27,7 @@ wtf_logger.setLevel(logging.INFO)
 root_logger = logging.getLogger(ROOT_LOGGER_NAME)
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 
+
 class FileSaver:
     """
     This class has the ability to save various data points such
@@ -39,6 +40,9 @@ class FileSaver:
     power_data_path = None
     waveform_data_path = None
     directories_created = False
+
+    high_frequency_tests_count: int = 0
+    low_frequency_tests_count: int = 0
 
     def __init__(self, config):
         if config is not None:
@@ -104,6 +108,34 @@ class FileSaver:
             return
 
         destination_path = os.path.join(self.log_files_dir, "SystemHardware.log")
+        shutil.copyfile(src=system_info_file, dst=destination_path)
+
+    def copy_script(self, path: str) -> None:
+        """Copies the script file into the results directory"""
+        if self.log_files_dir is None:
+            self.log(level='error', message='Could save config, log_files_dir does not exist')
+
+        if not os.path.exists(path):
+            self.log(level='Error', message='Could not store system info to results folder')
+            self.log(level='Error', message=f'systeminfo.ini was not found in {ROOT_DIR}')
+            return
+        filename = path.split('/')[len(path.split('/'))-1]
+
+        destination_path = os.path.join(self.results_dir, filename)
+        shutil.copyfile(src=path, dst=destination_path)
+
+    def copy_frequency_exclusions(self):
+        """Copies the frequency exclusions file into the results directory"""
+        if self.log_files_dir is None:
+            self.log(level='error', message='Could save config, log_files_dir does not exist')
+
+        system_info_file = os.path.join(ROOT_DIR, "FrequencyExclusions.txt")
+        if not os.path.exists(system_info_file):
+            self.log(level='Error', message='Could not store system info to results folder')
+            self.log(level='Error', message=f'FrequencyExclusions.txt was not found in {ROOT_DIR}')
+            return
+
+        destination_path = os.path.join(self.log_files_dir, "FrequencyExclusions.txt")
         shutil.copyfile(src=system_info_file, dst=destination_path)
 
     def save_test_results_summary_and_log(self, test_data: TestData) -> None:
@@ -228,26 +260,32 @@ class FileSaver:
             try:
                 path = check_directory(
                     os.path.join(
-                        storage_location, self.folder_name, "EfficiencyTest", f"E{element_number:02}"
+                        storage_location, self.folder_name
                     )
                 )
             except PermissionError:
                 path = check_directory(
                     os.path.join(
-                        self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
+                        self.power_data_path
                     )
                 )
         else:
             path = check_directory(
                 os.path.join(
-                    self.power_data_path, "EfficiencyTest", f"E{element_number:02}"
+                    self.power_data_path
                 )
             )
 
         if frequency_range == FrequencyRange.high_frequency:
-            file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
+            if self.low_frequency_tests_count == 0:
+                file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
+            else:
+                file_path = os.path.join(path, f"E{element_number:02}_HFpower_{self.high_frequency_tests_count:02}.csv")
         else:
-            file_path = os.path.join(path, f"E{element_number:02}_LFpower.csv")
+            if self.low_frequency_tests_count == 0:
+                file_path = os.path.join(path, f"E{element_number:02}_LFpower.csv")
+            else:
+                file_path = os.path.join(path, f"E{element_number:02}_LFpower_{self.low_frequency_tests_count:02}.csv")
 
         self.log(f"Saving efficiency test data to: {file_path}")
         file = open(file_path, "w+")

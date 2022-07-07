@@ -15,7 +15,7 @@ class DIOBoard(AbstractIOBoard):
 
     # Abort flag for the filling/draining tank operations
     stop_filling_draining_var: bool
-
+    power_relay: RelayBoard
     pump_reading_signal = QtCore.pyqtSignal(bool)
     water_level_reading_signal = QtCore.pyqtSignal(WaterLevel)
 
@@ -29,7 +29,6 @@ class DIOBoard(AbstractIOBoard):
         if simulate_sensors:
             self.water_level = WaterLevel.below_level
             self.ua_pump_on = False
-
         self.water_level = None
         self.ua_pump_on = None
         self.power_relay = RelayBoard(config=config, device_key="Daq_Power_Relay")
@@ -81,9 +80,6 @@ class DIOBoard(AbstractIOBoard):
         Breaks continuity for all other channels.
         """
 
-        # #todo: check this
-        # channel_number = 11-channel_number
-
         with nidaqmx.Task() as task:
             try:
                 task.do_channels.add_do_chan(f"{self.name}/port0/line0:7", line_grouping=LineGrouping.CHAN_PER_LINE)
@@ -91,6 +87,7 @@ class DIOBoard(AbstractIOBoard):
                 pin_ray = [False] * 10
                 if 0 < channel_number < 11:
                     pin_ray[channel_number - 1] = True
+
                 task.write(pin_ray, auto_start=True)
                 self.active_channel = channel_number
                 return True
@@ -273,5 +270,5 @@ class DIOBoard(AbstractIOBoard):
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.set_tank_pump_on(False, False)
-    dio.set_tank_pump_on(False, False)
+    dio.activate_relay_channel(1)
+    t.sleep(1000)

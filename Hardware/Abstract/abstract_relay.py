@@ -14,6 +14,7 @@ class AbstractRelay(AbstractDevice):
     timeout_s: float
     on_by_default: bool
     port: str
+    on: bool
 
     @abstractmethod
     def __init__(self, config=None, device_key="Pump", parent=None):

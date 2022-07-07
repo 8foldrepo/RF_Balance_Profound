@@ -125,6 +125,8 @@ class SimulatedIOBoard(AbstractIOBoard):
         """
         self.get_water_level()
         self.connected = True
+        self.power_relay.connect_hardware()
+        self.power_relay.relay_write(True)
         self.connected_signal.emit(self.connected)
         return self.connected, ""
 
@@ -141,6 +143,8 @@ class SimulatedIOBoard(AbstractIOBoard):
         Sets connected flag to false and emits new value via the connected_signal
         """
         self.connected = False
+        self.power_relay.relay_write(False)
+        self.power_relay.disconnect_hardware()
         self.connected_signal.emit(self.connected)
 
     def is_connected(self):

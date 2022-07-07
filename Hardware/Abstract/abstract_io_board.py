@@ -3,6 +3,7 @@ from abc import abstractmethod, ABCMeta
 from PyQt5.QtCore import pyqtSignal
 
 from Hardware.Abstract.abstract_device import AbstractDevice
+from Hardware.Abstract.abstract_relay import AbstractRelay
 from data_structures.variable_containers import WaterLevel
 
 
@@ -14,7 +15,7 @@ class AbstractIOBoard(AbstractDevice):
     filling_signal = pyqtSignal()
     draining_signal = pyqtSignal(WaterLevel)
     stop_filling_draining_var: bool
-
+    power_relay: AbstractRelay
     def __init__(self, config=None, device_key="NI_DAQ", parent=None):
         super().__init__(config=config, parent=parent, device_key=device_key)
 

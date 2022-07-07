@@ -87,7 +87,7 @@ class PowerMeter(AbstractSensor):
         power = self.pwr.ReadImmediatePower()
         self.reading_signal.emit(power)
         self.last_reading_time = t.time()
-        return power
+        return power * self.config[self.device_key]['cal_fact']
 
     def get_serial_number(self) -> Union[str, None]:
         """Returns the class' stored serial number for the power meter"""

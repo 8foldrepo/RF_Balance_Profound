@@ -130,6 +130,8 @@ class Manager(QThread):
     measured_element_x_coords: List[Union[float, None]]
     measured_element_r_coords: List[Union[float, None]]
 
+    script_path: str = None
+
     def __init__(self, system_info, parent, config: dict, access_level='Operator'):
         """Initializes various critical variables for this class, as well as setting thread locking mechanisms."""
         super().__init__(parent=parent)
@@ -566,6 +568,7 @@ class Manager(QThread):
 
         :param path: Windows directory path of the script (.WTF) file
         """
+        self.script_path = path
         self.abort_immediately(log=False)  # we don't want the save prompt for this use of abort
 
         # Send name of script to UI
@@ -1219,6 +1222,8 @@ class Manager(QThread):
         self.test_data.schema = test_data.schema
         try:
             self.file_saver.create_folders(test_data=self.test_data)
+            self.file_saver.copy_script(self.script_path)
+            self.file_saver.copy_frequency_exclusions()
         except PermissionError:
             self.user_prompt_signal.emit("Access to the results folder is denied, change it in local.yaml."
                                          "Copy default.yaml if local.yaml does not exist. Or re-run this application "
@@ -1427,10 +1432,17 @@ class Manager(QThread):
 
         :returns: A boolean indicating whether to continue the script
         """
-        self.AWG.set_output(True)
 
         self.element = element
         self.select_ua_channel(var_dict={"Element": self.element})
+
+        if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
+            self.AWG.set_output(True)
+        else:
+            self.sequence_pass_fail(action_type='Interrupt action',
+                                    error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
+
+
 
         self.oscilloscope_channel = scope_channel
 
@@ -1742,7 +1754,15 @@ class Manager(QThread):
             self.abort_immediately()
             return False
 
-        self.AWG.set_output(output)
+        if output:
+            if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
+                self.AWG.set_output(True)
+            else:
+                self.sequence_pass_fail(action_type='Interrupt action',
+                                        error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
+        else:
+            self.AWG.set_output(False)
+
         self.AWG.set_frequency_hz(int(frequency_mhz * 1000000))
         self.test_data.log_script(
             ["", "Configure FGen+PwrMeters", f"Frequency set to {frequency_mhz} MHz", "", ])
@@ -2292,7 +2312,11 @@ class Manager(QThread):
             cycle_start_time = t.time()
 
             self.log(f"Turning on AWG T = {'%.2f' % (t.time() - start_time)}")
-            self.AWG.set_output(True)  # turn on awg
+            if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
+                self.AWG.set_output(True)
+            else:
+                self.sequence_pass_fail(action_type='Interrupt action', error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
+
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
                 # Handle logger error if there is one
@@ -2338,11 +2362,17 @@ class Manager(QThread):
         self.rfb_data.trim_data()
         self.rfb_data.end_of_test_data_analysis()  # process internal rfb_data information
 
-        data_is_valid, feedback = self.rfb_data.data_is_valid(expected_test_duration=(rfb_on_time + rfb_off_time) * on_off_cycles + rfb_off_time)
+        data_is_valid, feedback = self.rfb_data.data_is_valid(
+            expected_test_duration=(rfb_on_time + rfb_off_time) * on_off_cycles + rfb_off_time)
 
         if not data_is_valid:
             cont = self.sequence_pass_fail(action_type='Interrupt action',
                                            error_detail=f'Element_{self.element:02} {feedback}')
+
+            # # Do not count invalid data interrupt actions towards retries
+            # if self.retry_count > 0 and self.retry_clicked_variable:
+            #     self.retry_count -= 1
+
             if not cont:
                 return False
 
