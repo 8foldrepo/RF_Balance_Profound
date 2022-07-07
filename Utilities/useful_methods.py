@@ -284,8 +284,10 @@ def log_msg(self, root_logger: Logger, message: str, level: str = None, line_num
     :param line_number: number of the line that called this log method
     """
     from PyQt5.QtCore import QThread
+    import colorama
 
     thread_name = QThread.currentThread().objectName()
+    colorama.init()
     log_entry = f"[{type(self).__name__}] [{line_number}] [{thread_name}] : {message}"
     if level.upper() == "DEBUG":
         if self.config['Debugging']['print_detailed_verbose']:
