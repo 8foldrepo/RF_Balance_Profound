@@ -137,7 +137,7 @@ class RFBData:
             if self.grams > 1:
                 self.grams = self.grams / 1000
                 self.balance_readings_g[len(self.balance_readings_g) - 1] = self.grams
-                pass  # todo: remove
+                pass
 
         else:
             self.grams = float('nan')
@@ -367,10 +367,12 @@ class RFBData:
                 f"Test result={test_result};Pf Max limit (W)={self.Pf_max}",
                 '']
 
-    def data_is_valid(self) -> Tuple[bool, str]:
+    def data_is_valid(self, expected_test_duration: float) -> Tuple[bool, str]:
         """
         Ensures reading, efficiency, percentage, and power list(s) aren't
         empty. Also checks for standard deviation inaccuracy threshold
+
+        :param: expected_test_duration, the expected amount of time the test takes
 
         :returns: whether the data contains missing values or the uncertainty is too high, along with a feedback message
         """
@@ -382,6 +384,13 @@ class RFBData:
 
         if None in self.f_meter_readings_w:
             return False, "Invalid test due to missing forward power data"
+
+        try:
+            if self.times_s[len(self.times_s) - 1] < .9 * expected_test_duration:
+                return False, "Invalid test because the time data is cut off"
+        except Exception as e:
+            self.log(level='Error', message="Error in data_is_valid: " + str(e))
+            return False, "Invalid test due missing time data or an error"
 
         if self.efficiency_percent is None or self.efficiency_percent == float('nan') or \
                 self.efficiency_percent < 0 or self.efficiency_percent > 100:
