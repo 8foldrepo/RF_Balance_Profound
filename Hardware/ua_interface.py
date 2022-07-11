@@ -132,6 +132,7 @@ class UAInterface(AbstractUAInterface):
             ua_calibration_data = self.ua_calibration_data
 
         output = self.get_write_command_output(ua_calibration_data)
+        self.log('command output: ' + output)
 
         if "status=-2" in output:
             self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
@@ -176,7 +177,7 @@ class UAInterface(AbstractUAInterface):
         high_eff_string = f'\"{" ".join(calibration_data[17:27])}\"'
 
         command_str = self.path_of_exe + " " + self.ip_address + " " + first_string + " " + low_eff_string + " " + high_eff_string
-
+        self.log('write command to UA: ' + command_str)
         start_time = t.time()
         # Try to get usable data until timeout occurs
 

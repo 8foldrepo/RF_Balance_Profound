@@ -41,8 +41,8 @@ class FileSaver:
     waveform_data_path = None
     directories_created = False
 
-    high_frequency_tests_count: int = 0
-    low_frequency_tests_count: int = 0
+    high_frequency_tests_count: int = 1
+    low_frequency_tests_count: int = 1
 
     def __init__(self, config):
         if config is not None:
@@ -277,15 +277,17 @@ class FileSaver:
             )
 
         if frequency_range == FrequencyRange.high_frequency:
-            if self.low_frequency_tests_count == 0:
+            if self.low_frequency_tests_count == 1:
                 file_path = os.path.join(path, f"E{element_number:02}_HFpower.csv")
             else:
                 file_path = os.path.join(path, f"E{element_number:02}_HFpower_{self.high_frequency_tests_count:02}.csv")
+            self.low_frequency_tests_count += 1
         else:
-            if self.low_frequency_tests_count == 0:
+            if self.low_frequency_tests_count == 1:
                 file_path = os.path.join(path, f"E{element_number:02}_LFpower.csv")
             else:
                 file_path = os.path.join(path, f"E{element_number:02}_LFpower_{self.low_frequency_tests_count:02}.csv")
+            self.high_frequency_tests_count += 1
 
         self.log(f"Saving efficiency test data to: {file_path}")
         file = open(file_path, "w+")
