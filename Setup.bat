@@ -225,16 +225,16 @@ IF EXIST "C:\Windows\System32\nicaiu.dll" (
 		curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
 	)
 	
-	ECHO [92m Go through installer, select all packages EXCEPT for "NI I/O Trace", "NI Linux RT System Image", and "NI Web-Based Configuration and Monitoring"[0m
+	ECHO [92mGo through installer, unselect all packages. Do not reboot yet. [0m
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-daqmx_21.8_online.exe
 )
 
 
 SET /P AREYOUSURE="Do you want to setup the Conda environment for RF_Balance_Profound? (Y/[N]): "
 IF /I "!AREYOUSURE!" == "Y" (
-	ECHO [92m Go through installer, select all packages EXCEPT for "NI I/O Trace", "NI Linux RT System Image", and "NI Web-Based Configuration and Monitoring"[0m
 	CD C:\Users\%username%\Documents\GitHub\RF_Balance_Profound
 	SET PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
+	SET PATH=!PATH!;"C:\ProgramData\Anaconda3\condabin\"
 	call conda.bat update conda
 	call conda.bat env create -f C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\environment.yml -v -v -v
 )
@@ -297,8 +297,37 @@ SET /P AREYOUSURE="Install NI system config and NI max? (Y/[N]): "
 
 SET /P AREYOUSURE="Create desktop shortcut? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		CD "C:\Users\%username%\Desktop\"
-		copy "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+		cd /d %userprofile%/Desktop
+		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+
+IF EXIST "%userprofile%\Documents\GitHub\RF_Balance_Profound\Logs\wtf.log" (
+	echo "wtf.log exists, contiuing"
+) ELSE (
+	echo making dir
+	mkdir C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Logs
+	cd /d %userprofile%\Documents\GitHub\RF_Balance_Profound\Logs
+	fsutil file createnew wtf.log 0
+)
+
+IF EXIST "%userprofile%\Documents\GitHub\RF_Balance_Profound\local.yaml" (
+	echo "local.yaml exists, contiuing"
+) ELSE (
+	cd /d %userprofile%\Documents\GitHub\RF_Balance_Profound\
+	fsutil file createnew local.yaml 0
+)
+
+SET /P AREYOUSURE="Create desktop shortcut? (Y/[N]): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		cd /d %userprofile%/Desktop
+		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
+	)
+
+SET /P AREYOUSURE="Create shortcut for config files? (Y/[N]): "
+	IF /I "!AREYOUSURE!" == "Y" (
+		cd /d %userprofile%/Desktop
+		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\default.yaml - Shortcut.lnk"
+		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\local.yaml - Shortcut.lnk"
+	)
 
 ECHO [92mRestart your PC and double click the desktop shortcut for the applcation[0m
 pause
