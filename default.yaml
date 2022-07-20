@@ -96,6 +96,7 @@ Galil_Motors:
     - 99.0
   time_limit_s: 2
   timeout_s: 0.1
+  HomeXWithLimit: False
 Keysight_AWG:
   amplitude_V: 0.2
   burst_cycles: 4000
