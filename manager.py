@@ -1363,6 +1363,14 @@ class Manager(QThread):
                 self.abort_immediately()
                 return False
 
+        success = self.Motors.go_to_position(['R'], [-180])
+        if not success:
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Theta movement failed in find_element')
+            if not cont:
+                self.abort_immediately
+                return False
+
         # Home X
         cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
                               ref_position=assumed_x_coordinate,
