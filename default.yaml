@@ -117,7 +117,7 @@ Keysight_Oscilloscope:
   ext_trigger: true
   identifier: '0x179B'
   range_mV: 300
-  retries: 5 #Zero for unlimited retries
+  retries: 2
   set_on_startup: true
   timeout_s: 1
 MT_Balance:

@@ -13,6 +13,9 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Utilities.useful_methods import create_comma_string, is_number, get_bit
 
 
+
+
+
 class GalilMotorController(AbstractMotorController):
     """Provides an interface with key functionality for a galil motor controller"""
 
@@ -168,10 +171,7 @@ class GalilMotorController(AbstractMotorController):
             # Attempt to stop motor's motion
             self.command("ST")
 
-            # Convert speeds to number of counts per second and update them
-            steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
-            sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
-            self.command(sp_command_str)
+            self.set_speeds(self.speeds_ray)
 
             # self.set_origin()
             self.get_position()
@@ -181,6 +181,12 @@ class GalilMotorController(AbstractMotorController):
             self.connected = False
         if enable_ui:
             self.ready_signal.emit()
+
+    def set_speeds(self, speeds_ray: List[float]):
+        # Convert speeds to number of counts per second and update them
+        steps_per_second = [speed * cal for speed, cal in zip(speeds_ray, self.calibrate_ray_steps_per)]
+        sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
+        self.command(sp_command_str)
 
     @pyqtSlot(list, list)
     def go_to_position(self, axes: List[str], coordinates_mm: List[float],
@@ -455,6 +461,12 @@ class GalilMotorController(AbstractMotorController):
         :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
+
+        if axis == 'X' and self.config[self.device_key]['HomeXWithLimit']:
+            success = self.home_x_on_negative_limit(axis, enable_ui, theta_pre_home_move)
+            return success
+
+
         if not axis == 'X' and not axis == 'R' and not axis == 'Theta':
             self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
 
@@ -537,6 +549,63 @@ class GalilMotorController(AbstractMotorController):
                                                           enable_ui=False)
 
         t.sleep(.1)
+        self.get_position()
+
+        if enable_ui:
+            self.ready_signal.emit()
+        return success
+
+    def home_x_on_negative_limit(self, axis, enable_ui, theta_pre_home_move) -> bool:
+        "Alternative home method for X which makes the X go to the negative limit and sets it as the origin"
+        if not axis == 'X':
+            self.log(level='error', message='Error in home x on negative limit. This function is not valid for axes '
+                                            'other than X')
+        success = self.go_to_position(['X'], [-9999], enable_ui=False)
+
+        self.set_speeds([1,1])
+
+        # Issue position absolute command
+        try:
+            pa_command_str = f"PA -999999999"
+            self.command(pa_command_str)
+
+            # Issue begin motion command
+            bg_command_str = f"BG A"
+            self.command(bg_command_str)
+
+            if not success:
+                self.log(level='error', message='movement timed out')
+                self.stop_motion()
+        except gclib.GclibError as e:
+            success = False
+            stop_code = self.check_user_fault()
+            if stop_code is not None:
+                self.log(level='error', message=f"error in home x on negative limit: {stop_code}")
+            else:
+                self.log(level='error', message=f"error in home x on negative limit: {e}")
+
+        # Wait until limit is no longer pressed, then stop
+        start_time = t.time()
+        success = False
+        while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
+            try:
+                reply, _ = self.command('TS A')  # Check status of X axis switches
+                if ': ' in reply:
+                    reply = reply.split(': ')[1]
+                try:
+                    x_negative_limit_active = not get_bit(int(reply), 2)
+                except ValueError:
+                    x_negative_limit_active = False
+
+                if not x_negative_limit_active:
+                    self.command("ST A")
+
+            except gclib.GclibError as e:
+                code = self.check_user_fault()
+                self.log(level='error', message=f"error while moving off of negative limit: {e}, {code}")
+                return False
+
+        self.set_origin_1d('X', self.config['WTF_PositionParameters']['XHomeCoord'])
         self.get_position()
 
         if enable_ui:
