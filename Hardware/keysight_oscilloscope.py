@@ -119,6 +119,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         Sets all the internal class variables to default values specified in the config file.
         """
         self.reset()
+        self.command("CHAN1:PROB 1")
+        self.command("CHAN2:PROB 2")
         self.channel = self.config[self.device_key]['channel']
         self.range_s = (self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6) * 8
         self.offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6
