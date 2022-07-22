@@ -235,6 +235,8 @@ IF /I "!AREYOUSURE!" == "Y" (
 	CD C:\Users\%username%\Documents\GitHub\RF_Balance_Profound
 	SET PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
 	SET PATH=!PATH!;"C:\ProgramData\Anaconda3\condabin\"
+    SET PATH=!PATH!;"C:\USERS\%username%\Anaconda3\condabin\"
+	SET PATH=!PATH!;"C:\USERS\%username%\Anaconda3\Scripts\"
 	call conda.bat update conda
 	call conda.bat env create -f C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\environment.yml -v -v -v
 )

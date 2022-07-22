@@ -135,7 +135,7 @@ Sequence pass/fail:
   Dialog timeout (s): 0
   Interrupt action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
   Pass fail action: Retry automatically #No dialog (abort), Prompt for retry, Retry automatically
-  Retries: 5 #Zero for unlimited retries
+  Retries: 2 #Zero for unlimited retries
 Software_Version: '1.0'
 TempMon:
   DeviceName: TankTemp
