@@ -542,3 +542,26 @@ class RFBData:
         to_return += f'std_too_high (type: {type(self.std_too_high)}): {self.std_too_high}\n'
 
         return to_return
+
+    def check_for_failure_realtime(self) -> Tuple[bool, str]:
+        """
+        :return: Boolean indicating if a failure condition has been met
+        :return: String providing feedback as to why the test failed
+        """
+
+        #This factor prevents the test from terminating early if the failure condition is borderline.
+        #This way, the whole test will run and the element will be passed/failed at the end
+        leeway_percent = 5
+
+        try:
+            eff = calculate_efficiency_percent(self.acoustic_power_on_mean, self.forward_power_on_mean, self.reflected_power_on_mean)
+            self.reflected_power_percent = self.reflected_power_on_mean / self.forward_power_on_mean * 100
+            pf_extrapolated = calculate_pf_max(self.Pa_max, eff, self.reflected_power_percent)
+            if pf_extrapolated > self.Pf_max * (100+leeway_percent)/100:
+                return True, f"Reflected power is above limit, ({pf_extrapolated} > {self.Pf_max})."
+            if self.reflected_power_percent > self.ref_limit * (100+leeway_percent)/100:
+                return True, f"Reflected power is above limit, ({self.reflected_power_percent} > {self.ref_limit})."
+        except Exception as e:
+            self.log(level='error', message='Error in check_for failure realtime: ' + str(e))
+
+        return False, ""

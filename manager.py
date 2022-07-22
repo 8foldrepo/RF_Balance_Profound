@@ -2311,7 +2311,7 @@ class Manager(QThread):
             # Handle logger error if there is one
             if self.rfb_logger_error is not None:
                 cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                               error_detail=f'Error in measure_element_efficiency_rfb for element '
+                                               error_detail=f'measure_element_efficiency_rfb terminated early for element '
                                                             f'{self.element}: {self.rfb_logger_error}')
                 if not cont:
                     return False
@@ -2327,7 +2327,9 @@ class Manager(QThread):
             if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
                 self.AWG.set_output(True)
             else:
-                self.sequence_pass_fail(action_type='Interrupt action', error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
+                self.sequence_pass_fail(action_type='Interrupt action', error_detail="Could not set AWG on because the "
+                                                                                     "IO board has no channel active. "
+                                                                                     "Please restart the program.")
 
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:

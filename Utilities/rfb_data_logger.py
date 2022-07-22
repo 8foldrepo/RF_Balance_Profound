@@ -70,9 +70,9 @@ class RFBDataLogger(QThread):
         self.Balance_Thread.reading_signal.connect(self.log_balance)
         self.F_Meter_Thread.reading_signal.connect(self.log_f_meter)
         self.R_Meter_Thread.reading_signal.connect(self.log_r_meter)
-        self.Balance_Thread.error_signal.connect(self.report_error)
-        self.F_Meter_Thread.error_signal.connect(self.report_error)
-        self.R_Meter_Thread.error_signal.connect(self.report_error)
+        self.Balance_Thread.error_signal.connect(self.report_interrupt_error)
+        self.F_Meter_Thread.error_signal.connect(self.report_interrupt_error)
+        self.R_Meter_Thread.error_signal.connect(self.report_interrupt_error)
 
         self.Balance_Thread.start(priority=QThread.HighPriority)
         self.F_Meter_Thread.start(priority=QThread.HighPriority)
@@ -106,9 +106,9 @@ class RFBDataLogger(QThread):
         return super().run()
 
     @pyqtSlot(str)
-    def report_error(self, error_str) -> None:
+    def report_interrupt_error(self, error_str) -> None:
         """Emits an error signal to be shown to the user. This also triggers an interrupt action in Manager"""
-        self.error_signal.emit(error_str)
+        self.error_signal.emit("Error: " + error_str)
 
     def sensors_ready(self) -> bool:
         """
@@ -140,6 +140,10 @@ class RFBDataLogger(QThread):
         self.rfb_data.acoustic_powers_w = acoustic_powers_w
         self.rfb_data.awg_on_ray = awg_on_ray
         self.rfb_data.balance_readings_g = balance_readings_g
+
+        test_failed, feedback_str = self.rfb_data.check_for_failure_realtime()
+        if test_failed:
+            self.error_signal.emit("Test failed: " + feedback_str)
 
         self.rfb_data.update_realtime_data()
 
