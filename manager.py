@@ -2578,7 +2578,7 @@ class Manager(QThread):
                     self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
                     max_retries = 5
                 if self.retry_count < max_retries:
-                    self.retry_if_retry_enabled(action_type)
+                    self.retry_automatically(action_type)
                 else:
                     self.test_data.element_failed(element_number=self.element, description=error_detail)
                     if self.config["Test_Settings"]["abort_on_fail"]:
@@ -2596,9 +2596,24 @@ class Manager(QThread):
                 return False
 
             elif self.config[k1][action_type].upper() == 'PROMPT FOR RETRY':
-                cont = self.prompt_for_retry(error_detail)
-                if not cont:
-                    return False
+                if self.step_index != self.last_step_index_retried:
+                    self.retry_count = 0
+                self.last_step_index_retried = self.step_index
+
+                # Retry automatically 1 time
+                max_retries = 1
+
+                if self.retry_count < max_retries:
+                    self.retry_automatically(action_type)
+                else:
+                    cont = self.prompt_for_retry(error_detail)
+                    if not cont:
+                        return False
+                    else:
+                        self.log(level='info', message='Continue clicked, proceeding with test')
+                        return True
+                return False
+
             else:
                 self.log(
                     "invalid setting for Sequence pass/fail : interrupt action in config file; "
@@ -2618,11 +2633,9 @@ class Manager(QThread):
         if not self.retry_clicked_variable:
             self.test_data.element_failed(element_number=self.element, description=error_detail)
 
-        if not cont:
-            return False
-        return True
+        return cont
 
-    def retry_if_retry_enabled(self, action_type: str):
+    def retry_automatically(self, action_type: str):
         if action_type != 'Interrupt action' and action_type != 'Pass fail action':
             self.log("invalid type passed for action_type in retry_if_retry_enabled, aborting", str(self.warn))
             self.abort_after_step()

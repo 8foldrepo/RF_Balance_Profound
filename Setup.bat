@@ -120,7 +120,7 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 	SET AREYOUSURE=N
 	SET /P AREYOUSURE="RF_Balance_Profound repository already exists, download again? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
-		echo [92mSelect manager-core if prompted for a credential helper[0m
+		echo [92mSelect HTTPS for your preferred protocol for git operations and Select manager-core if prompted for a credential helper[0m
 		gh auth login
 		cd C:\Users\%username%\Documents\GitHub
 		gh repo clone 8foldrepo/RF_Balance_Profound

@@ -13,9 +13,6 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Utilities.useful_methods import create_comma_string, is_number, get_bit
 
 
-
-
-
 class GalilMotorController(AbstractMotorController):
     """Provides an interface with key functionality for a galil motor controller"""
 
@@ -458,14 +455,12 @@ class GalilMotorController(AbstractMotorController):
         :param axis: the axis the user wishes to home
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
         :param theta_pre_home_move: enables a theta movement to move the UA off of the active region of the switch
-        :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
 
         if axis == 'X' and self.config[self.device_key]['HomeXWithLimit']:
             success = self.home_x_on_negative_limit(axis, enable_ui, theta_pre_home_move)
             return success
-
 
         if not axis == 'X' and not axis == 'R' and not axis == 'Theta':
             self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
@@ -560,9 +555,21 @@ class GalilMotorController(AbstractMotorController):
         if not axis == 'X':
             self.log(level='error', message='Error in home x on negative limit. This function is not valid for axes '
                                             'other than X')
-        success = self.go_to_position(['X'], [-9999], enable_ui=False)
 
-        self.set_speeds([1,1])
+        # Move X off of the negative limit if it is already active
+        reply, _ = self.command('TS A')  # Check status of X axis switches
+
+        if ': ' in reply:
+            reply = reply.split(': ')[1]
+        try:
+            x_negative_limit_active = not get_bit(int(reply), 2)
+        except ValueError:
+            x_negative_limit_active = False
+        if x_negative_limit_active:
+            self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
+
+        success = self.go_to_position(['X'], [-9999], enable_ui=False)
+        self.set_speeds([1, 1])
 
         # Issue position absolute command
         try:
@@ -608,18 +615,6 @@ class GalilMotorController(AbstractMotorController):
         self.set_origin_1d('X', self.config['WTF_PositionParameters']['XHomeCoord'])
         self.get_position()
 
-        if enable_ui:
-            self.ready_signal.emit()
-        return success
-
-    def home_x_on_negative_limit(self, axis, enable_ui, theta_pre_home_move) -> bool:
-        "Alternative home method for X which makes the X go to the negative limit and sets it as the origin"
-        if not axis == 'X':
-            self.log(level='error', message='Error in home x on negative limit. This function is not valid for axes '
-                                            'other than X')
-        success = self.go_to_position(['X'], [-9999], enable_ui=False)
-        self.set_origin_1d('X', self.config['WTF_PositionParameters']['XHomeCoord'])
-        self.get_position()
         if enable_ui:
             self.ready_signal.emit()
         return success
