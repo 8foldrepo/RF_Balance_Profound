@@ -2393,8 +2393,13 @@ class Manager(QThread):
         # prompt user if test failed
         if test_result.upper() == 'FAIL':
             # give user chance to retry, continue, or abort
+            if frequency_range == FrequencyRange.low_frequency:
+                freq_str = 'LF'
+            else:
+                freq_str = 'HF'
+
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test: {comment}')
+                                           error_detail=f'{freq_str} {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'DNF':  # if test did not finish or never started
