@@ -4,7 +4,7 @@ import yaml
 from PyQt5.QtCore import pyqtSlot
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
-
+from definitions import LOCAL_CONFIG_PATH, DEFAULT_CONFIG_PATH
 
 class SystemConfig(MyQWidget, Ui_Form):
     config: Union[dict, None]
@@ -72,10 +72,10 @@ class SystemConfig(MyQWidget, Ui_Form):
 
     def show_config(self):
         try:
-            osCommandString = "notepad.exe local.yaml"
+            osCommandString = f"notepad.exe {LOCAL_CONFIG_PATH}"
             os.system(osCommandString)
         except:
-            osCommandString = "notepad.exe default.yaml"
+            osCommandString = f"notepad.exe {DEFAULT_CONFIG_PATH}"
             os.system(osCommandString)
 
     # Save the settings input into the UI field to the local.yaml config file

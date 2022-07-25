@@ -43,7 +43,7 @@ IF EXIST "C:\Program Files\Git\cmd\git.exe" (
 		GOTO :InstallPortGit
 	)
 ) ELSE (
-	ECHO [93mNon-portable Git for Windows not detected[0m
+	ECHO [92mPortable Git for Windows not detected[0m
 	SET /P AREYOUSURE="Install portable git for windows? (Y/N): "
 		IF /I "!AREYOUSURE!" == "Y" (
 			:InstallPortGit
@@ -52,11 +52,11 @@ IF EXIST "C:\Program Files\Git\cmd\git.exe" (
 				ECHO [92mPortable Git for Windows is already installed[0m
 				SET PATH=!PATH!;"C:\Program Files\PortableGit\bin"
 			) ELSE (
-				ECHO [93mPortable Git for Windows not detected[0m
+				ECHO [92mPortable Git for Windows not detected[0m
 				IF EXIST "C:\Program Files\PortableGit-2.37.0-64-bit.7z.exe" (
 					ECHO [92mInstaller for portable Git already downloaded, skipping download step[0m
 				) ELSE (
-					ECHO [93mInstaller for portable Git not detected, downloading[0m
+					ECHO [92mInstaller for portable Git not detected, downloading[0m
 					CD "C:\Program Files"
 					curl -LO https://github.com/git-for-windows/git/releases/download/v2.37.0.windows.1/PortableGit-2.37.0-64-bit.7z.exe
 				)
@@ -74,7 +74,7 @@ IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
 		GOTO :InstallGHCLI
 	)
 ) ELSE (
-	ECHO [93mgh CLI does not exist, installing[0m
+	ECHO [92mgh CLI does not exist, installing[0m
 	:InstallGHCLI
 	IF EXIST C:\Users\%username%\AppData\Local\Microsoft\WindowsApps\winget.exe (
 		ECHO [92mwinget detected on computer, using winget to install gh CLI[0m
@@ -83,7 +83,7 @@ IF EXIST "C:\Program Files\GitHub CLI\gh.exe" (
 		IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\gh_2.13.0_windows_amd64.msi (
 			ECHO [92mInstaller for gh CLI detected, skipping download step[0m
 		) ELSE (
-			ECHO [93mInstaller for gh CLI not detected, downloading[0m
+			ECHO [92mInstaller for gh CLI not detected, downloading[0m
 			CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 			curl -LO https://github.com/cli/cli/releases/download/v2.13.0/gh_2.13.0_windows_amd64.msi
 		)
@@ -107,11 +107,11 @@ IF EXIST C:\Users\%username%\AppData\Local\GitHubDesktop\GitHubDesktop.exe (
 			IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\GitHubDesktopSetup-x64.exe (
 				ECHO [92mDownloader already exists, skipping download phase[0m
 			) ELSE (
-				ECHO [93mDownloader for Python 3.8 not detected, downloading[0m
+				ECHO [92mDownloader for Python 3.8 not detected, downloading[0m
 				CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads\
 				curl -LO https://central.github.com/deployments/desktop/desktop/latest/win32
 			)
-			ECHO [93mClick through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
+			ECHO [92mClick through installer. Once installed, click add repository on disk, then navigate to C:\Users\%username%\Documents\GitHub. Add an exception if prompted[0m
 			C:\Users\%username%\Documents\GitHub\Dependency_Downloads\GitHubDesktopSetup-x64.exe
 		)
 )
@@ -126,8 +126,8 @@ IF EXIST "C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\main.py" (
 		gh repo clone 8foldrepo/RF_Balance_Profound
 	)
 ) ELSE (
-	echo [93mRF_Balance_Profound repository not found, cloning[0m
-	echo [93mSelect manager-core if prompted for a credential helper[0m
+	echo [92mRF_Balance_Profound repository not found, cloning[0m
+	echo [92mSelect manager-core if prompted for a credential helper[0m
 	gh auth login
 	cd C:\Users\%username%\Documents\GitHub
 	gh repo clone 8foldrepo/RF_Balance_Profound
@@ -145,19 +145,19 @@ IF DEFINED CONDAEXISTS (
 			cd C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 			curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
 		)
-		ECHO [93muntick set as python 3.9 for system and tick add to PATH if possible[0m
+		ECHO [92mmuntick set as python 3.9 for system and tick add to PATH if possible[0m
 		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe
 	)
 ) ELSE (
-	ECHO [93mConda not detected in computer, downloading and installing[0m
+	ECHO [92mConda not detected in computer, downloading and installing[0m
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe (
 		ECHO [92mConda installer already downloaded, skipping download step[0m
 	) ELSE (
-		ECHO [93mConda installer not found, downloading[0m
+		ECHO [92mConda installer not found, downloading[0m
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe
 	)
-	ECHO [93muntick set as python 3.9 for system and tick add to PATH if possible[0m
+	ECHO [92muntick set as python 3.9 for system and tick add to PATH if possible[0m
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\Anaconda3-2022.05-Windows-x86_64.exe
 )
 
@@ -170,18 +170,18 @@ IF EXIST C:\Users\%username%\AppData\Local\Programs\Python\Python38\python.exe (
 			CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 			curl -LO https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe
 		)
-		ECHO [93mmake sure to tick install to PATH[0m
+		ECHO [92mmake sure to tick install to PATH[0m
 		C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe
 	)
 ) ELSE (
-	ECHO [93mPython 3.8 not found on computer, downloading and installing[0m
+	ECHO [92mPython 3.8 not found on computer, downloading and installing[0m
 	IF EXIST C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe (
 		ECHO [92mPython 3.8 installer found, skipping download step[0m
 	) ELSE (
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads
 		curl -LO https://www.python.org/ftp/python/3.8.10/python-3.8.10-amd64.exe
 	)
-	ECHO [93mmake sure to tick install to PATH[0m
+	ECHO [92mmake sure to tick install to PATH[0m
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\python-3.8.10-amd64.exe
 )
 
@@ -208,9 +208,9 @@ IF EXIST "C:\Windows\System32\nicaiu.dll" (
 			curl -LO https://download.ni.com/support/nipkg/products/ni-d/ni-daqmx/21.8/online/ni-daqmx_21.8_online.exe
 		)
 		IF EXIST "C:\Program Files\National Instruments\NI Package Manager\NIPackageManager.exe" (
-		ECHO [93mGo to "Drivers" tab on left column, select "NI-DAQmx", select "Remove", exit out of reboot prompt, then re-install from same package manager[0m
-		ECHO [93mselect all packages EXCEPT for "NI I/O Trace", "NI Linux RT System Image", and "NI Web-Based Configuration and Monitoring when installing[0m
-		ECHO [93mPress Ctrl and C keys together to go to next step if stuck[0m
+		ECHO [92mGo to "Drivers" tab on left column, select "NI-DAQmx", select "Remove", exit out of reboot prompt, then re-install from same package manager[0m
+		ECHO [92mselect all packages EXCEPT for "NI I/O Trace", "NI Linux RT System Image", and "NI Web-Based Configuration and Monitoring when installing[0m
+		ECHO [92mPress Ctrl and C keys together to go to next step if stuck[0m
 			"C:\Program Files\National Instruments\NI Package Manager\NIPackageManager.exe"
 		) ELSE (
 			C:\Users\%username%\Documents\GitHub\Dependency_Downloads\ni-daqmx_21.8_online.exe
@@ -258,7 +258,7 @@ IF /I "!AREYOUSURE!" == "Y" (
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads\
 		curl -LO https://www.galil.com/sw/pub/win/gclib/galil_gclib_1_34_15.exe
 	)
-	ECHO [93m make sure to install PCI driver and 32-bit binaries during setup[0m
+	ECHO [92mmake sure to install PCI driver and 32-bit binaries during setup[0m
 	C:\Users\%username%\Documents\GitHub\Dependency_Downloads\galil_gclib_1_34_15.exe
 )
 :ENDGDK

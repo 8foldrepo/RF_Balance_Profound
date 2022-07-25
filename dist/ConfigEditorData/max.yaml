@@ -1,0 +1,12 @@
+Analysis:
+  max_standard_deviation_w: 1
+  samples_to_remove_at_end: 20
+  settling_time_s: 10
+Keysight_AWG:
+  amplitude_V: 20
+  burst_cycles: 1000
+  burst_period_s: 100
+  frequency_Hz: 25000000
+Oscilloscope_timebase:
+  Horizontal scale (us): 5
+  Time offset (us): 100

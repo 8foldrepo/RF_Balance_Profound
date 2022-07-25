@@ -1,0 +1,22 @@
+Analysis:
+  max_standard_deviation_w: 1
+  samples_to_remove_at_end: 20
+  settling_time_s: 10
+Debugging:
+  simulate_awg: true
+  simulate_balance: true
+  simulate_io_board: true
+  simulate_motors: true
+  simulate_oscilloscope: true
+  simulate_power_meters: true
+  simulate_sensors: true
+  simulate_thermocouple: true
+  simulate_ua_interface: true
+Keysight_AWG:
+  amplitude_V: 20
+  burst_cycles: 1000
+  burst_period_s: 100
+  frequency_Hz: 1
+Oscilloscope_timebase:
+  Horizontal scale (us): 5
+  Time offset (us): 100

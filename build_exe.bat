@@ -15,9 +15,12 @@ cd dist
 mkdir "App"
 cd "App"
 
+mkdir ui_elements
+cd ui_elements
 mkdir images
 cd images
-copy "%USERPROFILE%\documents\github\RF_Balance_Profound\images"
+copy "%USERPROFILE%\documents\github\RF_Balance_Profound\ui_elements\images"
+cd ..
 cd ..
 
 mkdir scripts
