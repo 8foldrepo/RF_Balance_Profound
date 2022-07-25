@@ -156,7 +156,7 @@ class RFBDataLogger(QThread):
 
         if self.config["Debugging"]["simulate_awg"]:
             if self.awg_on:
-                reading_g = reading_g / 500 #+ .053
+                reading_g = reading_g / 500 + .053
             else:
                 reading_g = reading_g / 500
 
