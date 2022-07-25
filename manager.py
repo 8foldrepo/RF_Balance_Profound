@@ -1363,6 +1363,25 @@ class Manager(QThread):
                 self.abort_immediately()
                 return False
 
+        success = self.Motors.go_to_position(['R'], [-180])
+        if not success:
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Theta movement failed in find_element')
+            if not cont:
+                self.abort_immediately
+                return False
+
+        # Home X
+        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
+                              ref_position=assumed_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
+                              acquisition_type=acquisition_type,
+                              averages=averages, storage_location=storage_location)
+        if not cont:
+            self.abort_immediately()
+            return False
+
+        # Home Theta
         cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
                               increment=theta_increment_degrees,
                               ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
@@ -1373,14 +1392,7 @@ class Manager(QThread):
             self.abort_immediately()
             return False
 
-        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
-                              ref_position=assumed_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
-                              acquisition_type=acquisition_type,
-                              averages=averages, storage_location=storage_location)
-        if not cont:
-            self.abort_immediately()
-            return False
+
 
         self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
@@ -2381,8 +2393,13 @@ class Manager(QThread):
         # prompt user if test failed
         if test_result.upper() == 'FAIL':
             # give user chance to retry, continue, or abort
+            if frequency_range == FrequencyRange.low_frequency:
+                freq_str = 'LF'
+            else:
+                freq_str = 'HF'
+
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test: {comment}')
+                                           error_detail=f'{freq_str} {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'DNF':  # if test did not finish or never started
