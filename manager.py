@@ -34,9 +34,9 @@ from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\logs\\wtf.log", 'w') as f:
+with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
@@ -2395,8 +2395,13 @@ class Manager(QThread):
         # prompt user if test failed
         if test_result.upper() == 'FAIL':
             # give user chance to retry, continue, or abort
+            if frequency_range == FrequencyRange.low_frequency:
+                freq_str = 'LF'
+            else:
+                freq_str = 'HF'
+
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test: {comment}')
+                                           error_detail=f'{freq_str} {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'DNF':  # if test did not finish or never started

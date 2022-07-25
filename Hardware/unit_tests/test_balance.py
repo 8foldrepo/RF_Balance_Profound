@@ -1,6 +1,5 @@
 import time as t
 import unittest
-
 import serial.serialutil
 from termcolor import colored
 from Utilities.load_config import load_configuration
