@@ -11,7 +11,5 @@ local.yaml
 logs/EfficiencyTest/*
 logs/wtf.log
 Utilities/testdelete.py
-build/
-dist/
 main.spec
 Documentation/~$wtf_comparison_test.xlsx
