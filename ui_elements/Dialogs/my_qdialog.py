@@ -51,7 +51,7 @@ class MyQDialog(QDialog):
         """
         Set the icon to the 8Fold logo
         """
-        path = os.path.join(ROOT_DIR, "resources", "8foldlogo.ico")
+        path = os.path.join(ROOT_DIR, "Program_Data", "8foldlogo.ico")
         self.setWindowIcon(QIcon(path))
 
     def log(self, message: str, level: str = "info") -> None:

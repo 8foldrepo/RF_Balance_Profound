@@ -101,7 +101,7 @@ class FileSaver:
         if self.log_files_dir is None:
             self.log(level='error', message='Could save config, log_files_dir does not exist')
 
-        system_info_file = os.path.join(ROOT_DIR, "systeminfo.ini")
+        system_info_file = os.path.join(ROOT_DIR, "Program_Data", "systeminfo.ini")
         if not os.path.exists(system_info_file):
             self.log(level='Error', message='Could not store system info to results folder')
             self.log(level='Error', message=f'systeminfo.ini was not found in {ROOT_DIR}')

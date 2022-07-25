@@ -1392,8 +1392,6 @@ class Manager(QThread):
             self.abort_immediately()
             return False
 
-
-
         self.AWG.set_output(False)
         self.test_data.log_script(['', 'Disable UA and FGen', 'Disabled FGen output', ''])
         self.test_data.log_script(['', 'End', 'OK', ''])
@@ -1453,8 +1451,6 @@ class Manager(QThread):
         else:
             self.sequence_pass_fail(action_type='Interrupt action',
                                     error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
-
-
 
         self.oscilloscope_channel = scope_channel
 
@@ -2320,6 +2316,14 @@ class Manager(QThread):
             if not cont:  # exits if abort flag is true or __refresh_rfb_tab fails
                 return False
 
+            failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+            if failed:
+                cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                if not cont:
+                    # rfb_logger has been monitoring and recording test data behind the scenes
+                    self.__wrap_up_rfb_logger()
+                    return False
+
         while current_cycle <= on_off_cycles:  # beginning of our cycle loop
             cycle_start_time = t.time()
 
@@ -2327,9 +2331,12 @@ class Manager(QThread):
             if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
                 self.AWG.set_output(True)
             else:
-                self.sequence_pass_fail(action_type='Interrupt action', error_detail="Could not set AWG on because the "
-                                                                                     "IO board has no channel active. "
-                                                                                     "Please restart the program.")
+                cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                               error_detail="Could not set AWG on because the "
+                                                            "IO board has no channel active. "
+                                                            "Please restart the program.")
+                if not cont:
+                    return False
 
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
@@ -2345,6 +2352,14 @@ class Manager(QThread):
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
+
+                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                if failed:
+                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                    if not cont:
+                        # rfb_logger has been monitoring and recording test data behind the scenes
+                        self.__wrap_up_rfb_logger()
+                        return False
 
             # Turn off AWG
             self.log(f"Turning off AWG T = {'%.2f' % (t.time() - start_time)}")
@@ -2363,6 +2378,14 @@ class Manager(QThread):
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
+
+                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                if failed:
+                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                    if not cont:
+                        # rfb_logger has been monitoring and recording test data behind the scenes
+                        self.__wrap_up_rfb_logger()
+                        return False
 
             current_cycle += 1
 
@@ -2724,6 +2747,39 @@ class Manager(QThread):
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)
         return True
+
+    def check_for_failure_realtime(self, Pa_max, Pf_max, ref_limit) -> Tuple[bool, str]:
+        """
+        Checks if the current step has failed. If it has, it will return True and the error message.
+        If it has not, it will return False and an empty string.
+        """
+
+        Pa_max = float(Pa_max)
+        Pf_max = float(Pf_max)
+        ref_limit = float(ref_limit)
+
+        leeway_percent = 5
+
+        eff_ratio = self.rfb_data.acoustic_power_on_mean - self.rfb_data.acoustic_power_off_mean / \
+                    self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean
+
+        min_eff_ratio = Pa_max / Pf_max
+
+        if eff_ratio < min_eff_ratio - leeway_percent / 100:
+            self.log(level='error', message=f"Efficiency percentage{eff_ratio * 100} "
+                                            f"is less than {min_eff_ratio * 100}%")
+            failed = True
+            feedback = "Efficiency ratio is less than the minimum efficiency ratio"
+            return failed, feedback
+
+        if self.rfb_data.reflected_power_on_mean / self.rfb_data.forward_power_on_mean > (
+                ref_limit + leeway_percent) / 100:
+            self.log(level='error', message=f"Reflected power is greater than {ref_limit * 100}%")
+            failed = True
+            feedback = "Reflected power is greater than the maximum reflected power"
+            return failed, feedback
+
+        return False, ""
 
 
 class AbortException(Exception):

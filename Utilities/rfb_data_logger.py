@@ -141,10 +141,6 @@ class RFBDataLogger(QThread):
         self.rfb_data.awg_on_ray = awg_on_ray
         self.rfb_data.balance_readings_g = balance_readings_g
 
-        test_failed, feedback_str = self.rfb_data.check_for_failure_realtime()
-        if test_failed:
-            self.error_signal.emit("Test failed: " + feedback_str)
-
         self.rfb_data.update_realtime_data()
 
     @pyqtSlot(float)
@@ -160,7 +156,7 @@ class RFBDataLogger(QThread):
 
         if self.config["Debugging"]["simulate_awg"]:
             if self.awg_on:
-                reading_g = reading_g / 500 + .053
+                reading_g = reading_g / 500 #+ .053
             else:
                 reading_g = reading_g / 500
 
