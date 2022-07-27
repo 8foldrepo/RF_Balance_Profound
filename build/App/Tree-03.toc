@@ -1,5 +1,5 @@
 ('C:\\Users\\isaia\\Documents\\GitHub\\RF_Balance_Profound\\build\\App\\gclib-1.0-py3.8.egg',
  None,
- {'*.py', '*.cp38-win_amd64.pyd', '*.pyc', '*.pyd', 'EGG-INFO', '*.pyw'},
+ {'EGG-INFO', '*.pyw', '*.cp38-win_amd64.pyd', '*.pyd', '*.py', '*.pyc'},
  'DATA',
  [])

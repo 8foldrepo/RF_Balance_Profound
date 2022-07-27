@@ -1,7 +1,7 @@
-comments: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\Config File Editor\comments.yaml
+comments: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\ConfigEditorData\comments.yaml
 default: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\App\Program_Data\default.yaml
 local: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\App\Program_Data\local.yaml
-max: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\Config File Editor\max.yaml
-min: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\Config File Editor\min.yaml
+max: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\ConfigEditorData\max.yaml
+min: C:\Users\isaia\Documents\GitHub\RF_Balance_Profound\dist\ConfigEditorData\min.yaml
 passwords: passwords.yaml
 project_name: RF Balance Profound

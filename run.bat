@@ -1,3 +1,7 @@
+@echo off
+@setlocal enabledelayedexpansion
+
+
 SET PATH=!PATH!;"C:\ProgramData\Anaconda3\Scripts\"
 SET PATH=!PATH!;"C:\ProgramData\Anaconda3\condabin\"
 SET PATH=!PATH!;"C:\USERS\%username%\Anaconda3\condabin\"
