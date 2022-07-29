@@ -8,7 +8,7 @@ SET PATH=!PATH!;"C:\USERS\%username%\Anaconda3\Scripts\"
 CALL conda.bat activate RF_Balance_Profound
 
 cd %USERPROFILE%\documents\github\RF_Balance_Profound
-pyinstaller --icon="%USERPROFILE%\documents\github\RF_Balance_Profound\program_data\8foldlogo.ico" --noconfirm --name="App" main.py
+pyinstaller --icon="%USERPROFILE%\documents\github\RF_Balance_Profound\program_data\8foldlogo.ico" --noconfirm --onefile --name="App" main.py
 
 mkdir dist
 cd dist
