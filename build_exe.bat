@@ -7,35 +7,38 @@ SET PATH=!PATH!;"C:\USERS\%username%\Anaconda3\Scripts\"
 
 CALL conda.bat activate RF_Balance_Profound
 
-cd %USERPROFILE%\documents\github\RF_Balance_Profound
-pyinstaller --icon="%USERPROFILE%\documents\github\RF_Balance_Profound\program_data\8foldlogo.ico" --noconfirm --name="App" main.py
+pyinstaller --icon="images\8foldlogo.ico" --noconfirm  --onefile --name="Profound WTF" main.py
+
 
 mkdir dist
 cd dist
-mkdir "App"
-cd "App"
 
-mkdir ui_elements
-cd ui_elements
+copy ..\local.yaml
+copy ..\default.yaml
+copy ..\8foldlogo.ico
+copy ..\systeminfo.ini
+copy ..\FrequencyExclusions.txt
+copy ..\mcl_pm_NET45.dll
+copy "..\UA serial number and frequency data.txt"
 mkdir images
 cd images
-copy "%USERPROFILE%\documents\github\RF_Balance_Profound\ui_elements\images"
-cd ..
+copy "..\..\images"
 cd ..
 
 mkdir scripts
 cd scripts
-copy "%USERPROFILE%\documents\github\RF_Balance_Profound\scripts"
+copy "..\..\Scripts"
 cd ..
-
-mkdir Program_Data
-cd Program_Data
-
-copy "%USERPROFILE%\documents\github\RF_Balance_Profound\program_data"
 
 mkdir logs
 cd logs
 
 fsutil file createnew wtf.log 0
+
+cd ..
+cd ..
+cd ..
+del build
+del "Profound WTF.spec"
 
 pause

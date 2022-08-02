@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         self.setWindowTitle("Wet Test Fixture Python Interface")
 
-        path = os.path.join(ROOT_DIR, "8foldlogo.ico")
+        path = os.path.join(ROOT_DIR, "images", "8foldlogo.ico")
         self.setWindowIcon(QIcon(path))
         self.tabWidget.setCurrentIndex(0)
 

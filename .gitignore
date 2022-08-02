@@ -13,3 +13,5 @@ Logs/wtf.log
 Utilities/testdelete.py
 main.spec
 Documentation/~$wtf_comparison_test.xlsx
+/dist/
+/build/

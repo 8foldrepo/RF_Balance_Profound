@@ -44,9 +44,9 @@ class RFB(MyQWidget, Ui_Form):
         self.rfb_graph.refresh(x, y)
         # INFO: for some reason the bottom three elements' Pixmap don't copy over correctly
         # INFO: in widget_rfb.py when using the pyuic command, fixed via manually overriding here
-        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/reverse power.png"))
-        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/xsition pts.png"))
-        self.forward_pwr_img.setPixmap(QtGui.QPixmap("ui_elements/images/forward power.png"))
+        self.reverse_pwr_img.setPixmap(QtGui.QPixmap("images/reverse power.png"))
+        self.xsition_pwr_img.setPixmap(QtGui.QPixmap("images/xsition pts.png"))
+        self.forward_pwr_img.setPixmap(QtGui.QPixmap("images/forward power.png"))
 
     @pyqtSlot()
     def update_rfb_tab(self):
