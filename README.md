@@ -4,7 +4,13 @@ Application for operation of the wet test fixture using python
 
 (intended to recreate the functionality of existing labview code)
 
-## SETUP INSTRUCTIONS
+## Setup instructions (End user)
+1. Download and unzip the portable application from this link
+https://mega.nz/file/8aNzVbKQ#hzP-9tZhzt5WqmiHCRWF9BR1s1X9-3Ggz3las2fSveo
+2. With the help of a technician or remote support from the manufacturer, use the config editor to configure the system settings
+3. Double click the EXE to run
+
+## SETUP INSTRUCTIONS (Development)
 
 ### Setup script
 1. Double click the provided setup.bat file in the root of the repository and folllow the prompts. Reboot your computer afterwards. 

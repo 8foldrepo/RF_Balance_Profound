@@ -3,6 +3,8 @@ This class is to control the flow in information and
 commands to and from the position tab of main window.
 """
 import logging
+import os
+
 import yaml
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
@@ -17,9 +19,11 @@ from ui_elements.my_qwidget import MyQWidget
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)

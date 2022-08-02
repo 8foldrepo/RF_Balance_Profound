@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 import sys
 import time as t
@@ -25,7 +26,7 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.test_data_helper_methods import generate_calibration_data
 from Utilities.useful_methods import log_msg, get_element_distances, find_int, cast_as_bool, mean_of_non_none_values, \
-    is_number
+    is_number, check_directory
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 
@@ -34,9 +35,11 @@ from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)

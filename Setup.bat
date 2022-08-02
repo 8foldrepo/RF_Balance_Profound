@@ -318,18 +318,5 @@ IF EXIST "%userprofile%\Documents\GitHub\RF_Balance_Profound\local.yaml" (
 	fsutil file createnew local.yaml 0
 )
 
-SET /P AREYOUSURE="Create desktop shortcut? (Y/[N]): "
-	IF /I "!AREYOUSURE!" == "Y" (
-		cd /d %userprofile%/Desktop
-		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\RF Balance Profound.lnk"
-	)
-
-SET /P AREYOUSURE="Create shortcut for config files? (Y/[N]): "
-	IF /I "!AREYOUSURE!" == "Y" (
-		cd /d %userprofile%/Desktop
-		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\default.yaml - Shortcut.lnk"
-		copy "%userprofile%\Documents\GitHub\RF_Balance_Profound\local.yaml - Shortcut.lnk"
-	)
-
 ECHO [92mRestart your PC and double click the desktop shortcut for the applcation[0m
 pause
