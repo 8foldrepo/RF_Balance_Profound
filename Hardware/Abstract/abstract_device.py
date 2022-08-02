@@ -1,9 +1,10 @@
+import os
 from abc import abstractmethod, ABCMeta
 from typing import Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from Utilities.useful_methods import log_msg
+from Utilities.useful_methods import log_msg, check_directory
 
 
 class AbstractDevice(QObject):
@@ -26,9 +27,11 @@ class AbstractDevice(QObject):
 
         log_formatter = logging.Formatter(LOGGER_FORMAT)
         balance_logger = logging.getLogger('wtf_log')
-        with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+        directory = os.path.join(ROOT_DIR, "Logs")
+        check_directory(directory)
+        with open(os.path.join(directory, "wtf.log"), 'w+') as f:
             pass
-        file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+        file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
         file_handler.setFormatter(log_formatter)
         balance_logger.addHandler(file_handler)
         balance_logger.setLevel(logging.INFO)

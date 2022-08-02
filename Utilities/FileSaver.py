@@ -18,9 +18,11 @@ from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
@@ -101,7 +103,7 @@ class FileSaver:
         if self.log_files_dir is None:
             self.log(level='error', message='Could save config, log_files_dir does not exist')
 
-        system_info_file = os.path.join(ROOT_DIR, "Program_Data", "systeminfo.ini")
+        system_info_file = os.path.join(ROOT_DIR, "systeminfo.ini")
         if not os.path.exists(system_info_file):
             self.log(level='Error', message='Could not store system info to results folder')
             self.log(level='Error', message=f'systeminfo.ini was not found in {ROOT_DIR}')
@@ -129,7 +131,7 @@ class FileSaver:
         if self.log_files_dir is None:
             self.log(level='error', message='Could save config, log_files_dir does not exist')
 
-        frequency_exclusions_file = os.path.join(ROOT_DIR, "Program_Data", "FrequencyExclusions.txt")
+        frequency_exclusions_file = os.path.join(ROOT_DIR, "FrequencyExclusions.txt")
         if not os.path.exists(frequency_exclusions_file):
             self.log(level='Error', message='Could not store system info to results folder')
             self.log(level='Error', message=f'FrequencyExclusions.txt was not found in {frequency_exclusions_file}')

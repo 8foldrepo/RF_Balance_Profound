@@ -126,7 +126,7 @@ MT_Balance:
   timeout_s: 10
 Paths:
   #Note: if a drive letter and colon is not provided the program will append the path to the repository path
-  UA Serial numbers file: \Program_Data\UA serial number and frequency data.txt
+  UA Serial numbers file: \UA serial number and frequency data.txt
   UA results root directory: C:\Users\Public\UA results
 Reflected_Power_Meter:
   serial_number: '11408040323'

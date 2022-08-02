@@ -6,14 +6,16 @@ from PyQt5.QtCore import QEvent
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
-from Utilities.useful_methods import log_msg
+from Utilities.useful_methods import log_msg, check_directory
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(fmt=LOGGER_FORMAT)
 balance_logger = logging.getLogger(name="wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(fmt=log_formatter)
 balance_logger.addHandler(hdlr=file_handler)
 balance_logger.setLevel(level=logging.INFO)
@@ -51,7 +53,7 @@ class MyQDialog(QDialog):
         """
         Set the icon to the 8Fold logo
         """
-        path = os.path.join(ROOT_DIR, "Program_Data", "8foldlogo.ico")
+        path = os.path.join(ROOT_DIR, "8foldlogo.ico")
         self.setWindowIcon(QIcon(path))
 
     def log(self, message: str, level: str = "info") -> None:

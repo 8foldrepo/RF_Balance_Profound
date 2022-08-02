@@ -19,7 +19,7 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
-from Utilities.useful_methods import log_msg, tab_text_to_index
+from Utilities.useful_methods import log_msg, tab_text_to_index, check_directory
 from Widget_Library import window_wet_test
 from data_structures.variable_containers import WaterLevel
 from definitions import ROOT_DIR
@@ -39,9 +39,11 @@ from ui_elements.Dialogs.ui_write_cal_to_ua import WriteCalDataToUA
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
@@ -124,7 +126,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         self.setWindowTitle("Wet Test Fixture Python Interface")
 
-        path = os.path.join(ROOT_DIR, "Program_Data", "8foldlogo.ico")
+        path = os.path.join(ROOT_DIR, "8foldlogo.ico")
         self.setWindowIcon(QIcon(path))
         self.tabWidget.setCurrentIndex(0)
 
