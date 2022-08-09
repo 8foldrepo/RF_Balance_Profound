@@ -17,9 +17,9 @@ from ui_elements.my_qwidget import MyQWidget
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", 'w') as f:
+with open(ROOT_DIR + "\\logs\\wtf.log", 'w') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\Program_Data\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(ROOT_DIR + "\\logs\\wtf.log", mode="w")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)
