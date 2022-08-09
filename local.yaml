@@ -1,0 +1,44 @@
+Daq_Power_Relay:
+  port: COM6
+MT_Balance:
+  port: COM8
+Oscilloscope_timebase:
+  # Default should be .2 us for low frequency and .1 us for high frequency
+  Horizontal scale (us): .5
+  # 29 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
+  Time offset (us): 47.68
+Keysight_Oscilloscope:
+  range_mV: 200
+Debugging:
+  simulate_thermocouple: true
+  simulate_ua_pump_on: false
+  simulate_io_board: false
+Galil_Motors:
+  axes:
+    - X
+    - R
+  calibrate_ray:
+    - 12765.95
+    - 35.545
+  speeds_ray:
+    - 9.0
+    - 99
+  HomeXWithLimit: True
+Forward_Power_Meter:
+  serial_number: '11609010036'
+  cal_fact: 1
+Reflected_Power_Meter:
+  serial_number: '11612070013'
+  cal_fact: 1
+WTF_PositionParameters:
+  XHomeCoord: -267.7
+  CentreHomeTheta?: true
+  ThetaHomeCoord: -90
+  ThetaHomeEdgeCoord: -97
+  ThetaHydrophoneCoord: -180
+  ThetaLoadEnc?: false
+  ThetaPreHomeMove: -90
+  X-Element pitch (mm): 5
+  X-Element1: 0
+  X-TankInsertionPoint: 0
+  XNegativeLimitMove: 30
