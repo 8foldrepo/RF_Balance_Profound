@@ -15,3 +15,4 @@ main.spec
 Documentation/~$wtf_comparison_test.xlsx
 /dist/
 /build/
+local.yaml

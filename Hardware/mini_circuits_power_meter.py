@@ -59,6 +59,9 @@ class PowerMeter(AbstractSensor):
         self.pwr.Open_Sensor(self.serial_number)
         model_name = self.pwr.GetSensorModelName()
         serial_no = self.pwr.GetSensorSN()
+        if serial_no != self.serial_number:
+            return False, "Serial number mismatch, check config file."
+
         if len(model_name) == 20 or len(serial_no) == 20:
             self.log(level="error", message=f"{self.device_key} could not connect")
             self.connected = False
