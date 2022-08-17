@@ -1,0 +1,10 @@
+Analysis:
+  capture_rms_only: Improves speed, does not store or plot whole waveform
+  max_standard_deviation_w: limit for the standard deviation within each interval
+    for RFB test
+  samples_to_remove_at_end: Samples removed from end of each on/off interval to eliminate
+    transition
+  settling_time_s: Duration of data removed from beginning of each on/off interval
+Daq_Power_Relay:
+  port: Com port, find this in device manager
+FrequencyParameters: {}

@@ -59,6 +59,8 @@ class PowerMeter(AbstractSensor):
         self.pwr.Open_Sensor(self.serial_number)
         model_name = self.pwr.GetSensorModelName()
         serial_no = self.pwr.GetSensorSN()
+
+        # Todo: test
         if serial_no != self.serial_number:
             return False, "Serial number mismatch, check config file."
 
