@@ -14,6 +14,8 @@ class SystemInfo(MyQWidget, Ui_Form):
         super().__init__(parent=parent)
         self.parser = None
         self.setupUi(self)
+        self.HYDRO_SN_FIELD.setEnabled(False)
+        self.HYDR_DIAM_FIELD.setEnabled(False)
 
     def load_system_info(self):
         output = ""
