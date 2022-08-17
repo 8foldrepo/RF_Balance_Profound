@@ -98,6 +98,7 @@ class SimpleRFBDataLogger(QThread):
         self.c.append(reading)
         self.c_ready = True
 
+
 class SimpleSensorThread(QThread):
     """Simplified version of a sensor thread"""
     reading_signal = pyqtSignal(float)

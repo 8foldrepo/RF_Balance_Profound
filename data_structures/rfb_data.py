@@ -329,7 +329,6 @@ class RFBData:
 
         return closest_index
 
-    # TODO: UPDATE THE test RESULTS SUMMARY IN MANAGER WITH THIS
     def get_pass_result(self) -> Tuple[str, str]:
         """
         Retrieves a verdict for whether an actuator passes or fails the test. Specifically tests to ensure the
@@ -383,7 +382,7 @@ class RFBData:
             if self.times_s[len(self.times_s) - 1] < .9 * expected_test_duration:
                 return False, "Invalid test because the time data is cut off"
         except Exception as e:
-            self.log(level='Error', message="Error in data_is_valid: " + str(e))
+            print("Error in data_is_valid: " + str(e))
             return False, "Invalid test due missing time data or an error"
 
         if self.efficiency_percent is None or self.efficiency_percent == float('nan') or \

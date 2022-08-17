@@ -555,66 +555,9 @@ class GalilMotorController(AbstractMotorController):
         if not axis == 'X':
             self.log(level='error', message='Error in home x on negative limit. This function is not valid for axes '
                                             'other than X')
-
-        # Move X off of the negative limit if it is already active
-        reply, _ = self.command('TS A')  # Check status of X axis switches
-
-        if ': ' in reply:
-            reply = reply.split(': ')[1]
-        try:
-            x_negative_limit_active = not get_bit(int(reply), 2)
-        except ValueError:
-            x_negative_limit_active = False
-        if x_negative_limit_active:
-            self.position_relative_1d('X', self.config['WTF_PositionParameters']['XNegativeLimitMove'])
-
         success = self.go_to_position(['X'], [-9999], enable_ui=False)
-        self.set_speeds([1, 1])
-
-        # Issue position absolute command
-        try:
-            pa_command_str = f"PA -999999999"
-            self.command(pa_command_str)
-
-            # Issue begin motion command
-            bg_command_str = f"BG A"
-            self.command(bg_command_str)
-
-            if not success:
-                self.log(level='error', message='movement timed out')
-                self.stop_motion()
-        except gclib.GclibError as e:
-            success = False
-            stop_code = self.check_user_fault()
-            if stop_code is not None:
-                self.log(level='error', message=f"error in home x on negative limit: {stop_code}")
-            else:
-                self.log(level='error', message=f"error in home x on negative limit: {e}")
-
-        # Wait until limit is no longer pressed, then stop
-        start_time = t.time()
-        success = False
-        while t.time() - start_time < self.config[self.device_key]["move_timeout_s"]:
-            try:
-                reply, _ = self.command('TS A')  # Check status of X axis switches
-                if ': ' in reply:
-                    reply = reply.split(': ')[1]
-                try:
-                    x_negative_limit_active = not get_bit(int(reply), 2)
-                except ValueError:
-                    x_negative_limit_active = False
-
-                if not x_negative_limit_active:
-                    self.command("ST A")
-
-            except gclib.GclibError as e:
-                code = self.check_user_fault()
-                self.log(level='error', message=f"error while moving off of negative limit: {e}, {code}")
-                return False
-
         self.set_origin_1d('X', self.config['WTF_PositionParameters']['XHomeCoord'])
         self.get_position()
-
         if enable_ui:
             self.ready_signal.emit()
         return success
