@@ -48,10 +48,7 @@ class SimulatedBalance(AbstractBalance):
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
-            if self.config['Debugging']['simulate_balance_error']:
-                item = b"I"
-            else:
-                item = b"Z A"
+            item = b"Z A"
 
             if item == b"Z A":
                 self.log(level="info", message="Balance Zeroed")
@@ -81,10 +78,7 @@ class SimulatedBalance(AbstractBalance):
 
         start_time = t.time()
         while t.time() - start_time < self.timeout_s:
-            if self.config['Debugging']['simulate_balance_error']:
-                item = b"Z I"
-            else:
-                item = random.choice([b"Z S", b"Z D"])
+            item = random.choice([b"Z S", b"Z D"])
 
             if item == b"Z S" or item == b"Z D":
                 self.log(level="info", message="Balance Zeroed")
@@ -129,8 +123,6 @@ class SimulatedBalance(AbstractBalance):
 
         :return: random float value
         """
-        if self.config["Debugging"]["simulate_balance_error"]:
-            return None
 
         if not self.connected:
             self.log(level="error", message=f"{self.device_key} not connected")

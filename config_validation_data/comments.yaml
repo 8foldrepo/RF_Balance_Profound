@@ -7,4 +7,26 @@ Analysis:
   settling_time_s: Duration of data removed from beginning of each on/off interval
 Daq_Power_Relay:
   port: Com port, find this in device manager
+Forward_Power_Meter:
+  serial_number: Ensure this is the forward meter
 FrequencyParameters: {}
+Galil_Motors:
+  calibrate_ray: Steps per mm or degree
+  encoder_resolution_ray: Encoder counts per revolution
+  gearing_ray: Gear ratio between one motor turn and one turn of the UA (for theta)
+  ip_address: IP adress of the Galil on a dedicated NIC
+  speeds_ray: MM/s, degrees/s
+Keysight_AWG:
+  identifier: Model-specific str found in the Pyvisa adrees
+Reflected_Power_Meter:
+  cal_fact: (Not reccomended) Value to muliply power meter readings by
+  serial_number: Ensure this is the reflected meter
+WTF_PositionParameters:
+  CentreHomeTheta?: Causes theta homing to end on center of reflector, not edge
+  ThetaHomeCoord: The coordinate defined when homing is complete
+  ThetaHomeEdgeCoord: The difference between this and thetahomeedgecoord affects the
+    centrehometheta move
+  ThetaHydrophoneCoord: The assumed coordinate of the hydrophone in theta
+  ThetaPreHomeMove: The amount the R axis will move if the home switch is already
+    active
+  X-Element pitch (mm): Spacing between elements
