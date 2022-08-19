@@ -3,10 +3,6 @@ import time as t
 from typing import Union, Any, Tuple
 from PyQt5 import QtCore
 from Hardware.Abstract.abstract_sensor import AbstractSensor
-from definitions import POWER_METER_DLL_PATH
-
-sys.path.append(POWER_METER_DLL_PATH)
-
 # Setup power meter library (do not rearrange)
 import clr  # pythonnet
 clr.AddReference("mcl_pm_NET45")  # Reference the DLL
@@ -33,6 +29,7 @@ class PowerMeter(AbstractSensor):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.last_reading_time = None
         self.serial_number = self.config[self.device_key]["serial_number"]
+        self.log("Initializing power meter object")
         self.pwr = usb_pm()
         self.connected = False
 
@@ -52,9 +49,9 @@ class PowerMeter(AbstractSensor):
         """
         self.log(f"Attempting to connect to {self.device_key}: " + self.serial_number)
         self.pwr.Open_Sensor(self.serial_number)
+        self.log("Getting power meter name and serial number")
         model_name = self.pwr.GetSensorModelName()
         serial_no = self.pwr.GetSensorSN()
-
 
         if serial_no != self.serial_number:
             return False, "Serial number mismatch, check config file."
