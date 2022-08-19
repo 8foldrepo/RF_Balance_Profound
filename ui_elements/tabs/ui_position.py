@@ -83,7 +83,6 @@ class Position(MyQWidget, Ui_Form):
         """
         self.motors = motors
         self.populate_default_ui()
-        self.com_port = self.config[self.motors.device_key]['port']
         self.setup_signal.connect(self.motors.setup)
         self.stop_motion_signal.connect(self.motors.stop_motion)
         self.begin_motion_signal.connect(self.motors.begin_motion)

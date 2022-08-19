@@ -175,11 +175,6 @@ IF /I "!AREYOUSURE!" == "Y" (
 	copy gclib.py  C:\ProgramData\Anaconda3\envs\RF_Balanace_Profound\Lib\site-packages
 )
 
-SET /P AREYOUSURE="Install power meter DLL (to Windows\SysWOW64)? (Y/[N]): "
-IF /I "!AREYOUSURE!" == "Y" (
-	copy C:\Users\%username%\Documents\GitHub\RF_Balance_Profound\Hardware\power_meter_dlls\mcl_pm_NET45.dll C:\Windows\SysWOW64
-)
-
 SET /P AREYOUSURE="Install pycharm community (Optional, for code development)? (Y/[N]): "
 	IF /I "!AREYOUSURE!" == "Y" (
 		CD C:\Users\%username%\Documents\GitHub\Dependency_Downloads

@@ -15,6 +15,10 @@ cd dist
 
 ECHO Make sure that the version number of the config file editor is up to date
 copy "..\Config File Editor 1.2.exe"
+copy ..\readme.md
+copy "UA serial number and frequency data.txt"
+copy ..\batch_scripts\setup_user_pc.bat
+copy ..\batch_scripts\setup_development_pc.bat
 copy ..\local.yaml
 copy ..\default.yaml
 copy ..\8foldlogo.ico
@@ -47,7 +51,6 @@ cd logs
 
 fsutil file createnew wtf.log 0
 
-cd ..
 cd ..
 cd ..
 del build

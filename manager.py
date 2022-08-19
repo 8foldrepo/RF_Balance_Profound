@@ -6,6 +6,8 @@ import time as t
 import traceback
 from collections import OrderedDict
 from typing import List, Tuple, Union
+
+import nidaqmx.errors
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
@@ -459,7 +461,10 @@ class Manager(QThread):
                     else:
                         self.advance_script()
                 else:
-                    self.update_sensors()
+                    try:
+                        self.update_sensors()
+                    except nidaqmx.errors.DaqError as e:
+                        self.log(level='error', message=f"Device is already in use, use task manager to exit all instances of this application.")
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
@@ -1880,7 +1885,7 @@ class Manager(QThread):
         successful_go_home = False
         if axis_to_home == "All Axes":
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
-            if not cont:
+            if not cont or self.abort_immediately_variable:
                 return False
             successful_go_home = self.Motors.go_home(enable_ui=False, theta_pre_home_move=theta_pre_home_move)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
@@ -1895,7 +1900,7 @@ class Manager(QThread):
                 return False
         elif axis_to_home == 'X':
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
-            if not cont:
+            if not cont or self.abort_immediately_variable:
                 return False
             successful_go_home = self.Motors.go_home_1d("X", enable_ui=False, theta_pre_home_move=False)
             if successful_go_home and show_prompt:
@@ -2329,13 +2334,14 @@ class Manager(QThread):
             if not cont:  # exits if abort flag is true or __refresh_rfb_tab fails
                 return False
 
-            failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
-            if failed:
-                cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
-                if not cont:
-                    # rfb_logger has been monitoring and recording test data behind the scenes
-                    self.__wrap_up_rfb_logger()
-                    return False
+            if self.config['Test_Settings']['check_for_failure_realtime']:
+                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                if failed:
+                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                    if not cont:
+                        # rfb_logger has been monitoring and recording test data behind the scenes
+                        self.__wrap_up_rfb_logger()
+                        return False
 
         while current_cycle <= on_off_cycles:  # beginning of our cycle loop
             cycle_start_time = t.time()
@@ -2366,13 +2372,14 @@ class Manager(QThread):
                 if not cont:
                     return False
 
-                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
-                if failed:
-                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
-                    if not cont:
-                        # rfb_logger has been monitoring and recording test data behind the scenes
-                        self.__wrap_up_rfb_logger()
-                        return False
+                if self.config['Test_Settings']['check_for_failure_realtime']:
+                    failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                    if failed:
+                        cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                        if not cont:
+                            # rfb_logger has been monitoring and recording test data behind the scenes
+                            self.__wrap_up_rfb_logger()
+                            return False
 
             # Turn off AWG
             self.log(f"Turning off AWG T = {'%.2f' % (t.time() - start_time)}")
@@ -2392,13 +2399,14 @@ class Manager(QThread):
                 if not cont:
                     return False
 
-                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
-                if failed:
-                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
-                    if not cont:
-                        # rfb_logger has been monitoring and recording test data behind the scenes
-                        self.__wrap_up_rfb_logger()
-                        return False
+                if self.config['Test_Settings']['check_for_failure_realtime']:
+                    failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                    if failed:
+                        cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                        if not cont:
+                            # rfb_logger has been monitoring and recording test data behind the scenes
+                            self.__wrap_up_rfb_logger()
+                            return False
 
             current_cycle += 1
 
@@ -2773,10 +2781,18 @@ class Manager(QThread):
 
         leeway_percent = 5
 
-        eff_ratio = self.rfb_data.acoustic_power_on_mean - self.rfb_data.acoustic_power_off_mean / \
-                    self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean
+        if not self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean == 0:
+            eff_ratio = self.rfb_data.acoustic_power_on_mean - self.rfb_data.acoustic_power_off_mean / \
+                        self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean
+        else:
+            self.log(level='error', message='Invalid efficiency ratio')
+            return True, 'Invalid efficiency ratio'
 
-        min_eff_ratio = Pa_max / Pf_max
+        if not Pf_max == 0:
+            min_eff_ratio = Pa_max / Pf_max
+        else:
+            self.log(level='error', message = "Pf_max is 0, cannot calculate min_eff_ratio")
+            return True, "Pf_max is 0, cannot calculate min_eff_ratio"
 
         if eff_ratio < min_eff_ratio - leeway_percent / 100:
             self.log(level='error', message=f"Efficiency percentage{eff_ratio * 100} "
@@ -2785,11 +2801,17 @@ class Manager(QThread):
             feedback = "Efficiency ratio is less than the minimum efficiency ratio"
             return failed, feedback
 
-        if self.rfb_data.reflected_power_on_mean / self.rfb_data.forward_power_on_mean > (
-                ref_limit + leeway_percent) / 100:
-            self.log(level='error', message=f"Reflected power is greater than {ref_limit * 100}%")
+        if not self.rfb_data.forward_power_on_mean == 0:
+            if self.rfb_data.reflected_power_on_mean / self.rfb_data.forward_power_on_mean > (
+                    ref_limit + leeway_percent) / 100:
+                self.log(level='error', message=f"Reflected power is greater than {ref_limit * 100}%")
+                failed = True
+                feedback = "Reflected power is greater than the maximum reflected power"
+                return failed, feedback
+        else:
+            self.log(level='error', message="Forward power is zero")
             failed = True
-            feedback = "Reflected power is greater than the maximum reflected power"
+            feedback = "Forward power is zero"
             return failed, feedback
 
         return False, ""

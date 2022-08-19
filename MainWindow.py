@@ -958,6 +958,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         dlg = UARetractDialog(config=self.config)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_immediately)
+        dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
 
     @pyqtSlot(list, list)

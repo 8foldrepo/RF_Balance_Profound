@@ -3,11 +3,6 @@ Analysis:
   max_standard_deviation_w: 0.02
   samples_to_remove_at_end: 3
   settling_time_s: 2
-Oscilloscope_timebase:
-  # Default should be .2 us for low frequency and .1 us for high frequency
-  Horizontal scale (us): .2
-  # 29 us for low frequency and 34.75 us for high frequency (depending on hydrophone)
-  Time offset (us): 29
 Daq_Power_Relay:
   on_by_default: true
   port: COM3
@@ -18,7 +13,7 @@ Debugging:
   oscilloscope_realtime_capture: false
   print_detailed_verbose: false
   sensor_refresh_interval_s: 0.5
-  simulate_awg: false #Note: this setting also adds simulated values to the balance and power meter readings
+  simulate_awg: false
   simulate_balance: false
   simulate_io_board: false
   simulate_motors: false
@@ -27,16 +22,11 @@ Debugging:
   simulate_sensors: false
   simulate_thermocouple: false
   simulate_ua_error: false
-  simulate_ua_interface: false
-
+  simulate_ua_interface: true
   simulate_ua_pump_on: true
-Test_Settings:
-  Above_Level_Acceptable: true
-  abort_on_fail: false
-  drain_before_retract: true
 Forward_Power_Meter:
+  cal_fact: 1.0
   serial_number: '11506210019'
-  cal_fact: 1.1271137
 FrequencyParameters:
   HF:
     HF.Amplitude(mVpp): 50.0
@@ -52,45 +42,46 @@ FrequencyParameters:
     CoarseIncr(MHz): 0.1
     FineIncr(MHz): 0.01
 Galil_Motors:
+  HomeXWithLimit: false
   axes:
-    - X
-    - R
+  - X
+  - R
   calibrate_ray:
-    - 12765.95
-    - 71.09
+  - 12765.95
+  - 71.09
   enable_homing_ray:
-    - true
-    - true
+  - true
+  - true
   encoder_installed_ray:
-    - false
-    - true
+  - false
+  - true
   encoder_resolution_ray:
-    - 4000
-    - 1000
+  - 4000
+  - 1000
   gearing_ray:
-    - 1
-    - 1.92
+  - 1
+  - 1.92
   increment_ray:
-    - 5
-    - 5
+  - 5
+  - 5
   ip_address: 192.168.42.100
   jog_speed: 1
   move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
+  port: com7
   reverse_ray:
-    - false
-    - false
+  - false
+  - false
   rotational_ray:
-    - false
-    - true
+  - false
+  - true
   scan_speed: 1
   speeds_ray:
-    - 9.0
-    - 99.0
+  - 9.0
+  - 9.0
   time_limit_s: 2
   timeout_s: 0.1
-  HomeXWithLimit: False
 Keysight_AWG:
   amplitude_V: 0.2
   burst_cycles: 4000
@@ -112,28 +103,35 @@ Keysight_Oscilloscope:
   ext_trigger: true
   identifier: '0x179B'
   range_mV: 300
-  retries: 5 #Zero for unlimited retries
+  retries: 5
   set_on_startup: true
   timeout_s: 1
 MT_Balance:
   port: COM4
   timeout_s: 10
+Oscilloscope_timebase:
+  Horizontal scale (us): 0.2
+  Time offset (us): 29
 Paths:
-  #Note: if a drive letter and colon is not provided the program will append the path to the repository path
   UA Serial numbers file: \UA serial number and frequency data.txt
   UA results root directory: C:\Users\Public\UA results
 Reflected_Power_Meter:
-  serial_number: '11408040323'
   cal_fact: 1
+  serial_number: '11408040323'
 Sequence pass/fail:
   Dialog timeout (s): 0
-  Interrupt action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
-  Pass fail action: Prompt for retry #No dialog (abort), Prompt for retry, Retry automatically
-  Retries: 5 #Zero for unlimited retries
+  Interrupt action: Prompt for retry
+  Pass fail action: Prompt for retry
+  Retries: 5
 Software_Version: '1.0'
 TempMon:
   DeviceName: TankTemp
   TCoupleType: J
+Test_Settings:
+  Above_Level_Acceptable: true
+  abort_on_fail: false
+  check_for_failure_realtime: false
+  drain_before_retract: true
 UAInterface:
   timeout_s: 2.0
 User Accounts:
@@ -142,39 +140,39 @@ User Accounts:
   Operator: Operator
 VIX_Motors:
   axes:
-    - X
-    - R
+  - X
+  - R
   calibrate_ray:
-    - 30.0
-    - 15.0
+  - 30.0
+  - 15.0
   enable_homing_ray:
-    - true
-    - true
+  - true
+  - true
   encoder_installed_ray:
-    - false
-    - true
+  - false
+  - true
   encoder_resolution_ray:
-    - 4000
-    - 1000
+  - 4000
+  - 1000
   gearing_ray:
-    - 1
-    - 1.92
+  - 1
+  - 1.92
   increment_ray:
-    - 5
-    - 2
+  - 5
+  - 2
   move_timeout_s: 300
   movement_mode: Distance
   on_by_default: true
   port: COM7
   reverse_ray:
-    - false
-    - false
+  - false
+  - false
   rotational_ray:
-    - false
-    - true
+  - false
+  - true
   speeds_ray:
-    - 5.0
-    - 5.0
+  - 5.0
+  - 5.0
   time_limit_s: 2
   timeout_s: 0.1
 WTF_DIO:
