@@ -24,7 +24,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         if resource_manager is not None:
             self.rm = resource_manager
         else:
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
         self.inst = None
 
     def connect_hardware(self) -> Tuple[bool, str]:
@@ -34,7 +39,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         try:
             resources = self.rm.list_resources()
         except pyvisa.errors.InvalidSession:
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
             resources = self.rm.list_resources()
 
         self.inst = None

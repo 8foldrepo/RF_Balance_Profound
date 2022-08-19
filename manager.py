@@ -261,7 +261,12 @@ class Manager(QThread):
             self.Oscilloscope = SimulatedOscilloscope(config=self.config)
         else:
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.config["Debugging"]["simulate_ua_interface"] and simulate_access:
@@ -279,7 +284,12 @@ class Manager(QThread):
             from Hardware.keysight_awg import KeysightAWG
 
             if self.rm is None:
-                self.rm = pyvisa.ResourceManager()
+                try:
+                    # Try to reference the Visa library dll
+                    self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+                except:
+                    # If it fails, try to reference the Visa library dll in the default path
+                    self.rm = pyvisa.ResourceManager()
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
 
         if self.config["Debugging"]["simulate_balance"] and simulate_access:

@@ -9,7 +9,6 @@ sys.path.append(POWER_METER_DLL_PATH)
 
 # Setup power meter library (do not rearrange)
 import clr  # pythonnet
-
 clr.AddReference("mcl_pm_NET45")  # Reference the DLL
 # noinspection PyUnresolvedReferences
 from mcl_pm_NET45 import usb_pm  # This can still run if this shows a red underline
@@ -33,14 +32,9 @@ class PowerMeter(AbstractSensor):
     def __init__(self, config, parent=None, device_key="Forward_Power_Meter"):
         super().__init__(parent=parent, config=config, device_key=device_key)
         self.last_reading_time = None
-        self.serial_number = None
+        self.serial_number = self.config[self.device_key]["serial_number"]
         self.pwr = usb_pm()
         self.connected = False
-        self.fields_setup()
-
-    def fields_setup(self) -> None:
-        """Sets the class' serial number to the one specified in the config file"""
-        self.serial_number = self.config[self.device_key]["serial_number"]
 
     # def declare_methods(self):
     #     hllApiProto = ctypes.WINFUNCTYPE(
@@ -56,11 +50,12 @@ class PowerMeter(AbstractSensor):
         Sets the model name, serial number, power average, frequency,
         and format of the power meter. Also sends connected signals.
         """
+        self.log(f"Attempting to connect to {self.device_key}: " + self.serial_number)
         self.pwr.Open_Sensor(self.serial_number)
         model_name = self.pwr.GetSensorModelName()
         serial_no = self.pwr.GetSensorSN()
 
-        # Todo: test
+
         if serial_no != self.serial_number:
             return False, "Serial number mismatch, check config file."
 
