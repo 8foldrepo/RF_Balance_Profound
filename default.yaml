@@ -78,8 +78,8 @@ Galil_Motors:
   - true
   scan_speed: 1
   speeds_ray:
-  - 9.0
-  - 9.0
+  - 5.0
+  - 30.0
   time_limit_s: 2
   timeout_s: 0.1
   reverse_theta_home_direction: true
