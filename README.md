@@ -168,6 +168,11 @@ Use NI Max to look at connected devices.
    "Use a specific address", type 192.168.3.1, and use the default subnet mask: 255.255.255.0. To confirm the device is
    connected, go to command prompt and type ping 192.168.3.3. All 4 bytes should be received. Note that the ip address
    of the device in the code differs from the ip address in control panel. I am not sure why this works, but it does.
+7. Finally, Identify which network adapter in control panel is connected to the galil box.
+   right click it and click properties. Uncheck all but Internet Protocol Version 4
+   Select the Internet Protocol Version 4 line and click properties.
+   Select "use the following IP address". 
+   set IP address to 192.168.42.2 and the subnet to 255.255.255.0
 
 ### Tools for troubleshooting/testing hardware
 

@@ -62,7 +62,8 @@ class DIOBoard(AbstractIOBoard):
                 if str(e) == 'Specified operation cannot be performed when there are no channels in the task':
                     self.log(level='error', message='Channel not found')
                 elif 'Device identifier is invalid' in str(e):
-                    self.log(level='error', message='Device not found, check connection and make sure device name in the configuration matches the device name in the NI MAX')
+                    self.log(level='error',
+                             message='Device not found, check connection and make sure device name in the configuration matches the device name in the NI MAX')
                 else:
                     self.log(level='error', message=f'Unknown error {str(e)}')
                 return None
@@ -270,5 +271,5 @@ class DIOBoard(AbstractIOBoard):
 
 if __name__ == '__main__':
     dio = DIOBoard(config=None)
-    dio.activate_relay_channel(1)
+    dio.activate_relay_channel(4)
     t.sleep(1000)

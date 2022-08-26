@@ -31,8 +31,8 @@ YB ,400
 
 AGB=2
 
-# Increase amplifier gain for B
-AGA=2
+# Decrease amplifier gain for B
+AGB=0
 
 # Enable Low current stepper mode for B
 LCB=1
@@ -40,8 +40,13 @@ LCB=1
 #Change polarity of limit inputs and home switches
 CN1,1
 
+#Disable limits for B
+LDB=3
+
 # set homing velocity
 HV 30000, 3000
 
 # Save settings
 BN
+
+Reverse theta motor in GDK (so positive causes the UA to rotate from the hydrophone to the balance)

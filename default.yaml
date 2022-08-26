@@ -22,7 +22,7 @@ Debugging:
   simulate_sensors: false
   simulate_thermocouple: false
   simulate_ua_error: false
-  simulate_ua_interface: true
+  simulate_ua_interface: false
   simulate_ua_pump_on: true
 Forward_Power_Meter:
   cal_fact: 1.0
@@ -82,6 +82,7 @@ Galil_Motors:
   - 9.0
   time_limit_s: 2
   timeout_s: 0.1
+  reverse_theta_home_direction: true
 Keysight_AWG:
   amplitude_V: 0.2
   burst_cycles: 4000

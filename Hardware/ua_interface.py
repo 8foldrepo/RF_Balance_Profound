@@ -77,6 +77,7 @@ class UAInterface(AbstractUAInterface):
     def read_data(self) -> Tuple[List[str], str, int]:
         """Sends command to read full data from ua interface, returns device feedback, firmware, and status"""
         output = self.__get_read_command_output()
+        print(output)
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], '', -1)
