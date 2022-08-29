@@ -8,13 +8,12 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(646, 649)
+        Form.resize(646, 688)
         self.save_config_button = QtWidgets.QPushButton(Form)
-        self.save_config_button.setGeometry(QtCore.QRect(260, 600, 201, 41))
+        self.save_config_button.setGeometry(QtCore.QRect(230, 600, 201, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.save_config_button.setFont(font)
@@ -685,6 +684,17 @@ class Ui_Form(object):
         self.sys_config_tooltip = QtWidgets.QWidget(Form)
         self.sys_config_tooltip.setGeometry(QtCore.QRect(0, 0, 644, 40))
         self.sys_config_tooltip.setObjectName("sys_config_tooltip")
+        self.label = QtWidgets.QLabel(self.sys_config_tooltip)
+        self.label.setGeometry(QtCore.QRect(10, 10, 611, 20))
+        self.label.setObjectName("label")
+        self.config_editor_button = QtWidgets.QPushButton(Form)
+        self.config_editor_button.setGeometry(QtCore.QRect(440, 600, 201, 41))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.config_editor_button.setFont(font)
+        self.config_editor_button.setStyleSheet("background-color:green\n"
+"")
+        self.config_editor_button.setObjectName("config_editor_button")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -696,8 +706,7 @@ class Ui_Form(object):
         self.label_94.setText(_translate("Form", "UA results root directory"))
         self.label_97.setText(_translate("Form", "UA Serial numbers file"))
         self.ua_results_directory.setText(_translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA results"))
-        self.ua_serial_numbers_path.setText(
-            _translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"))
+        self.ua_serial_numbers_path.setText(_translate("Form", "C:\\Users\\Isaiah\\OneDrive\\Documents\\UA Serial Numbers\\Serial numbers.txt"))
         self.interrupt_action.setItemText(0, _translate("Form", "No dialog (abort)"))
         self.interrupt_action.setItemText(1, _translate("Form", "Prompt for retry"))
         self.interrupt_action.setItemText(2, _translate("Form", "Retry automatically"))
@@ -748,18 +757,19 @@ class Ui_Form(object):
         self.label_82.setText(_translate("Form", "LF.Amplitude(mVpp)"))
         self.label_80.setText(_translate("Form", "LF.BurstCount"))
         self.label_84.setText(_translate("Form", "Search.CoarseIncr"))
-        self.sys_config_tooltip.setToolTip(_translate("Form",
-                                                      "In this tab, you may see and set several parameters that are stored in the configuration\n"
-                                                      "                    (default/local.yaml) for the application\n"
-                                                      "                "))
+        self.sys_config_tooltip.setToolTip(_translate("Form", "In this tab, you may see and set several parameters that are stored in the configuration\n"
+"                    (default/local.yaml) for the application\n"
+"                "))
+        self.label.setText(_translate("Form", "Note: This interface is included for Legacy Purposes. For More advanced configuration editing, click \"Config Editor\""))
+        self.config_editor_button.setText(_translate("Form", "Config Editor"))
 
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
     Form = QtWidgets.QWidget()
     ui = Ui_Form()
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())
+

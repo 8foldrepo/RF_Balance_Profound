@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>646</width>
-    <height>649</height>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QPushButton" name="save_config_button">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>230</x>
      <y>600</y>
      <width>201</width>
      <height>41</height>
@@ -1735,6 +1735,46 @@
     <string>In this tab, you may see and set several parameters that are stored in the configuration
                     (default/local.yaml) for the application
                 </string>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>611</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Note: This interface is included for Legacy Purposes. For More advanced configuration editing, click &quot;Config Editor&quot;</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="config_editor_button">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>600</y>
+     <width>201</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:green
+</string>
+   </property>
+   <property name="text">
+    <string>Config Editor</string>
    </property>
   </widget>
  </widget>

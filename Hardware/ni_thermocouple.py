@@ -30,12 +30,17 @@ class NIThermocouple(AbstractSensor):
             with nidaqmx.Task() as task:
                 task.ai_channels.add_ai_thrmcpl_chan(f"{self.name}/ai0")
             self.connected = True
+            feedback = ''
+
         except Exception as e:
-            self.log(level="error", message=f"Error connecting to thermocouple: {e}")
+            feedback = f'Could not connect to thermocouple, make sure it is connected and the device name in ' \
+                       f'NI MAX matches the name in the config editor.: {e}'
+            self.log(level="error", message=feedback)
             self.connected = False
 
+
         self.connected_signal.emit(self.connected)
-        return self.connected, ""
+        return self.connected, feedback
 
     def disconnect_hardware(self) -> None:
         """

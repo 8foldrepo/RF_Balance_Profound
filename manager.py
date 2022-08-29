@@ -1,10 +1,13 @@
 import logging
+import os
 import re
 import sys
 import time as t
 import traceback
 from collections import OrderedDict
 from typing import List, Tuple, Union
+
+import nidaqmx.errors
 import numpy as np
 import pyvisa
 from PyQt5 import QtCore
@@ -25,7 +28,7 @@ from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
 from Utilities.test_data_helper_methods import generate_calibration_data
 from Utilities.useful_methods import log_msg, get_element_distances, find_int, cast_as_bool, mean_of_non_none_values, \
-    is_number
+    is_number, check_directory
 from data_structures.rfb_data import RFBData
 from data_structures.test_data import TestData
 
@@ -34,9 +37,11 @@ from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 wtf_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 wtf_logger.addHandler(file_handler)
 wtf_logger.setLevel(logging.INFO)
@@ -258,7 +263,12 @@ class Manager(QThread):
             self.Oscilloscope = SimulatedOscilloscope(config=self.config)
         else:
             from Hardware.keysight_oscilloscope import KeysightOscilloscope
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
             self.Oscilloscope = KeysightOscilloscope(config=self.config, resource_manager=self.rm)
 
         if self.config["Debugging"]["simulate_ua_interface"] and simulate_access:
@@ -276,7 +286,12 @@ class Manager(QThread):
             from Hardware.keysight_awg import KeysightAWG
 
             if self.rm is None:
-                self.rm = pyvisa.ResourceManager()
+                try:
+                    # Try to reference the Visa library dll
+                    self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+                except:
+                    # If it fails, try to reference the Visa library dll in the default path
+                    self.rm = pyvisa.ResourceManager()
             self.AWG = KeysightAWG(config=self.config, resource_manager=self.rm)
 
         if self.config["Debugging"]["simulate_balance"] and simulate_access:
@@ -446,7 +461,10 @@ class Manager(QThread):
                     else:
                         self.advance_script()
                 else:
-                    self.update_sensors()
+                    try:
+                        self.update_sensors()
+                    except nidaqmx.errors.DaqError as e:
+                        self.log(level='error', message=f"Device is already in use, use task manager to exit all instances of this application.")
 
             # Show script complete dialog whenever a script finishes
             if not self.currently_scripting and self.was_scripting:
@@ -1363,19 +1381,29 @@ class Manager(QThread):
                 self.abort_immediately()
                 return False
 
-        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
-                              increment=theta_increment_degrees,
-                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
-                              go_to_peak=True, update_element_position=True, data_storage=data_storage,
+        success = self.Motors.go_to_position(['R'], [-180])
+        if not success:
+            cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                           error_detail='Theta movement failed in find_element')
+            if not cont:
+                self.abort_immediately
+                return False
+
+        # Home X
+        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
+                              ref_position=assumed_x_coordinate,
+                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
                               acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
             self.abort_immediately()
             return False
 
-        cont = self.scan_axis(self.element, axis='X', num_points=x_points, increment=x_increment_mm,
-                              ref_position=assumed_x_coordinate,
-                              go_to_peak=True, data_storage=data_storage, update_element_position=True,
+        # Home Theta
+        cont = self.scan_axis(self.element, axis='Theta', num_points=theta_points,
+                              increment=theta_increment_degrees,
+                              ref_position=self.config["WTF_PositionParameters"]["ThetaHydrophoneCoord"],
+                              go_to_peak=True, update_element_position=True, data_storage=data_storage,
                               acquisition_type=acquisition_type,
                               averages=averages, storage_location=storage_location)
         if not cont:
@@ -1441,8 +1469,6 @@ class Manager(QThread):
         else:
             self.sequence_pass_fail(action_type='Interrupt action',
                                     error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
-
-
 
         self.oscilloscope_channel = scope_channel
 
@@ -1859,7 +1885,7 @@ class Manager(QThread):
         successful_go_home = False
         if axis_to_home == "All Axes":
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
-            if not cont:
+            if not cont or self.abort_immediately_variable:
                 return False
             successful_go_home = self.Motors.go_home(enable_ui=False, theta_pre_home_move=theta_pre_home_move)
             self.test_data.log_script(['', "Home all", f"X={self.Motors.coords_mm[0]}; "
@@ -1874,7 +1900,7 @@ class Manager(QThread):
                 return False
         elif axis_to_home == 'X':
             cont = self.retract_ua_warning()  # launch the retracting UA in the x direction warning box
-            if not cont:
+            if not cont or self.abort_immediately_variable:
                 return False
             successful_go_home = self.Motors.go_home_1d("X", enable_ui=False, theta_pre_home_move=False)
             if successful_go_home and show_prompt:
@@ -2299,7 +2325,7 @@ class Manager(QThread):
             # Handle logger error if there is one
             if self.rfb_logger_error is not None:
                 cont = self.sequence_pass_fail(action_type='Interrupt action',
-                                               error_detail=f'Error in measure_element_efficiency_rfb for element '
+                                               error_detail=f'measure_element_efficiency_rfb terminated early for element '
                                                             f'{self.element}: {self.rfb_logger_error}')
                 if not cont:
                     return False
@@ -2308,6 +2334,15 @@ class Manager(QThread):
             if not cont:  # exits if abort flag is true or __refresh_rfb_tab fails
                 return False
 
+            if self.config['Test_Settings']['check_for_failure_realtime']:
+                failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                if failed:
+                    cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                    if not cont:
+                        # rfb_logger has been monitoring and recording test data behind the scenes
+                        self.__wrap_up_rfb_logger()
+                        return False
+
         while current_cycle <= on_off_cycles:  # beginning of our cycle loop
             cycle_start_time = t.time()
 
@@ -2315,7 +2350,12 @@ class Manager(QThread):
             if 1 <= self.IO_Board.get_active_relay_channel() <= 10 and self.IO_Board.power_relay.on:
                 self.AWG.set_output(True)
             else:
-                self.sequence_pass_fail(action_type='Interrupt action', error_detail="Could not set AWG on because the IO board has no channel active. Please restart the program.")
+                cont = self.sequence_pass_fail(action_type='Interrupt action',
+                                               error_detail="Could not set AWG on because the "
+                                                            "IO board has no channel active. "
+                                                            "Please restart the program.")
+                if not cont:
+                    return False
 
             # for the duration of rfb on time
             while t.time() - cycle_start_time < rfb_on_time:
@@ -2331,6 +2371,15 @@ class Manager(QThread):
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
+
+                if self.config['Test_Settings']['check_for_failure_realtime']:
+                    failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                    if failed:
+                        cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                        if not cont:
+                            # rfb_logger has been monitoring and recording test data behind the scenes
+                            self.__wrap_up_rfb_logger()
+                            return False
 
             # Turn off AWG
             self.log(f"Turning off AWG T = {'%.2f' % (t.time() - start_time)}")
@@ -2349,6 +2398,15 @@ class Manager(QThread):
                 cont = self.__refresh_rfb_tab()
                 if not cont:
                     return False
+
+                if self.config['Test_Settings']['check_for_failure_realtime']:
+                    failed, feedback = self.check_for_failure_realtime(Pa_max, Pf_max, reflection_limit)
+                    if failed:
+                        cont = self.sequence_pass_fail(action_type='Pass fail action', error_detail=feedback)
+                        if not cont:
+                            # rfb_logger has been monitoring and recording test data behind the scenes
+                            self.__wrap_up_rfb_logger()
+                            return False
 
             current_cycle += 1
 
@@ -2381,8 +2439,13 @@ class Manager(QThread):
         # prompt user if test failed
         if test_result.upper() == 'FAIL':
             # give user chance to retry, continue, or abort
+            if frequency_range == FrequencyRange.low_frequency:
+                freq_str = 'LF'
+            else:
+                freq_str = 'HF'
+
             cont = self.sequence_pass_fail(action_type='Pass fail action',
-                                           error_detail=f'Element_{self.element:02} Failed efficiency test: {comment}')
+                                           error_detail=f'{freq_str} {comment}')
             if not cont:
                 return False
         elif test_result.upper() == 'DNF':  # if test did not finish or never started
@@ -2566,7 +2629,7 @@ class Manager(QThread):
                     self.log("no entry for Sequence pass/fail:Retries in config, defaulting to 5 retries", self.warn)
                     max_retries = 5
                 if self.retry_count < max_retries:
-                    self.retry_if_retry_enabled(action_type)
+                    self.retry_automatically(action_type)
                 else:
                     self.test_data.element_failed(element_number=self.element, description=error_detail)
                     if self.config["Test_Settings"]["abort_on_fail"]:
@@ -2584,9 +2647,24 @@ class Manager(QThread):
                 return False
 
             elif self.config[k1][action_type].upper() == 'PROMPT FOR RETRY':
-                cont = self.prompt_for_retry(error_detail)
-                if not cont:
-                    return False
+                if self.step_index != self.last_step_index_retried:
+                    self.retry_count = 0
+                self.last_step_index_retried = self.step_index
+
+                # Retry automatically 1 time
+                max_retries = 1
+
+                if self.retry_count < max_retries:
+                    self.retry_automatically(action_type)
+                else:
+                    cont = self.prompt_for_retry(error_detail)
+                    if not cont:
+                        return False
+                    else:
+                        self.log(level='info', message='Continue clicked, proceeding with test')
+                        return True
+                return False
+
             else:
                 self.log(
                     "invalid setting for Sequence pass/fail : interrupt action in config file; "
@@ -2606,11 +2684,9 @@ class Manager(QThread):
         if not self.retry_clicked_variable:
             self.test_data.element_failed(element_number=self.element, description=error_detail)
 
-        if not cont:
-            return False
-        return True
+        return cont
 
-    def retry_if_retry_enabled(self, action_type: str):
+    def retry_automatically(self, action_type: str):
         if action_type != 'Interrupt action' and action_type != 'Pass fail action':
             self.log("invalid type passed for action_type in retry_if_retry_enabled, aborting", str(self.warn))
             self.abort_after_step()
@@ -2692,6 +2768,53 @@ class Manager(QThread):
         self.enable_ui_signal.emit(True)
         self.set_abort_buttons_enabled_signal.emit(False)
         return True
+
+    def check_for_failure_realtime(self, Pa_max, Pf_max, ref_limit) -> Tuple[bool, str]:
+        """
+        Checks if the current step has failed. If it has, it will return True and the error message.
+        If it has not, it will return False and an empty string.
+        """
+
+        Pa_max = float(Pa_max)
+        Pf_max = float(Pf_max)
+        ref_limit = float(ref_limit)
+
+        leeway_percent = 5
+
+        if not self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean == 0:
+            eff_ratio = self.rfb_data.acoustic_power_on_mean - self.rfb_data.acoustic_power_off_mean / \
+                        self.rfb_data.forward_power_on_mean - self.rfb_data.reflected_power_on_mean
+        else:
+            self.log(level='error', message='Invalid efficiency ratio')
+            return True, 'Invalid efficiency ratio'
+
+        if not Pf_max == 0:
+            min_eff_ratio = Pa_max / Pf_max
+        else:
+            self.log(level='error', message = "Pf_max is 0, cannot calculate min_eff_ratio")
+            return True, "Pf_max is 0, cannot calculate min_eff_ratio"
+
+        if eff_ratio < min_eff_ratio - leeway_percent / 100:
+            self.log(level='error', message=f"Efficiency percentage{eff_ratio * 100} "
+                                            f"is less than {min_eff_ratio * 100}%")
+            failed = True
+            feedback = "Efficiency ratio is less than the minimum efficiency ratio"
+            return failed, feedback
+
+        if not self.rfb_data.forward_power_on_mean == 0:
+            if self.rfb_data.reflected_power_on_mean / self.rfb_data.forward_power_on_mean > (
+                    ref_limit + leeway_percent) / 100:
+                self.log(level='error', message=f"Reflected power is greater than {ref_limit * 100}%")
+                failed = True
+                feedback = "Reflected power is greater than the maximum reflected power"
+                return failed, feedback
+        else:
+            self.log(level='error', message="Forward power is zero")
+            failed = True
+            feedback = "Forward power is zero"
+            return failed, feedback
+
+        return False, ""
 
 
 class AbortException(Exception):

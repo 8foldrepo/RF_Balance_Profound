@@ -17,11 +17,6 @@ class SimulatedMotorController(AbstractMotorController):
         self.fields_setup()
 
     def go_home_1d(self, axis, enable_ui: bool = True, theta_pre_home_move: bool = True) -> bool:
-        if self.config['Debugging']['simulate_motor_error']:
-            if enable_ui:
-                self.ready_signal.emit()
-            return False
-
         # start_time = t.time()
         #
         # while t.time()-start_time < 20:
@@ -142,22 +137,12 @@ class SimulatedMotorController(AbstractMotorController):
         self.coords_mm[0] = 273
         self.get_position()
 
-        if self.config['Debugging']['simulate_motor_error']:
-            if enable_ui:
-                self.ready_signal.emit()
-            return False
-
         if enable_ui:
             self.ready_signal.emit()
         return True
 
     @pyqtSlot(list, list)
     def go_to_position(self, axes: list, coordinates_mm: list, enable_ui: bool = True) -> bool:
-        if self.config["Debugging"]["simulate_motor_error"]:
-            if enable_ui:
-                self.ready_signal.emit()
-            return False
-
         if not self.connected:
             self.log(level='error', message='Go to position failed, Simulated motor not connected')
             return False

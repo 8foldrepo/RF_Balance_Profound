@@ -8,10 +8,12 @@ local.yaml
 .vscode/settings.json
 .idea/RF_Balance_Profound.iml
 .idea/sonarlint/issuestore/*
-logs/EfficiencyTest/*
-logs/wtf.log
+Logs/EfficiencyTest/*
+Logs/wtf.log
 Utilities/testdelete.py
-build/
-dist/
 main.spec
 Documentation/~$wtf_comparison_test.xlsx
+/dist/
+/build/
+local.yaml
+RF Balance Profound.zip

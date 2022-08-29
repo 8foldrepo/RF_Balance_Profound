@@ -77,6 +77,7 @@ class UAInterface(AbstractUAInterface):
     def read_data(self) -> Tuple[List[str], str, int]:
         """Sends command to read full data from ua interface, returns device feedback, firmware, and status"""
         output = self.__get_read_command_output()
+        print(output)
         if output is None:
             self.log(level="Error", message="UA interface timed out due to invalid byte(s), could be a faulty cable?")
             self.cal_data_signal.emit([], '', -1)
@@ -132,6 +133,7 @@ class UAInterface(AbstractUAInterface):
             ua_calibration_data = self.ua_calibration_data
 
         output = self.get_write_command_output(ua_calibration_data)
+        self.log('command output: ' + output)
 
         if "status=-2" in output:
             self.log(level='error', message='WTFIB is not connected (check power and ethernet connection)')
@@ -176,7 +178,7 @@ class UAInterface(AbstractUAInterface):
         high_eff_string = f'\"{" ".join(calibration_data[17:27])}\"'
 
         command_str = self.path_of_exe + " " + self.ip_address + " " + first_string + " " + low_eff_string + " " + high_eff_string
-
+        self.log('write command to UA: ' + command_str)
         start_time = t.time()
         # Try to get usable data until timeout occurs
 

@@ -13,11 +13,6 @@ class SimulatedThermocouple(AbstractSensor):
     @abstractmethod
     def connect_hardware(self):
         self.connected = True
-        try:
-            if self.config['Debugging']['simulate_thermocouple_error']:
-                self.connected = False
-        except KeyError:
-            pass
         self.connected_signal.emit(self.connected)
         return self.connected, ""
 
@@ -28,8 +23,6 @@ class SimulatedThermocouple(AbstractSensor):
 
     @abstractmethod
     def get_reading(self):
-        if self.config["Debugging"]["simulate_thermocouple_error"]:
-            return None
 
         noise = 0.1 * random.random()
         signal = 23.2 + noise

@@ -17,7 +17,12 @@ class KeysightAWG(AbstractAWG):
         if resource_manager is not None:
             self.rm = resource_manager
         else:
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
 
         self.address = None
         self.inst = None

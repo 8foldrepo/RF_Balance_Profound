@@ -87,9 +87,7 @@ class RFBData:
 
         # List containing an average during each of the intervals while the UA was on
         self.acoustic_power_on_means, self.p_on_rand_unc, self.p_on_total_unc, self.p_on_standard_deviation, \
-        std_too_high = (
-            self.analyze_intervals(self.acoustic_powers_w, self.on_indices)
-        )
+            std_too_high = self.analyze_intervals(self.acoustic_powers_w, self.on_indices)
         # Mean acoustic power while on
         if len(self.acoustic_power_on_means) > 0:
             self.acoustic_power_on_mean = mean(self.acoustic_power_on_means)
@@ -98,9 +96,7 @@ class RFBData:
 
         # List containing an average during each of the intervals while the UA was off
         self.acoustic_power_off_means, self.p_off_rand_unc, self.p_off_total_unc, self.p_off_standard_deviation, \
-        a_std_too_high = (
-            self.analyze_intervals(self.acoustic_powers_w, self.off_indices)
-        )
+            a_std_too_high = self.analyze_intervals(self.acoustic_powers_w, self.off_indices)
 
         if len(self.acoustic_powers_w) > 0:
             self.acoustic_power_mean = mean(self.acoustic_powers_w)
@@ -192,8 +188,6 @@ class RFBData:
             self.efficiency_percent = calculate_efficiency_percent(self.acoustic_power_on_mean,
                                                                    self.forward_power_on_mean,
                                                                    self.reflected_power_on_mean)
-            if self.efficiency_percent == float('nan'):
-                pass  # todo: remove
         else:
             self.efficiency_percent = 0
 
@@ -335,7 +329,6 @@ class RFBData:
 
         return closest_index
 
-    # TODO: UPDATE THE test RESULTS SUMMARY IN MANAGER WITH THIS
     def get_pass_result(self) -> Tuple[str, str]:
         """
         Retrieves a verdict for whether an actuator passes or fails the test. Specifically tests to ensure the
@@ -345,10 +338,10 @@ class RFBData:
         :returns: a tuple where the first string is PASS or FAIL and the second is a feedback string for failure
         """
         if self.forward_power_max_extrapolated > self.Pf_max:
-            return "FAIL", f"Extrapolated forward power exceeds {self.Pf_max}W"
+            return "FAIL", f"Pfmax exceeds limit ({self.forward_power_max_extrapolated} > {self.Pf_max})"
 
         if self.reflected_power_percent > self.ref_limit:
-            return "FAIL", f"Reflected power exceeds {self.ref_limit} percent"
+            return "FAIL", f"Reflected power exceeds limit ({self.reflected_power_percent} > {self.ref_limit})"
 
         return "Pass", ""
 
@@ -389,7 +382,7 @@ class RFBData:
             if self.times_s[len(self.times_s) - 1] < .9 * expected_test_duration:
                 return False, "Invalid test because the time data is cut off"
         except Exception as e:
-            self.log(level='Error', message="Error in data_is_valid: " + str(e))
+            print("Error in data_is_valid: " + str(e))
             return False, "Invalid test due missing time data or an error"
 
         if self.efficiency_percent is None or self.efficiency_percent == float('nan') or \

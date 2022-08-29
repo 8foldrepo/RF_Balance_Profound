@@ -1,16 +1,20 @@
 import logging
+import os
 import sys
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QApplication
 from MainWindow import MainWindow
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
+from Utilities.useful_methods import check_directory
 from definitions import ROOT_DIR
 
 log_formatter = logging.Formatter(LOGGER_FORMAT)
 balance_logger = logging.getLogger("wtf_log")
-with open(ROOT_DIR + "\\logs\\wtf.log", 'w') as f:
+directory = os.path.join(ROOT_DIR, "Logs")
+check_directory(directory)
+with open(os.path.join(directory,"wtf.log"), 'w+') as f:
     pass
-file_handler = logging.FileHandler(ROOT_DIR + "\\logs\\wtf.log", mode="w")
+file_handler = logging.FileHandler(os.path.join(directory, 'wtf.log'), mode="w+")
 file_handler.setFormatter(log_formatter)
 balance_logger.addHandler(file_handler)
 balance_logger.setLevel(logging.INFO)

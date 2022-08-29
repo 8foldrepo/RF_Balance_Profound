@@ -84,3 +84,6 @@ class Plot(pg.PlotWidget):
         this_plot_item.layout.setContentsMargins(
             20, 40, 40, 20
         )  # Left, Top, Right, Bottom
+
+if __name__ == '__main__':
+    pass

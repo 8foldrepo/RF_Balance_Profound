@@ -1,9 +1,11 @@
 import os
+import subprocess
 from typing import Union
 import yaml
 from PyQt5.QtCore import pyqtSlot
 from Widget_Library.widget_system_config import Ui_Form
 from ui_elements.my_qwidget import MyQWidget
+from definitions import LOCAL_CONFIG_PATH, DEFAULT_CONFIG_PATH, ROOT_DIR
 
 
 class SystemConfig(MyQWidget, Ui_Form):
@@ -21,6 +23,10 @@ class SystemConfig(MyQWidget, Ui_Form):
     def configure_signals(self):
         self.save_config_button.clicked.connect(self.save_config)
         self.show_config_button.clicked.connect(self.show_config)
+        self.config_editor_button.clicked.connect(self.launch_config_editor)
+
+    def launch_config_editor(self):
+        subprocess.Popen([f'{os.path.join(ROOT_DIR, "Config File Editor.exe")}'])
 
     @pyqtSlot(bool)
     def set_buttons_enabled(self, enabled):
@@ -72,11 +78,10 @@ class SystemConfig(MyQWidget, Ui_Form):
 
     def show_config(self):
         try:
-            osCommandString = "notepad.exe local.yaml"
-            os.system(osCommandString)
-        except:
-            osCommandString = "notepad.exe default.yaml"
-            os.system(osCommandString)
+            subprocess.Popen(['notepad.exe', LOCAL_CONFIG_PATH])
+            # os.system(osCommandString)
+        except Exception:
+            subprocess.Popen(['notepad.exe', DEFAULT_CONFIG_PATH])
 
     # Save the settings input into the UI field to the local.yaml config file
     def save_config(self):

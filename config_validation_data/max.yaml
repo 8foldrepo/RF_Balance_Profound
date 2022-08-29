@@ -1,0 +1,4 @@
+Analysis:
+  max_standard_deviation_w: 10
+  samples_to_remove_at_end: 10
+  settling_time_s: 10

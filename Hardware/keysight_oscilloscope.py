@@ -24,7 +24,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         if resource_manager is not None:
             self.rm = resource_manager
         else:
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
         self.inst = None
 
     def connect_hardware(self) -> Tuple[bool, str]:
@@ -34,7 +39,12 @@ class KeysightOscilloscope(AbstractOscilloscope):
         try:
             resources = self.rm.list_resources()
         except pyvisa.errors.InvalidSession:
-            self.rm = pyvisa.ResourceManager()
+            try:
+                # Try to reference the Visa library dll
+                self.rm = pyvisa.ResourceManager("C:\\Windows\\System32\\visa32.dll")
+            except:
+                # If it fails, try to reference the Visa library dll in the default path
+                self.rm = pyvisa.ResourceManager()
             resources = self.rm.list_resources()
 
         self.inst = None
@@ -119,6 +129,8 @@ class KeysightOscilloscope(AbstractOscilloscope):
         Sets all the internal class variables to default values specified in the config file.
         """
         self.reset()
+        self.command("CHAN1:PROB 1")
+        self.command("CHAN2:PROB 2")
         self.channel = self.config[self.device_key]['channel']
         self.range_s = (self.config['Oscilloscope_timebase']["Horizontal scale (us)"] * 10 ** -6) * 8
         self.offset_s = self.config['Oscilloscope_timebase']['Time offset (us)'] * 10 ** -6

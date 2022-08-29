@@ -68,10 +68,11 @@ class SimpleRFBDataLogger(QThread):
                 # Print the number of items and current time for demonstration
                 print(f"Capture time: {'%.2f' % current_time}")
                 print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
-
             # Setting stay_alive to false with a slot is a way to end the logger prematurely
             if stay_alive is False:
                 break
+
+        print(f'Items in A: {len(self.a)}, Items in B: {len(self.b)}, Items in C: {len(self.c)}')
         self.mutex.unlock()
         return super().run()
 
@@ -80,19 +81,19 @@ class SimpleRFBDataLogger(QThread):
         return self.a_ready and self.b_ready and self.c_ready
 
     @pyqtSlot(float)
-    def log_a(self, reading):
+    def log_a(self, reading: float):
         """If sensor A emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.a.append(reading)
         self.a_ready = True
 
     @pyqtSlot(float)
-    def log_b(self, reading):
+    def log_b(self, reading: float):
         """If sensor B emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.b.append(reading)
         self.b_ready = True
 
     @pyqtSlot(float)
-    def log_c(self, reading):
+    def log_c(self, reading: float):
         """If sensor C emits a reading, add it to the list and flag the sensor as ready to capture again"""
         self.c.append(reading)
         self.c_ready = True
@@ -138,9 +139,10 @@ class SimpleSensorThread(QThread):
         #
         self.ready = False
         # print(f"Beginning capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
-        reading = random.random()
-        time.sleep(random.random() / 20)
-        self.reading_signal.emit(reading)
+        #reading = random.random()
+
+        #time.sleep(random.random() / 20)
+        self.reading_signal.emit(1)
         # print(f"Finishing capture of {self.name}, time = {time.time() - self.start_time}, index = {self.index}")
         self.ready = True
 

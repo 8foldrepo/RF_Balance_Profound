@@ -96,7 +96,7 @@ class GalilMotorController(AbstractMotorController):
             except gclib.GclibError as e:
                 # noinspection IncorrectFormatting
                 feedback = "Connection to motor controller timed out. Make sure it is connected and do a power " \
-                           "cycle: {0}".format(e)
+                           "cycle. Make sure the E-stop is not depressed.: {0}".format(e)
 
             if self.connected:
                 break
@@ -168,10 +168,7 @@ class GalilMotorController(AbstractMotorController):
             # Attempt to stop motor's motion
             self.command("ST")
 
-            # Convert speeds to number of counts per second and update them
-            steps_per_second = [speed * cal for speed, cal in zip(self.speeds_ray, self.calibrate_ray_steps_per)]
-            sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
-            self.command(sp_command_str)
+            self.set_speeds(self.speeds_ray)
 
             # self.set_origin()
             self.get_position()
@@ -181,6 +178,12 @@ class GalilMotorController(AbstractMotorController):
             self.connected = False
         if enable_ui:
             self.ready_signal.emit()
+
+    def set_speeds(self, speeds_ray: List[float]):
+        # Convert speeds to number of counts per second and update them
+        steps_per_second = [speed * cal for speed, cal in zip(speeds_ray, self.calibrate_ray_steps_per)]
+        sp_command_str = f"SP {create_comma_string(self.ax_letters, steps_per_second, self.ax_letters)}"
+        self.command(sp_command_str)
 
     @pyqtSlot(list, list)
     def go_to_position(self, axes: List[str], coordinates_mm: List[float],
@@ -452,9 +455,13 @@ class GalilMotorController(AbstractMotorController):
         :param axis: the axis the user wishes to home
         :param enable_ui: re-enables various inputs of the main window if a script isn't running
         :param theta_pre_home_move: enables a theta movement to move the UA off of the active region of the switch
-        :param x_pre_home_move: enables an X movement to move the x motor off of the active region of the switch
         :return: whether homing operation completed successfully
         """
+
+        if axis == 'X' and self.config[self.device_key]['HomeXWithLimit']:
+            success = self.home_x_on_negative_limit(axis, enable_ui, theta_pre_home_move)
+            return success
+
         if not axis == 'X' and not axis == 'R' and not axis == 'Theta':
             self.log(level='error', message=f'Unrecognized axis in go_home_1d: {axis}')
 
@@ -467,11 +474,23 @@ class GalilMotorController(AbstractMotorController):
 
         # Reverse homing direction and perform a prehome move if the axis is R
         if axis == 'R' or axis == 'Theta':
-            if theta_pre_home_move:
+            reply, _ = self.command('TS B')  # Check status of Theta axis switches
+            if ': ' in reply:
+                reply = reply.split(': ')[1]
+            try:
+                theta_home_active = get_bit(int(reply), 1)
+            except ValueError:
+                theta_home_active = False
+            #Todo: remove theta_prehome_move_parameter
+            if theta_home_active:
                 # Theta pre-home move
+                print("Executing pre home move")
                 self.position_relative_1d('R', self.config['WTF_PositionParameters']['ThetaPreHomeMove'])
             # Temporarily reverse homing direction for all axes (switch it back to 1 later)
-            self.command("CN,-1")
+            if not self.config[self.device_key]['reverse_theta_home_direction']:
+                self.command("CN,-1")
+            else:
+                self.command("CN,1")
 
         # If axis is X, and it is on the negative limit move it off
         if axis == 'X':
@@ -539,6 +558,18 @@ class GalilMotorController(AbstractMotorController):
         t.sleep(.1)
         self.get_position()
 
+        if enable_ui:
+            self.ready_signal.emit()
+        return success
+
+    def home_x_on_negative_limit(self, axis, enable_ui, theta_pre_home_move) -> bool:
+        "Alternative home method for X which makes the X go to the negative limit and sets it as the origin"
+        if not axis == 'X':
+            self.log(level='error', message='Error in home x on negative limit. This function is not valid for axes '
+                                            'other than X')
+        success = self.go_to_position(['X'], [-9999], enable_ui=False)
+        self.set_origin_1d('X', self.config['WTF_PositionParameters']['XHomeCoord'])
+        self.get_position()
         if enable_ui:
             self.ready_signal.emit()
         return success
