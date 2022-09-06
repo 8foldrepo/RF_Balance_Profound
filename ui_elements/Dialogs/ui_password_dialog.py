@@ -1,6 +1,8 @@
 import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+
+from Utilities.load_config import load_configuration
 from Widget_Library import dialog_password
 from ui_elements.Dialogs.my_qdialog import MyQDialog
 
@@ -19,6 +21,10 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
     def __init__(self, config, parent=None):
         super().__init__(config=config, parent=parent)
         self.config = config
+
+        if self.config is None:
+            self.config = load_configuration()
+
         self.setupUi(self)
         self.style_ui()
         self.configure_signals()
@@ -36,11 +42,6 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
             self.dialog_resolved = True
             self.access_level_signal.emit("Operator")
             self.close()
-        elif self.access_level_combo.currentText() == "Engineer" and self.password_field.text() == \
-                self.config["User Accounts"]["Engineer"]:
-            self.dialog_resolved = True
-            self.access_level_signal.emit("Engineer")
-            self.close()
         elif (
                 "Administrator".upper() in self.access_level_combo.currentText().upper()
                 and self.password_field.text() == self.config["User Accounts"]["Administrator"]
@@ -48,6 +49,8 @@ class PasswordDialog(MyQDialog, dialog_password.Ui_Dialog):
             self.dialog_resolved = True
             self.access_level_signal.emit("Administrator")
             self.close()
+        else:
+            self.label_2.setText("Incorrect Password, Please try again")
 
     def cancel_clicked(self):
         self.access_level_signal.emit("Denied")

@@ -135,7 +135,6 @@ UAInterface:
   timeout_s: 2.0
 User Accounts:
   Administrator: PMI_Admin
-  Engineer: Engineer
   Operator: Operator
 WTF_DIO:
   DAQ Device name: WTF4

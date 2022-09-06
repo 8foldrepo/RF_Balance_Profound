@@ -131,7 +131,6 @@ class SystemConfig(MyQWidget, Ui_Form):
     # Populate fields in config tab with settings from the config file
     def populate_config_ui(self):
         self.operator_pass_field.setText(self.config["User Accounts"]["Operator"])
-        self.engineer_pass_field.setText(self.config["User Accounts"]["Engineer"])
         self.admin_pass_field.setText(self.config["User Accounts"]["Administrator"])
 
         self.x_homecoord.setValue(self.config["WTF_PositionParameters"]["XHomeCoord"])

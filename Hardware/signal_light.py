@@ -159,19 +159,26 @@ def usb_open() -> Device:
         Device instance of USB controlled stacked signal light
     """
 
-    # Search for devices
-    dev = usb.core.find(idVendor=VENDOR_ID, idProduct=DEVICE_ID)
-    if dev is None:
-        raise ValueError('device not found')
+    dev = None
 
-    if sys.platform == 'linux':
-        # Detach the kernel driver
-        # ※Run only in Linux environment.
-        if dev.is_kernel_driver_active(0):
-            dev.detach_kernel_driver(0)
+    try:
+        # Search for devices
+        dev = usb.core.find(idVendor=VENDOR_ID, idProduct=DEVICE_ID)
+        if dev is None:
+            raise ValueError('device not found')
 
-    # Setting up device configuration
-    dev.set_configuration()
+        if sys.platform == 'linux':
+            # Detach the kernel driver
+            # ※Run only in Linux environment.
+            if dev.is_kernel_driver_active(0):
+                dev.detach_kernel_driver(0)
+
+        # Setting up device configuration
+        dev.set_configuration()
+    except usb.core.USBError as e:
+        print(f'USB Signal light is not accessible, it may be in use by another program: {e}')
+    except ValueError as e:
+        print(f'USB Signal light is not connected, ensure it is on a powered USB port: {e}')
 
     return dev
 
@@ -200,6 +207,9 @@ def send_command(dev: Device, data: bytes) -> bool:
     bool
         Result of sending (Success: True, Failure: False)
     """
+
+    if dev is None:
+        return
 
     try:
         # Send
@@ -266,52 +276,61 @@ def set_light(dev: Device, color: int, state: int) -> bool:
         Result of sending (Success: True, Failure: False)
     """
 
-    # Data conversion for LED control
-    led_ry = (LED_KEEP << 4) | LED_KEEP
-    led_gb = (LED_KEEP << 4) | LED_KEEP
-    led_w_ = LED_KEEP << 4
-    if color == LED_COLOR_RED:          # red
-        led_ry = state << 4
-        led_ry |= LED_KEEP
+    try:
 
-    elif color == LED_COLOR_YELLOW:     # yellow
-        led_ry = LED_KEEP << 4
-        led_ry |= state
+        # Data conversion for LED control
+        led_ry = (LED_KEEP << 4) | LED_KEEP
+        led_gb = (LED_KEEP << 4) | LED_KEEP
+        led_w_ = LED_KEEP << 4
+        if color == LED_COLOR_RED:          # red
+            led_ry = state << 4
+            led_ry |= LED_KEEP
 
-    elif color == LED_COLOR_GREEN:      # green
-        led_gb = state << 4
-        led_gb |= LED_KEEP
+        elif color == LED_COLOR_YELLOW:     # yellow
+            led_ry = LED_KEEP << 4
+            led_ry |= state
 
-    elif color == LED_COLOR_BLUE:       # blue
-        led_gb = LED_KEEP << 4
-        led_gb |= state
+        elif color == LED_COLOR_GREEN:      # green
+            led_gb = state << 4
+            led_gb |= LED_KEEP
 
-    elif color == LED_COLOR_WHITE:      # white
-        led_w_ = state << 4
+        elif color == LED_COLOR_BLUE:       # blue
+            led_gb = LED_KEEP << 4
+            led_gb |= state
 
-    else:
-        print('out of range color')
+        elif color == LED_COLOR_WHITE:      # white
+            led_w_ = state << 4
+
+        else:
+            print('out of range color')
+            return False
+
+        # Converted to communication data
+        data = struct.pack(
+            'BBBBBBBx',         # format
+            COMMAND_VERSION,    # command version (0x00: fixed)
+            COMMAND_ID,         # Command ID (0x00: fixed)
+            BUZZER_KEEP,        # buzzer control (status quo)
+            0,                  # buzzer scale
+            led_ry,             # LED control (red, yellow)
+            led_gb,             # LED control (green/blue)
+            led_w_,             # LED Control (white, fixed)
+        )
+
+        # Send command
+        ret = send_command(dev, data)
+        if ret is False:
+            print(f'USB Signal light is not accessible, it may be in use by another program:')
+            return False
+
+        return True
+
+    except usb.core.USBError as e:
+        print(f'USB Signal light is not accessible, it may be in use by another program: {e}')
         return False
-
-    # Converted to communication data
-    data = struct.pack(
-        'BBBBBBBx',         # format
-        COMMAND_VERSION,    # command version (0x00: fixed)
-        COMMAND_ID,         # Command ID (0x00: fixed)
-        BUZZER_KEEP,        # buzzer control (status quo)
-        0,                  # buzzer scale
-        led_ry,             # LED control (red, yellow)
-        led_gb,             # LED control (green/blue)
-        led_w_,             # LED Control (white, fixed)
-    )
-
-    # Send command
-    ret = send_command(dev, data)
-    if ret is False:
-        print('failed to send data')
-        return False
-
-    return True
+    except ValueError as e:
+        print(f'USB Signal light is not connected: {e}')
+        pass
 
 
 def set_tower(dev: Device, red: int, yellow: int, green: int, blue: int, white: int) -> bool:
@@ -366,7 +385,7 @@ def set_tower(dev: Device, red: int, yellow: int, green: int, blue: int, white: 
     # Send command
     ret = send_command(dev, data)
     if ret is False:
-        print('failed to send data')
+        print(f'USB Signal light is not accessible, it may be in use by another program')
         return False
 
     return True
@@ -423,13 +442,21 @@ def set_buz(dev: Device, buz_state: int, limit: int) -> bool:
     # Send command
     ret = send_command(dev, data)
     if ret is False:
-        print('failed to send data')
+        print(f'USB Signal light is not accessible, it may be in use by another program')
         return False
 
     return True
 
 def set_wtf_buzzer(dev):
-    set_buz_ex(dev, 2, 1, 0x1, 0x0)
+    try:
+        set_buz_ex(dev, 2, 1, 0x1, 0x0)
+        return True
+    except usb.core.USBError as e:
+        print(f'USB Signal light is not accessible, it may be in use by another program: {e}')
+        return False
+    except ValueError as e:
+        print(f'USB Signal light is not connected: {e}')
+        pass
 
 def set_buz_ex(dev: Device, buz_state: int, limit: int, pitch1: int, pitch2: int) -> bool:
     """
@@ -516,14 +543,20 @@ def reset(dev: Device) -> bool:
         LED_OFF,            # LED control (green/blue)
         LED_OFF,            # LED Control (white, fixed)
     )
+    try:
+        # Send command
+        ret = send_command(dev, data)
+        if ret is False:
+            print(f'USB Signal light is not connected, it may be in use by another program')
+            return False
 
-    # Send command
-    ret = send_command(dev, data)
-    if ret is False:
-        print('failed to send data')
+        return True
+    except usb.core.USBError as e:
+        print(f'USB Signal light is not connected, it may be in use by another program: {e}')
         return False
-
-    return True
+    except ValueError as e:
+        print(f'USB Signal light is not connected: {e}')
+        pass
 
 
 if __name__ == '__main__':

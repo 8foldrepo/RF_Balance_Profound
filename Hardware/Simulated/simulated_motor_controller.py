@@ -11,7 +11,7 @@ class SimulatedMotorController(AbstractMotorController):
         A class providing a crude imitation of the functionality of motor controller hardware classes.
     """
 
-    def __init__(self, config: dict, device_key="VIX_Motors", parent=None, lock=None):
+    def __init__(self, config: dict, device_key="Galil_Motors", parent=None, lock=None):
         super().__init__(parent=parent, config=config, device_key=device_key, lock=lock)
         self.app = QApp.instance()
         self.fields_setup()
