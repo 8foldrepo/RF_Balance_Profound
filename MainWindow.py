@@ -17,6 +17,8 @@ from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtGui import QIcon
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QTreeWidgetItem, QFileDialog, QAction, QMessageBox, QApplication, QMainWindow
+
+from Hardware.signal_light import open_light, set_light
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.load_config import load_configuration
 from Utilities.useful_methods import log_msg, tab_text_to_index, check_directory
@@ -317,6 +319,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         Launches a Qt PasswordDialog object whilst connecting the dialog's access level a feature limiter method
         """
+
+        with open_light(clearOut=False) as dev:
+            set_light(dev, 1, 3)
+
         dlg = PasswordDialog(parent=self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
         dlg.exec()
@@ -332,6 +338,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         self.access_level_combo.setCurrentText(access_level)
         self.access_level = access_level
+
+        with open_light(clearOut=False) as dev:
+            pass
 
         if access_level == "Engineer":
             self.tabWidget.removeTab(self.tab_text_to_index("System Config"))
@@ -880,6 +889,9 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         ua_read_data, firmware_version, status = self.UAInterface.read_data()
         # If their access level is operator, do not proceed with the script unless the read was successful.
 
+        with open_light(clearOut=False) as dev:
+            set_light(dev, 1, 3)
+
         if status != 0:
             if self.access_level_combo.currentText() == "Operator":
                 self.dialog_critical("UA Read failed, aborting test")
@@ -970,11 +982,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         :param passed_ray: The pass/fail/DNF list for all actuators and overall device
         :param description_ray: The description list for all actuators and overall device
         """
-        dlg = ScriptCompleteDialog(
-            passed_ray=passed_ray, description_ray=description_ray, config=self.config
-        )
+        dlg = ScriptCompleteDialog(passed_ray=passed_ray, description_ray=description_ray, config=self.config)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
+        dlg.exec()
 
     @pyqtSlot(str)
     def dialog_critical(self, text: str) -> None:

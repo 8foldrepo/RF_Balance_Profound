@@ -159,7 +159,8 @@ class TestData(MyQObject):
         if self.results_summary[element - 1][15].upper() != 'FAIL':
             self.results_summary[element - 1][15] = test_result.upper()
 
-        self.update_comment(element, comment)
+        if not 'exceeds limit' in comment:
+            self.update_comment(element, comment)
 
         self.show_results_summary.emit(self.results_summary)
 

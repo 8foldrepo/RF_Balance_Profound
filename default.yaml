@@ -130,7 +130,7 @@ TempMon:
   TCoupleType: J
 Test_Settings:
   Above_Level_Acceptable: true
-  abort_on_fail: false
+  abort_on_fail: true
   check_for_failure_realtime: false
   drain_before_retract: true
 UAInterface:

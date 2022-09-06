@@ -338,10 +338,10 @@ class RFBData:
         :returns: a tuple where the first string is PASS or FAIL and the second is a feedback string for failure
         """
         if self.forward_power_max_extrapolated > self.Pf_max:
-            return "FAIL", f"Pfmax exceeds limit ({self.forward_power_max_extrapolated} > {self.Pf_max})"
+            return "FAIL", f"Pfmax exceeds limit ({'%.2f' % self.forward_power_max_extrapolated} > {self.Pf_max})"
 
         if self.reflected_power_percent > self.ref_limit:
-            return "FAIL", f"Reflected power exceeds limit ({self.reflected_power_percent} > {self.ref_limit})"
+            return "FAIL", f"Reflected power exceeds limit ({'%.2f' % self.reflected_power_percent} > {self.ref_limit})"
 
         return "Pass", ""
 

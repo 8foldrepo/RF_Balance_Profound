@@ -3,6 +3,7 @@ from typing import List
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QTableWidgetItem, QApplication
 
+from Hardware.signal_light import open_light
 from Widget_Library import dialog_script_complete
 from ui_elements.Dialogs.my_qdialog import MyQDialog
 
@@ -49,11 +50,21 @@ class ScriptCompleteDialog(MyQDialog, dialog_script_complete.Ui_Dialog):
     def ok_clicked(self):
         # currently close will emit the continue signal. If this is changed, emit continue_signal here
         self.dialog_resolved = True
+
+        # Reset the light
+        with open_light(clearOut=False) as dev:
+            pass
+
         self.close()
 
     def closeEvent(self, event) -> None:
         self.continue_signal.emit()
         self.dialog_resolved = True
+
+        # Reset the light
+        with open_light(clearOut=False) as dev:
+            pass
+
         event.accept()
 
 

@@ -6,7 +6,6 @@ import time as t
 import traceback
 from collections import OrderedDict
 from typing import List, Tuple, Union
-
 import nidaqmx.errors
 import numpy as np
 import pyvisa
@@ -23,6 +22,7 @@ from Hardware.Abstract.abstract_motor_controller import AbstractMotorController
 from Hardware.Abstract.abstract_oscilloscope import AbstractOscilloscope
 from Hardware.Abstract.abstract_sensor import AbstractSensor
 from Hardware.Abstract.abstract_ua_interface import AbstractUAInterface
+from Hardware.signal_light import set_light, open_light, reset, set_wtf_buzzer
 from Utilities.FileSaver import FileSaver
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT
 from Utilities.rfb_data_logger import RFBDataLogger
@@ -324,6 +324,10 @@ class Manager(QThread):
             from Hardware.ni_thermocouple import NIThermocouple
             self.thermocouple = NIThermocouple(config=self.config)
 
+        # Clear the signal light
+        with open_light(clearOut=False) as dev:
+            pass
+
         self.devices.append(self.Forward_Power_Meter)
         self.devices.append(self.Reflected_Power_Meter)
         self.devices.append(self.IO_Board)
@@ -490,6 +494,12 @@ class Manager(QThread):
         """
         self.abort_immediately(log=False)
         log_msg(self, root_logger, level="info", message="Running script")
+
+        # Clear the signal light
+        with open_light(clearOut=False) as dev:
+            set_light(dev, 2, 1)
+            pass
+
         self.currently_scripting = True
         self.enable_ui_signal.emit(False)
         self.set_abort_buttons_enabled_signal.emit(True)  # enables main window abort buttons during test
@@ -586,6 +596,10 @@ class Manager(QThread):
 
         :param path: Windows directory path of the script (.WTF) file
         """
+        # Clear the signal light
+        with open_light(clearOut=False) as dev:
+            pass
+
         self.script_path = path
         self.abort_immediately(log=False)  # we don't want the save prompt for this use of abort
 
@@ -893,6 +907,7 @@ class Manager(QThread):
         """
         if log:
             self.log(level='warning', message="Aborting script")
+
         # Reset script control variables
         self.Motors.stop_motion()
         self.currently_scripting = False
@@ -912,22 +927,33 @@ class Manager(QThread):
 
         :return: True if user clicked continue, false otherwise
         """
-        try:  # abort and retry are handled as exceptions
-            self.wait_for_cont()  # calls helper method to wait for user's input
-            return True  # return true if neither abort nor retry are clicked (handled below)
-        except AbortException:  # if the user clicked the abort button or closed the prompt inappropriately
-            self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
-            if self.abort_immediately_variable:
-                self.abort_immediately()
+        # Open light usb resource, when finished, close it
+        with open_light(clearOut=False) as dev:
+            # Set light to flashing amber
+            set_light(dev, 1, 3)
+
+            try:  # abort and retry are handled as exceptions
+                self.wait_for_cont()  # calls helper method to wait for user's input
+                reset(dev)
+                set_light(dev, 2, 1)
+                return True  # return true if neither abort nor retry are clicked (handled below)
+            except AbortException:  # if the user clicked the abort button or closed the prompt inappropriately
+                self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
+                if self.abort_immediately_variable:
+                    self.abort_immediately()
+                    reset(dev)
+                    return False
+                else:
+                    self.abort_after_step()
+                    reset(dev)
+                    return False
+            except RetryException:  # if the user has clicked retry
+                self.test_data.log_script(["", "User prompt", "Retry step", ""])
+                self.log(level='info', message="Retrying step")
+                self.retry_clicked_variable = True
+                reset(dev)
+                set_light(dev, 2, 1)
                 return False
-            else:
-                self.abort_after_step()
-                return False
-        except RetryException:  # if the user has clicked retry
-            self.test_data.log_script(["", "User prompt", "Retry step", ""])
-            self.log(level='info', message="Retrying step")
-            self.retry_clicked_variable = True
-            return False
 
     def wait_for_cont(self) -> bool:
         """
@@ -959,17 +985,19 @@ class Manager(QThread):
 
         :return: True if user clicked an answer, false if user aborted
         """
-        try:
-            self.wait_for_answer()
-            return True
-        except AbortException:  # if user inappropriately closed question box
-            self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])  # log the event
-            if self.abort_immediately_variable:
-                self.abort_immediately()
-                return False
-            else:
-                self.abort_after_step()
-                return False
+        with open_light() as dev:
+            set_light(dev, 1, 3)
+            try:
+                self.wait_for_answer()
+                return True
+            except AbortException:  # if user inappropriately closed question box
+                self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])  # log the event
+                if self.abort_immediately_variable:
+                    self.abort_immediately()
+                    return False
+                else:
+                    self.abort_after_step()
+                    return False
 
     def wait_for_answer(self) -> bool:
         """
@@ -1038,6 +1066,17 @@ class Manager(QThread):
                 device_result = 'FAIL'  # the whole device fails
             description_list[i] = self.test_data.results_summary[i][16]
 
+        # Flash red if the device failed and the test is complete
+        if finished and device_result == 'FAIL':
+            with open_light(clearOut=False) as dev:
+                set_light(dev, 0, 2)
+                set_wtf_buzzer(dev)
+        # Flash green if the device passed and the test is complete
+        if finished and device_result == 'PASS':
+            with open_light(clearOut=False) as dev:
+                set_light(dev, 0, 2)
+                set_wtf_buzzer(dev)
+
         # Add ua write result to output
         if self.test_data.skip_write_to_ua or self.test_data.write_result is None:  # if user opted not to write to UA
             pass_list[10] = "N/A"  # write N/A instead of fail
@@ -1102,6 +1141,7 @@ class Manager(QThread):
                 return False
             if not self.IO_Board.get_ua_pump_reading():  # if the pump is not running
                 self.user_prompt_pump_not_running_signal.emit(pump_status)  # launch dialog box signifying this issue
+                set_light()
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
@@ -1197,9 +1237,12 @@ class Manager(QThread):
 
         if water_level == WaterLevel.below_level or water_level == WaterLevel.level:
             self.user_prompt_signal_water_too_low_signal.emit()
+
+            # Wait for user action
             cont = self.cont_if_cont_clicked()
             if not cont:
                 return False
+
             self.show_filling_dialog_signal.emit()
             self.IO_Board.bring_tank_to_level()  # if user clicked continue, send the fill tank command
         elif water_level == WaterLevel.above_level and not self.config['Test_Settings']['Above_Level_Acceptable']:
@@ -1222,6 +1265,9 @@ class Manager(QThread):
         :param test_data: connects PretestDialog's user-inputted test_data and manager's test_data variables
         :param run_script: if true, calls the run_script helper method at the end of this method
         """
+
+        with open_light(clearOut=False) as dev:
+            set_light(dev, 2, 1)
 
         # reset test data to default values
         self.test_data.set_blank_values()
@@ -1713,6 +1759,7 @@ class Manager(QThread):
             cont = self.cont_if_answer_clicked()  # sets cont variable to true if user clicked continue
             if not cont:  # if user did not click continue, return
                 return
+
             if self.yes_clicked_variable:
                 calibration_data = generate_calibration_data(self.test_data)
                 self.UAInterface.write_data(calibration_data)
@@ -2634,7 +2681,10 @@ class Manager(QThread):
                     self.test_data.element_failed(element_number=self.element, description=error_detail)
                     if self.config["Test_Settings"]["abort_on_fail"]:
                         self.log(f"retry limit reached, aborting script. \n(Error detail: {error_detail})", self.warn)
-                        self.abort_immediately()
+                        with open_light(clearOut=False) as dev:
+                            set_light(dev, 0, 3)
+                            set_wtf_buzzer(dev)
+                            self.abort_immediately()
                         return False
                     else:
                         self.log(f"retry limit reached, continuing script. \n(Error detail: {error_detail})", self.warn)
@@ -2643,7 +2693,10 @@ class Manager(QThread):
             elif self.config[k1][action_type].upper() == 'NO DIALOG (ABORT)':
                 self.test_data.element_failed(element_number=self.element, description=error_detail)
                 self.log(error_detail + ', aborting script.', self.error)
-                self.abort_after_step()
+                with open_light(clearOut=False) as dev:
+                    set_light(dev, 0, 3)
+                    set_wtf_buzzer(dev)
+                    self.abort_after_step()
                 return False
 
             elif self.config[k1][action_type].upper() == 'PROMPT FOR RETRY':
