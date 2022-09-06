@@ -56,6 +56,7 @@ class SimulatedUAInterface(AbstractUAInterface):
     def write_data(self, data: List[str]) -> bool:
         """Attempts to write the passed list of calibration data to the internal variable of the simulated UA"""
         try:
+            print(data)
             self.ua_calibration_data = data
             self.write_result = True
         except Exception as e:

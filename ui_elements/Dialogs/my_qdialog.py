@@ -2,7 +2,7 @@
 import logging
 import os
 from PyQt5 import QtCore
-from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QEvent, pyqtSlot
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 from Utilities.load_config import ROOT_LOGGER_NAME, LOGGER_FORMAT, load_configuration
@@ -55,6 +55,23 @@ class MyQDialog(QDialog):
         """
         path = os.path.join(ROOT_DIR, "images/8foldlogo.ico")
         self.setWindowIcon(QIcon(path))
+
+    @pyqtSlot(float)
+    def time_remaining_slot(self, time_remaining:float):
+        """
+        Update the time remaining label (when a signal is recieved from Manager)
+
+        :param time_remaining: the time remaining in seconds
+        """
+        self.setWindowTitle(f"Time Remaining: {'%.0f' % time_remaining}")
+
+    @pyqtSlot()
+    def close_dialog_slot(self):
+        """
+        Consider the dialog resolved and close it (this occurs when the dialog times out)
+        """
+        self.dialog_resolved=True
+        self.close()
 
     def log(self, message: str, level: str = "info") -> None:
         """

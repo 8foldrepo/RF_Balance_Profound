@@ -6,9 +6,10 @@ Analysis:
     transition
   settling_time_s: Duration of data removed from beginning of each on/off interval
 Daq_Power_Relay:
+  on_by_default: Provides power to the relay switcher on startup
   port: Com port, find this in device manager
 Debugging:
-  simulate_awg: Note that enabling this setting will show simulated data
+  simulate_awg: Note that thiis setting will also show simulated data
 Forward_Power_Meter:
   serial_number: Ensure this is the forward meter
 Galil_Motors:
@@ -22,11 +23,23 @@ Keysight_AWG:
 Reflected_Power_Meter:
   cal_fact: (Not reccomended) Value to muliply power meter readings by
   serial_number: Ensure this is the reflected meter
+TempMon:
+  DeviceName: Ensure this matches the name in NI MAX
+Test_Settings:
+  Above_Level_Acceptable: Tank will to fill to the above level sensor and then stop
+  abort_on_fail: Terminates the script if the UA fails
+  check_for_failure_realtime: Terminates RFB action early if high reflection or low
+    efficiency is present
+  drain_before_retract: Enable this if the valve is not watertight
+UAInterface:
+  timeout_s: Communication timeout
+WTF_DIO:
+  DAQ Device name: Ensure this matches the name in NI MAX
 WTF_PositionParameters:
   CentreHomeTheta?: Causes theta homing to end on center of reflector, not edge
-  ThetaHomeCoord: The coordinate defined when homing is complete
-  ThetaHomeEdgeCoord: The difference between this and thetahomeedgecoord affects the
-    centrehometheta move
+  ThetaHomeCoord: The theta coordinate of the rf balance
+  ThetaHomeEdgeCoord: The theta coordinate of the negative edge of the UA the home
+    sensor
   ThetaHydrophoneCoord: The assumed coordinate of the hydrophone in theta
   ThetaPreHomeMove: The amount the R axis will move if the home switch is already
     active

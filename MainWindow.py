@@ -930,6 +930,10 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         dlg = WTFUserPrompt(config=self.config, access_level=self.access_level, restrict_continue=restrict_continue)
         dlg.user_prompt_output.setText(message)
+        if not restrict_continue:
+            self.manager.dialog_timeout_signal.connect(dlg.time_remaining_slot)
+            self.manager.dialog_close_signal.connect(dlg.close_dialog_slot)
+
         if message == "Do you want to write calibration data to UA?":
             # dlg.continue_button.setText('Yes')
             dlg.continue_button.setText('No')
@@ -961,6 +965,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         dlg = WTFUserInfo(config=self.config)
         dlg.user_prompt_output.setText(message)
+        self.manager.dialog_timeout_signal.connect(dlg.time_remaining_slot)
+        self.manager.dialog_close_signal.connect(dlg.close_dialog_slot)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.exec()
 
@@ -1021,6 +1027,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
             self.yes_signal.emit()
         elif answer == dlg.No:
             self.no_signal.emit()
+        else:
+            raise Exception("Invalid response from user")
 
     @pyqtSlot(list)
     def show_write_cal_data_prompt(self, calibration_data: list) -> None:
@@ -1077,6 +1085,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         dlg = WTFUserPromptPumpNotRunning(config=self.config)
         dlg.label.setText(pump_status)
+        self.manager.dialog_timeout_signal.connect(dlg.time_remaining_slot)
+        self.manager.dialog_close_signal.connect(dlg.close_dialog_slot)
         # todo: have ua_pump_status switch react to pump_status var
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
@@ -1090,6 +1100,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         dlg = WTFUserPromptWaterTooLow()
         # todo: have ua_water_level switch react to water_level var
+        self.manager.dialog_timeout_signal.connect(dlg.time_remaining_slot)
+        self.manager.dialog_close_signal.connect(dlg.close_dialog_slot)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()
@@ -1102,6 +1114,8 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
         dlg = WTFUserPromptWaterTooHigh()
         # todo: have ua_water_level switch react to water_level var
+        self.manager.dialog_timeout_signal.connect(dlg.time_remaining_slot)
+        self.manager.dialog_close_signal.connect(dlg.close_dialog_slot)
         dlg.continue_signal.connect(self.manager.continue_clicked)
         dlg.abort_signal.connect(self.manager.abort_clicked)
         dlg.exec()

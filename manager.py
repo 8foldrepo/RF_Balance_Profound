@@ -96,6 +96,9 @@ class Manager(QThread):
     user_question_signal = QtCore.pyqtSignal(str)  # str is question to be asked
     system_info_signal = QtCore.pyqtSignal(SerialNumbers)
 
+    dialog_close_signal = QtCore.pyqtSignal()
+    dialog_timeout_signal = QtCore.pyqtSignal(float)
+
     # Script metadata
     description_signal = QtCore.pyqtSignal(str)
     created_on_signal = QtCore.pyqtSignal(str)
@@ -966,7 +969,16 @@ class Manager(QThread):
         self.retry_clicked_variable = False
         self.abort_clicked_variable = False
 
+        start_time = t.time()
+
         while not self.continue_clicked_variable:
+            timeout_time = self.config["Sequence pass/fail"]["Dialog timeout (s)"]
+            if timeout_time != 0:
+                self.dialog_timeout_signal.emit(timeout_time - (t.time() - start_time))
+                if t.time()-start_time > timeout_time:
+                    self.dialog_close_signal.emit()
+                    return True
+
             if self.retry_clicked_variable:
                 self.retry_clicked_variable = False
                 raise RetryException
@@ -1074,8 +1086,7 @@ class Manager(QThread):
         # Flash green if the device passed and the test is complete
         if finished and device_result == 'PASS':
             with open_light(clearOut=False) as dev:
-                set_light(dev, 0, 2)
-                set_wtf_buzzer(dev)
+                set_light(dev, 2, 2)
 
         # Add ua write result to output
         if self.test_data.skip_write_to_ua or self.test_data.write_result is None:  # if user opted not to write to UA
@@ -1141,7 +1152,7 @@ class Manager(QThread):
                 return False
             if not self.IO_Board.get_ua_pump_reading():  # if the pump is not running
                 self.user_prompt_pump_not_running_signal.emit(pump_status)  # launch dialog box signifying this issue
-                set_light()
+
                 cont = self.cont_if_cont_clicked()
                 if not cont:
                     return False
@@ -1980,7 +1991,6 @@ class Manager(QThread):
         """
         if self.config["Test_Settings"]["drain_before_retract"]:
             self.retracting_ua_warning_signal.emit()
-
             cont = self.cont_if_cont_clicked()
             if not cont:
                 self.abort_immediately()

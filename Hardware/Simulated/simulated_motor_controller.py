@@ -47,7 +47,6 @@ class SimulatedMotorController(AbstractMotorController):
         self.timeout_s = self.config[self.device_key]["timeout_s"]
         self.time_limit_s = self.config[self.device_key]["time_limit_s"]
         self.on_by_default = self.config[self.device_key]["on_by_default"]
-        self.port = self.config[self.device_key]["port"]
 
     @pyqtSlot(dict)
     def setup(self, settings):
