@@ -321,7 +321,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         """
 
         with open_light(clearOut=False) as dev:
-            set_light(dev, 1, 3)
+            set_light(dev, self.config['WTF_Alarms']['user_action_color'], self.config['WTF_Alarms']['user_action_pattern'])
 
         dlg = PasswordDialog(parent=self, config=self.config)
         dlg.access_level_signal.connect(self.password_result)
@@ -890,7 +890,7 @@ class MainWindow(QMainWindow, window_wet_test.Ui_MainWindow):
         # If their access level is operator, do not proceed with the script unless the read was successful.
 
         with open_light(clearOut=False) as dev:
-            set_light(dev, 1, 3)
+            set_light(dev, self.config['WTF_Alarms']['user_action_color'], self.config['WTF_Alarms']['user_action_pattern'])
 
         if status != 0:
             if self.access_level_combo.currentText() == "Operator":

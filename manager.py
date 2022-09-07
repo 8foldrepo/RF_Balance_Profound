@@ -500,8 +500,8 @@ class Manager(QThread):
 
         # Clear the signal light
         with open_light(clearOut=False) as dev:
-            set_light(dev, 2, 1)
-            pass
+            # Set it to solid green (configurable)
+            set_light(dev, self.config["WTF_Alarms"]["test_running_color"], self.config["WTF_Alarms"]["test_running_pattern"])
 
         self.currently_scripting = True
         self.enable_ui_signal.emit(False)
@@ -933,12 +933,14 @@ class Manager(QThread):
         # Open light usb resource, when finished, close it
         with open_light(clearOut=False) as dev:
             # Set light to flashing amber
-            set_light(dev, 1, 3)
+            set_light(dev, self.config['WTF_Alarms']['user_action_color'], self.config['WTF_Alarms']['user_action_pattern'])
 
             try:  # abort and retry are handled as exceptions
                 self.wait_for_cont()  # calls helper method to wait for user's input
                 reset(dev)
-                set_light(dev, 2, 1)
+                # Set it to solid green (configurable)
+                set_light(dev, self.config["WTF_Alarms"]["test_running_color"],
+                          self.config["WTF_Alarms"]["test_running_pattern"])
                 return True  # return true if neither abort nor retry are clicked (handled below)
             except AbortException:  # if the user clicked the abort button or closed the prompt inappropriately
                 self.test_data.log_script(["", "User prompt", "FAIL", "Closed by user"])
@@ -955,7 +957,9 @@ class Manager(QThread):
                 self.log(level='info', message="Retrying step")
                 self.retry_clicked_variable = True
                 reset(dev)
-                set_light(dev, 2, 1)
+                # Set it to solid green (configurable)
+                set_light(dev, self.config["WTF_Alarms"]["test_running_color"],
+                          self.config["WTF_Alarms"]["test_running_pattern"])
                 return False
 
     def wait_for_cont(self) -> bool:
@@ -998,7 +1002,7 @@ class Manager(QThread):
         :return: True if user clicked an answer, false if user aborted
         """
         with open_light() as dev:
-            set_light(dev, 1, 3)
+            set_light(dev, self.config['WTF_Alarms']['user_action_color'], self.config['WTF_Alarms']['user_action_pattern'])
             try:
                 self.wait_for_answer()
                 return True
@@ -1081,12 +1085,15 @@ class Manager(QThread):
         # Flash red if the device failed and the test is complete
         if finished and device_result == 'FAIL':
             with open_light(clearOut=False) as dev:
-                set_light(dev, 0, 2)
-                set_wtf_buzzer(dev)
+                set_light(dev, self.config['WTF_Alarms']['test_failed_color'], self.config['WTF_Alarms']['test_failed_pattern'])
+                if self.config['WTF_Alarms']['test_failed_buzzer']:
+                    set_wtf_buzzer(dev)
         # Flash green if the device passed and the test is complete
         if finished and device_result == 'PASS':
             with open_light(clearOut=False) as dev:
-                set_light(dev, 2, 2)
+                # Set it to solid green (configurable)
+                set_light(dev, self.config["WTF_Alarms"]["test_passed_color"],
+                          self.config["WTF_Alarms"]["test_passed_pattern"])
 
         # Add ua write result to output
         if self.test_data.skip_write_to_ua or self.test_data.write_result is None:  # if user opted not to write to UA
@@ -1278,7 +1285,9 @@ class Manager(QThread):
         """
 
         with open_light(clearOut=False) as dev:
-            set_light(dev, 2, 1)
+            # Set it to solid green (configurable)
+            set_light(dev, self.config["WTF_Alarms"]["test_running_color"],
+                      self.config["WTF_Alarms"]["test_running_pattern"])
 
         # reset test data to default values
         self.test_data.set_blank_values()
@@ -2692,8 +2701,10 @@ class Manager(QThread):
                     if self.config["Test_Settings"]["abort_on_fail"]:
                         self.log(f"retry limit reached, aborting script. \n(Error detail: {error_detail})", self.warn)
                         with open_light(clearOut=False) as dev:
-                            set_light(dev, 0, 3)
-                            set_wtf_buzzer(dev)
+                            set_light(dev, self.config['WTF_Alarms']['test_failed_color'],
+                                      self.config['WTF_Alarms']['test_failed_pattern'])
+                            if self.config['WTF_Alarms']['test_failed_buzzer']:
+                                set_wtf_buzzer(dev)
                             self.abort_immediately()
                         return False
                     else:
@@ -2704,8 +2715,10 @@ class Manager(QThread):
                 self.test_data.element_failed(element_number=self.element, description=error_detail)
                 self.log(error_detail + ', aborting script.', self.error)
                 with open_light(clearOut=False) as dev:
-                    set_light(dev, 0, 3)
-                    set_wtf_buzzer(dev)
+                    set_light(dev, self.config['WTF_Alarms']['test_failed_color'],
+                              self.config['WTF_Alarms']['test_failed_pattern'])
+                    if self.config['WTF_Alarms']['test_failed_buzzer']:
+                        set_wtf_buzzer(dev)
                     self.abort_after_step()
                 return False
 

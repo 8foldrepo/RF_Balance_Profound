@@ -59,7 +59,7 @@ class MyTestCase(unittest.TestCase):
 
         results_summary = (
                 self.manager.config['Paths']['UA results root directory'] + "\\" +
-                self.manager.file_saver.folder_name + '\\Results Summary.txt')
+                self.manager.file_saver.folder_name + '\\Test results summary.txt')
         script_results = (
                 self.manager.config['Paths']['UA results root directory'] + "\\" +
                 self.manager.file_saver.folder_name + '\\Log files\\ScriptResults.log')

@@ -136,6 +136,16 @@ UAInterface:
 User Accounts:
   Administrator: PMI_Admin
   Operator: Operator
+WTF_Alarms:
+  test_passed_color: 2
+  test_passed_pattern: 2
+  test_running_color: 2
+  test_running_pattern: 1
+  user_action_color: 1
+  user_action_pattern: 2
+  test_failed_color: 0
+  test_failed_pattern: 2
+  test_failed_buzzer: true
 WTF_DIO:
   DAQ Device name: WTF4
   Deactivate_channels_on_startup: false
