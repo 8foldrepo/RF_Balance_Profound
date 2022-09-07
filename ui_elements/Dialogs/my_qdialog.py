@@ -27,7 +27,7 @@ class MyQDialog(QDialog):
     abort_signal = QtCore.pyqtSignal()
     root_logger = logging.getLogger(name=ROOT_LOGGER_NAME)
 
-    def __init__(self, config, parent=None, ):
+    def __init__(self, config=None, parent=None, ):
         super().__init__(parent=parent)
 
         # If this flag is not true when the dialog is closed, the script will abort

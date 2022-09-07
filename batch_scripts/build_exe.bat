@@ -25,6 +25,7 @@ copy ..\8foldlogo.ico
 copy ..\systeminfo.ini
 copy ..\FrequencyExclusions.txt
 copy ..\mcl_pm_NET45.dll
+copy ..\libusb-1.0.dll
 copy "..\UA serial number and frequency data.txt"
 mkdir config_validation_data
 cd config_validation_data
