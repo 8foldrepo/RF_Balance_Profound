@@ -146,6 +146,7 @@ class FileSaver:
 
         :param test_data: test data to be written to the results file, passed from manager
         """
+
         if not test_data:  # if dictionary is empty return
             self.log(level="error", message="No results to save")
             return

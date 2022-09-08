@@ -865,7 +865,10 @@ class Manager(QThread):
         elif 'FREQUENCY SWEEP' in task_name.upper():
             self.frequency_sweep(task_arguments)
         else:
-            self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")
+            if "Loop over elements".upper() in task_name.upper():
+                self.log("Invalid script, check that each loop action has an end loop action")
+            else:
+                self.log(f"{task_name} is not a valid task task_name in the script, aborting immediately", "error")
             self.critical_error_flag = True
             # string will be shown to user in the script_complete method
             self.error_message = f"{task_name} is not a valid task task_name in the script, aborting immediately"
@@ -1098,10 +1101,13 @@ class Manager(QThread):
         # Add ua write result to output
         if self.test_data.skip_write_to_ua or self.test_data.write_result is None:  # if user opted not to write to UA
             pass_list[10] = "N/A"  # write N/A instead of fail
-        elif self.test_data.write_result:
-            pass_list[10] = "PASS"
         else:
-            pass_list[10] = "FAIL"
+            # Update UA write result in the results summary
+            self.test_data.write_result = self.UAInterface.write_result
+            if self.test_data.write_result:
+                pass_list[10] = "PASS"
+            else:
+                pass_list[10] = "FAIL"
 
         self.test_data.set_pass_result(11, device_result)  # add the overall device result to the results_summary
 
@@ -1291,6 +1297,9 @@ class Manager(QThread):
 
         # reset test data to default values
         self.test_data.set_blank_values()
+
+        # reset UAInterface result
+        self.UAInterface.write_result = False
 
         # reset their representation in the UI
         self.test_data.show_results_summary.emit(self.test_data.results_summary)
@@ -1769,6 +1778,9 @@ class Manager(QThread):
             self.test_data.software_version = "1.0"
 
         self.test_data.calculate_angle_average(self.measured_element_r_coords)
+
+        # Update UA write result in the results summary
+        self.test_data.write_result = self.UAInterface.write_result
 
         if prompt_for_calibration_write:  # displays the "write to UA" dialog box if this variable is true
             self.yes_clicked_variable = False

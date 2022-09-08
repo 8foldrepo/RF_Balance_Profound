@@ -7,7 +7,7 @@ from datetime import datetime
 from pprint import pprint
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
-from Utilities.useful_methods import is_number, check_directory
+from Utilities.useful_methods import is_number, check_directory, is_integer
 from Widget_Library import dialog_pretest
 from data_structures.test_data import TestData
 from definitions import ROOT_DIR
@@ -102,7 +102,7 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if self.hf_MHz_field.text() == "":
             self.hf_MHz_field.setText("Not found")
         if self.hardware_code_field.text() == "":
-            self.hardware_code_field.setText("Not found")
+            self.hardware_code_field.setText("0")
 
     def ok_clicked(self) -> None:
         """
@@ -116,6 +116,11 @@ class PretestDialog(MyQDialog, dialog_pretest.Ui_test_data_capture):
         if not is_number(self.lf_MHz_field.text()) or not is_number(self.hf_MHz_field.text()):
             self.feedback_label.setText("Frequencies must be numeric")
             return
+
+        if not is_integer(self.hardware_code_field.text()):
+            self.feedback_label.setText("Hardware code must be an integer")
+            return
+
         self.test_data.test_comment = self.comment_inputbox.toPlainText()
         self.test_data.serial_number = self.ua_serial_no_inputline.text()
         self.test_data.operator_name = self.test_operator_inputline.text()

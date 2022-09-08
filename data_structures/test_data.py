@@ -196,9 +196,9 @@ class TestData(MyQObject):
         """Calculates the average of all measured element theta positions from find element"""
         angle_average = mean_of_non_none_values(measured_element_r_coords)
 
-        if not angle_average == float('nan'):
+        if angle_average == angle_average:
             self.angle_average = angle_average
-        else:
+        else: # Angle average is NaN
             self.angle_average = -90
 
         self.results_summary[10][2] = '%.2f' % self.angle_average

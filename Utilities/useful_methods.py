@@ -31,6 +31,25 @@ def create_coord_rays(coordinates: str, ax_letters: list) -> Tuple[list, List[st
     coordinates = list(filter(lambda val: val != "", coordinates))
     return axes, coordinates
 
+def is_integer(var):
+    """Returns whether the given variable is an integer"""
+    if isinstance(var, int):
+        return True
+
+    try:
+        if float(var) == int(var):
+            return True
+    except ValueError:
+        pass
+
+    try:
+        if float(var)%1==0:
+            return True
+    except ValueError:
+        pass
+
+    return False
+
 
 def create_comma_string(axes: list, numbers: list, ax_letters: list) -> str:
     """
@@ -343,4 +362,7 @@ def cast_as_bool(var) -> bool:
 
 
 if __name__ == "__main__":
+    print(float("1"))
+    print(int("1"))
+    print(float("1.1")%1==0)
     pass
