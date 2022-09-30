@@ -10,12 +10,12 @@ set IP address to 192.168.3.1 and the subnet to 255.255.255.0
 IP address:
 192.168.42.2
 
+Use GDK to change the following settings
+
 Switch polarity:
 Reversed
 
-Commands:
-
-
+Terminal commands:
 
 # Step smoothing
 KSA=16
